@@ -5,7 +5,7 @@ This package provides a command-line interface for interacting with Claude
 to build projects, generate code, and improve your codebase.
 """
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = "Yiqiao Yin"
 __email__ = "yiqiao.yin@wyn-associates.com"
 

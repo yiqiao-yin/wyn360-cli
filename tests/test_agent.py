@@ -169,7 +169,7 @@ class TestWYN360Agent:
 
         # Mock the agent.run method
         mock_result = Mock()
-        mock_result.data = "Test response"
+        mock_result.output = "Test response"
         mocker.patch.object(agent.agent, 'run', return_value=mock_result)
 
         initial_length = len(agent.conversation_history)

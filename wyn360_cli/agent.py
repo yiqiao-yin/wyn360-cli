@@ -170,8 +170,8 @@ When analyzing projects, use list_files and read_file tools first.
             # Run the agent
             result = await self.agent.run(user_message)
 
-            # Extract the response
-            response_text = result.data
+            # Extract the response (handle both .data and .output for compatibility)
+            response_text = getattr(result, 'data', None) or getattr(result, 'output', str(result))
 
             # Add assistant response to history
             self.conversation_history.append({
