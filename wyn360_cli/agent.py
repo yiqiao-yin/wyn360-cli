@@ -198,7 +198,6 @@ When analyzing projects, use list_files and read_file tools first.
 
         except Exception as e:
             error_msg = f"An error occurred: {str(e)}"
-            print(f"Error: {error_msg}")
             return error_msg
 
     def _suggest_filename(self, code: str) -> str:

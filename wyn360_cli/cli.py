@@ -95,13 +95,13 @@ async def chat_loop(agent: WYN360Agent):
             if not user_input.strip():
                 continue
 
-            # Get response from agent
+            # Get response from agent with progress indicator
             console.print()
-            console.print("[bold blue]WYN360:[/bold blue]", end=" ")
-
-            response = await agent.chat(user_input)
+            with console.status("[bold cyan]WYN360 is thinking...", spinner="dots"):
+                response = await agent.chat(user_input)
 
             # Display response with markdown formatting
+            console.print("[bold blue]WYN360:[/bold blue]")
             console.print()
             md = Markdown(response)
             console.print(md)
