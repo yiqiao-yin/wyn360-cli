@@ -34,11 +34,11 @@ class WYN360Agent:
         self.model_name = model
         self.conversation_history: List[Dict[str, str]] = []
 
-        # Initialize Anthropic model
-        self.model = AnthropicModel(
-            model_name=model,
-            api_key=api_key
-        )
+        # Set API key in environment for pydantic-ai to use
+        os.environ['ANTHROPIC_API_KEY'] = api_key
+
+        # Initialize Anthropic model (it will use the environment variable)
+        self.model = AnthropicModel(model)
 
         # Create the agent with tools
         self.agent = Agent(
