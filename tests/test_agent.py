@@ -39,6 +39,9 @@ class TestWYN360Agent:
         assert "WYN360" in prompt
         assert "coding assistant" in prompt.lower()
         assert "python" in prompt.lower()
+        # Check for file operation intelligence
+        assert "overwrite=True" in prompt
+        assert "read_file first" in prompt.lower()
 
     @pytest.mark.asyncio
     async def test_read_file_tool(self):

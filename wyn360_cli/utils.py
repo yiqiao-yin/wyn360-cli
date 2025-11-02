@@ -116,7 +116,7 @@ def write_file_safe(file_path: str, content: str, overwrite: bool = False) -> Tu
 
         # Check if file exists and overwrite is False
         if path.exists() and not overwrite:
-            return False, f"File already exists: {file_path} (use overwrite=True to replace)"
+            return False, f"File already exists: {file_path}. To update it, call write_file again with overwrite=True"
 
         # Create parent directories if needed
         path.parent.mkdir(parents=True, exist_ok=True)

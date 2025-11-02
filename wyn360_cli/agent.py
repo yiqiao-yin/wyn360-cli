@@ -49,7 +49,8 @@ class WYN360Agent:
                 self.write_file,
                 self.list_files,
                 self.get_project_info
-            ]
+            ],
+            retries=3  # Allow up to 3 retries for tool calls
         )
 
     def _get_system_prompt(self) -> str:
@@ -70,8 +71,23 @@ Guidelines:
 - For existing projects, analyze the structure before making changes
 - Be proactive in suggesting best practices and improvements
 
-When a user asks you to create files, use the write_file tool to save them.
-When analyzing projects, use list_files and read_file tools first.
+**File Operation Intelligence:**
+
+When user says "add feature", "update", "improve", "modify", "change", or similar:
+- They want to UPDATE existing files
+- ALWAYS use read_file first to understand current state
+- Then use write_file with overwrite=True to save changes
+- This applies to phrases like "add XYZ to my app" or "improve the chatbot"
+
+When user says "create new", "make another", "build a separate", or specifies a new filename:
+- They want a NEW file
+- Use write_file with overwrite=False (default)
+- This applies to phrases like "create utils.py" or "make a new script"
+
+**Best Practice:**
+- Before updating any existing file, use read_file to see current contents
+- This ensures you understand what you're modifying
+- Include context about what changed in your response to the user
 """
 
     async def read_file(self, ctx: RunContext[None], file_path: str) -> str:
