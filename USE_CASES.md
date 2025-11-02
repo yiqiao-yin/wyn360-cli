@@ -203,6 +203,94 @@ WYN360:
 
 ---
 
+## 🤖 Intelligent File Operation Handling (NEW in v0.2.1)
+
+WYN360 now includes advanced intelligence for understanding user intent when working with files, automatically determining whether to create new files or update existing ones.
+
+### Intent Recognition
+
+The agent analyzes your natural language to understand what you want:
+
+**Update Existing Files** - When you say:
+- "Add feature to my app"
+- "Update the chatbot"
+- "Improve my script"
+- "Modify the config"
+- "Change the API endpoint"
+
+**Action taken:**
+1. Agent reads the existing file first to understand current state
+2. Makes the requested modifications
+3. Writes back with `overwrite=True`
+4. Shows you what changed
+
+**Create New Files** - When you say:
+- "Create a new script called utils.py"
+- "Make another chatbot"
+- "Build a separate module"
+- "Generate a helper file"
+
+**Action taken:**
+1. Agent creates the new file
+2. Uses `overwrite=False` to prevent accidents
+3. Leaves existing files untouched
+
+### Context-Aware Updates
+
+**Before updating any file, the agent:**
+1. ✓ Reads the current file contents
+2. ✓ Understands the existing structure
+3. ✓ Makes intelligent modifications
+4. ✓ Preserves what shouldn't change
+5. ✓ Explains what was updated
+
+**Example:**
+```
+You: Add a feature to run hello_world.py when user asks
+
+WYN360:
+1. Reading your current app.py...
+2. Creating hello_world.py...
+3. Updating app.py with new functionality...
+✓ Created: hello_world.py
+✓ Updated: app.py (added script execution feature)
+```
+
+### Self-Correcting Behavior
+
+If the agent makes a wrong choice, it can self-correct:
+
+**Scenario:**
+- Agent tries to create file but it already exists
+- Gets clear error: "File exists. Use overwrite=True to update"
+- Automatically retries with correct settings (up to 3 retries)
+- Succeeds on retry
+
+**Benefits:**
+- No more "max retries exceeded" errors
+- Agent learns from mistakes
+- Seamless user experience
+- Natural language understanding
+
+### Smart Retry Mechanism
+
+**Configuration:** 3 retries for tool operations
+
+**How it works:**
+1. First attempt based on intent recognition
+2. If error occurs, analyzes the error message
+3. Adjusts parameters (e.g., sets overwrite=True)
+4. Retries with corrected parameters
+5. Repeats up to 3 times
+
+**This handles:**
+- File existence conflicts
+- Permission issues
+- Temporary failures
+- Ambiguous user requests
+
+---
+
 ## 🛠️ Available Tools
 
 WYN360 has access to these specialized tools for file and project operations:
@@ -617,6 +705,18 @@ WYN360:
 - Test before deploying
 - Customize as needed
 
+### 6. Use Clear Intent Language (NEW)
+- Say "add feature" or "update" when modifying existing files
+- Say "create new" or "make another" for new files
+- Be explicit about what you want to change
+- The agent understands natural language intent
+
+**Examples:**
+- ✅ "Add authentication to my app" (updates existing)
+- ✅ "Create a new helper module" (creates new)
+- ✅ "Improve error handling" (updates existing)
+- ✅ "Build a separate API client" (creates new)
+
 ---
 
 ## 🎓 Learning Path
@@ -680,6 +780,35 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 **Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
+
+## 📝 Changelog
+
+### v0.2.1 (Latest)
+- ✨ **NEW:** Intelligent file operation handling with intent recognition
+- ✨ **NEW:** Context-aware updates (reads before modifying)
+- ✨ **NEW:** Self-correcting behavior with smart retry mechanism (3 retries)
+- 🔧 Improved error messages for better agent understanding
+- 🔧 Enhanced system prompt with file operation guidelines
+
+### v0.2.0
+- ✨ Added progress indicator with animated spinner
+- 🐛 Fixed duplicate output in CLI display
+- 🔧 Improved user experience during long operations
+
+### v0.1.3
+- 🐛 Fixed result attribute compatibility across pydantic-ai versions
+- 🔧 Support for both .data and .output attributes
+
+### v0.1.2
+- 🎨 Fixed ASCII banner to correctly display "WYN360"
+- 📧 Updated email to yiqiao.yin@wyn-associates.com
+
+### v0.1.1
+- 🐛 Fixed AnthropicModel initialization error
+- 🔧 Updated to use environment variables for API key
+
+### v0.1.0
+- 🎉 Initial release
