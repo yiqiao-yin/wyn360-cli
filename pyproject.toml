@@ -1,0 +1,31 @@
+[project]
+name = "wyn360-cli"
+version = "0.1.0"
+description = "WYN360 - An intelligent AI coding assistant CLI tool powered by Anthropic Claude"
+authors = [
+    {name = "Yiqiao Yin", email = "eagle0504@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "click>=8.1.0",
+    "pydantic-ai>=0.0.1",
+    "anthropic>=0.39.0",
+    "rich>=13.0.0",
+    "python-dotenv (>=1.2.1,<2.0.0)",
+]
+
+[project.scripts]
+wyn360 = "wyn360_cli.cli:main"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=8.4.2,<9.0.0)",
+    "pytest-asyncio (>=1.2.0,<2.0.0)",
+    "pytest-mock (>=3.15.1,<4.0.0)"
+]

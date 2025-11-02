@@ -1,0 +1,226 @@
+"""WYN360 Agent - AI coding assistant using pydantic_ai"""
+
+import os
+from typing import List, Dict, Any
+from pydantic_ai import Agent, RunContext
+from pydantic_ai.models.anthropic import AnthropicModel
+from .utils import (
+    scan_directory,
+    read_file_safe,
+    write_file_safe,
+    get_project_summary,
+    is_blank_project,
+    extract_code_blocks
+)
+
+
+class WYN360Agent:
+    """
+    WYN360 AI coding assistant agent.
+
+    Provides intelligent code generation, file operations, and project assistance
+    using Anthropic Claude via pydantic_ai.
+    """
+
+    def __init__(self, api_key: str, model: str = "claude-sonnet-4-20250514"):
+        """
+        Initialize the WYN360 Agent.
+
+        Args:
+            api_key: Anthropic API key
+            model: Claude model to use (default: claude-sonnet-4-20250514)
+        """
+        self.api_key = api_key
+        self.model_name = model
+        self.conversation_history: List[Dict[str, str]] = []
+
+        # Initialize Anthropic model
+        self.model = AnthropicModel(
+            model_name=model,
+            api_key=api_key
+        )
+
+        # Create the agent with tools
+        self.agent = Agent(
+            model=self.model,
+            system_prompt=self._get_system_prompt(),
+            tools=[
+                self.read_file,
+                self.write_file,
+                self.list_files,
+                self.get_project_info
+            ]
+        )
+
+    def _get_system_prompt(self) -> str:
+        """Get the system prompt for the coding assistant."""
+        return """You are WYN360, an intelligent AI coding assistant. Your role is to help users with:
+
+1. **Starting new projects**: Generate well-structured Python code from scratch
+2. **Improving existing projects**: Analyze codebases and suggest/implement improvements
+3. **Code generation**: Write clean, efficient, and well-documented Python code
+4. **File operations**: Read, analyze, and modify files as needed
+
+Guidelines:
+- Always write production-quality code with proper error handling
+- Include docstrings and comments for clarity
+- When generating code, use markdown code blocks with ```python
+- Ask clarifying questions if requirements are unclear
+- For new projects, create complete, runnable code
+- For existing projects, analyze the structure before making changes
+- Be proactive in suggesting best practices and improvements
+
+When a user asks you to create files, use the write_file tool to save them.
+When analyzing projects, use list_files and read_file tools first.
+"""
+
+    async def read_file(self, ctx: RunContext[None], file_path: str) -> str:
+        """
+        Read the contents of a file.
+
+        Args:
+            file_path: Path to the file to read
+
+        Returns:
+            File contents or error message
+        """
+        success, content = read_file_safe(file_path)
+        if success:
+            return f"Contents of {file_path}:\n\n{content}"
+        else:
+            return f"Error: {content}"
+
+    async def write_file(
+        self,
+        ctx: RunContext[None],
+        file_path: str,
+        content: str,
+        overwrite: bool = False
+    ) -> str:
+        """
+        Write content to a file.
+
+        Args:
+            file_path: Path where to write the file
+            content: Content to write
+            overwrite: Whether to overwrite if file exists
+
+        Returns:
+            Success or error message
+        """
+        success, message = write_file_safe(file_path, content, overwrite)
+        return message
+
+    async def list_files(self, ctx: RunContext[None], directory: str = ".") -> str:
+        """
+        List all files in the project directory.
+
+        Args:
+            directory: Directory to scan (default: current directory)
+
+        Returns:
+            Formatted list of files by category
+        """
+        files = scan_directory(directory)
+
+        result = "Files in project:\n\n"
+        for category, file_list in files.items():
+            if file_list:
+                result += f"{category.upper()}:\n"
+                for file_path in file_list:
+                    result += f"  - {file_path}\n"
+                result += "\n"
+
+        return result if any(files.values()) else "No files found in directory."
+
+    async def get_project_info(self, ctx: RunContext[None]) -> str:
+        """
+        Get comprehensive information about the current project.
+
+        Returns:
+            Project summary including file counts and structure
+        """
+        summary = get_project_summary()
+        is_blank = is_blank_project()
+
+        if is_blank:
+            summary += "\nNote: This appears to be a blank/new project.\n"
+        else:
+            summary += "\nNote: This is an existing project with files.\n"
+
+        return summary
+
+    async def chat(self, user_message: str) -> str:
+        """
+        Process a user message and generate a response.
+
+        Args:
+            user_message: The user's input message
+
+        Returns:
+            Agent's response
+        """
+        try:
+            # Add user message to history
+            self.conversation_history.append({
+                "role": "user",
+                "content": user_message
+            })
+
+            # Run the agent
+            result = await self.agent.run(user_message)
+
+            # Extract the response
+            response_text = result.data
+
+            # Add assistant response to history
+            self.conversation_history.append({
+                "role": "assistant",
+                "content": response_text
+            })
+
+            # Check if response contains code blocks and extract them
+            code_blocks = extract_code_blocks(response_text)
+
+            # If there are Python code blocks, offer to save them
+            if code_blocks:
+                python_blocks = [b for b in code_blocks if b['language'] == 'python']
+                if python_blocks and is_blank_project():
+                    # Auto-save first Python code block in blank projects
+                    code = python_blocks[0]['code']
+                    # Try to determine filename from code or use default
+                    filename = self._suggest_filename(code)
+                    success, msg = write_file_safe(filename, code, overwrite=False)
+                    if success:
+                        response_text += f"\n\n✓ Code saved to: {filename}"
+
+            return response_text
+
+        except Exception as e:
+            error_msg = f"An error occurred: {str(e)}"
+            print(f"Error: {error_msg}")
+            return error_msg
+
+    def _suggest_filename(self, code: str) -> str:
+        """
+        Suggest a filename based on code content.
+
+        Args:
+            code: Python code content
+
+        Returns:
+            Suggested filename
+        """
+        # Look for class definitions
+        if 'class ' in code and 'streamlit' in code.lower():
+            return 'app.py'
+        elif 'class ' in code:
+            return 'main.py'
+        elif 'def main' in code:
+            return 'main.py'
+        elif 'streamlit' in code.lower() or 'st.' in code:
+            return 'app.py'
+        elif 'fastapi' in code.lower() or 'FastAPI' in code:
+            return 'app.py'
+        else:
+            return 'script.py'
