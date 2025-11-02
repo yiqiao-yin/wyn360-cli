@@ -1,9 +1,9 @@
 [project]
 name = "wyn360-cli"
-version = "0.1.1"
+version = "0.1.2"
 description = "WYN360 - An intelligent AI coding assistant CLI tool powered by Anthropic Claude"
 authors = [
-    {name = "Yiqiao Yin", email = "eagle0504@gmail.com"}
+    {name = "Yiqiao Yin", email = "yiqiao.yin@wyn-associates.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.10"
