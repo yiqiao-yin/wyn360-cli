@@ -86,14 +86,27 @@ async def chat_loop(agent: WYN360Agent):
     Args:
         agent: The WYN360Agent instance
     """
+    # Create key bindings for multi-line input
+    # Shift+Enter = newline, Enter = submit
+    kb = KeyBindings()
+
+    @kb.add('s-enter')  # Shift+Enter adds newline
+    def _(event):
+        event.current_buffer.insert_text('\n')
+
     # Create prompt session with multi-line support
-    session = PromptSession(multiline=True)
+    # With prompt_wrap_lines=True, multiline works but Enter submits by default
+    session = PromptSession(
+        multiline=False,  # Don't use multiline mode, we handle it with Shift+Enter
+        key_bindings=kb,
+        prompt_continuation=lambda width, line_number, is_soft_wrap: '... '
+    )
 
     while True:
         try:
             # Get user input with multi-line support (Shift+Enter for newline)
             console.print("[bold green]You:[/bold green]")
-            user_input = await session.prompt_async("", multiline=True)
+            user_input = await session.prompt_async("")
 
             # Check for exit commands
             if user_input.lower().strip() in ['exit', 'quit', 'q']:

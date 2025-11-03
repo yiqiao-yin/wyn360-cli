@@ -881,13 +881,18 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.2
+**Version:** 0.2.3
 **Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.2 (Latest)
+### v0.2.3 (Latest)
+- 🐛 **BUGFIX:** Fixed multi-line input behavior - Enter now properly submits
+- 🔧 Corrected key bindings: Enter submits, Shift+Enter adds newline
+- 🔧 Changed from `multiline=True` to custom key binding approach
+
+### v0.2.2
 - ✨ **NEW:** Command execution capability - run Python scripts, UV commands, shell scripts, any CLI tool
 - ✨ **NEW:** Multi-line input support with Shift+Enter for newline
 - ✨ **NEW:** User confirmation prompts before executing commands
