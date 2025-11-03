@@ -281,11 +281,11 @@ Write complex, multi-line prompts with ease using keyboard shortcuts.
 
 **How it works:**
 - **Enter** → Submit your message
-- **Shift+Enter** → Add a new line (continue typing)
+- **Ctrl+Enter** → Add a new line (continue typing)
 
 **Example:**
 ```
-You: [Shift+Enter for each line]
+You: [Ctrl+Enter for each line]
 Create a Streamlit app that:
 1. Loads a CSV file
 2. Shows summary statistics
@@ -881,13 +881,18 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.3
+**Version:** 0.2.4
 **Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.3 (Latest)
+### v0.2.4 (Latest)
+- 🐛 **BUGFIX:** Fixed key binding error - Changed to Ctrl+Enter for newlines
+- 🔧 Updated key bindings: Enter submits, Ctrl+Enter adds newline
+- 🔧 Fixed ValueError: Invalid key 's-enter' issue from v0.2.3
+
+### v0.2.3
 - 🐛 **BUGFIX:** Fixed multi-line input behavior - Enter now properly submits
 - 🔧 Corrected key bindings: Enter submits, Shift+Enter adds newline
 - 🔧 Changed from `multiline=True` to custom key binding approach
