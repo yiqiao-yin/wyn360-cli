@@ -11,7 +11,8 @@ from wyn360_cli.utils import (
     read_file_safe,
     write_file_safe,
     get_project_summary,
-    is_blank_project
+    is_blank_project,
+    execute_command_safe
 )
 
 
@@ -251,3 +252,93 @@ class TestIsBlankProject:
     def test_not_blank_with_text_files(self):
         (Path(self.test_dir) / "readme.md").write_text("docs")
         assert is_blank_project(self.test_dir) is False
+
+
+class TestExecuteCommandSafe:
+    """Tests for execute_command_safe function"""
+
+    def setup_method(self):
+        """Create a temporary directory for testing"""
+        self.test_dir = tempfile.mkdtemp()
+
+    def teardown_method(self):
+        """Clean up temporary directory"""
+        shutil.rmtree(self.test_dir)
+
+    def test_execute_successful_command(self):
+        """Test executing a successful command"""
+        success, output, return_code = execute_command_safe("echo 'Hello World'")
+        assert success is True
+        assert "Hello World" in output
+        assert return_code == 0
+
+    def test_execute_failed_command(self):
+        """Test executing a command that fails"""
+        success, output, return_code = execute_command_safe("exit 1")
+        assert success is False
+        assert return_code == 1
+
+    def test_execute_nonexistent_command(self):
+        """Test executing a command that doesn't exist"""
+        success, output, return_code = execute_command_safe("nonexistent_command_xyz")
+        assert success is False
+        assert return_code != 0
+
+    def test_execute_with_working_directory(self):
+        """Test executing command in specific working directory"""
+        # Create a test file in the temp directory
+        test_file = Path(self.test_dir) / "test.txt"
+        test_file.write_text("content")
+
+        # List files in that directory
+        success, output, return_code = execute_command_safe(
+            "ls test.txt",
+            working_dir=self.test_dir
+        )
+        assert success is True
+        assert "test.txt" in output
+
+    def test_execute_invalid_working_directory(self):
+        """Test executing with non-existent working directory"""
+        success, output, return_code = execute_command_safe(
+            "echo test",
+            working_dir="/nonexistent/directory/xyz"
+        )
+        assert success is False
+        assert "not found" in output.lower()
+        assert return_code == 1
+
+    def test_execute_timeout(self):
+        """Test command timeout"""
+        # Command that sleeps for 10 seconds with 1 second timeout
+        success, output, return_code = execute_command_safe(
+            "sleep 10",
+            timeout=1
+        )
+        assert success is False
+        assert "timed out" in output.lower()
+        assert return_code == -1
+
+    def test_execute_captures_stderr(self):
+        """Test that stderr is captured"""
+        # Command that writes to stderr
+        success, output, return_code = execute_command_safe(
+            "python -c \"import sys; sys.stderr.write('error message')\"",
+            working_dir=self.test_dir
+        )
+        # Python exits with 0 even when writing to stderr
+        assert "error message" in output
+
+    def test_execute_python_script(self):
+        """Test executing a Python script"""
+        # Create a simple Python script
+        script_path = Path(self.test_dir) / "test_script.py"
+        script_path.write_text("print('Script executed')")
+
+        success, output, return_code = execute_command_safe(
+            "python test_script.py",
+            working_dir=self.test_dir
+        )
+        assert success is True
+        assert "Script executed" in output
+        assert return_code == 0

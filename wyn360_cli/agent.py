@@ -1,6 +1,7 @@
 """WYN360 Agent - AI coding assistant using pydantic_ai"""
 
 import os
+import sys
 from typing import List, Dict, Any
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.anthropic import AnthropicModel
@@ -48,7 +49,8 @@ class WYN360Agent:
                 self.read_file,
                 self.write_file,
                 self.list_files,
-                self.get_project_info
+                self.get_project_info,
+                self.execute_command
             ],
             retries=3  # Allow up to 3 retries for tool calls
         )
@@ -88,6 +90,31 @@ When user says "create new", "make another", "build a separate", or specifies a 
 - Before updating any existing file, use read_file to see current contents
 - This ensures you understand what you're modifying
 - Include context about what changed in your response to the user
+
+**Command Execution:**
+
+You can execute shell commands using the execute_command tool.
+
+When user says "run", "execute", "install", "start", or asks you to run a script:
+- Understand what they want to run
+- Use execute_command with the appropriate command
+- Explain what the command will do before running it
+
+Common patterns:
+- Python scripts: execute_command("python script.py")
+- UV commands:
+  - execute_command("uv init project_name")
+  - execute_command("uv add package1 package2")
+  - execute_command("uv run python script.py")
+- Streamlit apps: execute_command("uv run streamlit run app.py")
+- Shell scripts: execute_command("bash script.sh")
+- Any CLI tool: execute_command("npm install"), execute_command("docker ps"), etc.
+
+Notes:
+- The user will be asked to confirm before execution (handled automatically)
+- Commands run with user's full permissions in the current directory
+- Default timeout is 300 seconds (5 minutes), adjust if needed
+- Always provide context about expected results
 """
 
     async def read_file(self, ctx: RunContext[None], file_path: str) -> str:
@@ -165,6 +192,55 @@ When user says "create new", "make another", "build a separate", or specifies a 
             summary += "\nNote: This is an existing project with files.\n"
 
         return summary
+
+    async def execute_command(
+        self,
+        ctx: RunContext[None],
+        command: str,
+        timeout: int = 300
+    ) -> str:
+        """
+        Execute a shell command and return its output.
+
+        This tool can execute any shell command including:
+        - Python scripts: "python run_analysis.py"
+        - UV commands: "uv init my_project", "uv add torch scikit-learn", "uv run streamlit run app.py"
+        - Shell scripts: "bash setup.sh"
+        - Any CLI tool: "npm install", "docker run", etc.
+
+        Args:
+            command: Full command string to execute
+            timeout: Maximum execution time in seconds (default: 300)
+
+        Returns:
+            Command output or error message
+
+        Note:
+            User will be asked to confirm before execution.
+            Commands run with user's full permissions in the current directory.
+        """
+        from .utils import execute_command_safe
+
+        # Ask for user confirmation in interactive mode
+        # Skip confirmation in non-interactive mode (tests) or if disabled via env var
+        if sys.stdin.isatty() and os.getenv('WYN360_SKIP_CONFIRM') != '1':
+            print(f"\n⚠️  About to execute command: {command}")
+            print("⚠️  This will run with your full permissions in the current directory.")
+            response = input("   Confirm execution? (y/N): ").strip().lower()
+
+            if response not in ['y', 'yes']:
+                return "❌ Command execution cancelled by user."
+
+        success, output, return_code = execute_command_safe(command, timeout)
+
+        if success:
+            result = f"✅ Command executed successfully (exit code {return_code})\n\n"
+            result += f"Output:\n{output}"
+            return result
+        else:
+            result = f"❌ Command failed (exit code {return_code})\n\n"
+            result += f"Error output:\n{output}"
+            return result
 
     async def chat(self, user_message: str) -> str:
         """

@@ -203,6 +203,107 @@ WYN360:
 
 ---
 
+### 6. Execute Commands and Scripts (NEW in v0.2.2)
+
+Run any shell command, Python script, or CLI tool directly through WYN360 with built-in safety confirmations.
+
+**Capabilities:**
+- Execute Python scripts
+- Run UV commands for package management
+- Start Streamlit/FastAPI applications
+- Execute shell scripts
+- Run any CLI tool (npm, docker, git, etc.)
+- Built-in timeout protection (5 minutes default)
+- User confirmation before execution
+
+**Supported Command Types:**
+
+| Command Type | Example | Use Case |
+|--------------|---------|----------|
+| Python Scripts | `python run_analysis.py` | Run data analysis scripts |
+| UV Package Manager | `uv init project`, `uv add torch` | Initialize projects, install packages |
+| UV Run | `uv run streamlit run app.py` | Run apps in UV environments |
+| Shell Scripts | `bash setup.sh` | Execute automation scripts |
+| Any CLI Tool | `npm install`, `docker ps` | Use any command-line tool |
+
+**Safety Features:**
+- ⚠️ Confirmation prompt before execution
+- ⏱️ Automatic timeout after 5 minutes (configurable)
+- 📝 Captures both stdout and stderr
+- ✅ Shows exit codes and success status
+- 🔒 Runs with user's permissions in current directory
+
+**Example Interaction:**
+```
+You: Run the adult.py analysis script
+
+WYN360:
+⚠️  About to execute command: python adult.py
+⚠️  This will run with your full permissions in the current directory.
+   Confirm execution? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+Output:
+Loading Adult dataset...
+Preprocessing data...
+Training model...
+Accuracy: 0.85
+Results saved to results.csv
+```
+
+**UV Workflow Example:**
+```
+You: Initialize a new UV project called my-app and add streamlit
+
+WYN360:
+I'll help you set up a UV project:
+
+1. First, initializing the project...
+⚠️  About to execute command: uv init my-app
+   Confirm execution? (y/N): y
+✅ Project initialized
+
+2. Now adding Streamlit...
+⚠️  About to execute command: uv add streamlit
+   Confirm execution? (y/N): y
+✅ Streamlit added to dependencies
+```
+
+**Bypass Confirmation (For Testing):**
+Set environment variable `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts.
+
+---
+
+### 7. Multi-line Input Support (NEW in v0.2.2)
+
+Write complex, multi-line prompts with ease using keyboard shortcuts.
+
+**How it works:**
+- **Enter** → Submit your message
+- **Shift+Enter** → Add a new line (continue typing)
+
+**Example:**
+```
+You: [Shift+Enter for each line]
+Create a Streamlit app that:
+1. Loads a CSV file
+2. Shows summary statistics
+3. Displays interactive charts
+4. Allows filtering by columns
+[Press Enter to submit]
+
+WYN360: [Generates complete multi-featured app]
+```
+
+**Why it's useful:**
+- Write detailed, structured prompts
+- Paste code with proper formatting
+- Create multi-step instructions
+- Format lists and requirements clearly
+
+---
+
 ## 🤖 Intelligent File Operation Handling (NEW in v0.2.1)
 
 WYN360 now includes advanced intelligence for understanding user intent when working with files, automatically determining whether to create new files or update existing ones.
@@ -780,13 +881,23 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.1
+**Version:** 0.2.2
 **Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.1 (Latest)
+### v0.2.2 (Latest)
+- ✨ **NEW:** Command execution capability - run Python scripts, UV commands, shell scripts, any CLI tool
+- ✨ **NEW:** Multi-line input support with Shift+Enter for newline
+- ✨ **NEW:** User confirmation prompts before executing commands
+- ✨ **NEW:** Timeout protection for long-running commands (5 min default)
+- ✨ **NEW:** Comprehensive stdout/stderr capture with exit codes
+- 🔧 Added prompt-toolkit dependency for advanced input handling
+- 🧪 Added 8 new unit tests for command execution (45 total tests)
+- 📚 Updated documentation with command execution examples
+
+### v0.2.1
 - ✨ **NEW:** Intelligent file operation handling with intent recognition
 - ✨ **NEW:** Context-aware updates (reads before modifying)
 - ✨ **NEW:** Self-correcting behavior with smart retry mechanism (3 retries)

@@ -2,6 +2,7 @@
 
 import os
 import re
+import subprocess
 from pathlib import Path
 from typing import List, Dict, Tuple
 
@@ -174,3 +175,71 @@ def is_blank_project(path: str = ".") -> bool:
 
     # Consider it blank if no Python or text files
     return len(files['python']) == 0 and len(files['text']) == 0
+
+
+def execute_command_safe(
+    command: str,
+    timeout: int = 300,
+    working_dir: str = "."
+) -> Tuple[bool, str, int]:
+    """
+    Safely execute a shell command with timeout.
+
+    This function can execute any shell command including:
+    - Python scripts: "python script.py"
+    - UV commands: "uv init project", "uv add torch", "uv run streamlit run app.py"
+    - Shell scripts: "bash script.sh"
+    - Any CLI tool: "npm install", "docker run", etc.
+
+    Args:
+        command: Full command string to execute
+        timeout: Maximum execution time in seconds (default: 300 = 5 minutes)
+        working_dir: Directory to run command in (default: current directory)
+
+    Returns:
+        Tuple of (success: bool, output: str, return_code: int)
+        - success: True if command completed with exit code 0
+        - output: Combined stdout and stderr output
+        - return_code: Command exit code
+
+    Security notes:
+        - Uses shell=True for full command flexibility
+        - Runs with user's permissions (no sandboxing)
+        - User should confirm before execution (handled in CLI)
+        - Timeout prevents infinite loops
+    """
+    try:
+        # Validate working directory
+        work_path = Path(working_dir)
+        if not work_path.exists():
+            return False, f"Directory not found: {working_dir}", 1
+
+        # Execute command with timeout
+        result = subprocess.run(
+            command,
+            shell=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            cwd=str(work_path)
+        )
+
+        # Combine stdout and stderr
+        output = result.stdout
+        if result.stderr:
+            if output:
+                output += "\n\n[STDERR]\n"
+            output += result.stderr
+
+        # Determine success based on return code
+        success = result.returncode == 0
+
+        return success, output if output else "(No output)", result.returncode
+
+    except subprocess.TimeoutExpired:
+        error_msg = f"Command timed out after {timeout} seconds. Consider increasing timeout or optimizing the command."
+        return False, error_msg, -1
+
+    except Exception as e:
+        error_msg = f"Error executing command: {str(e)}"
+        return False, error_msg, -1

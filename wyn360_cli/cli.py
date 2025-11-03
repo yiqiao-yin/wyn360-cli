@@ -7,6 +7,8 @@ from pathlib import Path
 from dotenv import load_dotenv
 from rich.console import Console
 from rich.markdown import Markdown
+from prompt_toolkit import PromptSession
+from prompt_toolkit.key_binding import KeyBindings
 from .agent import WYN360Agent
 
 console = Console()
@@ -58,7 +60,10 @@ def main(api_key, model):
     console.print()
     console.print("[yellow]Commands:[/yellow]")
     console.print("  • Type your request to chat with the assistant")
+    console.print("  • Press [bold]Enter[/bold] to submit, [bold]Shift+Enter[/bold] for new line")
     console.print("  • Type [bold]'exit'[/bold] or [bold]'quit'[/bold] to end the session")
+    console.print()
+    console.print("[yellow]Note:[/yellow] You'll be asked to confirm before executing any commands")
     console.print()
 
     # Initialize agent
@@ -81,10 +86,14 @@ async def chat_loop(agent: WYN360Agent):
     Args:
         agent: The WYN360Agent instance
     """
+    # Create prompt session with multi-line support
+    session = PromptSession(multiline=True)
+
     while True:
         try:
-            # Get user input
-            user_input = console.input("[bold green]You:[/bold green] ")
+            # Get user input with multi-line support (Shift+Enter for newline)
+            console.print("[bold green]You:[/bold green]")
+            user_input = await session.prompt_async("", multiline=True)
 
             # Check for exit commands
             if user_input.lower().strip() in ['exit', 'quit', 'q']:
