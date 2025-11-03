@@ -240,9 +240,19 @@ Notes:
         # Ask for user confirmation in interactive mode
         # Skip confirmation in non-interactive mode (tests) or if disabled via env var
         if sys.stdin.isatty() and os.getenv('WYN360_SKIP_CONFIRM') != '1':
-            print(f"\n⚠️  About to execute command: {command}")
-            print("⚠️  This will run with your full permissions in the current directory.")
-            response = input("   Confirm execution? (y/N): ").strip().lower()
+            # Clear any spinners and make prompt very visible
+            print("\n" + "="*70)
+            print("⚠️  COMMAND EXECUTION CONFIRMATION")
+            print("="*70)
+            print(f"Command: {command}")
+            print(f"Directory: {os.getcwd()}")
+            print("Permissions: Full user permissions")
+            print("="*70)
+            print("\n>>> WAITING FOR YOUR RESPONSE <<<\n")
+            sys.stdout.flush()  # Force output to appear immediately
+
+            response = input("Execute this command? (y/N): ").strip().lower()
+            print()  # Add spacing after response
 
             if response not in ['y', 'yes']:
                 return "❌ Command execution cancelled by user."

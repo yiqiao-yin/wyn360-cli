@@ -152,13 +152,25 @@ WYN360:
 ```
 You: Run the analysis script
 
-WYN360:
-⚠️  About to execute command: python analysis.py
-   Confirm execution? (y/N): y
+WYN360: [Generates the command to run]
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: python analysis.py
+Directory: /current/working/directory
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
 
 ✅ Command executed successfully
 [Shows output]
 ```
+
+**Note:** When you see the confirmation prompt, the "thinking" spinner may still appear in the background. This is normal - just type `y` and press Enter to proceed, or `N` to cancel.
 
 ## 🎯 Commands
 

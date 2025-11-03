@@ -237,10 +237,19 @@ Run any shell command, Python script, or CLI tool directly through WYN360 with b
 ```
 You: Run the adult.py analysis script
 
-WYN360:
-⚠️  About to execute command: python adult.py
-⚠️  This will run with your full permissions in the current directory.
-   Confirm execution? (y/N): y
+WYN360: [Prepares to execute]
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: python adult.py
+Directory: /your/working/directory
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
 
 ✅ Command executed successfully (exit code 0)
 
@@ -252,21 +261,35 @@ Accuracy: 0.85
 Results saved to results.csv
 ```
 
+**Note:** The confirmation prompt appears while the "thinking" spinner may still be visible. This is normal - just type your response and press Enter.
+
 **UV Workflow Example:**
 ```
 You: Initialize a new UV project called my-app and add streamlit
 
-WYN360:
-I'll help you set up a UV project:
+WYN360: I'll help you set up a UV project:
 
 1. First, initializing the project...
-⚠️  About to execute command: uv init my-app
-   Confirm execution? (y/N): y
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: uv init my-app
+Directory: /current/directory
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
 ✅ Project initialized
 
 2. Now adding Streamlit...
-⚠️  About to execute command: uv add streamlit
-   Confirm execution? (y/N): y
+
+[Similar confirmation prompt]
+Execute this command? (y/N): y
+
 ✅ Streamlit added to dependencies
 ```
 
@@ -881,13 +904,22 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.5
+**Version:** 0.2.6
 **Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.5 (Latest)
+### v0.2.6 (Latest)
+- 🎨 **UX IMPROVEMENT:** Enhanced command execution confirmation prompt
+- 🔧 Made confirmation much more visible with banner and clear messaging
+- 🔧 Added "WAITING FOR YOUR RESPONSE" indicator
+- 🔧 Shows command, directory, and permissions clearly
+- 🔧 Added sys.stdout.flush() to ensure prompt appears immediately
+- 📚 Updated documentation to explain spinner behavior during confirmation
+- 💡 Improves user experience - no more confusion about whether to wait or respond
+
+### v0.2.5
 - 🐛 **BUGFIX:** Fixed "write_file exceeded max retries" error for script generation
 - 🔧 Enhanced intent recognition for "write/generate script" patterns
 - 🔧 Added automatic retry with overwrite=True if file exists
