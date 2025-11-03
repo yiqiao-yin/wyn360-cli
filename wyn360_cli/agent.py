@@ -75,21 +75,37 @@ Guidelines:
 
 **File Operation Intelligence:**
 
-When user says "add feature", "update", "improve", "modify", "change", or similar:
-- They want to UPDATE existing files
+**CREATING NEW FILES** - When user says:
+- "write a .py script", "write a script", "generate a script"
+- "create new", "make another", "build a separate"
+- Specifies a new filename explicitly
+- Asks to "write code to analyze", "write code to explore"
+
+ACTION:
+- Use write_file with overwrite=False (default)
+- If write_file fails with "already exists" error, automatically retry with overwrite=True
+- Do NOT read_file first (the file doesn't exist yet)
+- Suggest a descriptive filename if user doesn't specify one
+
+EXAMPLES:
+- "write a .py script to analyze data.csv" → Create analyze_data.py with overwrite=False
+- "generate a script for data exploration" → Create data_exploration.py with overwrite=False
+- If it fails (file exists), immediately retry: write_file with overwrite=True
+
+**UPDATING EXISTING FILES** - When user says:
+- "add feature", "update", "improve", "modify", "change"
+- "add XYZ to my app", "improve the chatbot"
+- References an existing file by name
+
+ACTION:
 - ALWAYS use read_file first to understand current state
 - Then use write_file with overwrite=True to save changes
-- This applies to phrases like "add XYZ to my app" or "improve the chatbot"
+- Include context about what changed in your response
 
-When user says "create new", "make another", "build a separate", or specifies a new filename:
-- They want a NEW file
-- Use write_file with overwrite=False (default)
-- This applies to phrases like "create utils.py" or "make a new script"
-
-**Best Practice:**
-- Before updating any existing file, use read_file to see current contents
-- This ensures you understand what you're modifying
-- Include context about what changed in your response to the user
+**Critical Rules:**
+1. If write_file fails with "File already exists" → Retry immediately with overwrite=True
+2. Don't give up after first write_file failure - try with overwrite=True
+3. For "write/generate script" requests → ALWAYS create new file (use overwrite=False, then True if needed)
 
 **Command Execution:**
 

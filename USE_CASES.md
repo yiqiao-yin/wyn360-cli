@@ -881,13 +881,20 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.4
+**Version:** 0.2.5
 **Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.4 (Latest)
+### v0.2.5 (Latest)
+- 🐛 **BUGFIX:** Fixed "write_file exceeded max retries" error for script generation
+- 🔧 Enhanced intent recognition for "write/generate script" patterns
+- 🔧 Added automatic retry with overwrite=True if file exists
+- 🔧 Clear instructions: Don't read_file for NEW file creation
+- 📚 Better handling of data analysis script generation workflows
+
+### v0.2.4
 - 🐛 **BUGFIX:** Fixed key binding error - Changed to Ctrl+Enter for newlines
 - 🔧 Updated key bindings: Enter submits, Ctrl+Enter adds newline
 - 🔧 Fixed ValueError: Invalid key 's-enter' issue from v0.2.3
