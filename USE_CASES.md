@@ -904,13 +904,20 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.6
+**Version:** 0.2.7
 **Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.6 (Latest)
+### v0.2.7 (Latest)
+- 🐛 **BUGFIX:** Ensured command execution status always displayed
+- 🔧 Added CRITICAL instruction to agent: preserve "✅ Command executed successfully" indicator
+- 🔧 Agent now required to start responses with status indicator
+- 📚 User reported not always seeing success message - now guaranteed
+- 💡 Consistent feedback for all command executions
+
+### v0.2.6
 - 🎨 **UX IMPROVEMENT:** Enhanced command execution confirmation prompt
 - 🔧 Made confirmation much more visible with banner and clear messaging
 - 🔧 Added "WAITING FOR YOUR RESPONSE" indicator

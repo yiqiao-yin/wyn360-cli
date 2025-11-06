@@ -126,11 +126,26 @@ Common patterns:
 - Shell scripts: execute_command("bash script.sh")
 - Any CLI tool: execute_command("npm install"), execute_command("docker ps"), etc.
 
+**CRITICAL - Command Execution Response Format:**
+When you receive output from execute_command tool, ALWAYS start your response with:
+- If successful: "✅ Command executed successfully (exit code X)"
+- If failed: "❌ Command failed (exit code X)"
+
+Then show the output. DO NOT skip or reformat these status indicators.
+
+Example response format:
+```
+✅ Command executed successfully (exit code 0)
+
+The script ran and here's what happened:
+[output details]
+```
+
 Notes:
 - The user will be asked to confirm before execution (handled automatically)
 - Commands run with user's full permissions in the current directory
 - Default timeout is 300 seconds (5 minutes), adjust if needed
-- Always provide context about expected results
+- Always preserve the success/failure indicator from tool output
 """
 
     async def read_file(self, ctx: RunContext[None], file_path: str) -> str:
