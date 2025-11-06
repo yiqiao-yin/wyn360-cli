@@ -773,41 +773,26 @@ class TestStreaming:
         assert callable(agent.chat_stream)
 
     @pytest.mark.asyncio
-    async def test_chat_stream_is_async_generator(self):
-        """Test that chat_stream returns an async generator with real streaming"""
+    async def test_chat_stream_returns_complete_response(self):
+        """Test that chat_stream returns complete response text"""
         agent = WYN360Agent(api_key="test_key")
 
-        # Mock run_stream to return async stream
+        # Mock run() to return a complete response
         class MockResult:
-            async def stream(self):
-                # Simulate streaming text chunks
-                yield "Hello"
-                yield " "
-                yield "World"
+            data = "Hello World"
 
-            async def __aenter__(self):
-                return self
-
-            async def __aexit__(self, exc_type, exc_val, exc_tb):
-                pass
-
-        def mock_run_stream(*args, **kwargs):
+        async def mock_run(*args, **kwargs):
             return MockResult()
 
-        # Patch the agent's run_stream method
-        agent.agent.run_stream = mock_run_stream
+        # Patch the agent's run method
+        agent.agent.run = mock_run
 
-        # Test streaming
-        chunks = []
-        async for chunk in agent.chat_stream("Test message"):
-            chunks.append(chunk)
+        # Test chat_stream
+        response = await agent.chat_stream("Test message")
 
-        # Verify we got delta chunks (not accumulated)
-        # Should be: "Hello", " ", "World"
-        assert len(chunks) == 3
-        assert chunks[0] == "Hello"
-        assert chunks[1] == " "
-        assert chunks[2] == "World"
+        # Verify we got complete response string
+        assert isinstance(response, str)
+        assert response == "Hello World"
 
         # Verify conversation history was updated
         assert len(agent.conversation_history) == 2
@@ -821,17 +806,16 @@ class TestStreaming:
         """Test that chat_stream handles errors gracefully"""
         agent = WYN360Agent(api_key="test_key")
 
-        # Mock run_stream to raise an error
-        def mock_run_stream_error(*args, **kwargs):
+        # Mock run() to raise an error
+        async def mock_run_error(*args, **kwargs):
             raise Exception("Test error")
 
-        agent.agent.run_stream = mock_run_stream_error
+        agent.agent.run = mock_run_error
 
-        # Test that error is yielded
-        chunks = []
-        async for chunk in agent.chat_stream("Test message"):
-            chunks.append(chunk)
+        # Test that error is returned
+        response = await agent.chat_stream("Test message")
 
-        # Should yield error message
-        assert len(chunks) > 0
-        assert any("error" in chunk.lower() for chunk in chunks)
+        # Should return error message
+        assert isinstance(response, str)
+        assert "error" in response.lower()
+        assert "test error" in response.lower()

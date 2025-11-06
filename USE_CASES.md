@@ -1698,13 +1698,22 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.12
+**Version:** 0.3.13
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.12 (Latest)
+### v0.3.13 (Latest)
+- 🐛 **CRITICAL FIX:** Removed streaming API entirely to fix persistent duplication
+- ✅ Now uses agent.run() to get complete response (not run_stream())
+- 🎨 Simulates streaming by splitting response by spaces and printing word-by-word
+- ⚡ Small 0.01s delay between words creates smooth streaming effect
+- 🔧 Tools execute reliably with non-streaming approach
+- 📺 Visual streaming effect maintained without API complexity
+- 🎯 Simple, reliable solution: get complete response → split → print word-by-word
+
+### v0.3.12
 - 🐛 **CRITICAL FIX:** Eliminated streaming text duplication
 - ⚡ Fixed: Agent now yields deltas (new text only), not accumulated text
 - 🎯 Simplified CLI: Direct delta display without complex extraction logic

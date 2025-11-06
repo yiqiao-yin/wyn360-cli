@@ -375,34 +375,31 @@ async def chat_loop(agent: WYN360Agent):
                 console.print()
                 continue
 
-            # Stream response from agent
+            # Get complete response from agent
             console.print()
 
             # Show thinking status while agent processes
             with console.status("[bold blue]WYN360 is thinking...", spinner="dots"):
-                # Create the stream generator
-                stream = agent.chat_stream(user_input)
-                # Get the first chunk (this triggers agent.run())
-                first_chunk = await stream.__anext__()
+                # Get complete response (not streaming)
+                response_text = await agent.chat_stream(user_input)
 
-            # Now display the response
+            # Now display the response word-by-word to simulate streaming
             console.print("[bold blue]WYN360:[/bold blue]")
             console.print()
 
-            # Accumulate response text from deltas
-            response_text = ""
+            # Split response by spaces and print word-by-word
+            import time
+            words = response_text.split(' ')
+            for i, word in enumerate(words):
+                # Print word with space (except last word)
+                if i < len(words) - 1:
+                    console.print(word + ' ', end='', style="white")
+                else:
+                    console.print(word, end='', style="white")
+                # Small delay to simulate streaming
+                time.sleep(0.01)
 
-            # Print first chunk (delta)
-            console.print(first_chunk, end='', style="white")
-            response_text += first_chunk
-
-            # Stream remaining chunks (deltas) as they arrive
-            async for chunk in stream:
-                # Each chunk is a delta (new text only), just print and accumulate
-                console.print(chunk, end='', style="white")
-                response_text += chunk
-
-            console.print()  # Add newline after streaming
+            console.print()  # Add newline after printing
             console.print()
 
         except KeyboardInterrupt:
