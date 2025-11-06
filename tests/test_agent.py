@@ -989,3 +989,87 @@ class TestHuggingFaceTools:
             assert "colorTo: purple" in content
         finally:
             os.chdir(original_dir)
+
+    @pytest.mark.asyncio
+    async def test_create_hf_space_success(self, mocker):
+        """Test successful Space creation"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock execute_command_safe to simulate successful space creation
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(True, "Repository created successfully", 0)
+        )
+
+        result = await agent.create_hf_space(None, "eagle0504/test-app", sdk="streamlit")
+
+        assert "Successfully created" in result
+        assert "eagle0504/test-app" in result
+        assert "https://huggingface.co/spaces/eagle0504/test-app" in result
+
+    @pytest.mark.asyncio
+    async def test_create_hf_space_already_exists(self, mocker):
+        """Test Space creation when space already exists"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock execute_command_safe to simulate space already exists
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(False, "Repository already exists", 1)
+        )
+
+        result = await agent.create_hf_space(None, "eagle0504/existing-app")
+
+        assert "already exists" in result
+        assert "eagle0504/existing-app" in result
+
+    @pytest.mark.asyncio
+    async def test_create_hf_space_invalid_name(self):
+        """Test Space creation with invalid name format"""
+        agent = WYN360Agent(api_key="test_key")
+
+        result = await agent.create_hf_space(None, "invalidname")
+
+        assert "Invalid space name format" in result
+        assert "username/repo-name" in result
+
+    @pytest.mark.asyncio
+    async def test_push_to_hf_space_success(self, mocker, tmp_path):
+        """Test successful file upload to Space"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Create test directory with app.py
+        test_dir = tmp_path / "test_app"
+        test_dir.mkdir()
+        (test_dir / "app.py").write_text("import streamlit as st")
+        (test_dir / "requirements.txt").write_text("streamlit")
+
+        # Mock execute_command_safe to simulate successful upload
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(True, "Files uploaded successfully", 0)
+        )
+
+        result = await agent.push_to_hf_space(None, "eagle0504/test-app", str(test_dir))
+
+        assert "Successfully uploaded" in result
+        assert "🎉" in result
+        assert "https://huggingface.co/spaces/eagle0504/test-app" in result
+
+    @pytest.mark.asyncio
+    async def test_push_to_hf_space_directory_not_found(self):
+        """Test upload with non-existent directory"""
+        agent = WYN360Agent(api_key="test_key")
+
+        result = await agent.push_to_hf_space(None, "eagle0504/test-app", "/nonexistent/path")
+
+        assert "Directory not found" in result
+
+    @pytest.mark.asyncio
+    async def test_push_to_hf_space_invalid_name(self):
+        """Test upload with invalid space name"""
+        agent = WYN360Agent(api_key="test_key")
+
+        result = await agent.push_to_hf_space(None, "invalidname", ".")
+
+        assert "Invalid space name format" in result

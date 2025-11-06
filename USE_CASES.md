@@ -1698,13 +1698,24 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.16
+**Version:** 0.3.17
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.16 (Latest)
+### v0.3.17 (Latest)
+- 🚀 **NEW FEATURE:** HuggingFace integration Phase 2 - Full Deployment
+- ✅ **TOOL:** create_hf_space - Create HuggingFace Space repository via CLI
+- ✅ **TOOL:** push_to_hf_space - Upload files to HuggingFace Space automatically
+- 🤖 **AUTOMATION:** Complete end-to-end deployment to HuggingFace Spaces
+- 🧪 **TESTS:** Added 6 new unit tests for Phase 2 tools (152 total tests)
+- 📚 **DOCUMENTATION:** Updated ROADMAP.md with Phase 6 complete
+- 💡 **SYSTEM PROMPT:** Updated workflow with automatic deployment instructions
+- 🔧 **BUG FIX:** Fixed authentication loop when HF_TOKEN is set in environment
+- ⚡ **WORKFLOW:** Users can now deploy apps with one command: "push to huggingface"
+
+### v0.3.16
 - 🚀 **NEW FEATURE:** HuggingFace integration Phase 1
 - ✅ **TOOL:** check_hf_authentication - Check HuggingFace CLI authentication status
 - ✅ **TOOL:** authenticate_hf - Authenticate with HuggingFace using access token

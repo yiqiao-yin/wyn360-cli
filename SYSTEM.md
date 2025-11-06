@@ -2,7 +2,7 @@
 
 This document provides a detailed overview of the WYN360 CLI system architecture, including all components, layers, and data flows.
 
-**Version:** 0.3.16
+**Version:** 0.3.17
 **Last Updated:** January 2025
 
 ---
@@ -443,6 +443,6 @@ See [ROADMAP.md](ROADMAP.md) for planned features including:
 
 ---
 
-**Version:** 0.3.16
+**Version:** 0.3.17
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)

@@ -85,7 +85,9 @@ class WYN360Agent:
                 # HuggingFace tools
                 self.check_hf_authentication,
                 self.authenticate_hf,
-                self.create_hf_readme
+                self.create_hf_readme,
+                self.create_hf_space,
+                self.push_to_hf_space
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -188,11 +190,11 @@ Notes:
 - Default timeout is 300 seconds (5 minutes), adjust if needed
 - Always preserve the success/failure indicator from tool output
 
-**HuggingFace Integration (Phase 1 - Authentication & README):**
+**HuggingFace Integration (Phase 2 - Full Deployment):**
 
-You can help users prepare apps for HuggingFace Spaces deployment!
+You can help users deploy apps to HuggingFace Spaces automatically!
 
-**Workflow when user says "push to huggingface" or "deploy to HF":**
+**Complete Workflow when user says "push to huggingface" or "deploy to HF":**
 
 1. **Check Authentication (ONLY ONCE per session)**:
    - Call check_hf_authentication() ONE TIME only
@@ -204,35 +206,36 @@ You can help users prepare apps for HuggingFace Spaces deployment!
    - Space name in format "username/repo-name" (e.g., "eagle0504/test-echo-bot")
    - App title for the Space
    - SDK type (streamlit, gradio, docker, or static)
+   - App directory path (where app.py and requirements.txt are located)
 
-3. **Create README.md**:
-   - Navigate to the app directory if needed
-   - Use create_hf_readme(title, sdk) with appropriate parameters:
-     * For Streamlit: sdk="streamlit", app_file="app.py"
-     * For Gradio: sdk="gradio", app_file="app.py"
-   - This creates README.md with proper YAML frontmatter
+3. **Deploy to HuggingFace (Automatic)**:
+   a. Navigate to the app directory if needed
+   b. Create README.md with create_hf_readme(title, sdk):
+      - For Streamlit: sdk="streamlit", app_file="app.py"
+      - For Gradio: sdk="gradio", app_file="app.py"
+   c. Create Space with create_hf_space(space_name, sdk):
+      - Returns Space URL or "already exists" message
+   d. Upload files with push_to_hf_space(space_name, directory):
+      - Uploads all files in directory to the Space
+      - Returns live Space URL
 
-4. **Inform User**:
-   - Tell them README.md was created successfully
-   - Explain they need to manually push to HuggingFace using:
-     ```
-     hf repo create username/space-name --type=space --space-sdk=streamlit
-     cd app-directory
-     hf upload username/space-name . --repo-type=space
-     ```
-   - Or they can use git to push to the Space repository
+4. **Completion**:
+   - Confirm files were uploaded successfully
+   - Provide the live Space URL: https://huggingface.co/spaces/{space_name}
+   - Tell user "🎉 Your app is live!"
 
 **CRITICAL - Avoid Authentication Loops:**
 - Do NOT call check_hf_authentication() multiple times in one conversation
 - Once user is authenticated, trust it and proceed
 - If user provided token in previous messages, they are authenticated - don't ask again
-- If user gave you all details (token, space name, title), proceed directly to create README
+- If user gave you all details (token, space name, title, directory), proceed directly to deployment
 
 **Important Notes:**
-- Space names MUST be in "namespace/repo-name" format (e.g., "eagle0504/test-echo-bot")
+- Space names MUST be in "username/repo-name" format (e.g., "eagle0504/test-echo-bot")
 - README.md needs proper YAML frontmatter for Spaces to work
 - For Streamlit: typically need app.py and requirements.txt in same directory
-- Phase 2 will add automatic Space creation and file upload - for now, user does manual push
+- The entire directory gets uploaded, so make sure only necessary files are included
+- If Space already exists, files will be updated (not replaced)
 """
 
         # Add custom instructions from config if available
@@ -824,6 +827,106 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
             return f"✓ Created README.md with {sdk} Space configuration (title: {title})"
         else:
             return f"❌ Failed to create README.md: {msg}"
+
+    async def create_hf_space(
+        self,
+        ctx: RunContext[None],
+        space_name: str,
+        sdk: str = "streamlit",
+        private: bool = False
+    ) -> str:
+        """
+        Create a HuggingFace Space repository.
+
+        Args:
+            space_name: Space name in format "username/repo-name" (e.g., "eagle0504/test-echo-bot")
+            sdk: SDK type (streamlit, gradio, docker, static)
+            private: Whether the Space should be private (default: False)
+
+        Returns:
+            Success message with Space URL or error message
+
+        Examples:
+            - "create huggingface space eagle0504/my-app with streamlit"
+            - "create private space myuser/secret-app"
+        """
+        from .utils import execute_command_safe
+
+        # Validate space name format
+        if '/' not in space_name:
+            return f"❌ Invalid space name format. Must be 'username/repo-name' (e.g., 'eagle0504/test-echo-bot'), got: {space_name}"
+
+        # Build command
+        cmd = f"hf repo create {space_name} --type=space --space-sdk={sdk}"
+        if private:
+            cmd += " --private"
+
+        # Execute command
+        success, output, code = execute_command_safe(cmd, timeout=60)
+
+        if success or "already exists" in output.lower():
+            space_url = f"https://huggingface.co/spaces/{space_name}"
+            if "already exists" in output.lower():
+                return f"✓ Space '{space_name}' already exists at {space_url}"
+            else:
+                return f"✓ Successfully created Space '{space_name}' at {space_url}"
+        else:
+            return f"❌ Failed to create Space '{space_name}'\n\nError: {output[:300]}"
+
+    async def push_to_hf_space(
+        self,
+        ctx: RunContext[None],
+        space_name: str,
+        directory: str = "."
+    ) -> str:
+        """
+        Upload files to HuggingFace Space.
+
+        Args:
+            space_name: Space name in format "username/repo-name"
+            directory: Directory to upload (default: current directory)
+
+        Returns:
+            Success message or error message
+
+        Examples:
+            - "push current directory to eagle0504/test-echo-bot"
+            - "upload test_echo folder to myuser/my-app"
+        """
+        from .utils import execute_command_safe
+        from pathlib import Path
+
+        # Validate space name format
+        if '/' not in space_name:
+            return f"❌ Invalid space name format. Must be 'username/repo-name', got: {space_name}"
+
+        # Validate directory exists
+        dir_path = Path(directory)
+        if not dir_path.exists():
+            return f"❌ Directory not found: {directory}"
+
+        # Check for required files
+        app_files = list(dir_path.glob("app.py")) + list(dir_path.glob("Home.py"))
+        if not app_files:
+            return f"⚠️  Warning: No app.py or Home.py found in {directory}. Make sure this is the correct directory."
+
+        # Upload entire directory to Space
+        cmd = f"hf upload {space_name} {directory} . --repo-type=space"
+
+        # Execute upload
+        success, output, code = execute_command_safe(cmd, timeout=300)
+
+        if success:
+            space_url = f"https://huggingface.co/spaces/{space_name}"
+            return f"✓ Successfully uploaded files to Space '{space_name}'\n\n🎉 Your app is live at: {space_url}"
+        else:
+            # Check if it's a quota/permission error
+            if "quota" in output.lower() or "limit" in output.lower():
+                return f"❌ Upload failed: You may have reached your HuggingFace storage quota.\n\nError: {output[:300]}"
+            elif "not found" in output.lower() or "doesn't exist" in output.lower():
+                return f"❌ Upload failed: Space '{space_name}' doesn't exist. Create it first with create_hf_space.\n\nError: {output[:300]}"
+            else:
+                return f"❌ Upload failed for Space '{space_name}'\n\nError: {output[:300]}"
 
     async def chat(self, user_message: str) -> str:
         """
