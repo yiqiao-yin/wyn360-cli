@@ -263,3 +263,26 @@ class TestSlashCommands:
 
         assert handled is True
         # The function should handle this without errors
+
+    def test_model_command_show_info(self):
+        """Test /model command shows current model info"""
+        handled, message = handle_slash_command("model", self.agent)
+
+        assert handled is True
+        # Should show model info (message is empty because it prints a table)
+
+    def test_model_command_switch(self):
+        """Test /model command switches model"""
+        # Switch to haiku
+        handled, message = handle_slash_command("model haiku", self.agent)
+
+        assert handled is True
+        assert "✓" in message or "Switched" in message
+        assert self.agent.model_name == "claude-3-5-haiku-20241022"
+
+    def test_model_command_switch_opus(self):
+        """Test /model command switches to opus"""
+        handled, message = handle_slash_command("model opus", self.agent)
+
+        assert handled is True
+        assert "✓" in message or "Switched" in message or "Opus" in message

@@ -664,3 +664,99 @@ class TestFileManagementTools:
         result = await agent.create_directory(None, str(existing_dir))
 
         assert "already exists" in result
+
+
+class TestModelSwitching:
+    """Tests for model switching functionality"""
+
+    def test_get_model_info_default(self):
+        """Test get_model_info returns correct info for default model"""
+        agent = WYN360Agent(api_key="test_key", model="claude-sonnet-4-20250514")
+        info = agent.get_model_info()
+
+        assert info["current_model"] == "claude-sonnet-4-20250514"
+        assert info["display_name"] == "Sonnet 4"
+        assert info["input_cost_per_million"] == 3.00
+        assert info["output_cost_per_million"] == 15.00
+        assert "Balanced" in info["description"]
+
+    def test_get_model_info_haiku(self):
+        """Test get_model_info for Haiku model"""
+        agent = WYN360Agent(api_key="test_key", model="claude-3-5-haiku-20241022")
+        info = agent.get_model_info()
+
+        assert info["display_name"] == "Haiku"
+        assert info["input_cost_per_million"] == 0.25
+        assert info["output_cost_per_million"] == 1.25
+        assert "Fast" in info["description"]
+
+    def test_switch_model_short_name(self):
+        """Test switching model using short name"""
+        agent = WYN360Agent(api_key="test_key", model="claude-sonnet-4-20250514")
+
+        # Switch to haiku using short name
+        success = agent.switch_model("haiku")
+        assert success is True
+
+        # Verify model changed
+        info = agent.get_model_info()
+        assert info["display_name"] == "Haiku"
+        assert agent.model_name == "claude-3-5-haiku-20241022"
+
+    def test_switch_model_full_name(self):
+        """Test switching model using full model ID"""
+        agent = WYN360Agent(api_key="test_key", model="claude-sonnet-4-20250514")
+
+        # Switch using full name
+        success = agent.switch_model("claude-3-5-haiku-20241022")
+        assert success is True
+
+        # Verify model changed
+        assert agent.model_name == "claude-3-5-haiku-20241022"
+
+    def test_switch_model_case_insensitive(self):
+        """Test model switching is case insensitive"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Try different cases
+        success1 = agent.switch_model("HAIKU")
+        assert success1 is True
+
+        success2 = agent.switch_model("Sonnet")
+        assert success2 is True
+
+        success3 = agent.switch_model("oPuS")
+        assert success3 is True
+
+    def test_switch_model_preserves_history(self):
+        """Test that switching models preserves conversation history"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Add some history
+        agent.conversation_history = [
+            {"role": "user", "content": "Hello"},
+            {"role": "assistant", "content": "Hi"}
+        ]
+
+        # Switch model
+        agent.switch_model("haiku")
+
+        # History should still be there
+        assert len(agent.conversation_history) == 2
+        assert agent.conversation_history[0]["content"] == "Hello"
+
+    def test_model_description(self):
+        """Test _get_model_description method"""
+        agent = WYN360Agent(api_key="test_key")
+
+        desc_haiku = agent._get_model_description("claude-3-5-haiku-20241022")
+        assert "Fast" in desc_haiku
+
+        desc_sonnet = agent._get_model_description("claude-sonnet-4-20250514")
+        assert "Balanced" in desc_sonnet
+
+        desc_opus = agent._get_model_description("claude-opus-4-20250514")
+        assert "capable" in desc_opus
+
+        desc_unknown = agent._get_model_description("unknown-model")
+        assert "Custom" in desc_unknown

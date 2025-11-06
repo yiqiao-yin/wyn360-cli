@@ -583,6 +583,150 @@ WYN360:
 
 ---
 
+### 11. Model Selection & Optimization (NEW in v0.3.0)
+
+Choose the right AI model for your task to optimize cost and performance.
+
+**Available Models:**
+
+| Model | Speed | Cost | Best For |
+|-------|-------|------|----------|
+| **Haiku** | Fastest | Cheapest ($0.25/$1.25 per M) | Simple file ops, quick questions |
+| **Sonnet** | Balanced | Moderate ($3/$15 per M) | General coding, analysis (default) |
+| **Opus** | Slower | Premium ($15/$75 per M) | Complex reasoning, architecture |
+
+**Viewing Current Model:**
+```
+You: /model
+
+[Model Information Table]
+Model: Sonnet 4
+Full ID: claude-sonnet-4-20250514
+Description: Balanced performance - general coding & analysis
+Input Cost: $3.00/M tokens
+Output Cost: $15.00/M tokens
+
+Available models: haiku, sonnet, opus
+Usage: /model <name>  (e.g., /model haiku)
+```
+
+**Switching Models Mid-Session:**
+```
+You: /model haiku
+✓ Switched to Haiku (claude-3-5-haiku-20241022)
+
+You: List all Python files in this directory
+WYN360: [Uses Haiku - fast and cheap for simple task]
+
+You: /model opus
+✓ Switched to Opus 4 (claude-opus-4-20250514)
+
+You: Refactor my entire application architecture
+WYN360: [Uses Opus - most capable for complex reasoning]
+```
+
+**Cost Optimization Strategies:**
+
+**Strategy 1: Start with Haiku, upgrade as needed**
+```
+You: /model haiku
+
+You: Show me the files in this project
+WYN360: [Haiku handles this easily - saves money]
+
+You: Now help me redesign the database schema
+You: /model opus
+
+WYN360: [Switches to Opus for complex architectural decision]
+```
+
+**Strategy 2: Use Sonnet for most work, Haiku for repetitive tasks**
+```
+You: /model sonnet
+
+You: Add error handling to api.py
+WYN360: [Sonnet provides good code quality]
+
+You: /model haiku
+
+You: Run git status
+You: List files in tests directory
+You: Show me config.json
+WYN360: [Haiku handles these simple operations cheaply]
+```
+
+**Strategy 3: Model selection by session type**
+
+**Exploration sessions (Haiku):**
+- Understanding new codebase
+- Reading files
+- Running git commands
+- Simple searches
+
+**Development sessions (Sonnet - default):**
+- Writing new features
+- Refactoring code
+- Debugging issues
+- General coding
+
+**Architecture sessions (Opus):**
+- System design
+- Complex refactoring
+- Performance optimization
+- Critical bug fixes
+
+**Real-World Cost Comparison:**
+
+```
+Scenario: Adding a new feature (10 interactions)
+
+With Haiku only:
+  - 15K input tokens × $0.25/M = $0.004
+  - 8K output tokens × $1.25/M = $0.010
+  - Total: $0.014
+
+With Sonnet (default):
+  - 15K input tokens × $3.00/M = $0.045
+  - 8K output tokens × $15.00/M = $0.120
+  - Total: $0.165
+
+With Opus:
+  - 15K input tokens × $15.00/M = $0.225
+  - 8K output tokens × $75.00/M = $0.600
+  - Total: $0.825
+
+Optimized (mixed):
+  - 3 simple tasks with Haiku: $0.004
+  - 5 coding tasks with Sonnet: $0.083
+  - 2 complex tasks with Opus: $0.165
+  - Total: $0.252 (saves 69% vs all Opus, better quality than all Haiku)
+```
+
+**Command-Line Model Selection:**
+
+You can also set the model when starting WYN360:
+```bash
+# Start with Haiku for quick tasks
+wyn360 --model haiku
+
+# Start with Opus for complex work
+wyn360 --model opus
+
+# Use full model ID
+wyn360 --model claude-sonnet-4-20250514
+```
+
+**Pro Tips:**
+- ✅ Use `/model` without arguments to check current model and costs
+- ✅ Switch models freely - conversation history is preserved
+- ✅ Start sessions with cheaper models, upgrade when needed
+- ✅ Use Haiku for file operations and git commands
+- ✅ Use Opus sparingly for genuinely complex architectural decisions
+- ✅ Monitor costs with `/tokens` command
+- ⚠️ Model switches only affect future requests, not past ones
+
+---
+
 ## 🛠️ Available Tools
 
 WYN360 has access to these specialized tools for file and project operations:
@@ -1109,13 +1253,24 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.9
+**Version:** 0.3.0
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.9 (Latest)
+### v0.3.0 (Latest)
+- ✨ **NEW:** Model selection and switching - choose Haiku, Sonnet, or Opus
+- ✨ **NEW:** `/model` slash command to view and switch models mid-session
+- ✨ **NEW:** Real-time model information with pricing and descriptions
+- 💰 Cost optimization - use cheaper models for simple tasks
+- 🔧 Conversation history preserved when switching models
+- 🧪 Added 10 new unit tests for model switching (103 total tests)
+- 📊 Model comparison guide with cost analysis
+- 💡 Three cost optimization strategies documented
+- 📚 Updated documentation with comprehensive model examples
+
+### v0.2.9
 - ✨ **NEW:** Git operation tools - status, diff, log, branch
 - ✨ **NEW:** Code search across files with pattern matching
 - ✨ **NEW:** File management tools - delete, move/rename, create directories

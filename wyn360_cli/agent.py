@@ -712,6 +712,108 @@ Notes:
             "output_cost": self.total_output_tokens / 1_000_000 * 15.0,
         }
 
+    def switch_model(self, model_name: str) -> bool:
+        """
+        Switch to a different Claude model mid-session.
+
+        Args:
+            model_name: Model identifier (haiku, sonnet, opus, or full model ID)
+
+        Returns:
+            True if successful, False otherwise
+
+        Supported models:
+            - haiku: claude-3-5-haiku-20241022 (fast & cheap)
+            - sonnet: claude-sonnet-4-20250514 (balanced, default)
+            - opus: claude-opus-4-20250514 (most capable)
+        """
+        # Model mapping for convenience
+        model_map = {
+            "haiku": "claude-3-5-haiku-20241022",
+            "sonnet": "claude-sonnet-4-20250514",
+            "opus": "claude-opus-4-20250514"
+        }
+
+        # Resolve model name
+        if model_name.lower() in model_map:
+            full_model_name = model_map[model_name.lower()]
+        else:
+            full_model_name = model_name
+
+        try:
+            # Create new model instance
+            from pydantic_ai.models.anthropic import AnthropicModel
+            new_model = AnthropicModel(full_model_name)
+
+            # Update agent with new model
+            self.model = new_model
+            self.model_name = full_model_name
+
+            # Recreate agent with new model
+            from pydantic_ai import Agent
+            self.agent = Agent(
+                model=self.model,
+                system_prompt=self._get_system_prompt(),
+                tools=[
+                    self.read_file,
+                    self.write_file,
+                    self.list_files,
+                    self.get_project_info,
+                    self.execute_command,
+                    self.git_status,
+                    self.git_diff,
+                    self.git_log,
+                    self.git_branch,
+                    self.search_files,
+                    self.delete_file,
+                    self.move_file,
+                    self.create_directory
+                ],
+                retries=3
+            )
+
+            return True
+        except Exception as e:
+            print(f"Error switching model: {e}")
+            return False
+
+    def get_model_info(self) -> dict:
+        """
+        Get information about the current model.
+
+        Returns:
+            Dictionary with model information and pricing
+        """
+        # Model pricing (per million tokens)
+        pricing = {
+            "claude-3-5-haiku-20241022": {"input": 0.25, "output": 1.25, "name": "Haiku"},
+            "claude-sonnet-4-20250514": {"input": 3.00, "output": 15.00, "name": "Sonnet 4"},
+            "claude-opus-4-20250514": {"input": 15.00, "output": 75.00, "name": "Opus 4"}
+        }
+
+        model_info = pricing.get(self.model_name, {
+            "input": 3.00,
+            "output": 15.00,
+            "name": "Custom"
+        })
+
+        return {
+            "current_model": self.model_name,
+            "display_name": model_info["name"],
+            "input_cost_per_million": model_info["input"],
+            "output_cost_per_million": model_info["output"],
+            "description": self._get_model_description(self.model_name)
+        }
+
+    def _get_model_description(self, model_name: str) -> str:
+        """Get description for a model."""
+        descriptions = {
+            "claude-3-5-haiku-20241022": "Fast & economical - best for simple tasks",
+            "claude-sonnet-4-20250514": "Balanced performance - general coding & analysis",
+            "claude-opus-4-20250514": "Most capable - complex reasoning & architecture"
+        }
+        return descriptions.get(model_name, "Custom model")
+
     def _estimate_tokens(self, text: str) -> int:
         """
         Estimate token count for text.

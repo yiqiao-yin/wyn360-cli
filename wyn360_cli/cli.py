@@ -165,6 +165,40 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
         console.print(table)
         return True, ""
 
+    elif cmd == "model":
+        if not arg:
+            # Show current model info
+            model_info = agent.get_model_info()
+
+            from rich.table import Table
+            from rich.panel import Panel
+
+            table = Table(title="Current Model Information", show_header=False)
+            table.add_column("Property", style="cyan", width=25)
+            table.add_column("Value", style="yellow")
+
+            table.add_row("Model", model_info["display_name"])
+            table.add_row("Full ID", model_info["current_model"])
+            table.add_row("Description", model_info["description"])
+            table.add_row("─" * 25, "─" * 50)
+            table.add_row("Input Cost", f"${model_info['input_cost_per_million']}/M tokens")
+            table.add_row("Output Cost", f"${model_info['output_cost_per_million']}/M tokens")
+
+            console.print(table)
+            console.print("\n[yellow]Available models:[/yellow] haiku, sonnet, opus")
+            console.print("[yellow]Usage:[/yellow] /model <name>  (e.g., /model haiku)")
+            return True, ""
+        else:
+            # Switch to specified model
+            model_name = arg.strip()
+            success = agent.switch_model(model_name)
+
+            if success:
+                model_info = agent.get_model_info()
+                return True, f"✓ Switched to {model_info['display_name']} ({model_info['current_model']})"
+            else:
+                return True, f"❌ Failed to switch to model: {model_name}"
+
     elif cmd == "help":
         help_text = """
 [bold cyan]WYN360 CLI - Available Commands[/bold cyan]
@@ -175,17 +209,21 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
   • Type [bold]exit[/bold] or [bold]quit[/bold] to end the session
 
 [bold yellow]Slash Commands:[/bold yellow]
-  [bold green]/clear[/bold green]           Clear conversation history and reset counters
-  [bold green]/history[/bold green]         Show conversation history
-  [bold green]/save <file>[/bold green]    Save session to JSON file
-  [bold green]/load <file>[/bold green]    Load session from JSON file
-  [bold green]/tokens[/bold green]          Show token usage statistics
-  [bold green]/help[/bold green]            Show this help message
+  [bold green]/clear[/bold green]            Clear conversation history and reset counters
+  [bold green]/history[/bold green]          Show conversation history
+  [bold green]/save <file>[/bold green]     Save session to JSON file
+  [bold green]/load <file>[/bold green]     Load session from JSON file
+  [bold green]/tokens[/bold green]           Show token usage statistics
+  [bold green]/model [name][/bold green]    Show/switch AI model (haiku/sonnet/opus)
+  [bold green]/help[/bold green]             Show this help message
 
 [bold yellow]Examples:[/bold yellow]
   /save my_session.json       Save current conversation
   /load my_session.json       Continue previous conversation
   /tokens                     Check how much you've spent
+  /model                      Show current model info
+  /model haiku                Switch to Haiku (fast & cheap)
+  /model opus                 Switch to Opus (most capable)
 
 [bold yellow]Tips:[/bold yellow]
   • Conversation history helps maintain context across turns

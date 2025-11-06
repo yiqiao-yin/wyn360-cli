@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.2.9)
+## 🎯 Current Capabilities (v0.3.0)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -19,6 +19,9 @@ This document outlines potential features and enhancements to expand WYN360 CLI'
 - ✅ Git operations (status, diff, log, branch) (Phase 2)
 - ✅ Code search across files (Phase 2)
 - ✅ File management (delete, move, create dirs) (Phase 2)
+- ✅ Dynamic model switching (haiku/sonnet/opus) (Phase 3)
+- ✅ Model information display with pricing (Phase 3)
+- ✅ /model command for mid-session model changes (Phase 3)
 
 ---
 
@@ -149,7 +152,7 @@ async def create_directory(self, ctx: RunContext[None], dir_path: str) -> str:
 
 ---
 
-### Phase 3: Model Selection & Optimization (MEDIUM PRIORITY)
+### Phase 3: Model Selection & Optimization ✅ COMPLETED (v0.3.0)
 
 #### 3.1 Dynamic Model Switching
 **Feature:** Choose model based on task complexity
@@ -801,5 +804,5 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 ---
 
 **Last Updated:** November 2025
-**Current Version:** 0.2.7
-**Next Planned Release:** v0.3.0 (Context & History)
+**Current Version:** 0.3.0
+**Next Planned Release:** v0.4.0 (Enhanced Tools)

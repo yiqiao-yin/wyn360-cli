@@ -130,6 +130,12 @@ WYN360: I'll create a Streamlit app for you...
 - 💾 **Session Save/Load** - Preserve conversations for later continuation
 - 🎯 **Slash Commands** - Quick access to history, stats, and session management
 
+### Model Selection & Optimization (v0.3.0)
+- 🔄 **Dynamic Model Switching** - Switch between Haiku, Sonnet, and Opus mid-session
+- 💰 **Cost Optimization** - Choose the right model for your task complexity
+- 📊 **Model Information** - View current model, pricing, and capabilities
+- ⚡ **Flexible Performance** - Balance between speed, capability, and cost
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
@@ -189,9 +195,9 @@ Execute this command? (y/N): y
 | `Ctrl+Enter` | Add a new line (multi-line input) |
 | `exit` or `quit` | End the session |
 
-### Slash Commands (v0.2.8)
+### Slash Commands (v0.2.8+)
 
-Slash commands provide quick access to context management features:
+Slash commands provide quick access to context management and model selection features:
 
 | Command | Description | Example |
 |---------|-------------|---------|
@@ -200,6 +206,7 @@ Slash commands provide quick access to context management features:
 | `/save <file>` | Save current session to JSON file | `/save my_session.json` |
 | `/load <file>` | Load session from JSON file | `/load my_session.json` |
 | `/tokens` | Show detailed token usage statistics and costs | `/tokens` |
+| `/model [name]` | Show current model info or switch models (v0.3.0) | `/model haiku` |
 | `/help` | Display help message with all commands | `/help` |
 
 **Example Usage:**
@@ -209,6 +216,12 @@ WYN360: [Creates analysis.py]
 
 You: /tokens
 [Shows token usage: 1,500 input tokens, 800 output tokens, $0.02 cost]
+
+You: /model
+[Shows current model: Sonnet 4, pricing: $3.00/$15.00 per M tokens]
+
+You: /model haiku
+✓ Switched to Haiku (claude-3-5-haiku-20241022)
 
 You: /save my_analysis_session.json
 ✓ Session saved to: my_analysis_session.json
@@ -295,10 +308,10 @@ poetry run pytest tests/ --cov=wyn360_cli --cov-report=html
 ```
 tests/
 ├── __init__.py
-├── test_agent.py          # Agent and tool tests (29 tests)
-├── test_cli.py            # CLI and slash command tests (18 tests)
+├── test_agent.py          # Agent and tool tests (43 tests)
+├── test_cli.py            # CLI and slash command tests (31 tests)
 └── test_utils.py          # Utility function tests (29 tests)
-                           # Total: 76 tests
+                           # Total: 103 tests
 ```
 
 ### Expected Output
@@ -311,15 +324,15 @@ cachedir: .pytest_cache
 rootdir: /home/workbench/wyn360-cli/wyn360-cli
 configfile: pyproject.toml
 plugins: asyncio-1.2.0, mock-3.15.1
-collected 76 items
+collected 103 items
 
 tests/test_agent.py::TestWYN360Agent::test_agent_initialization PASSED   [  1%]
-tests/test_agent.py::TestHistoryManagement::test_clear_history PASSED    [ 25%]
+tests/test_agent.py::TestHistoryManagement::test_clear_history PASSED    [ 20%]
 tests/test_cli.py::TestSlashCommands::test_clear_command PASSED          [ 39%]
 ...
 tests/test_utils.py::TestExecuteCommandSafe::test_execute_python_script PASSED [100%]
 
-============================== 76 passed in 1.78s
+============================== 103 passed in 2.45s
 ```
 
 ### Building and Publishing
@@ -438,5 +451,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.2.9
+**Current Version:** 0.3.0
 **Last Updated:** January 2025
