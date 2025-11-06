@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.6
+**Version:** 0.3.7
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.6 (Latest)
+### v0.3.7 (Latest)
+- 🐛 **CRITICAL FIX:** Set retries=0 to completely disable retries
+- 📊 Added comprehensive debug logging to write_file tool
+- 🔍 Input validation with detailed type checking
+- 📝 Full error tracebacks for debugging issues
+- 💡 Clear error messages showing exactly what went wrong
+
+### v0.3.6
 - 🐛 **FIX:** Reduced retry count from 3 to 1 to prevent "exceeded max retries" errors
 - 🔧 Added file size validation (1MB limit) to write_file tool
 - 📝 Improved error messages with clearer guidance for tool failures

@@ -83,7 +83,7 @@ class WYN360Agent:
                 self.move_file,
                 self.create_directory
             ],
-            retries=1  # Allow 1 retry for transient failures, then show error to model
+            retries=0  # No retries - show errors immediately to model for correction
         )
 
     def _get_system_prompt(self) -> str:
@@ -235,11 +235,26 @@ Notes:
             Success or error message
         """
         try:
+            # Debug info
+            content_length = len(content)
+            content_preview = content[:100] if len(content) > 100 else content
+
+            # Validate inputs
+            if not file_path:
+                return "Error: file_path is required and cannot be empty."
+
+            if not isinstance(file_path, str):
+                return f"Error: file_path must be a string, got {type(file_path).__name__}"
+
+            if not isinstance(content, str):
+                return f"Error: content must be a string, got {type(content).__name__}. Content preview: {str(content)[:200]}"
+
             # Validate content size (prevent extremely large files)
             max_size = 1_000_000  # 1MB limit
-            if len(content) > max_size:
-                return f"Error: Content too large ({len(content)} bytes). Maximum size is {max_size} bytes. Consider breaking into smaller files."
+            if content_length > max_size:
+                return f"Error: Content too large ({content_length} bytes). Maximum size is {max_size} bytes. Consider breaking into smaller files."
 
+            # Try to write the file
             success, message = write_file_safe(file_path, content, overwrite)
 
             # If file exists and overwrite is False, provide clear guidance
@@ -247,9 +262,13 @@ Notes:
                 return f"{message}\n\nNote: If you want to update this file, you must explicitly set overwrite=True in your next write_file call."
 
             return message
+        except TypeError as e:
+            return f"TypeError in write_file: {str(e)}. file_path type: {type(file_path)}, content type: {type(content)}, overwrite type: {type(overwrite)}"
         except Exception as e:
             # Log the actual exception for debugging
-            error_msg = f"Unexpected error in write_file: {type(e).__name__}: {str(e)}"
+            import traceback
+            tb = traceback.format_exc()
+            error_msg = f"Unexpected error in write_file: {type(e).__name__}: {str(e)}\n\nTraceback:\n{tb}"
             return error_msg
 
     async def list_files(self, ctx: RunContext[None], directory: str = ".") -> str:
