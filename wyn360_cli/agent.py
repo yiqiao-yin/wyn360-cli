@@ -83,7 +83,7 @@ class WYN360Agent:
                 self.move_file,
                 self.create_directory
             ],
-            retries=3  # Allow up to 3 retries for tool calls
+            retries=1  # Allow 1 retry for transient failures, then show error to model
         )
 
     def _get_system_prompt(self) -> str:
@@ -114,14 +114,15 @@ Guidelines:
 
 ACTION:
 - Use write_file with overwrite=False (default)
-- If write_file fails with "already exists" error, automatically retry with overwrite=True
+- If write_file returns an "already exists" error message, call write_file ONCE MORE with overwrite=True
 - Do NOT read_file first (the file doesn't exist yet)
 - Suggest a descriptive filename if user doesn't specify one
+- If a tool call fails with "exceeded max retries", this means there's a validation error - explain the issue to the user
 
 EXAMPLES:
 - "write a .py script to analyze data.csv" → Create analyze_data.py with overwrite=False
 - "generate a script for data exploration" → Create data_exploration.py with overwrite=False
-- If it fails (file exists), immediately retry: write_file with overwrite=True
+- If result is "already exists", then: write_file with overwrite=True ONCE
 
 **UPDATING EXISTING FILES** - When user says:
 - "add feature", "update", "improve", "modify", "change"
@@ -233,8 +234,23 @@ Notes:
         Returns:
             Success or error message
         """
-        success, message = write_file_safe(file_path, content, overwrite)
-        return message
+        try:
+            # Validate content size (prevent extremely large files)
+            max_size = 1_000_000  # 1MB limit
+            if len(content) > max_size:
+                return f"Error: Content too large ({len(content)} bytes). Maximum size is {max_size} bytes. Consider breaking into smaller files."
+
+            success, message = write_file_safe(file_path, content, overwrite)
+
+            # If file exists and overwrite is False, provide clear guidance
+            if not success and "already exists" in message:
+                return f"{message}\n\nNote: If you want to update this file, you must explicitly set overwrite=True in your next write_file call."
+
+            return message
+        except Exception as e:
+            # Log the actual exception for debugging
+            error_msg = f"Unexpected error in write_file: {type(e).__name__}: {str(e)}"
+            return error_msg
 
     async def list_files(self, ctx: RunContext[None], directory: str = ".") -> str:
         """

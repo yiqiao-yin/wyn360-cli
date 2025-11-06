@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.5
+**Version:** 0.3.6
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.5 (Latest)
+### v0.3.6 (Latest)
+- 🐛 **FIX:** Reduced retry count from 3 to 1 to prevent "exceeded max retries" errors
+- 🔧 Added file size validation (1MB limit) to write_file tool
+- 📝 Improved error messages with clearer guidance for tool failures
+- 💡 Updated system prompt to clarify retry behavior
+- ✅ Better handling of tool validation errors
+
+### v0.3.5
 - ✨ **NEW:** Added back "thinking" spinner while agent processes
 - 🎨 Better UX - shows "WYN360 is thinking..." with animated dots
 - ⏳ Spinner appears before first response chunk is ready

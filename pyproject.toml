@@ -1,6 +1,6 @@
 [project]
 name = "wyn360-cli"
-version = "0.3.5"
+version = "0.3.6"
 description = "WYN360 - An intelligent AI coding assistant CLI tool powered by Anthropic Claude"
 authors = [
     {name = "Yiqiao Yin", email = "yiqiao.yin@wyn-associates.com"}
