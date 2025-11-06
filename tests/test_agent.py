@@ -857,6 +857,31 @@ class TestHuggingFaceTools:
         assert "testuser" in result
 
     @pytest.mark.asyncio
+    async def test_check_hf_authentication_auto_auth(self, mocker):
+        """Test auto-authentication when HF_TOKEN is in environment"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Set HF_TOKEN in environment
+        mocker.patch.dict('os.environ', {'HF_TOKEN': 'hf_test_token_12345'})
+
+        # Mock execute_command_safe to simulate:
+        # 1. whoami fails (not authenticated yet)
+        # 2. auth login succeeds
+        # 3. whoami succeeds after authentication
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (False, "not logged in", 1),  # First whoami fails
+            (True, "Token is valid", 0),   # auth login succeeds
+            (True, "username: autouser\nemail: auto@example.com", 0)  # Second whoami succeeds
+        ]
+
+        result = await agent.check_hf_authentication(None)
+
+        assert "Authenticated" in result
+        assert "autouser" in result
+        assert "auto-authenticated" in result.lower()
+
+    @pytest.mark.asyncio
     async def test_authenticate_hf_invalid_token(self):
         """Test authentication with invalid token"""
         agent = WYN360Agent(api_key="test_key")

@@ -188,26 +188,51 @@ Notes:
 - Default timeout is 300 seconds (5 minutes), adjust if needed
 - Always preserve the success/failure indicator from tool output
 
-**HuggingFace Integration:**
+**HuggingFace Integration (Phase 1 - Authentication & README):**
 
-You can help users deploy their apps to HuggingFace Spaces!
+You can help users prepare apps for HuggingFace Spaces deployment!
 
 **Workflow when user says "push to huggingface" or "deploy to HF":**
-1. Check authentication with check_hf_authentication()
-2. If not authenticated:
-   - Ask user for their HF token (they can get it from https://huggingface.co/settings/tokens)
-   - Use authenticate_hf(token) to log them in
-3. Ask for Space name in format "username/repo-name" (e.g., "myuser/echo-bot")
-4. Create README.md with create_hf_readme(title, sdk) - use appropriate SDK:
-   - For Streamlit apps: sdk="streamlit", app_file="app.py"
-   - For Gradio apps: sdk="gradio", app_file="app.py"
-5. Inform user that Space is being created (Phase 2 will add actual Space creation and push)
+
+1. **Check Authentication (ONLY ONCE per session)**:
+   - Call check_hf_authentication() ONE TIME only
+   - If it returns "✓ Authenticated", NEVER check again - remember they're authenticated
+   - If not authenticated, ask for token and use authenticate_hf(token)
+   - Once authenticated, proceed to step 2
+
+2. **Gather Information (if not already provided)**:
+   - Space name in format "username/repo-name" (e.g., "eagle0504/test-echo-bot")
+   - App title for the Space
+   - SDK type (streamlit, gradio, docker, or static)
+
+3. **Create README.md**:
+   - Navigate to the app directory if needed
+   - Use create_hf_readme(title, sdk) with appropriate parameters:
+     * For Streamlit: sdk="streamlit", app_file="app.py"
+     * For Gradio: sdk="gradio", app_file="app.py"
+   - This creates README.md with proper YAML frontmatter
+
+4. **Inform User**:
+   - Tell them README.md was created successfully
+   - Explain they need to manually push to HuggingFace using:
+     ```
+     hf repo create username/space-name --type=space --space-sdk=streamlit
+     cd app-directory
+     hf upload username/space-name . --repo-type=space
+     ```
+   - Or they can use git to push to the Space repository
+
+**CRITICAL - Avoid Authentication Loops:**
+- Do NOT call check_hf_authentication() multiple times in one conversation
+- Once user is authenticated, trust it and proceed
+- If user provided token in previous messages, they are authenticated - don't ask again
+- If user gave you all details (token, space name, title), proceed directly to create README
 
 **Important Notes:**
-- Space names MUST be in "namespace/repo-name" format
-- README.md needs proper frontmatter for Spaces to work
-- For Streamlit: typically need app.py and requirements.txt
-- Always confirm Space name with user before creating
+- Space names MUST be in "namespace/repo-name" format (e.g., "eagle0504/test-echo-bot")
+- README.md needs proper YAML frontmatter for Spaces to work
+- For Streamlit: typically need app.py and requirements.txt in same directory
+- Phase 2 will add automatic Space creation and file upload - for now, user does manual push
 """
 
         # Add custom instructions from config if available
@@ -683,7 +708,18 @@ You can help users deploy their apps to HuggingFace Spaces!
             username = extract_username_from_hf_whoami(output)
             return f"✓ Authenticated with HuggingFace as '{username}'"
         elif hf_token:
-            return "HF_TOKEN found in environment but not authenticated with CLI. Please provide your token so I can authenticate you."
+            # Token exists but CLI not authenticated - try to authenticate automatically
+            os.environ['HF_TOKEN'] = hf_token
+            success2, output2, code2 = execute_command_safe(
+                "hf auth login --token $HF_TOKEN",
+                timeout=30
+            )
+            if success2 or "token is valid" in output2.lower():
+                success3, output3, _ = execute_command_safe("hf auth whoami", timeout=10)
+                username = extract_username_from_hf_whoami(output3) if success3 else "user"
+                return f"✓ Authenticated with HuggingFace as '{username}' (auto-authenticated using HF_TOKEN from environment)"
+            else:
+                return f"❌ HF_TOKEN found in environment but authentication failed. Error: {output2[:200]}"
         else:
             return ("Not authenticated with HuggingFace. To push code to HuggingFace Spaces, I need your access token.\n\n"
                    "You can get a token from: https://huggingface.co/settings/tokens\n\n"
