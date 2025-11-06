@@ -12,60 +12,7 @@ WYN360 CLI is an AI-powered coding assistant that helps you build projects, gene
 
 ## 🏗️ System Architecture
 
-```mermaid
-graph TB
-    subgraph "User Interface Layer"
-        CLI[CLI Interface<br/>click + prompt-toolkit]
-        Input[User Input<br/>Multi-line support]
-        Output[Rich Console Output<br/>Markdown rendering]
-    end
-
-    subgraph "Agent Layer"
-        Agent[WYN360Agent<br/>pydantic-ai]
-        Model[Anthropic Claude<br/>claude-sonnet-4]
-        Prompt[System Prompt<br/>Intent recognition]
-    end
-
-    subgraph "Tool Layer"
-        ReadFile[read_file<br/>Read file contents]
-        WriteFile[write_file<br/>Create/update files]
-        ListFiles[list_files<br/>Scan directory]
-        ProjectInfo[get_project_info<br/>Project summary]
-        ExecCmd[execute_command<br/>Run shell commands]
-    end
-
-    subgraph "Utility Layer"
-        FileOps[File Operations<br/>Safe read/write]
-        Scanner[Directory Scanner<br/>Categorize files]
-        CmdExec[Command Executor<br/>subprocess + timeout]
-        CodeExt[Code Extractor<br/>Parse markdown blocks]
-    end
-
-    Input --> CLI
-    CLI --> Agent
-    Agent --> Model
-    Agent --> Prompt
-
-    Agent --> ReadFile
-    Agent --> WriteFile
-    Agent --> ListFiles
-    Agent --> ProjectInfo
-    Agent --> ExecCmd
-
-    ReadFile --> FileOps
-    WriteFile --> FileOps
-    ListFiles --> Scanner
-    ProjectInfo --> Scanner
-    ExecCmd --> CmdExec
-
-    Model --> Output
-    CLI --> Output
-
-    style Agent fill:#e1f5ff
-    style Model fill:#fff3e0
-    style CLI fill:#f3e5f5
-    style ExecCmd fill:#ffebee
-```
+For a detailed architecture overview including all components, layers, and data flows, see **[SYSTEM.md](SYSTEM.md)**.
 
 ## 📦 Installation
 

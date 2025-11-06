@@ -30,16 +30,28 @@ The system prompt is sent with **every request** and includes:
 
 **Cost per request:** ~$0.00255 (input only)
 
-### 2. Tool Definitions (~600 tokens)
+### 2. Tool Definitions (~1,200 tokens)
 
-All 5 tools are registered with the agent and their schemas are sent with each request:
+All 13 tools are registered with the agent and their schemas are sent with each request:
+
+**Core Tools (Phase 1):**
 - `read_file` - Read file contents (~100 tokens)
 - `write_file` - Create/update files (~120 tokens)
 - `list_files` - Scan directory (~80 tokens)
 - `get_project_info` - Project summary (~100 tokens)
 - `execute_command` - Run shell commands (~200 tokens)
 
-**Cost per request:** ~$0.0018 (input only)
+**Extended Tools (Phase 2 - Added in v0.2.9):**
+- `git_status` - Show git status (~80 tokens)
+- `git_diff` - Show git changes (~80 tokens)
+- `git_log` - Show commit history (~80 tokens)
+- `git_branch` - List branches (~80 tokens)
+- `search_files` - Pattern search across files (~100 tokens)
+- `delete_file` - Delete files safely (~80 tokens)
+- `move_file` - Move/rename files (~80 tokens)
+- `create_directory` - Create nested directories (~80 tokens)
+
+**Cost per request:** ~$0.0036 (input only)
 
 ### 3. User Message (~50-500 tokens)
 
@@ -69,12 +81,12 @@ Starting with v0.2.8, conversation history is maintained across interactions to 
 **Cost implications:**
 ```
 Without history (v0.2.7 and earlier):
-  Each request: ~1,500 tokens baseline
+  Each request: ~1,500 tokens baseline (5 tools)
 
-With history (v0.2.8+):
-  Turn 1:  ~1,500 tokens baseline
-  Turn 5:  ~3,500-5,500 tokens (includes 4 previous turns)
-  Turn 10: ~6,500-10,500 tokens (includes 9 previous turns)
+With history + extended tools (v0.2.9+):
+  Turn 1:  ~2,100 tokens baseline (13 tools)
+  Turn 5:  ~4,100-6,100 tokens (includes 4 previous turns)
+  Turn 10: ~7,100-11,100 tokens (includes 9 previous turns)
 ```
 
 **Average conversation history cost per turn:**
@@ -641,4 +653,4 @@ For **most developers**, WYN360 CLI will cost **$1-3 per month** - significantly
 ---
 
 **Last Updated:** January 2025
-**Version:** 0.2.8
+**Version:** 0.3.14
