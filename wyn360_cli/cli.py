@@ -11,8 +11,13 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from .agent import WYN360Agent
 from .config import load_config, get_user_config_path, get_project_config_path
+import shutil
 
-console = Console()
+# Get terminal width, with fallback to 120 if detection fails
+terminal_width = shutil.get_terminal_size(fallback=(120, 24)).columns
+# Ensure minimum width of 80, maximum of 200 for readability
+console_width = max(80, min(200, terminal_width))
+console = Console(width=console_width, force_terminal=True)
 
 
 @click.command()

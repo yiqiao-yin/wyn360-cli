@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.9
+**Version:** 0.3.10
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.9 (Latest)
+### v0.3.10 (Latest)
+- 🐛 **FIX:** Console width detection causing narrow text wrapping
+- 📐 Set minimum console width of 80 characters
+- 🎨 Maximum width of 200 for readability
+- 💻 Uses shutil.get_terminal_size() with fallback to 120
+- ✅ Prevents text from wrapping every 10-15 characters in some environments
+
+### v0.3.9
 - 🐛 **FIX:** Stricter early size validation (100KB limit, down from 1MB)
 - 🔍 Enhanced type checking with automatic string conversion attempts
 - 📏 More explicit ML script guidance: ONE model, NO extensive hyperparameter tuning

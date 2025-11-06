@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.3.9)
+## 🎯 Current Capabilities (v0.3.10)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -810,5 +810,5 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 ---
 
 **Last Updated:** January 2025
-**Current Version:** 0.3.9
+**Current Version:** 0.3.10
 **Next Planned Release:** v0.6.0 (Advanced Workflows)

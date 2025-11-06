@@ -467,5 +467,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.9
+**Current Version:** 0.3.10
 **Last Updated:** January 2025
