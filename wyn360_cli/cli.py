@@ -389,23 +389,18 @@ async def chat_loop(agent: WYN360Agent):
             console.print("[bold blue]WYN360:[/bold blue]")
             console.print()
 
-            # Accumulate response for markdown rendering
+            # Accumulate response text from deltas
             response_text = ""
-            printed_length = 0
 
-            # Print first chunk
-            new_text = first_chunk[printed_length:]
-            console.print(new_text, end='', style="white")
-            printed_length = len(first_chunk)
-            response_text = first_chunk
+            # Print first chunk (delta)
+            console.print(first_chunk, end='', style="white")
+            response_text += first_chunk
 
-            # Stream remaining chunks as they arrive
+            # Stream remaining chunks (deltas) as they arrive
             async for chunk in stream:
-                # Each chunk contains accumulated text, only print the new portion
-                new_text = chunk[printed_length:]
-                console.print(new_text, end='', style="white")
-                printed_length = len(chunk)
-                response_text = chunk  # Chunk already contains full accumulated text
+                # Each chunk is a delta (new text only), just print and accumulate
+                console.print(chunk, end='', style="white")
+                response_text += chunk
 
             console.print()  # Add newline after streaming
             console.print()

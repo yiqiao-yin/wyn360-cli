@@ -1698,13 +1698,21 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.11
+**Version:** 0.3.12
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.11 (Latest)
+### v0.3.12 (Latest)
+- 🐛 **CRITICAL FIX:** Eliminated streaming text duplication
+- ⚡ Fixed: Agent now yields deltas (new text only), not accumulated text
+- 🎯 Simplified CLI: Direct delta display without complex extraction logic
+- ✅ Cleaner, more efficient streaming implementation
+- 🔧 Updated tests to expect delta chunks instead of accumulated chunks
+- 📺 True real-time streaming with correct tool execution
+
+### v0.3.11
 - ⚡ **CRITICAL FIX:** Restored REAL streaming using run_stream()
 - 🔧 Fixed: Was using run() and waiting for full response, then simulating chunks
 - 🎯 Now uses pydantic-ai's run_stream() for true token-by-token streaming

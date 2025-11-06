@@ -708,11 +708,12 @@ Notes:
             # Stream the agent's response using run_stream
             # This DOES execute tools and streams text in real-time
             async with self.agent.run_stream(user_message) as result:
-                # Stream text chunks as they arrive
+                # Stream text chunks as they arrive (deltas)
                 async for text_chunk in result.stream():
                     response_text += text_chunk
-                    # Yield accumulated text (for delta display in CLI)
-                    yield response_text
+                    # Yield only the delta (new text), not accumulated
+                    # CLI will accumulate for display
+                    yield text_chunk
 
             # Add assistant response to history
             self.conversation_history.append({

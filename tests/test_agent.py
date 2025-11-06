@@ -802,12 +802,12 @@ class TestStreaming:
         async for chunk in agent.chat_stream("Test message"):
             chunks.append(chunk)
 
-        # Verify we got accumulated chunks
-        # Should be: "Hello", "Hello ", "Hello World"
+        # Verify we got delta chunks (not accumulated)
+        # Should be: "Hello", " ", "World"
         assert len(chunks) == 3
         assert chunks[0] == "Hello"
-        assert chunks[1] == "Hello "
-        assert chunks[2] == "Hello World"
+        assert chunks[1] == " "
+        assert chunks[2] == "World"
 
         # Verify conversation history was updated
         assert len(agent.conversation_history) == 2
