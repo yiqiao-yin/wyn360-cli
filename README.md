@@ -124,6 +124,12 @@ WYN360: I'll create a Streamlit app for you...
 - ⏱️ **Timeout Protection** - Prevents infinite loops (5 min default)
 - 📊 **Comprehensive Output** - Captures stdout, stderr, and exit codes
 
+### Context Management (v0.2.8)
+- 💬 **Conversation History** - Maintains context across multiple interactions
+- 📊 **Token Tracking** - Real-time monitoring of API usage and costs
+- 💾 **Session Save/Load** - Preserve conversations for later continuation
+- 🎯 **Slash Commands** - Quick access to history, stats, and session management
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
@@ -174,12 +180,45 @@ Execute this command? (y/N): y
 
 ## 🎯 Commands
 
+### Chat Commands
+
 | Command | Description |
 |---------|-------------|
 | `<message>` | Chat with the AI assistant |
 | `Enter` | Submit your message |
-| `Shift+Enter` | Add a new line (multi-line input) |
+| `Ctrl+Enter` | Add a new line (multi-line input) |
 | `exit` or `quit` | End the session |
+
+### Slash Commands (v0.2.8)
+
+Slash commands provide quick access to context management features:
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/clear` | Clear conversation history and reset token counters | `/clear` |
+| `/history` | Display conversation history in a table | `/history` |
+| `/save <file>` | Save current session to JSON file | `/save my_session.json` |
+| `/load <file>` | Load session from JSON file | `/load my_session.json` |
+| `/tokens` | Show detailed token usage statistics and costs | `/tokens` |
+| `/help` | Display help message with all commands | `/help` |
+
+**Example Usage:**
+```
+You: Write a data analysis script
+WYN360: [Creates analysis.py]
+
+You: /tokens
+[Shows token usage: 1,500 input tokens, 800 output tokens, $0.02 cost]
+
+You: /save my_analysis_session.json
+✓ Session saved to: my_analysis_session.json
+
+You: /clear
+✓ Conversation history cleared. Token counters reset.
+
+You: /load my_analysis_session.json
+✓ Session loaded from: my_analysis_session.json
+```
 
 ## 📚 Documentation
 
@@ -256,9 +295,10 @@ poetry run pytest tests/ --cov=wyn360_cli --cov-report=html
 ```
 tests/
 ├── __init__.py
-├── test_agent.py          # Agent and tool tests (16 tests)
+├── test_agent.py          # Agent and tool tests (29 tests)
+├── test_cli.py            # CLI and slash command tests (18 tests)
 └── test_utils.py          # Utility function tests (29 tests)
-                           # Total: 45 tests
+                           # Total: 76 tests
 ```
 
 ### Expected Output
@@ -271,14 +311,15 @@ cachedir: .pytest_cache
 rootdir: /home/workbench/wyn360-cli/wyn360-cli
 configfile: pyproject.toml
 plugins: asyncio-1.2.0, mock-3.15.1
-collected 45 items
+collected 76 items
 
-tests/test_agent.py::TestWYN360Agent::test_agent_initialization PASSED   [  2%]
-tests/test_agent.py::TestWYN360Agent::test_system_prompt_contains_key_instructions PASSED [  4%]
+tests/test_agent.py::TestWYN360Agent::test_agent_initialization PASSED   [  1%]
+tests/test_agent.py::TestHistoryManagement::test_clear_history PASSED    [ 25%]
+tests/test_cli.py::TestSlashCommands::test_clear_command PASSED          [ 39%]
 ...
 tests/test_utils.py::TestExecuteCommandSafe::test_execute_python_script PASSED [100%]
 
-============================== 45 passed in 1.55s
+============================== 76 passed in 1.78s
 ```
 
 ### Building and Publishing
@@ -397,5 +438,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.2.3
-**Last Updated:** November 2025
+**Current Version:** 0.2.8
+**Last Updated:** January 2025

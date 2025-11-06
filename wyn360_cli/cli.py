@@ -79,6 +79,127 @@ def main(api_key, model):
     asyncio.run(chat_loop(agent))
 
 
+def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
+    """
+    Handle slash commands.
+
+    Args:
+        command: The slash command (without the /)
+        agent: The WYN360Agent instance
+
+    Returns:
+        Tuple of (handled: bool, message: str)
+    """
+    parts = command.split(maxsplit=1)
+    cmd = parts[0].lower()
+    arg = parts[1] if len(parts) > 1 else None
+
+    if cmd == "clear":
+        agent.clear_history()
+        return True, "✓ Conversation history cleared. Token counters reset."
+
+    elif cmd == "history":
+        history = agent.get_history()
+        if not history:
+            return True, "No conversation history yet."
+
+        from rich.table import Table
+        table = Table(title="Conversation History", show_lines=True)
+        table.add_column("#", style="cyan", width=4)
+        table.add_column("Role", style="magenta", width=10)
+        table.add_column("Content", style="white")
+
+        for idx, msg in enumerate(history, 1):
+            role = msg.get("role", "unknown")
+            content = msg.get("content", "")
+            # Truncate long messages
+            if len(content) > 200:
+                content = content[:200] + "..."
+            table.add_row(str(idx), role, content)
+
+        console.print(table)
+        return True, ""
+
+    elif cmd == "save":
+        if not arg:
+            return True, "❌ Usage: /save <filename>\nExample: /save my_session.json"
+
+        success = agent.save_session(arg)
+        if success:
+            return True, f"✓ Session saved to: {arg}"
+        else:
+            return True, f"❌ Failed to save session to: {arg}"
+
+    elif cmd == "load":
+        if not arg:
+            return True, "❌ Usage: /load <filename>\nExample: /load my_session.json"
+
+        success = agent.load_session(arg)
+        if success:
+            return True, f"✓ Session loaded from: {arg}"
+        else:
+            return True, f"❌ Failed to load session from: {arg}"
+
+    elif cmd == "tokens":
+        stats = agent.get_token_stats()
+
+        from rich.table import Table
+        from rich.panel import Panel
+
+        table = Table(title="Token Usage Statistics", show_header=False)
+        table.add_column("Metric", style="cyan", width=25)
+        table.add_column("Value", style="yellow")
+
+        table.add_row("Total Requests", str(stats["total_requests"]))
+        table.add_row("─" * 25, "─" * 20)
+        table.add_row("Input Tokens", f"{stats['total_input_tokens']:,}")
+        table.add_row("Output Tokens", f"{stats['total_output_tokens']:,}")
+        table.add_row("Total Tokens", f"{stats['total_tokens']:,}")
+        table.add_row("─" * 25, "─" * 20)
+        table.add_row("Input Cost", f"${stats['input_cost']:.4f}")
+        table.add_row("Output Cost", f"${stats['output_cost']:.4f}")
+        table.add_row("Total Cost", f"${stats['total_cost']:.4f}")
+        table.add_row("─" * 25, "─" * 20)
+        table.add_row("Avg Cost/Request", f"${stats['avg_cost_per_request']:.4f}")
+
+        console.print(table)
+        return True, ""
+
+    elif cmd == "help":
+        help_text = """
+[bold cyan]WYN360 CLI - Available Commands[/bold cyan]
+
+[bold yellow]Chat Commands:[/bold yellow]
+  • Type your request to chat with the assistant
+  • Press [bold]Enter[/bold] to submit, [bold]Ctrl+Enter[/bold] for new line
+  • Type [bold]exit[/bold] or [bold]quit[/bold] to end the session
+
+[bold yellow]Slash Commands:[/bold yellow]
+  [bold green]/clear[/bold green]           Clear conversation history and reset counters
+  [bold green]/history[/bold green]         Show conversation history
+  [bold green]/save <file>[/bold green]    Save session to JSON file
+  [bold green]/load <file>[/bold green]    Load session from JSON file
+  [bold green]/tokens[/bold green]          Show token usage statistics
+  [bold green]/help[/bold green]            Show this help message
+
+[bold yellow]Examples:[/bold yellow]
+  /save my_session.json       Save current conversation
+  /load my_session.json       Continue previous conversation
+  /tokens                     Check how much you've spent
+
+[bold yellow]Tips:[/bold yellow]
+  • Conversation history helps maintain context across turns
+  • Use /clear if costs are getting high
+  • Save important sessions for later reference
+  • Token estimates are approximate (±10%)
+"""
+        console.print(help_text)
+        return True, ""
+
+    else:
+        return False, f"Unknown command: /{cmd}. Type /help for available commands."
+
+
 async def chat_loop(agent: WYN360Agent):
     """
     Main interactive chat loop.
@@ -114,6 +235,15 @@ async def chat_loop(agent: WYN360Agent):
 
             # Skip empty input
             if not user_input.strip():
+                continue
+
+            # Check for slash commands
+            if user_input.startswith('/'):
+                command = user_input[1:]  # Remove the leading /
+                handled, message = handle_slash_command(command, agent)
+                if message:
+                    console.print(f"[cyan]{message}[/cyan]")
+                console.print()
                 continue
 
             # Get response from agent with progress indicator

@@ -172,6 +172,7 @@ class TestWYN360Agent:
 
         # Mock the agent.run method
         mock_result = Mock()
+        mock_result.data = None  # Set data to None so it falls back to output
         mock_result.output = "Test response"
         mocker.patch.object(agent.agent, 'run', return_value=mock_result)
 
@@ -195,3 +196,243 @@ class TestWYN360Agent:
 
         assert "error" in response.lower()
         assert "Test error" in response
+
+
+class TestHistoryManagement:
+    """Tests for conversation history management"""
+
+    def test_initialization_with_history(self):
+        """Test that agent initializes with history enabled by default"""
+        agent = WYN360Agent(api_key="test_key", use_history=True)
+        assert agent.use_history is True
+        assert agent.conversation_history == []
+        assert agent.total_input_tokens == 0
+        assert agent.total_output_tokens == 0
+        assert agent.request_count == 0
+
+    def test_initialization_without_history(self):
+        """Test that agent can be initialized with history disabled"""
+        agent = WYN360Agent(api_key="test_key", use_history=False)
+        assert agent.use_history is False
+        assert agent.conversation_history == []
+
+    def test_clear_history(self):
+        """Test clearing conversation history"""
+        agent = WYN360Agent(api_key="test_key")
+        # Manually add some history
+        agent.conversation_history = [
+            {"role": "user", "content": "Hello"},
+            {"role": "assistant", "content": "Hi"}
+        ]
+        agent.total_input_tokens = 100
+        agent.total_output_tokens = 50
+        agent.request_count = 1
+
+        agent.clear_history()
+
+        assert agent.conversation_history == []
+        assert agent.total_input_tokens == 0
+        assert agent.total_output_tokens == 0
+        assert agent.request_count == 0
+        assert agent.token_history == []
+
+    def test_get_history(self):
+        """Test getting conversation history"""
+        agent = WYN360Agent(api_key="test_key")
+        agent.conversation_history = [
+            {"role": "user", "content": "Hello"},
+            {"role": "assistant", "content": "Hi"}
+        ]
+
+        history = agent.get_history()
+
+        assert len(history) == 2
+        assert history[0]["role"] == "user"
+        assert history[1]["role"] == "assistant"
+        # Should return a copy
+        assert history is not agent.conversation_history
+
+    def test_save_session(self):
+        """Test saving session to JSON file"""
+        import tempfile
+        agent = WYN360Agent(api_key="test_key", model="claude-sonnet-4-20250514")
+        agent.conversation_history = [
+            {"role": "user", "content": "Test message"}
+        ]
+        agent.total_input_tokens = 100
+        agent.total_output_tokens = 50
+        agent.request_count = 1
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            filepath = f"{tmpdir}/test_session.json"
+            success = agent.save_session(filepath)
+
+            assert success is True
+            assert Path(filepath).exists()
+
+            # Verify JSON content
+            import json
+            with open(filepath, 'r') as f:
+                data = json.load(f)
+
+            assert data["model"] == "claude-sonnet-4-20250514"
+            assert len(data["conversation_history"]) == 1
+            assert data["total_input_tokens"] == 100
+            assert data["total_output_tokens"] == 50
+            assert data["request_count"] == 1
+
+    def test_save_session_creates_directories(self):
+        """Test that save_session creates parent directories"""
+        import tempfile
+        agent = WYN360Agent(api_key="test_key")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            filepath = f"{tmpdir}/nested/path/session.json"
+            success = agent.save_session(filepath)
+
+            assert success is True
+            assert Path(filepath).exists()
+
+    def test_load_session(self):
+        """Test loading session from JSON file"""
+        import tempfile
+        import json
+
+        agent = WYN360Agent(api_key="test_key")
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            filepath = f"{tmpdir}/test_session.json"
+
+            # Create a test session file
+            session_data = {
+                "model": "claude-sonnet-4-20250514",
+                "conversation_history": [
+                    {"role": "user", "content": "Test"}
+                ],
+                "total_input_tokens": 200,
+                "total_output_tokens": 100,
+                "request_count": 2,
+                "token_history": [{"request_number": 1}],
+                "timestamp": "2025-01-01"
+            }
+
+            with open(filepath, 'w') as f:
+                json.dump(session_data, f)
+
+            # Load the session
+            success = agent.load_session(filepath)
+
+            assert success is True
+            assert len(agent.conversation_history) == 1
+            assert agent.total_input_tokens == 200
+            assert agent.total_output_tokens == 100
+            assert agent.request_count == 2
+            assert len(agent.token_history) == 1
+
+    def test_load_session_nonexistent_file(self):
+        """Test loading from nonexistent file"""
+        agent = WYN360Agent(api_key="test_key")
+        success = agent.load_session("/nonexistent/session.json")
+
+        assert success is False
+
+    def test_get_token_stats(self):
+        """Test getting token usage statistics"""
+        agent = WYN360Agent(api_key="test_key")
+        agent.total_input_tokens = 1_000_000  # 1M tokens
+        agent.total_output_tokens = 500_000   # 500K tokens
+        agent.request_count = 10
+
+        stats = agent.get_token_stats()
+
+        assert stats["total_requests"] == 10
+        assert stats["total_input_tokens"] == 1_000_000
+        assert stats["total_output_tokens"] == 500_000
+        assert stats["total_tokens"] == 1_500_000
+
+        # Cost calculations
+        # Input: 1M tokens * $3 per M = $3
+        # Output: 500K tokens * $15 per M = $7.50
+        # Total: $10.50
+        assert stats["input_cost"] == 3.0
+        assert stats["output_cost"] == 7.5
+        assert stats["total_cost"] == 10.5
+        assert stats["avg_cost_per_request"] == 1.05
+
+    def test_get_token_stats_no_requests(self):
+        """Test token stats with no requests"""
+        agent = WYN360Agent(api_key="test_key")
+        stats = agent.get_token_stats()
+
+        assert stats["total_requests"] == 0
+        assert stats["total_cost"] == 0.0
+        assert stats["avg_cost_per_request"] == 0.0
+
+    def test_estimate_tokens(self):
+        """Test token estimation"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Test with empty string
+        assert agent._estimate_tokens("") == 0
+
+        # Test with typical text (1 token ≈ 4 characters)
+        text = "Hello, World!"  # 13 characters
+        assert agent._estimate_tokens(text) == 3  # 13 // 4 = 3
+
+        # Test with longer text
+        text = "a" * 400  # 400 characters
+        assert agent._estimate_tokens(text) == 100  # 400 // 4 = 100
+
+    @pytest.mark.asyncio
+    async def test_track_tokens(self, mocker):
+        """Test token tracking during chat"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock the agent.run method
+        mock_result = Mock()
+        mock_result.data = None  # Set data to None so it falls back to output
+        mock_result.output = "Short response"
+        mocker.patch.object(agent.agent, 'run', return_value=mock_result)
+
+        initial_tokens = agent.total_input_tokens
+        initial_requests = agent.request_count
+
+        await agent.chat("Hello")
+
+        # Should have tracked tokens
+        assert agent.total_input_tokens > initial_tokens
+        assert agent.total_output_tokens > 0
+        assert agent.request_count == initial_requests + 1
+        assert len(agent.token_history) == 1
+
+        # Check token history entry
+        entry = agent.token_history[0]
+        assert entry["request_number"] == 1
+        assert entry["input_tokens"] > 0
+        assert entry["output_tokens"] > 0
+        assert entry["total_tokens"] > 0
+        assert entry["cost"] > 0
+
+    @pytest.mark.asyncio
+    async def test_history_persists_across_chats(self, mocker):
+        """Test that conversation history persists across multiple chats"""
+        agent = WYN360Agent(api_key="test_key", use_history=True)
+
+        mock_result = Mock()
+        mock_result.data = None  # Set data to None so it falls back to output
+        mock_result.output = "Response"
+        mocker.patch.object(agent.agent, 'run', return_value=mock_result)
+
+        # First chat
+        await agent.chat("First message")
+        assert len(agent.conversation_history) == 2  # user + assistant
+
+        # Second chat
+        await agent.chat("Second message")
+        assert len(agent.conversation_history) == 4  # 2 more messages
+
+        # Check order
+        assert agent.conversation_history[0]["content"] == "First message"
+        assert agent.conversation_history[1]["content"] == "Response"
+        assert agent.conversation_history[2]["content"] == "Second message"
+        assert agent.conversation_history[3]["content"] == "Response"

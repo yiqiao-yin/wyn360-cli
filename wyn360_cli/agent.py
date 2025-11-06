@@ -23,17 +23,25 @@ class WYN360Agent:
     using Anthropic Claude via pydantic_ai.
     """
 
-    def __init__(self, api_key: str, model: str = "claude-sonnet-4-20250514"):
+    def __init__(self, api_key: str, model: str = "claude-sonnet-4-20250514", use_history: bool = True):
         """
         Initialize the WYN360 Agent.
 
         Args:
             api_key: Anthropic API key
             model: Claude model to use (default: claude-sonnet-4-20250514)
+            use_history: Whether to send conversation history with each request (default: True)
         """
         self.api_key = api_key
         self.model_name = model
+        self.use_history = use_history
         self.conversation_history: List[Dict[str, str]] = []
+
+        # Token usage tracking
+        self.total_input_tokens = 0
+        self.total_output_tokens = 0
+        self.request_count = 0
+        self.token_history: List[Dict[str, Any]] = []
 
         # Set API key in environment for pydantic-ai to use
         os.environ['ANTHROPIC_API_KEY'] = api_key
@@ -312,6 +320,9 @@ Notes:
                 "content": response_text
             })
 
+            # Track token usage
+            self._track_tokens(user_message, response_text)
+
             # Check if response contains code blocks and extract them
             code_blocks = extract_code_blocks(response_text)
 
@@ -356,3 +367,159 @@ Notes:
             return 'app.py'
         else:
             return 'script.py'
+
+    def clear_history(self) -> None:
+        """Clear conversation history and reset token counters."""
+        self.conversation_history = []
+        self.total_input_tokens = 0
+        self.total_output_tokens = 0
+        self.request_count = 0
+        self.token_history = []
+
+    def get_history(self) -> List[Dict[str, str]]:
+        """Get current conversation history."""
+        return self.conversation_history.copy()
+
+    def save_session(self, filepath: str) -> bool:
+        """
+        Save current session to JSON file.
+
+        Args:
+            filepath: Path to save session file
+
+        Returns:
+            True if successful, False otherwise
+        """
+        import json
+        from pathlib import Path
+
+        try:
+            session_data = {
+                "model": self.model_name,
+                "conversation_history": self.conversation_history,
+                "total_input_tokens": self.total_input_tokens,
+                "total_output_tokens": self.total_output_tokens,
+                "request_count": self.request_count,
+                "token_history": self.token_history,
+                "timestamp": str(os.popen('date').read().strip())
+            }
+
+            path = Path(filepath)
+            path.parent.mkdir(parents=True, exist_ok=True)
+
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(session_data, f, indent=2, ensure_ascii=False)
+
+            return True
+        except Exception as e:
+            print(f"Error saving session: {e}")
+            return False
+
+    def load_session(self, filepath: str) -> bool:
+        """
+        Load session from JSON file.
+
+        Args:
+            filepath: Path to session file
+
+        Returns:
+            True if successful, False otherwise
+        """
+        import json
+        from pathlib import Path
+
+        try:
+            path = Path(filepath)
+            if not path.exists():
+                print(f"Session file not found: {filepath}")
+                return False
+
+            with open(path, 'r', encoding='utf-8') as f:
+                session_data = json.load(f)
+
+            self.conversation_history = session_data.get("conversation_history", [])
+            self.total_input_tokens = session_data.get("total_input_tokens", 0)
+            self.total_output_tokens = session_data.get("total_output_tokens", 0)
+            self.request_count = session_data.get("request_count", 0)
+            self.token_history = session_data.get("token_history", [])
+
+            return True
+        except Exception as e:
+            print(f"Error loading session: {e}")
+            return False
+
+    def get_token_stats(self) -> Dict[str, Any]:
+        """
+        Get token usage statistics.
+
+        Returns:
+            Dictionary with token usage stats
+        """
+        total_cost = (
+            (self.total_input_tokens / 1_000_000 * 3.0) +
+            (self.total_output_tokens / 1_000_000 * 15.0)
+        )
+
+        avg_cost_per_request = total_cost / self.request_count if self.request_count > 0 else 0
+
+        return {
+            "total_requests": self.request_count,
+            "total_input_tokens": self.total_input_tokens,
+            "total_output_tokens": self.total_output_tokens,
+            "total_tokens": self.total_input_tokens + self.total_output_tokens,
+            "total_cost": total_cost,
+            "avg_cost_per_request": avg_cost_per_request,
+            "input_cost": self.total_input_tokens / 1_000_000 * 3.0,
+            "output_cost": self.total_output_tokens / 1_000_000 * 15.0,
+        }
+
+    def _estimate_tokens(self, text: str) -> int:
+        """
+        Estimate token count for text.
+        Rough estimation: 1 token ≈ 4 characters for English text.
+
+        Args:
+            text: Text to estimate tokens for
+
+        Returns:
+            Estimated token count
+        """
+        return len(text) // 4
+
+    def _track_tokens(self, user_message: str, response_text: str) -> None:
+        """
+        Track token usage for a request/response pair.
+
+        Args:
+            user_message: User's input message
+            response_text: Agent's response
+        """
+        # Estimate tokens (rough approximation)
+        system_prompt_tokens = self._estimate_tokens(self._get_system_prompt())
+        user_tokens = self._estimate_tokens(user_message)
+        response_tokens = self._estimate_tokens(response_text)
+
+        # History tokens (if enabled)
+        history_tokens = 0
+        if self.use_history and len(self.conversation_history) > 0:
+            for msg in self.conversation_history:
+                history_tokens += self._estimate_tokens(msg.get("content", ""))
+
+        # Tool definitions add ~600 tokens
+        tool_tokens = 600
+
+        input_tokens = system_prompt_tokens + user_tokens + history_tokens + tool_tokens
+        output_tokens = response_tokens
+
+        self.total_input_tokens += input_tokens
+        self.total_output_tokens += output_tokens
+        self.request_count += 1
+
+        # Track per-request stats
+        self.token_history.append({
+            "request_number": self.request_count,
+            "input_tokens": input_tokens,
+            "output_tokens": output_tokens,
+            "total_tokens": input_tokens + output_tokens,
+            "cost": (input_tokens / 1_000_000 * 3.0) + (output_tokens / 1_000_000 * 15.0)
+        })

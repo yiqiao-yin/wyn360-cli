@@ -829,7 +829,7 @@ WYN360:
 - Test before deploying
 - Customize as needed
 
-### 6. Use Clear Intent Language (NEW)
+### 6. Use Clear Intent Language
 - Say "add feature" or "update" when modifying existing files
 - Say "create new" or "make another" for new files
 - Be explicit about what you want to change
@@ -840,6 +840,43 @@ WYN360:
 - ✅ "Create a new helper module" (creates new)
 - ✅ "Improve error handling" (updates existing)
 - ✅ "Build a separate API client" (creates new)
+
+### 7. Manage Context with Slash Commands (NEW in v0.2.8)
+- Use `/tokens` to monitor API costs during long sessions
+- Use `/save` to preserve important conversations for later
+- Use `/load` to continue previous work sessions
+- Use `/clear` when starting fresh to reduce token usage
+- Use `/history` to review what you've discussed
+
+**Example Workflow:**
+```
+You: Build a data analysis pipeline
+WYN360: [Creates initial pipeline]
+
+You: Add visualization features
+WYN360: [Enhances the pipeline]
+
+You: /tokens
+[Token Usage Statistics]
+Total Cost: $0.03
+
+You: /save my_pipeline_session.json
+✓ Session saved
+
+[Later...]
+You: /load my_pipeline_session.json
+✓ Session loaded (conversation history restored)
+
+You: Add export to Excel feature
+WYN360: [Continues from where you left off with full context]
+```
+
+**Cost Management Tips:**
+- Check `/tokens` regularly to track spending
+- Use `/clear` after completing a major feature to reset context
+- Save sessions before clearing to preserve your work
+- Long conversations cost more due to conversation history in each API call
+- Balance between context (better results) and cost (fewer tokens)
 
 ---
 
@@ -904,13 +941,29 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.7
-**Last Updated:** November 2025
+**Version:** 0.2.8
+**Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.7 (Latest)
+### v0.2.8 (Latest)
+- ✨ **NEW:** Conversation history management - context persists across multiple interactions
+- ✨ **NEW:** Token usage tracking and cost estimation
+- ✨ **NEW:** Slash commands for quick access to context management features
+  - `/clear` - Clear conversation history and reset token counters
+  - `/history` - Display conversation history in a formatted table
+  - `/save <file>` - Save current session to JSON file
+  - `/load <file>` - Load session from JSON file
+  - `/tokens` - Show detailed token usage statistics and costs
+  - `/help` - Display help message with all commands
+- ✨ **NEW:** Session save/load functionality - preserve conversations for later
+- 🧪 Added 31 new unit tests for history management and slash commands (76 total tests)
+- 📊 Real-time cost tracking: input tokens ($3/M), output tokens ($15/M)
+- 💾 JSON session export with full conversation state and token statistics
+- 📚 Updated documentation with slash command examples and usage patterns
+
+### v0.2.7
 - 🐛 **BUGFIX:** Ensured command execution status always displayed
 - 🔧 Added CRITICAL instruction to agent: preserve "✅ Command executed successfully" indicator
 - 🔧 Agent now required to start responses with status indicator

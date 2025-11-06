@@ -50,7 +50,46 @@ Varies based on complexity:
 
 **Average cost:** ~$0.00015 - $0.0015 (input)
 
-### 4. Tool Call Execution (Variable)
+### 4. Conversation History (NEW in v0.2.8) (Variable)
+
+Starting with v0.2.8, conversation history is maintained across interactions to provide better context:
+
+**How it works:**
+- Every user message and assistant response is stored
+- The entire conversation history is sent with each subsequent request
+- This allows the agent to maintain context across multiple turns
+- History accumulates throughout the session
+
+**Token Impact:**
+- **Turn 1:** 0 tokens (no history yet)
+- **Turn 2:** ~50-800 tokens (previous turn)
+- **Turn 3:** ~100-1,600 tokens (2 previous turns)
+- **Turn 10:** ~450-8,000 tokens (9 previous turns)
+
+**Cost implications:**
+```
+Without history (v0.2.7 and earlier):
+  Each request: ~1,500 tokens baseline
+
+With history (v0.2.8+):
+  Turn 1:  ~1,500 tokens baseline
+  Turn 5:  ~3,500-5,500 tokens (includes 4 previous turns)
+  Turn 10: ~6,500-10,500 tokens (includes 9 previous turns)
+```
+
+**Average conversation history cost per turn:**
+- Turns 1-3: +$0.001 - $0.005
+- Turns 4-7: +$0.005 - $0.015
+- Turns 8-15: +$0.015 - $0.040
+- Turns 16+: +$0.040 - $0.100
+
+**Managing history costs:**
+- Use `/clear` to reset conversation history when starting a new task
+- Use `/save` before `/clear` to preserve important conversations
+- Use `/tokens` to monitor cumulative costs during long sessions
+- Balance context quality (better with history) vs cost (increases per turn)
+
+### 5. Tool Call Execution (Variable)
 
 When the agent calls tools, additional tokens are used:
 
@@ -74,7 +113,7 @@ When the agent calls tools, additional tokens are used:
 
 **Average tool execution:** ~$0.003 - $0.015 per tool call
 
-### 5. Assistant Response (~200-1,500 tokens)
+### 6. Assistant Response (~200-1,500 tokens)
 
 The final response varies by complexity:
 - Simple confirmation: ~50 tokens
@@ -601,5 +640,5 @@ For **most developers**, WYN360 CLI will cost **$1-3 per month** - significantly
 
 ---
 
-**Last Updated:** November 2025
-**Version:** 0.2.4
+**Last Updated:** January 2025
+**Version:** 0.2.8
