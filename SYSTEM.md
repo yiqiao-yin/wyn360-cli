@@ -29,7 +29,7 @@ graph TB
     subgraph "Agent Layer"
         Agent[WYN360Agent<br/>pydantic-ai framework]
         ModelSwitch[Model Switcher<br/>haiku/sonnet/opus]
-        Model[Anthropic Claude<br/>claude-sonnet-4 (default)]
+        Model[Anthropic Claude<br/>claude-sonnet-4 - default]
         Prompt[System Prompt<br/>Intent recognition<br/>Context awareness]
         History[Conversation History<br/>Context persistence<br/>Token tracking]
     end
