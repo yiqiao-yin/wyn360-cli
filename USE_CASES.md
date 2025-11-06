@@ -1698,13 +1698,21 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.10
+**Version:** 0.3.11
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.10 (Latest)
+### v0.3.11 (Latest)
+- ⚡ **CRITICAL FIX:** Restored REAL streaming using run_stream()
+- 🔧 Fixed: Was using run() and waiting for full response, then simulating chunks
+- 🎯 Now uses pydantic-ai's run_stream() for true token-by-token streaming
+- 📺 Immediate visual feedback - see text appear as model generates it
+- ✅ Tools still execute properly with streaming enabled
+- 💡 No more long waits - responses appear instantly as they're generated
+
+### v0.3.10
 - 🐛 **FIX:** Console width detection causing narrow text wrapping
 - 📐 Set minimum console width of 80 characters
 - 🎨 Maximum width of 200 for readability
