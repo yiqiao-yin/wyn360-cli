@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.3.2)
+## 🎯 Current Capabilities (v0.3.3)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -265,7 +265,7 @@ commands:
 
 ---
 
-### Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2)
+### Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2, bugfix v0.3.3)
 
 #### 5.1 Token-by-Token Streaming
 **Why:** See responses as they generate (like ChatGPT)
@@ -809,6 +809,6 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 
 ---
 
-**Last Updated:** November 2025
-**Current Version:** 0.3.2
+**Last Updated:** January 2025
+**Current Version:** 0.3.3
 **Next Planned Release:** v0.6.0 (Advanced Workflows)

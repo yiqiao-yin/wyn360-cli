@@ -377,12 +377,15 @@ async def chat_loop(agent: WYN360Agent):
 
             # Accumulate response for markdown rendering
             response_text = ""
+            printed_length = 0
 
             # Stream tokens as they arrive
             async for chunk in agent.chat_stream(user_input):
-                # Print chunk immediately (streaming)
-                console.print(chunk, end='', style="white")
-                response_text += chunk
+                # Each chunk contains accumulated text, only print the new portion
+                new_text = chunk[printed_length:]
+                console.print(new_text, end='', style="white")
+                printed_length = len(chunk)
+                response_text = chunk  # Chunk already contains full accumulated text
 
             console.print()  # Add newline after streaming
             console.print()

@@ -1698,13 +1698,18 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.2
+**Version:** 0.3.3
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.2 (Latest)
+### v0.3.3 (Latest)
+- 🐛 **FIX:** Streaming duplication bug - fixed text appearing multiple times
+- 🔧 Implemented delta tracking to show only new text portions
+- ✅ All 133 tests passing with streaming fix
+
+### v0.3.2
 - ✨ **NEW:** Streaming Responses - token-by-token real-time output
 - ✨ **NEW:** `chat_stream()` method for streaming responses
 - ⚡ Immediate feedback - see responses as they're generated
