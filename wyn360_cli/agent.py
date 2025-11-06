@@ -618,6 +618,62 @@ Notes:
             error_msg = f"An error occurred: {str(e)}"
             return error_msg
 
+    async def chat_stream(self, user_message: str):
+        """
+        Process a user message and stream the response token-by-token.
+
+        Args:
+            user_message: The user's input message
+
+        Yields:
+            Chunks of the response as they're generated
+        """
+        try:
+            # Add user message to history
+            self.conversation_history.append({
+                "role": "user",
+                "content": user_message
+            })
+
+            # Accumulate the full response
+            response_text = ""
+
+            # Stream the agent's response
+            async with self.agent.run_stream(user_message) as result:
+                async for chunk in result.stream():
+                    # Yield each chunk as it arrives
+                    yield chunk
+                    response_text += chunk
+
+            # Add assistant response to history
+            self.conversation_history.append({
+                "role": "assistant",
+                "content": response_text
+            })
+
+            # Track token usage
+            self._track_tokens(user_message, response_text)
+
+            # Check if response contains code blocks and extract them
+            code_blocks = extract_code_blocks(response_text)
+
+            # If there are Python code blocks, offer to save them
+            if code_blocks:
+                python_blocks = [b for b in code_blocks if b['language'] == 'python']
+                if python_blocks and is_blank_project():
+                    # Auto-save first Python code block in blank projects
+                    code = python_blocks[0]['code']
+                    # Try to determine filename from code or use default
+                    filename = self._suggest_filename(code)
+                    success, msg = write_file_safe(filename, code, overwrite=False)
+                    if success:
+                        save_message = f"\n\n✓ Code saved to: {filename}"
+                        yield save_message
+
+        except Exception as e:
+            error_msg = f"\n\nAn error occurred: {str(e)}"
+            yield error_msg
+
     def _suggest_filename(self, code: str) -> str:
         """
         Suggest a filename based on code content.

@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.3.1)
+## 🎯 Current Capabilities (v0.3.2)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -26,6 +26,8 @@ This document outlines potential features and enhancements to expand WYN360 CLI'
 - ✅ Project configuration file (.wyn360.yaml) (Phase 4)
 - ✅ Custom instructions and project context (Phase 4)
 - ✅ /config command to view settings (Phase 4)
+- ✅ Streaming responses - token-by-token output (Phase 5)
+- ✅ Real-time feedback and progress visibility (Phase 5)
 
 ---
 
@@ -263,7 +265,7 @@ commands:
 
 ---
 
-### Phase 5: Streaming Responses (HIGH PRIORITY)
+### Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2)
 
 #### 5.1 Token-by-Token Streaming
 **Why:** See responses as they generate (like ChatGPT)
@@ -808,5 +810,5 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 ---
 
 **Last Updated:** November 2025
-**Current Version:** 0.3.1
-**Next Planned Release:** v0.5.0 (Streaming & UX)
+**Current Version:** 0.3.2
+**Next Planned Release:** v0.6.0 (Advanced Workflows)

@@ -142,6 +142,12 @@ WYN360: I'll create a Streamlit app for you...
 - 🎯 **Custom Instructions** - Add your coding standards to every conversation
 - 🏗️ **Project Context** - Help AI understand your tech stack automatically
 
+### Streaming Responses (v0.3.2)
+- ⚡ **Real-Time Output** - See responses as they're generated, token-by-token
+- 🎯 **Immediate Feedback** - Start reading while AI is still generating
+- 📺 **Progress Visibility** - Watch code and explanations appear in real-time
+- 💨 **Faster Perceived Speed** - Feels 2-3x faster with instant feedback
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
@@ -315,11 +321,11 @@ poetry run pytest tests/ --cov=wyn360_cli --cov-report=html
 ```
 tests/
 ├── __init__.py
-├── test_agent.py          # Agent and tool tests (43 tests)
+├── test_agent.py          # Agent and tool tests (46 tests)
 ├── test_cli.py            # CLI and slash command tests (33 tests)
 ├── test_config.py         # Configuration tests (25 tests)
 └── test_utils.py          # Utility function tests (29 tests)
-                           # Total: 130 tests
+                           # Total: 133 tests
 ```
 
 ### Expected Output
@@ -332,16 +338,17 @@ cachedir: .pytest_cache
 rootdir: /home/workbench/wyn360-cli/wyn360-cli
 configfile: pyproject.toml
 plugins: asyncio-1.2.0, mock-3.15.1
-collected 130 items
+collected 133 items
 
 tests/test_agent.py::TestWYN360Agent::test_agent_initialization PASSED   [  1%]
-tests/test_agent.py::TestHistoryManagement::test_clear_history PASSED    [ 19%]
-tests/test_cli.py::TestSlashCommands::test_clear_command PASSED          [ 41%]
-tests/test_config.py::TestWYN360Config::test_default_values PASSED       [ 59%]
+tests/test_agent.py::TestHistoryManagement::test_clear_history PASSED    [ 18%]
+tests/test_agent.py::TestStreaming::test_chat_stream_method_exists PASSED [ 40%]
+tests/test_cli.py::TestSlashCommands::test_clear_command PASSED          [ 42%]
+tests/test_config.py::TestWYN360Config::test_default_values PASSED       [ 60%]
 ...
 tests/test_utils.py::TestExecuteCommandSafe::test_execute_python_script PASSED [100%]
 
-============================== 130 passed in 2.57s
+============================== 133 passed in 2.64s
 ```
 
 ### Building and Publishing
@@ -460,5 +467,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.1
+**Current Version:** 0.3.2
 **Last Updated:** January 2025

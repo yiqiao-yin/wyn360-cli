@@ -370,16 +370,21 @@ async def chat_loop(agent: WYN360Agent):
                 console.print()
                 continue
 
-            # Get response from agent with progress indicator
+            # Stream response from agent
             console.print()
-            with console.status("[bold cyan]WYN360 is thinking...", spinner="dots"):
-                response = await agent.chat(user_input)
-
-            # Display response with markdown formatting
             console.print("[bold blue]WYN360:[/bold blue]")
             console.print()
-            md = Markdown(response)
-            console.print(md)
+
+            # Accumulate response for markdown rendering
+            response_text = ""
+
+            # Stream tokens as they arrive
+            async for chunk in agent.chat_stream(user_input):
+                # Print chunk immediately (streaming)
+                console.print(chunk, end='', style="white")
+                response_text += chunk
+
+            console.print()  # Add newline after streaming
             console.print()
 
         except KeyboardInterrupt:

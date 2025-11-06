@@ -760,3 +760,73 @@ class TestModelSwitching:
 
         desc_unknown = agent._get_model_description("unknown-model")
         assert "Custom" in desc_unknown
+
+
+class TestStreaming:
+    """Tests for streaming functionality"""
+
+    def test_chat_stream_method_exists(self):
+        """Test that chat_stream method exists"""
+        agent = WYN360Agent(api_key="test_key")
+
+        assert hasattr(agent, 'chat_stream')
+        assert callable(agent.chat_stream)
+
+    @pytest.mark.asyncio
+    async def test_chat_stream_is_async_generator(self):
+        """Test that chat_stream returns an async generator"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock the agent.run_stream to return a simple async generator
+        class MockResult:
+            async def stream(self):
+                yield "Hello"
+                yield " "
+                yield "World"
+
+            async def __aenter__(self):
+                return self
+
+            async def __aexit__(self, exc_type, exc_val, exc_tb):
+                pass
+
+        def mock_stream(*args, **kwargs):
+            return MockResult()
+
+        # Patch the agent's run_stream method
+        agent.agent.run_stream = mock_stream
+
+        # Test streaming
+        chunks = []
+        async for chunk in agent.chat_stream("Test message"):
+            chunks.append(chunk)
+
+        # Verify we got chunks
+        assert len(chunks) == 3  # "Hello", " ", "World"
+
+        # Verify conversation history was updated
+        assert len(agent.conversation_history) == 2
+        assert agent.conversation_history[0]["role"] == "user"
+        assert agent.conversation_history[0]["content"] == "Test message"
+        assert agent.conversation_history[1]["role"] == "assistant"
+        assert agent.conversation_history[1]["content"] == "Hello World"
+
+    @pytest.mark.asyncio
+    async def test_chat_stream_handles_errors(self):
+        """Test that chat_stream handles errors gracefully"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock the agent.run_stream to raise an error
+        async def mock_stream_error(*args, **kwargs):
+            raise Exception("Test error")
+
+        agent.agent.run_stream = mock_stream_error
+
+        # Test that error is yielded
+        chunks = []
+        async for chunk in agent.chat_stream("Test message"):
+            chunks.append(chunk)
+
+        # Should yield error message
+        assert len(chunks) > 0
+        assert any("error" in chunk.lower() for chunk in chunks)
