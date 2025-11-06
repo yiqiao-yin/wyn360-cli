@@ -1698,13 +1698,24 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.15
+**Version:** 0.3.16
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.15 (Latest)
+### v0.3.16 (Latest)
+- 🚀 **NEW FEATURE:** HuggingFace integration Phase 1
+- ✅ **TOOL:** check_hf_authentication - Check HuggingFace CLI authentication status
+- ✅ **TOOL:** authenticate_hf - Authenticate with HuggingFace using access token
+- ✅ **TOOL:** create_hf_readme - Generate README.md with Space configuration
+- 📦 **DEPENDENCY:** Added huggingface-hub>=0.20.0
+- 🧪 **TESTS:** Added 12 new unit tests for HuggingFace tools (7 in test_agent.py, 5 in test_utils.py)
+- 📚 **DOCUMENTATION:** Updated ROADMAP.md with Phase 6 HuggingFace Integration
+- 🛠️ **UTILS:** Added extract_username_from_hf_whoami() helper function
+- 💡 **SYSTEM PROMPT:** Added HuggingFace workflow instructions
+
+### v0.3.15
 - 📚 **DOCUMENTATION:** Created comprehensive SYSTEM.md with updated architecture
 - 📊 **DOCUMENTATION:** Updated mermaid diagram to include all Phase 1-5 features
 - 📝 **DOCUMENTATION:** Updated COST.md with Phase 2 tools (13 tools total)

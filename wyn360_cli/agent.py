@@ -81,7 +81,11 @@ class WYN360Agent:
                 self.search_files,
                 self.delete_file,
                 self.move_file,
-                self.create_directory
+                self.create_directory,
+                # HuggingFace tools
+                self.check_hf_authentication,
+                self.authenticate_hf,
+                self.create_hf_readme
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -183,6 +187,27 @@ Notes:
 - Commands run with user's full permissions in the current directory
 - Default timeout is 300 seconds (5 minutes), adjust if needed
 - Always preserve the success/failure indicator from tool output
+
+**HuggingFace Integration:**
+
+You can help users deploy their apps to HuggingFace Spaces!
+
+**Workflow when user says "push to huggingface" or "deploy to HF":**
+1. Check authentication with check_hf_authentication()
+2. If not authenticated:
+   - Ask user for their HF token (they can get it from https://huggingface.co/settings/tokens)
+   - Use authenticate_hf(token) to log them in
+3. Ask for Space name in format "username/repo-name" (e.g., "myuser/echo-bot")
+4. Create README.md with create_hf_readme(title, sdk) - use appropriate SDK:
+   - For Streamlit apps: sdk="streamlit", app_file="app.py"
+   - For Gradio apps: sdk="gradio", app_file="app.py"
+5. Inform user that Space is being created (Phase 2 will add actual Space creation and push)
+
+**Important Notes:**
+- Space names MUST be in "namespace/repo-name" format
+- README.md needs proper frontmatter for Spaces to work
+- For Streamlit: typically need app.py and requirements.txt
+- Always confirm Space name with user before creating
 """
 
         # Add custom instructions from config if available
@@ -633,6 +658,136 @@ Notes:
 
         except Exception as e:
             return f"Error creating directory '{dir_path}': {str(e)}"
+
+    # ==================== HuggingFace Integration Tools ====================
+
+    async def check_hf_authentication(self, ctx: RunContext[None]) -> str:
+        """
+        Check if user is authenticated with HuggingFace.
+
+        Returns authentication status and username if authenticated.
+
+        Examples:
+            - "check if I'm logged into huggingface"
+            - "am I authenticated with HF?"
+        """
+        from .utils import execute_command_safe, extract_username_from_hf_whoami
+
+        # Check environment variable
+        hf_token = os.getenv('HF_TOKEN')
+
+        # Try hf CLI whoami
+        success, output, code = execute_command_safe("hf auth whoami", timeout=10)
+
+        if success and "username" in output.lower():
+            username = extract_username_from_hf_whoami(output)
+            return f"✓ Authenticated with HuggingFace as '{username}'"
+        elif hf_token:
+            return "HF_TOKEN found in environment but not authenticated with CLI. Please provide your token so I can authenticate you."
+        else:
+            return ("Not authenticated with HuggingFace. To push code to HuggingFace Spaces, I need your access token.\n\n"
+                   "You can get a token from: https://huggingface.co/settings/tokens\n\n"
+                   "Then either:\n"
+                   "1. Export it before starting: export HF_TOKEN=your_token\n"
+                   "2. Provide it to me in chat and I'll authenticate you")
+
+    async def authenticate_hf(self, ctx: RunContext[None], token: str) -> str:
+        """
+        Authenticate with HuggingFace using provided token.
+
+        Args:
+            token: HuggingFace access token (starts with 'hf_')
+
+        Returns:
+            Status message with username if successful
+
+        Examples:
+            - "authenticate with HF using token hf_xxxxx"
+            - "login to huggingface with hf_xxxxx"
+        """
+        from .utils import execute_command_safe, extract_username_from_hf_whoami
+
+        # Validate token format
+        if not token or len(token) < 10:
+            return "❌ Invalid token format. HuggingFace tokens should be longer."
+
+        # Save token to environment for this session
+        os.environ['HF_TOKEN'] = token
+
+        # Authenticate via CLI using the token environment variable
+        success, output, code = execute_command_safe(
+            "hf auth login --token $HF_TOKEN",
+            timeout=30
+        )
+
+        if success or "token is valid" in output.lower():
+            # Get username
+            success2, output2, _ = execute_command_safe("hf auth whoami", timeout=10)
+            username = extract_username_from_hf_whoami(output2) if success2 else "user"
+            return f"✓ Successfully authenticated with HuggingFace as '{username}'\n\nYou can now push code to Spaces!"
+        else:
+            return f"❌ Authentication failed. Please check your token.\n\nError: {output[:200]}"
+
+    async def create_hf_readme(
+        self,
+        ctx: RunContext[None],
+        title: str,
+        sdk: str = "streamlit",
+        sdk_version: str = "1.34.0",
+        app_file: str = "app.py",
+        emoji: str = "🔥",
+        color_from: str = "indigo",
+        color_to: str = "green",
+        license: str = "mit"
+    ) -> str:
+        """
+        Generate README.md with HuggingFace Space frontmatter.
+
+        Args:
+            title: Space title
+            sdk: SDK type (streamlit, gradio, docker, static)
+            sdk_version: SDK version
+            app_file: Main app file (app.py or Home.py for streamlit)
+            emoji: Space emoji
+            color_from: Gradient start color
+            color_to: Gradient end color
+            license: License type
+
+        Returns:
+            Path to created README.md
+
+        Examples:
+            - "create a README for my streamlit app called 'Echo Bot'"
+            - "generate huggingface README with title 'Data Viz'"
+        """
+        from .utils import write_file_safe
+
+        readme_content = f"""---
+title: {title}
+emoji: {emoji}
+colorFrom: {color_from}
+colorTo: {color_to}
+sdk: {sdk}
+sdk_version: {sdk_version}
+app_file: {app_file}
+pinned: false
+license: {license}
+---
+
+# {title}
+
+This Space was created with WYN360-CLI.
+
+Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+"""
+
+        # Write README.md
+        success, msg = write_file_safe("README.md", readme_content, overwrite=True)
+
+        if success:
+            return f"✓ Created README.md with {sdk} Space configuration (title: {title})"
+        else:
+            return f"❌ Failed to create README.md: {msg}"
 
     async def chat(self, user_message: str) -> str:
         """

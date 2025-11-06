@@ -1,6 +1,6 @@
 [project]
 name = "wyn360-cli"
-version = "0.3.15"
+version = "0.3.16"
 description = "WYN360 - An intelligent AI coding assistant CLI tool powered by Anthropic Claude"
 authors = [
     {name = "Yiqiao Yin", email = "yiqiao.yin@wyn-associates.com"}
@@ -15,6 +15,7 @@ dependencies = [
     "python-dotenv (>=1.2.1,<2.0.0)",
     "prompt-toolkit>=3.0.0",
     "pyyaml>=6.0.0",
+    "huggingface-hub>=0.20.0",
 ]
 
 [project.scripts]

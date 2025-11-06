@@ -243,3 +243,27 @@ def execute_command_safe(
     except Exception as e:
         error_msg = f"Error executing command: {str(e)}"
         return False, error_msg, -1
+
+
+def extract_username_from_hf_whoami(output: str) -> str:
+    """
+    Extract username from 'hf auth whoami' output.
+
+    Args:
+        output: Output from 'hf auth whoami' command
+
+    Returns:
+        Username string or "user" if not found
+
+    Example:
+        >>> extract_username_from_hf_whoami("username: john\\nemail: john@example.com")
+        'john'
+    """
+    for line in output.split('\n'):
+        line = line.strip()
+        if line.lower().startswith('username'):
+            # Handle formats like "username: john" or "username john"
+            parts = line.split(':', 1) if ':' in line else line.split(None, 1)
+            if len(parts) > 1:
+                return parts[1].strip()
+    return "user"

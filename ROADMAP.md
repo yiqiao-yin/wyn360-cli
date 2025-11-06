@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.3.15)
+## 🎯 Current Capabilities (v0.3.16)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -28,6 +28,7 @@ This document outlines potential features and enhancements to expand WYN360 CLI'
 - ✅ /config command to view settings (Phase 4)
 - ✅ Streaming responses - token-by-token output (Phase 5)
 - ✅ Real-time feedback and progress visibility (Phase 5)
+- ✅ HuggingFace authentication and README generation (Phase 6.1)
 
 ---
 
@@ -299,9 +300,155 @@ async for chunk in agent.run_stream(user_message):
 
 ---
 
-### Phase 6: Advanced Workflows (MEDIUM PRIORITY)
+### Phase 6: HuggingFace Integration ⚙️ IN PROGRESS (v0.3.16+)
 
-#### 6.1 Multi-File Refactoring
+#### 6.1 HuggingFace Authentication & README Generation ✅ COMPLETED (v0.3.16)
+
+**Feature:** Enable users to deploy apps to HuggingFace Spaces through natural language
+
+**Phase 1 Implementation:**
+
+**New Tools:**
+```python
+async def check_hf_authentication(self, ctx: RunContext[None]) -> str:
+    """Check if user is authenticated with HuggingFace"""
+
+async def authenticate_hf(self, ctx: RunContext[None], token: str) -> str:
+    """Authenticate with HuggingFace using provided token"""
+
+async def create_hf_readme(
+    self,
+    ctx: RunContext[None],
+    title: str,
+    sdk: str = "streamlit",
+    sdk_version: str = "1.34.0",
+    app_file: str = "app.py",
+    emoji: str = "🔥",
+    color_from: str = "indigo",
+    color_to: str = "green",
+    license: str = "mit"
+) -> str:
+    """Generate README.md with HuggingFace Space frontmatter"""
+```
+
+**Workflow:**
+1. User creates an app (e.g., Streamlit chatbot) using WYN360-CLI
+2. User says "push to huggingface"
+3. WYN360 checks for HF_TOKEN authentication
+4. If not authenticated, asks for token and authenticates
+5. Generates README.md with proper YAML frontmatter for Spaces
+
+**Example Use Case:**
+```
+You: Create a simple Streamlit echo chatbot
+
+WYN360: [Creates app.py with Streamlit code]
+
+You: Push this to HuggingFace
+
+WYN360: Let me check your HuggingFace authentication...
+Not authenticated. Please provide your HuggingFace token.
+Get one from: https://huggingface.co/settings/tokens
+
+You: hf_xxxxxxxxxxxxx
+
+WYN360: ✓ Authenticated as 'username'
+Creating README.md with Streamlit Space configuration...
+✓ README.md created
+
+[Phase 2 will add: Space creation and file upload]
+```
+
+**Test Coverage:**
+- 12 new unit tests (7 in test_agent.py, 5 in test_utils.py)
+- Tests for authentication checking (authenticated/not authenticated)
+- Tests for authentication success/failure
+- Tests for README creation (Streamlit, Gradio, Docker, Static)
+- Tests for username extraction from HF CLI output
+
+**Priority:** HIGH - Enables direct deployment to HuggingFace Spaces
+
+---
+
+#### 6.2 HuggingFace Space Creation & File Upload 🔜 NEXT (v0.3.17)
+
+**Feature:** Complete the deployment workflow by creating Spaces and uploading files
+
+**Planned Tools:**
+```python
+async def create_hf_space(
+    self,
+    ctx: RunContext[None],
+    space_name: str,
+    sdk: str = "streamlit",
+    private: bool = False
+) -> str:
+    """Create HuggingFace Space via CLI"""
+
+async def push_to_hf_space(
+    self,
+    ctx: RunContext[None],
+    space_name: str,
+    files: List[str] = None
+) -> str:
+    """Upload files to HuggingFace Space"""
+```
+
+**HuggingFace CLI Commands Used:**
+```bash
+# Create Space
+hf repo create {space_name} --type=space --space-sdk={sdk}
+
+# Upload files
+hf upload {space_name} {file_path}
+# or upload entire directory
+hf upload {space_name} . --repo-type=space
+```
+
+**Complete Workflow (Phase 1 + Phase 2):**
+```
+You: Create a Streamlit chatbot and deploy to HuggingFace
+
+WYN360:
+1. Creating Streamlit app...
+   ✓ app.py created
+
+2. Checking HuggingFace authentication...
+   ✓ Authenticated as 'username'
+
+3. Creating README.md for Space...
+   ✓ README.md created
+
+4. Creating HuggingFace Space...
+   What should the Space be called? (format: username/repo-name)
+
+You: username/echo-chatbot
+
+WYN360:
+   ✓ Space created: https://huggingface.co/spaces/username/echo-chatbot
+
+5. Uploading files to Space...
+   Uploading: app.py
+   Uploading: README.md
+   Uploading: requirements.txt
+   ✓ All files uploaded
+
+🎉 Your app is live at: https://huggingface.co/spaces/username/echo-chatbot
+```
+
+**Supported SDKs:**
+- Streamlit (most common for demos)
+- Gradio (ML interfaces)
+- Docker (custom environments)
+- Static (HTML/JS apps)
+
+**Priority:** HIGH - Completes the deployment workflow
+
+---
+
+### Phase 7: Advanced Workflows (MEDIUM PRIORITY)
+
+#### 7.1 Multi-File Refactoring
 **Feature:** Refactor across multiple files in one operation
 
 **Use Case:**
@@ -324,7 +471,7 @@ I'll refactor all 3 files:
 
 ---
 
-#### 6.2 Test Generation Mode
+#### 7.2 Test Generation Mode
 **Feature:** Automatically generate tests for code
 
 **Use Case:**
@@ -346,7 +493,7 @@ Creating test_calculator.py with:
 
 ---
 
-#### 6.3 Documentation Generation
+#### 7.3 Documentation Generation
 **Feature:** Auto-generate documentation
 
 **Use Case:**
@@ -366,9 +513,9 @@ Creating API_DOCS.md with:
 
 ---
 
-### Phase 7: Integration Features (LOW PRIORITY)
+### Phase 8: Integration Features (LOW PRIORITY)
 
-#### 7.1 GitHub Integration
+#### 8.1 GitHub Integration
 **Feature:** Direct GitHub operations
 
 **Capabilities:**
@@ -407,7 +554,7 @@ https://github.com/user/repo/pull/123
 
 ---
 
-#### 7.2 Database Tools
+#### 8.2 Database Tools
 **Feature:** Direct database operations
 
 **Capabilities:**
@@ -432,9 +579,9 @@ async def describe_table(
 
 ---
 
-### Phase 8: Safety & Quality (HIGH PRIORITY)
+### Phase 9: Safety & Quality (HIGH PRIORITY)
 
-#### 8.1 Pre-Execution Validation
+#### 9.1 Pre-Execution Validation
 **Feature:** Validate code before execution
 
 **Checks:**
@@ -461,7 +608,7 @@ Continue anyway? (y/N):
 
 ---
 
-#### 8.2 Automatic Backups
+#### 9.2 Automatic Backups
 **Feature:** Create backups before modifications
 
 **Implementation:**
@@ -482,7 +629,7 @@ shutil.copy(file_path, backup_path)
 
 ---
 
-#### 8.3 Undo/Rollback
+#### 9.3 Undo/Rollback
 **Feature:** Undo last operation
 
 **Implementation:**
@@ -502,9 +649,9 @@ operations = [
 
 ---
 
-### Phase 9: Monitoring & Analytics (LOW PRIORITY)
+### Phase 10: Monitoring & Analytics (LOW PRIORITY)
 
-#### 9.1 Token Usage Tracking
+#### 10.1 Token Usage Tracking
 **Feature:** Track and display token usage
 
 **Dashboard:**
@@ -530,7 +677,7 @@ Most expensive operations:
 
 ---
 
-#### 9.2 Performance Metrics
+#### 10.2 Performance Metrics
 **Feature:** Track response times and success rates
 
 **Metrics:**
@@ -545,9 +692,9 @@ Most expensive operations:
 
 ---
 
-### Phase 10: Collaboration Features (LOW PRIORITY)
+### Phase 11: Collaboration Features (LOW PRIORITY)
 
-#### 10.1 Session Sharing
+#### 11.1 Session Sharing
 **Feature:** Share WYN360 sessions with team
 
 **Implementation:**
@@ -565,7 +712,7 @@ wyn360 --import session.json
 
 ---
 
-#### 10.2 Prompt Library
+#### 11.2 Prompt Library
 **Feature:** Share and reuse prompts
 
 **Implementation:**
@@ -810,5 +957,5 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 ---
 
 **Last Updated:** January 2025
-**Current Version:** 0.3.15
-**Next Planned Release:** v0.6.0 (Advanced Workflows)
+**Current Version:** 0.3.16
+**Next Planned Release:** v0.3.17 (HuggingFace Phase 2 - Space Creation & Upload)

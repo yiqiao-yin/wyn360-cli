@@ -819,3 +819,148 @@ class TestStreaming:
         assert isinstance(response, str)
         assert "error" in response.lower()
         assert "test error" in response.lower()
+
+
+class TestHuggingFaceTools:
+    """Tests for HuggingFace integration tools"""
+
+    @pytest.mark.asyncio
+    async def test_check_hf_authentication_not_authenticated(self, mocker):
+        """Test authentication check when not authenticated"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock execute_command_safe to simulate not authenticated
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(False, "not logged in", 1)
+        )
+
+        result = await agent.check_hf_authentication(None)
+
+        assert "Not authenticated" in result
+        assert "https://huggingface.co/settings/tokens" in result
+
+    @pytest.mark.asyncio
+    async def test_check_hf_authentication_authenticated(self, mocker):
+        """Test authentication check when authenticated"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock execute_command_safe to simulate authenticated
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(True, "username: testuser\nemail: test@example.com", 0)
+        )
+
+        result = await agent.check_hf_authentication(None)
+
+        assert "Authenticated" in result
+        assert "testuser" in result
+
+    @pytest.mark.asyncio
+    async def test_authenticate_hf_invalid_token(self):
+        """Test authentication with invalid token"""
+        agent = WYN360Agent(api_key="test_key")
+
+        result = await agent.authenticate_hf(None, "short")
+
+        assert "Invalid token" in result
+
+    @pytest.mark.asyncio
+    async def test_authenticate_hf_success(self, mocker):
+        """Test successful authentication"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock both auth login and whoami commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "token is valid", 0),  # auth login
+            (True, "username: testuser", 0)  # whoami
+        ]
+
+        result = await agent.authenticate_hf(None, "hf_validtoken1234567890")
+
+        assert "Successfully authenticated" in result
+        assert "testuser" in result
+
+    @pytest.mark.asyncio
+    async def test_authenticate_hf_failure(self, mocker):
+        """Test failed authentication"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock auth login failure
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(False, "invalid token", 1)
+        )
+
+        result = await agent.authenticate_hf(None, "hf_invalidtoken")
+
+        assert "Authentication failed" in result
+
+    @pytest.mark.asyncio
+    async def test_create_hf_readme_streamlit(self, mocker, tmp_path):
+        """Test README creation for Streamlit app"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Change to temp directory
+        import os
+        original_dir = os.getcwd()
+        os.chdir(tmp_path)
+
+        try:
+            result = await agent.create_hf_readme(
+                None,
+                title="Test Echo Bot",
+                sdk="streamlit",
+                sdk_version="1.34.0",
+                app_file="app.py"
+            )
+
+            assert "Created README.md" in result
+            assert "streamlit" in result.lower()
+
+            # Verify README.md was created
+            readme_path = tmp_path / "README.md"
+            assert readme_path.exists()
+
+            # Verify frontmatter content
+            content = readme_path.read_text()
+            assert "title: Test Echo Bot" in content
+            assert "sdk: streamlit" in content
+            assert "sdk_version: 1.34.0" in content
+            assert "app_file: app.py" in content
+            assert "---" in content  # YAML frontmatter markers
+        finally:
+            os.chdir(original_dir)
+
+    @pytest.mark.asyncio
+    async def test_create_hf_readme_gradio(self, mocker, tmp_path):
+        """Test README creation for Gradio app"""
+        agent = WYN360Agent(api_key="test_key")
+
+        import os
+        original_dir = os.getcwd()
+        os.chdir(tmp_path)
+
+        try:
+            result = await agent.create_hf_readme(
+                None,
+                title="Gradio Demo",
+                sdk="gradio",
+                emoji="🎨",
+                color_from="blue",
+                color_to="purple"
+            )
+
+            assert "Created README.md" in result
+            assert "gradio" in result.lower()
+
+            # Verify content
+            readme_path = tmp_path / "README.md"
+            content = readme_path.read_text()
+            assert "sdk: gradio" in content
+            assert "emoji: 🎨" in content
+            assert "colorFrom: blue" in content
+            assert "colorTo: purple" in content
+        finally:
+            os.chdir(original_dir)

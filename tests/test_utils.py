@@ -342,3 +342,52 @@ class TestExecuteCommandSafe:
         assert success is True
         assert "Script executed" in output
         assert return_code == 0
+
+
+class TestExtractUsernameFromHFWhoami:
+    """Tests for extract_username_from_hf_whoami utility function"""
+
+    def test_extract_username_with_colon(self):
+        """Test extracting username from output with colon format"""
+        from wyn360_cli.utils import extract_username_from_hf_whoami
+
+        output = "username: testuser\nemail: test@example.com"
+        username = extract_username_from_hf_whoami(output)
+
+        assert username == "testuser"
+
+    def test_extract_username_without_colon(self):
+        """Test extracting username from output without colon"""
+        from wyn360_cli.utils import extract_username_from_hf_whoami
+
+        output = "username testuser\nemail test@example.com"
+        username = extract_username_from_hf_whoami(output)
+
+        assert username == "testuser"
+
+    def test_extract_username_with_extra_spaces(self):
+        """Test extracting username with extra whitespace"""
+        from wyn360_cli.utils import extract_username_from_hf_whoami
+
+        output = "  username:   testuser  \nemail: test@example.com"
+        username = extract_username_from_hf_whoami(output)
+
+        assert username == "testuser"
+
+    def test_extract_username_not_found(self):
+        """Test when username is not in output"""
+        from wyn360_cli.utils import extract_username_from_hf_whoami
+
+        output = "some other output\nwithout username"
+        username = extract_username_from_hf_whoami(output)
+
+        assert username == "user"  # Default fallback
+
+    def test_extract_username_case_insensitive(self):
+        """Test username extraction is case insensitive"""
+        from wyn360_cli.utils import extract_username_from_hf_whoami
+
+        output = "USERNAME: TESTUSER\nEMAIL: TEST@EXAMPLE.COM"
+        username = extract_username_from_hf_whoami(output)
+
+        assert username == "TESTUSER"
