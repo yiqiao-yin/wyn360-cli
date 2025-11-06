@@ -286,3 +286,31 @@ class TestSlashCommands:
 
         assert handled is True
         assert "✓" in message or "Switched" in message or "Opus" in message
+
+    def test_config_command_no_config(self):
+        """Test /config command when no config is loaded"""
+        # Agent without config
+        self.agent.config = None
+
+        handled, message = handle_slash_command("config", self.agent)
+
+        assert handled is True
+        assert "No configuration loaded" in message
+
+    def test_config_command_with_config(self):
+        """Test /config command with config loaded"""
+        from wyn360_cli.config import WYN360Config
+
+        # Create a config
+        config = WYN360Config(
+            model="claude-sonnet-4-20250514",
+            max_tokens=4096,
+            custom_instructions="Use type hints"
+        )
+        self.agent.config = config
+
+        handled, message = handle_slash_command("config", self.agent)
+
+        assert handled is True
+        # The command prints a table, so message will be empty
+        # But we verify it was handled

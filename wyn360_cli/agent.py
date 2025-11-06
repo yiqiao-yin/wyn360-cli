@@ -2,7 +2,7 @@
 
 import os
 import sys
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.anthropic import AnthropicModel
 from .utils import (
@@ -13,6 +13,7 @@ from .utils import (
     is_blank_project,
     extract_code_blocks
 )
+from .config import WYN360Config
 
 
 class WYN360Agent:
@@ -23,7 +24,13 @@ class WYN360Agent:
     using Anthropic Claude via pydantic_ai.
     """
 
-    def __init__(self, api_key: str, model: str = "claude-sonnet-4-20250514", use_history: bool = True):
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "claude-sonnet-4-20250514",
+        use_history: bool = True,
+        config: Optional[WYN360Config] = None
+    ):
         """
         Initialize the WYN360 Agent.
 
@@ -31,9 +38,17 @@ class WYN360Agent:
             api_key: Anthropic API key
             model: Claude model to use (default: claude-sonnet-4-20250514)
             use_history: Whether to send conversation history with each request (default: True)
+            config: Optional WYN360Config object with user/project configuration
         """
         self.api_key = api_key
-        self.model_name = model
+        self.config = config
+
+        # Use config model if available, otherwise use provided model
+        if config:
+            self.model_name = config.model
+        else:
+            self.model_name = model
+
         self.use_history = use_history
         self.conversation_history: List[Dict[str, str]] = []
 
@@ -47,7 +62,7 @@ class WYN360Agent:
         os.environ['ANTHROPIC_API_KEY'] = api_key
 
         # Initialize Anthropic model (it will use the environment variable)
-        self.model = AnthropicModel(model)
+        self.model = AnthropicModel(self.model_name)
 
         # Create the agent with tools
         self.agent = Agent(
@@ -73,7 +88,7 @@ class WYN360Agent:
 
     def _get_system_prompt(self) -> str:
         """Get the system prompt for the coding assistant."""
-        return """You are WYN360, an intelligent AI coding assistant. Your role is to help users with:
+        base_prompt = """You are WYN360, an intelligent AI coding assistant. Your role is to help users with:
 
 1. **Starting new projects**: Generate well-structured Python code from scratch
 2. **Improving existing projects**: Analyze codebases and suggest/implement improvements
@@ -163,6 +178,26 @@ Notes:
 - Default timeout is 300 seconds (5 minutes), adjust if needed
 - Always preserve the success/failure indicator from tool output
 """
+
+        # Add custom instructions from config if available
+        if self.config:
+            if self.config.custom_instructions:
+                base_prompt += "\n\n**Custom Instructions:**\n"
+                base_prompt += self.config.custom_instructions
+
+            # Add project context if available
+            if self.config.project_context:
+                base_prompt += "\n\n**Project Context:**\n"
+                base_prompt += self.config.project_context
+
+            # Add project dependencies info if available
+            if self.config.project_dependencies:
+                base_prompt += "\n\n**Project Dependencies:**\n"
+                base_prompt += "This project uses the following key dependencies:\n"
+                for dep in self.config.project_dependencies:
+                    base_prompt += f"- {dep}\n"
+
+        return base_prompt
 
     async def read_file(self, ctx: RunContext[None], file_path: str) -> str:
         """

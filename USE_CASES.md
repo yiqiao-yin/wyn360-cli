@@ -1253,13 +1253,264 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.3.0
+## Use Case 12: Configuration & Personalization
+
+**Feature:** User and project-specific configuration files (v0.3.1)
+
+**Problem:** Every developer has different preferences and every project has unique requirements. Repeating instructions manually is tedious.
+
+**Solution:** WYN360 supports two levels of configuration:
+1. **User Config** (`~/.wyn360/config.yaml`) - Your personal preferences across all projects
+2. **Project Config** (`.wyn360.yaml`) - Project-specific settings and context
+
+### Configuration Levels
+
+#### User Configuration (~/.wyn360/config.yaml)
+
+```yaml
+# Personal preferences that apply to all projects
+model: claude-sonnet-4-20250514
+max_tokens: 4096
+temperature: 0.7
+
+# Custom instructions for all your work
+custom_instructions: |
+  - Always use type hints in Python
+  - Follow PEP 8 style guidelines
+  - Add comprehensive docstrings
+  - Include error handling
+
+# Quick command aliases
+aliases:
+  test: "run pytest tests/ -v"
+  lint: "run ruff check ."
+  format: "run ruff format ."
+
+# Your workspace directories
+workspaces:
+  - ~/projects
+  - ~/work
+```
+
+#### Project Configuration (.wyn360.yaml)
+
+```yaml
+# Project-specific context - helps AI understand your codebase
+context: |
+  This is a FastAPI web application with:
+  - PostgreSQL database (SQLAlchemy ORM)
+  - Redis for caching and session management
+  - Celery for background tasks
+  - JWT authentication
+  - RESTful API design
+
+# Key dependencies
+dependencies:
+  - fastapi
+  - sqlalchemy
+  - redis
+  - celery
+  - pyjwt
+
+# Common project commands
+commands:
+  dev: "uvicorn app.main:app --reload"
+  test: "pytest tests/ -v --cov"
+  migrate: "alembic upgrade head"
+
+# Override model for this project (optional)
+model: claude-3-5-haiku-20241022  # Use faster model for simple project
+```
+
+### Configuration Priority
+
+Configurations merge with this precedence (highest to lowest):
+1. **Project config** (`.wyn360.yaml` in current directory)
+2. **User config** (`~/.wyn360/config.yaml`)
+3. **Default values**
+
+### Example Workflows
+
+#### Workflow 1: Setting Up User Preferences
+
+```bash
+# First time setup - create default user config
+$ wyn360
+
+WYN360:
+No user config found. Create one with:
+~/.wyn360/config.yaml
+
+# After creating config:
+$ wyn360
+
+• Loaded user config from: /home/user/.wyn360/config.yaml
+• Custom instructions loaded
+✓ Connected using model: claude-sonnet-4-20250514
+```
+
+#### Workflow 2: Project-Specific Context
+
+```yaml
+# Create .wyn360.yaml in your project root
+context: |
+  This is a machine learning project that:
+  - Trains sentiment analysis models
+  - Uses PyTorch and Hugging Face Transformers
+  - Processes large text datasets
+  - Requires GPU for training
+
+dependencies:
+  - pytorch
+  - transformers
+  - datasets
+  - scikit-learn
+
+commands:
+  train: "python train.py --config config.yaml"
+  evaluate: "python evaluate.py --model checkpoints/best"
+```
+
+**When you run wyn360 in this directory:**
+```
+$ wyn360
+
+• Loaded user config from: ~/.wyn360/config.yaml
+• Loaded project config from: .wyn360.yaml
+• Custom instructions loaded
+• Project context loaded
+✓ Connected using model: claude-sonnet-4-20250514
+
+You: Help me implement a new transformer model
+
+WYN360: I see you're working on a sentiment analysis project with PyTorch
+and Transformers. Let me help you implement a new model that integrates with
+your existing training pipeline...
+[AI now understands your project context automatically!]
+```
+
+#### Workflow 3: Viewing Current Configuration
+
+```
+You: /config
+
+Current Configuration
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Model                   claude-sonnet-4-20250514
+Max Tokens              4096
+Temperature             0.7
+─────────────────────────────────────────────
+User Config             ~/.wyn360/config.yaml
+Project Config          .wyn360.yaml
+─────────────────────────────────────────────
+Custom Instructions     - Always use type hints...
+Project Context         This is a FastAPI project...
+Dependencies            fastapi, sqlalchemy, redis (+2 more)
+Aliases                 test, lint, format
+
+Tip: Create ~/.wyn360/config.yaml for user settings
+Tip: Create .wyn360.yaml in project root for project settings
+```
+
+### Benefits
+
+**1. Consistency Across Projects**
+- Same code style and conventions everywhere
+- No need to repeat preferences
+
+**2. Team Collaboration**
+- Share `.wyn360.yaml` in git repo
+- Everyone gets same project context
+- New team members onboard faster
+
+**3. Project-Specific Intelligence**
+- AI understands your tech stack
+- More relevant code suggestions
+- Better architecture decisions
+
+**4. Time Savings**
+- No repeating "use type hints" every time
+- No explaining project structure repeatedly
+- Quick command aliases
+
+### Real-World Example
+
+**Scenario:** You're a Python developer who always uses type hints and works on multiple projects (FastAPI, Django, ML).
+
+**Setup:**
+
+1. **User Config** (`~/.wyn360/config.yaml`):
+```yaml
+custom_instructions: |
+  - Always use type hints
+  - Add docstrings to all functions
+  - Follow PEP 8
+  - Prefer pathlib over os.path
+
+aliases:
+  test: "run pytest tests/ -v"
+  lint: "run ruff check ."
+```
+
+2. **FastAPI Project** (`.wyn360.yaml`):
+```yaml
+context: |
+  FastAPI REST API with PostgreSQL
+dependencies: [fastapi, sqlalchemy, pydantic]
+commands:
+  dev: "uvicorn app:app --reload"
+```
+
+3. **ML Project** (`.wyn360.yaml`):
+```yaml
+context: |
+  PyTorch deep learning project
+dependencies: [torch, transformers, scikit-learn]
+commands:
+  train: "python train.py"
+model: claude-sonnet-4-20250514  # Use more capable model
+```
+
+**Result:** When you work in the FastAPI project, the AI knows about FastAPI and REST APIs. When you switch to the ML project, it knows about PyTorch and transformers. Both use your personal preferences (type hints, docstrings, etc.).
+
+### Tips
+
+**Best Practices:**
+1. ✅ Keep user config for personal preferences
+2. ✅ Keep project config for project-specific context
+3. ✅ Commit `.wyn360.yaml` to git (helps team)
+4. ✅ Use project config to specify tech stack
+5. ❌ Don't put API keys in config files
+6. ❌ Don't make configs too verbose
+
+**Pro Tips:**
+- Use `/config` command to verify your settings
+- Use project config for complex projects (5+ files)
+- Update project context as your project evolves
+- Share project config in README for team alignment
+
+---
+
+**Version:** 0.3.1
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.0 (Latest)
+### v0.3.1 (Latest)
+- ✨ **NEW:** Configuration & Personalization - user and project-specific settings
+- ✨ **NEW:** User config file (`~/.wyn360/config.yaml`) for personal preferences
+- ✨ **NEW:** Project config file (`.wyn360.yaml`) for project-specific context
+- ✨ **NEW:** `/config` slash command to view current configuration
+- 🔧 Custom instructions automatically added to system prompt
+- 🔧 Project context helps AI understand your codebase
+- 🔧 Configuration merging with precedence (project > user > defaults)
+- 🧪 Added 27 new unit tests for configuration system (130 total tests)
+- 📦 Added PyYAML dependency for configuration file parsing
+- 📚 Comprehensive configuration documentation and examples
+- 💡 Support for aliases, workspaces, dependencies, and commands
+
+### v0.3.0
 - ✨ **NEW:** Model selection and switching - choose Haiku, Sonnet, or Opus
 - ✨ **NEW:** `/model` slash command to view and switch models mid-session
 - ✨ **NEW:** Real-time model information with pricing and descriptions

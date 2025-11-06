@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.3.0)
+## 🎯 Current Capabilities (v0.3.1)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -22,6 +22,10 @@ This document outlines potential features and enhancements to expand WYN360 CLI'
 - ✅ Dynamic model switching (haiku/sonnet/opus) (Phase 3)
 - ✅ Model information display with pricing (Phase 3)
 - ✅ /model command for mid-session model changes (Phase 3)
+- ✅ User configuration file (~/.wyn360/config.yaml) (Phase 4)
+- ✅ Project configuration file (.wyn360.yaml) (Phase 4)
+- ✅ Custom instructions and project context (Phase 4)
+- ✅ /config command to view settings (Phase 4)
 
 ---
 
@@ -198,7 +202,7 @@ def suggest_model(task_description: str) -> str:
 
 ---
 
-### Phase 4: Configuration & Personalization (MEDIUM PRIORITY)
+### Phase 4: Configuration & Personalization ✅ COMPLETED (v0.3.1)
 
 #### 4.1 Configuration File
 **Feature:** Persistent user preferences
@@ -804,5 +808,5 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 ---
 
 **Last Updated:** November 2025
-**Current Version:** 0.3.0
-**Next Planned Release:** v0.4.0 (Enhanced Tools)
+**Current Version:** 0.3.1
+**Next Planned Release:** v0.5.0 (Streaming & UX)

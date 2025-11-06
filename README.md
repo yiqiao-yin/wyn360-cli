@@ -136,6 +136,12 @@ WYN360: I'll create a Streamlit app for you...
 - 📊 **Model Information** - View current model, pricing, and capabilities
 - ⚡ **Flexible Performance** - Balance between speed, capability, and cost
 
+### Configuration & Personalization (v0.3.1)
+- ⚙️ **User Configuration** - Personal preferences via `~/.wyn360/config.yaml`
+- 📁 **Project Configuration** - Project-specific settings via `.wyn360.yaml`
+- 🎯 **Custom Instructions** - Add your coding standards to every conversation
+- 🏗️ **Project Context** - Help AI understand your tech stack automatically
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
@@ -207,6 +213,7 @@ Slash commands provide quick access to context management and model selection fe
 | `/load <file>` | Load session from JSON file | `/load my_session.json` |
 | `/tokens` | Show detailed token usage statistics and costs | `/tokens` |
 | `/model [name]` | Show current model info or switch models (v0.3.0) | `/model haiku` |
+| `/config` | Show current configuration (v0.3.1) | `/config` |
 | `/help` | Display help message with all commands | `/help` |
 
 **Example Usage:**
@@ -309,9 +316,10 @@ poetry run pytest tests/ --cov=wyn360_cli --cov-report=html
 tests/
 ├── __init__.py
 ├── test_agent.py          # Agent and tool tests (43 tests)
-├── test_cli.py            # CLI and slash command tests (31 tests)
+├── test_cli.py            # CLI and slash command tests (33 tests)
+├── test_config.py         # Configuration tests (25 tests)
 └── test_utils.py          # Utility function tests (29 tests)
-                           # Total: 103 tests
+                           # Total: 130 tests
 ```
 
 ### Expected Output
@@ -324,15 +332,16 @@ cachedir: .pytest_cache
 rootdir: /home/workbench/wyn360-cli/wyn360-cli
 configfile: pyproject.toml
 plugins: asyncio-1.2.0, mock-3.15.1
-collected 103 items
+collected 130 items
 
 tests/test_agent.py::TestWYN360Agent::test_agent_initialization PASSED   [  1%]
-tests/test_agent.py::TestHistoryManagement::test_clear_history PASSED    [ 20%]
-tests/test_cli.py::TestSlashCommands::test_clear_command PASSED          [ 39%]
+tests/test_agent.py::TestHistoryManagement::test_clear_history PASSED    [ 19%]
+tests/test_cli.py::TestSlashCommands::test_clear_command PASSED          [ 41%]
+tests/test_config.py::TestWYN360Config::test_default_values PASSED       [ 59%]
 ...
 tests/test_utils.py::TestExecuteCommandSafe::test_execute_python_script PASSED [100%]
 
-============================== 103 passed in 2.45s
+============================== 130 passed in 2.57s
 ```
 
 ### Building and Publishing
@@ -451,5 +460,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.0
+**Current Version:** 0.3.1
 **Last Updated:** January 2025

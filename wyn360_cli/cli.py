@@ -10,6 +10,7 @@ from rich.markdown import Markdown
 from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from .agent import WYN360Agent
+from .config import load_config, get_user_config_path, get_project_config_path
 
 console = Console()
 
@@ -66,10 +67,35 @@ def main(api_key, model):
     console.print("[yellow]Note:[/yellow] You'll be asked to confirm before executing any commands")
     console.print()
 
-    # Initialize agent
+    # Load configuration
+    config = load_config()
+
+    # Show config status
+    user_config_path = get_user_config_path()
+    project_config_path = get_project_config_path()
+
+    if user_config_path.exists():
+        console.print(f"[dim]• Loaded user config from: {user_config_path}[/dim]")
+    if project_config_path:
+        console.print(f"[dim]• Loaded project config from: {project_config_path}[/dim]")
+
+    # Initialize agent with config
     try:
-        agent = WYN360Agent(api_key=api_key, model=model)
-        console.print(f"[green]✓[/green] Connected using model: [cyan]{model}[/cyan]")
+        # Use model from CLI arg if provided, otherwise use config model
+        if model != 'claude-sonnet-4-20250514':  # If user specified a different model
+            agent = WYN360Agent(api_key=api_key, model=model, config=config)
+        else:
+            agent = WYN360Agent(api_key=api_key, config=config)
+
+        actual_model = agent.model_name
+        console.print(f"[green]✓[/green] Connected using model: [cyan]{actual_model}[/cyan]")
+
+        # Show custom instructions indicator
+        if config.custom_instructions:
+            console.print("[dim]• Custom instructions loaded[/dim]")
+        if config.project_context:
+            console.print("[dim]• Project context loaded[/dim]")
+
         console.print()
     except Exception as e:
         console.print(f"[red]Error initializing agent:[/red] {str(e)}")
@@ -199,6 +225,65 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
             else:
                 return True, f"❌ Failed to switch to model: {model_name}"
 
+    elif cmd == "config":
+        # Show current configuration
+        if not agent.config:
+            return True, "No configuration loaded. Create ~/.wyn360/config.yaml or .wyn360.yaml"
+
+        from rich.table import Table
+
+        table = Table(title="Current Configuration", show_header=False)
+        table.add_column("Setting", style="cyan", width=25)
+        table.add_column("Value", style="yellow")
+
+        # Model settings
+        table.add_row("Model", agent.config.model)
+        table.add_row("Max Tokens", str(agent.config.max_tokens))
+        table.add_row("Temperature", str(agent.config.temperature))
+        table.add_row("─" * 25, "─" * 50)
+
+        # Config files
+        if agent.config.user_config_path:
+            table.add_row("User Config", agent.config.user_config_path)
+        else:
+            table.add_row("User Config", "[dim]Not found[/dim]")
+
+        if agent.config.project_config_path:
+            table.add_row("Project Config", agent.config.project_config_path)
+        else:
+            table.add_row("Project Config", "[dim]Not found[/dim]")
+
+        table.add_row("─" * 25, "─" * 50)
+
+        # Custom instructions
+        if agent.config.custom_instructions:
+            instructions_preview = agent.config.custom_instructions[:100] + "..." if len(agent.config.custom_instructions) > 100 else agent.config.custom_instructions
+            table.add_row("Custom Instructions", instructions_preview)
+
+        # Project context
+        if agent.config.project_context:
+            context_preview = agent.config.project_context[:100] + "..." if len(agent.config.project_context) > 100 else agent.config.project_context
+            table.add_row("Project Context", context_preview)
+
+        # Dependencies
+        if agent.config.project_dependencies:
+            deps = ", ".join(agent.config.project_dependencies[:5])
+            if len(agent.config.project_dependencies) > 5:
+                deps += f" (+{len(agent.config.project_dependencies) - 5} more)"
+            table.add_row("Dependencies", deps)
+
+        # Aliases
+        if agent.config.aliases:
+            aliases = ", ".join(list(agent.config.aliases.keys())[:3])
+            if len(agent.config.aliases) > 3:
+                aliases += f" (+{len(agent.config.aliases) - 3} more)"
+            table.add_row("Aliases", aliases)
+
+        console.print(table)
+        console.print("\n[dim]Tip: Create ~/.wyn360/config.yaml for user settings[/dim]")
+        console.print("[dim]Tip: Create .wyn360.yaml in project root for project settings[/dim]")
+        return True, ""
+
     elif cmd == "help":
         help_text = """
 [bold cyan]WYN360 CLI - Available Commands[/bold cyan]
@@ -215,6 +300,7 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
   [bold green]/load <file>[/bold green]     Load session from JSON file
   [bold green]/tokens[/bold green]           Show token usage statistics
   [bold green]/model [name][/bold green]    Show/switch AI model (haiku/sonnet/opus)
+  [bold green]/config[/bold green]           Show current configuration
   [bold green]/help[/bold green]             Show this help message
 
 [bold yellow]Examples:[/bold yellow]
