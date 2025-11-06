@@ -1698,13 +1698,23 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.17
+**Version:** 0.3.18
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.17 (Latest)
+### v0.3.18 (Latest)
+- 🚀 **NEW FEATURE:** Phase 7.2 - Automatic Test Generation
+- ✅ **TOOL:** generate_tests - Automatically generate pytest test stubs for Python files
+- 🧪 **AST PARSING:** Safe code analysis without execution
+- 📝 **TEMPLATES:** Generates test scaffolding with TODO markers for easy completion
+- 🧪 **TESTS:** Added 6 new unit tests for test generation (158 total tests)
+- 📚 **DOCUMENTATION:** Updated system prompt with test generation workflow
+- 💡 **PRODUCTIVITY:** Saves time by auto-generating test structure
+- ⚡ **WORKFLOW:** "generate tests for calculator.py" → instant pytest template
+
+### v0.3.17
 - 🚀 **NEW FEATURE:** HuggingFace integration Phase 2 - Full Deployment
 - ✅ **TOOL:** create_hf_space - Create HuggingFace Space repository via CLI
 - ✅ **TOOL:** push_to_hf_space - Upload files to HuggingFace Space automatically

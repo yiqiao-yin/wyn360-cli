@@ -1073,3 +1073,125 @@ class TestHuggingFaceTools:
         result = await agent.push_to_hf_space(None, "invalidname", ".")
 
         assert "Invalid space name format" in result
+
+
+class TestGenerateTests:
+    """Tests for test generation tool"""
+
+    @pytest.mark.asyncio
+    async def test_generate_tests_simple_function(self, tmp_path):
+        """Test generating tests for simple functions"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Create a simple Python file
+        test_file = tmp_path / "calculator.py"
+        test_file.write_text("""def add(a, b):
+    return a + b
+
+def subtract(a, b):
+    return a - b
+""")
+
+        result = await agent.generate_tests(None, str(test_file))
+
+        assert "✓ Generated test file" in result
+        assert "test_calculator.py" in result
+        assert "2 function(s)" in result
+        assert "add, subtract" in result
+
+        # Verify test file was created
+        test_output = tmp_path / "test_calculator.py"
+        assert test_output.exists()
+        content = test_output.read_text()
+        assert "def test_add_basic():" in content
+        assert "def test_subtract_basic():" in content
+        assert "import pytest" in content
+
+    @pytest.mark.asyncio
+    async def test_generate_tests_class(self, tmp_path):
+        """Test generating tests for classes"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Create a class-based Python file
+        test_file = tmp_path / "user.py"
+        test_file.write_text("""class User:
+    def __init__(self, name):
+        self.name = name
+
+    def greet(self):
+        return f"Hello, {self.name}"
+
+    def update_name(self, new_name):
+        self.name = new_name
+""")
+
+        result = await agent.generate_tests(None, str(test_file))
+
+        assert "✓ Generated test file" in result
+        assert "1 class(es): User" in result
+
+        # Verify test file content
+        test_output = tmp_path / "test_user.py"
+        assert test_output.exists()
+        content = test_output.read_text()
+        assert "class TestUser:" in content
+        assert "def test_initialization(self):" in content
+        assert "def test_greet(self):" in content
+
+    @pytest.mark.asyncio
+    async def test_generate_tests_file_not_found(self):
+        """Test error handling when file doesn't exist"""
+        agent = WYN360Agent(api_key="test_key")
+
+        result = await agent.generate_tests(None, "/nonexistent/file.py")
+
+        assert "File not found" in result
+
+    @pytest.mark.asyncio
+    async def test_generate_tests_not_python_file(self, tmp_path):
+        """Test error handling for non-Python files"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Create a text file
+        test_file = tmp_path / "readme.txt"
+        test_file.write_text("This is not Python code")
+
+        result = await agent.generate_tests(None, str(test_file))
+
+        assert "must be a Python file" in result
+
+    @pytest.mark.asyncio
+    async def test_generate_tests_syntax_error(self, tmp_path):
+        """Test error handling for Python files with syntax errors"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Create a Python file with syntax error
+        test_file = tmp_path / "broken.py"
+        test_file.write_text("""def broken_function(
+    # Missing closing parenthesis
+    return "broken"
+""")
+
+        result = await agent.generate_tests(None, str(test_file))
+
+        assert "Syntax error" in result
+
+    @pytest.mark.asyncio
+    async def test_generate_tests_custom_output_path(self, tmp_path):
+        """Test generating tests with custom output path"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Create a simple Python file
+        test_file = tmp_path / "math_utils.py"
+        test_file.write_text("""def multiply(a, b):
+    return a * b
+""")
+
+        custom_output = tmp_path / "tests" / "test_math.py"
+        custom_output.parent.mkdir(exist_ok=True)
+
+        result = await agent.generate_tests(None, str(test_file), str(custom_output))
+
+        assert "✓ Generated test file" in result
+        assert str(custom_output) in result
+        assert custom_output.exists()

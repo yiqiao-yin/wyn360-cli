@@ -87,7 +87,9 @@ class WYN360Agent:
                 self.authenticate_hf,
                 self.create_hf_readme,
                 self.create_hf_space,
-                self.push_to_hf_space
+                self.push_to_hf_space,
+                # Test Generation tool
+                self.generate_tests
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -236,6 +238,35 @@ You can help users deploy apps to HuggingFace Spaces automatically!
 - For Streamlit: typically need app.py and requirements.txt in same directory
 - The entire directory gets uploaded, so make sure only necessary files are included
 - If Space already exists, files will be updated (not replaced)
+
+**Test Generation (Phase 7.2):**
+
+You can automatically generate unit tests for Python files!
+
+**When to use generate_tests:**
+- User asks "generate tests for [file]"
+- User says "create test file for [file]"
+- User wants pytest tests for their code
+
+**Workflow:**
+1. Confirm the Python file path with user
+2. Use generate_tests(file_path) to analyze and generate tests
+3. Explain what was generated (functions, classes covered)
+4. Remind user that generated tests are templates with TODO markers
+5. Suggest they fill in actual test logic and assertions
+
+**What it does:**
+- Parses Python file using AST (safe, doesn't execute code)
+- Finds all public functions and classes
+- Generates pytest test stubs with docstrings
+- Creates test_{filename}.py file
+- Includes TODO comments for user to fill in
+
+**Important:**
+- Generated tests are TEMPLATES - they have pass statements and TODO comments
+- User must add actual test logic and assertions
+- Tests won't fail initially - they need implementation
+- Good starting point to save time on test structure
 """
 
         # Add custom instructions from config if available
@@ -927,6 +958,152 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
                 return f"❌ Upload failed: Space '{space_name}' doesn't exist. Create it first with create_hf_space.\n\nError: {output[:300]}"
             else:
                 return f"❌ Upload failed for Space '{space_name}'\n\nError: {output[:300]}"
+
+    # ==================== Test Generation Tool ====================
+
+    async def generate_tests(
+        self,
+        ctx: RunContext[None],
+        file_path: str,
+        test_file_path: str = None
+    ) -> str:
+        """
+        Generate unit tests for a Python file.
+
+        Analyzes the Python file and creates pytest test cases for functions and classes.
+
+        Args:
+            file_path: Path to Python file to generate tests for
+            test_file_path: Optional path for test file (default: test_{filename}.py)
+
+        Returns:
+            Success message with test file path or error message
+
+        Examples:
+            - "generate tests for calculator.py"
+            - "create tests for utils/helpers.py"
+        """
+        import ast
+        from pathlib import Path
+        from .utils import read_file_safe, write_file_safe
+
+        # Validate file exists
+        file_p = Path(file_path)
+        if not file_p.exists():
+            return f"❌ File not found: {file_path}"
+
+        if not file_p.suffix == '.py':
+            return f"❌ File must be a Python file (.py), got: {file_p.suffix}"
+
+        # Read the file
+        success, content = read_file_safe(str(file_p))
+        if not success:
+            return f"❌ Failed to read file: {content}"
+
+        # Parse the Python code
+        try:
+            tree = ast.parse(content)
+        except SyntaxError as e:
+            return f"❌ Syntax error in {file_path}: {str(e)}"
+
+        # Extract functions and classes
+        functions = []
+        classes = []
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                # Skip private functions and methods inside classes
+                if not node.name.startswith('_'):
+                    # Check if it's a module-level function
+                    parent_is_module = any(
+                        isinstance(parent, ast.Module)
+                        for parent in ast.walk(tree)
+                        if hasattr(parent, 'body') and node in getattr(parent, 'body', [])
+                    )
+                    if parent_is_module or node.col_offset == 0:
+                        functions.append({
+                            'name': node.name,
+                            'args': [arg.arg for arg in node.args.args if arg.arg != 'self'],
+                            'lineno': node.lineno
+                        })
+            elif isinstance(node, ast.ClassDef):
+                if not node.name.startswith('_'):
+                    methods = [
+                        n.name for n in node.body
+                        if isinstance(n, ast.FunctionDef) and not n.name.startswith('_')
+                    ]
+                    classes.append({
+                        'name': node.name,
+                        'methods': methods,
+                        'lineno': node.lineno
+                    })
+
+        if not functions and not classes:
+            return f"⚠️  No testable functions or classes found in {file_path}"
+
+        # Determine test file path
+        if test_file_path is None:
+            test_file_path = file_p.parent / f"test_{file_p.name}"
+        else:
+            test_file_path = Path(test_file_path)
+
+        # Generate test code
+        module_name = file_p.stem
+        test_code = f'''"""Unit tests for {module_name}.py"""
+
+import pytest
+from {module_name} import {', '.join([f['name'] for f in functions] + [c['name'] for c in classes])}
+
+
+'''
+
+        # Generate test functions
+        for func in functions:
+            test_code += f'''def test_{func['name']}_basic():
+    """Test {func['name']} with basic inputs"""
+    # TODO: Add test implementation
+    # Example: result = {func['name']}({', '.join(['arg' + str(i+1) for i in range(len(func['args']))])})
+    # assert result == expected_value
+    pass
+
+
+'''
+
+        # Generate test classes
+        for cls in classes:
+            test_code += f'''class Test{cls['name']}:
+    """Tests for {cls['name']} class"""
+
+    def test_initialization(self):
+        """Test {cls['name']} initialization"""
+        # TODO: Add test implementation
+        # obj = {cls['name']}()
+        # assert obj is not None
+        pass
+
+'''
+            for method in cls['methods'][:3]:  # Limit to first 3 methods
+                test_code += f'''    def test_{method}(self):
+        """Test {cls['name']}.{method}() method"""
+        # TODO: Add test implementation
+        pass
+
+'''
+
+        # Write test file
+        success, msg = write_file_safe(str(test_file_path), test_code, overwrite=False)
+
+        if success:
+            summary = f"✓ Generated test file: {test_file_path}\n\n"
+            summary += f"Test coverage:\n"
+            summary += f"  - {len(functions)} function(s): {', '.join([f['name'] for f in functions])}\n" if functions else ""
+            summary += f"  - {len(classes)} class(es): {', '.join([c['name'] for c in classes])}\n" if classes else ""
+            summary += f"\nTotal tests generated: {len(functions) + sum(1 + len(c['methods'][:3]) for c in classes)}\n"
+            summary += f"\n⚠️  Note: Generated tests are templates with TODO markers."
+            summary += f"\n    You need to fill in actual test logic and assertions."
+            return summary
+        else:
+            return f"❌ Failed to write test file: {msg}"
 
     async def chat(self, user_message: str) -> str:
         """
