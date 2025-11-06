@@ -37,7 +37,8 @@ venv.bak/
 .venv/
 
 # Poetry
-poetry.lock
+# NOTE: poetry.lock is NOT ignored for applications (only for libraries)
+# This ensures reproducible builds across environments
 
 # IDEs
 .vscode/
@@ -46,6 +47,11 @@ poetry.lock
 *.swo
 *~
 .DS_Store
+*.iml
+*.iws
+
+# Claude Code workspace
+.claude/
 
 # Testing
 .pytest_cache/
@@ -65,3 +71,17 @@ htmlcov/
 # Temporary files
 *.tmp
 test_cli_manual.py
+
+# Type checkers
+.mypy_cache/
+.pytype/
+.pyre/
+
+# Linters
+.ruff_cache/
+
+# WYN360 session/backup files
+.wyn360_sessions/
+.wyn360_backup/
+sessions/
+*.session.json
