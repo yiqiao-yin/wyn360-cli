@@ -382,9 +382,14 @@ Notes:
             sys.stdout.flush()  # Force output to appear immediately
 
             response = input("Execute this command? (y/N): ").strip().lower()
-            print()  # Add spacing after response
 
-            if response not in ['y', 'yes']:
+            # Confirm user's input
+            if response in ['y', 'yes']:
+                print("✓ Confirmed. Executing command...\n")
+                sys.stdout.flush()
+            else:
+                print(f"✗ Cancelled (pressed '{response or 'N'}').\n")
+                sys.stdout.flush()
                 return "❌ Command execution cancelled by user."
 
         success, output, return_code = execute_command_safe(command, timeout)

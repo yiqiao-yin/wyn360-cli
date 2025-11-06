@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.13
+**Version:** 0.3.14
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.13 (Latest)
+### v0.3.14 (Latest)
+- 🎨 **UX IMPROVEMENT:** Added confirmation feedback after command execution prompt
+- ✓ When pressing 'y': Shows "✓ Confirmed. Executing command..." before spinner
+- ✗ When pressing 'N': Shows "✗ Cancelled (pressed 'N')." with clear feedback
+- 📺 User now sees immediate visual confirmation that their keypress was registered
+- 🔧 Added sys.stdout.flush() to ensure messages appear immediately
+
+### v0.3.13
 - 🐛 **CRITICAL FIX:** Removed streaming API entirely to fix persistent duplication
 - ✅ Now uses agent.run() to get complete response (not run_stream())
 - 🎨 Simulates streaming by splitting response by spaces and printing word-by-word
