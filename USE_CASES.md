@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.8
+**Version:** 0.3.9
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.8 (Latest)
+### v0.3.9 (Latest)
+- 🐛 **FIX:** Stricter early size validation (100KB limit, down from 1MB)
+- 🔍 Enhanced type checking with automatic string conversion attempts
+- 📏 More explicit ML script guidance: ONE model, NO extensive hyperparameter tuning
+- 📊 Better error messages with content preview when size exceeded
+- ⚠️ Clear warning: "Your code is too long! Reduce to under 1000 lines"
+
+### v0.3.8
 - 🐛 **CRITICAL FIX:** Removed type hints from write_file to bypass pydantic validation
 - 📏 Added 50KB size guidance - model now generates concise code
 - 🎯 Updated system prompt: "Keep code under 500-800 lines"

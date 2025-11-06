@@ -113,9 +113,11 @@ Guidelines:
 - Asks to "write code to analyze", "write code to explore"
 
 ACTION:
-- **KEEP CODE CONCISE** - Write minimal, focused code under 50KB (approximately 500-800 lines)
+- **KEEP CODE CONCISE** - Write minimal, focused code under 100KB (approximately 800-1000 lines MAX)
 - For EDA/analysis scripts: include only essential imports, loading, and 3-5 key visualizations
-- If script would be >50KB, break into multiple smaller files (e.g., eda_part1.py, eda_part2.py)
+- For ML models: ONE model type, essential preprocessing, train/evaluate, save model - NO extensive hyperparameter tuning
+- If script would be >100KB, break into multiple smaller files (e.g., train_model.py, evaluate_model.py)
+- **CRITICAL**: Exceeding size limits causes "exceeded max retries" errors - ALWAYS keep code minimal
 - Use write_file with overwrite=False (default)
 - If write_file returns an "already exists" error message, call write_file ONCE MORE with overwrite=True
 - Do NOT read_file first (the file doesn't exist yet)
@@ -243,24 +245,43 @@ Notes:
         All validation happens inside the function with clear error messages.
         """
         try:
-            # Debug info
-            content_length = len(content)
-            content_preview = content[:100] if len(content) > 100 else content
+            # First, check if content is even a valid type
+            if content is None:
+                return "Error: content parameter is None. You must provide code content to write."
 
-            # Validate inputs
+            # Try to get length - if this fails, content is wrong type
+            try:
+                content_length = len(content)
+            except TypeError as e:
+                return f"Error: content must be a string or have length, got type {type(content).__name__}: {str(e)}"
+
+            # Now we know content has a length, check if it's a string
+            if not isinstance(content, str):
+                # Try to convert to string
+                try:
+                    content = str(content)
+                    content_length = len(content)
+                except Exception as e:
+                    return f"Error: Cannot convert content to string. Type: {type(content).__name__}, Error: {str(e)}"
+
+            # Validate file_path
             if not file_path:
                 return "Error: file_path is required and cannot be empty."
 
             if not isinstance(file_path, str):
-                return f"Error: file_path must be a string, got {type(file_path).__name__}"
+                try:
+                    file_path = str(file_path)
+                except Exception as e:
+                    return f"Error: Cannot convert file_path to string. Type: {type(file_path).__name__}, Error: {str(e)}"
 
-            if not isinstance(content, str):
-                return f"Error: content must be a string, got {type(content).__name__}. Content preview: {str(content)[:200]}"
-
-            # Validate content size (prevent extremely large files)
-            max_size = 1_000_000  # 1MB limit
+            # Validate content size EARLY (prevent extremely large files)
+            max_size = 100_000  # Reduced to 100KB from 1MB
             if content_length > max_size:
-                return f"Error: Content too large ({content_length} bytes). Maximum size is {max_size} bytes. Consider breaking into smaller files."
+                # Truncate and show preview
+                preview = content[:500] + f"\n\n... ({content_length - 500} more bytes) ..."
+                return f"Error: Content too large ({content_length} bytes, {content_length // 1024}KB). Maximum size is {max_size} bytes ({max_size // 1024}KB).\n\nYour code is too long! Please reduce to under 1000 lines. Break into smaller files if needed.\n\nContent preview:\n{preview}"
+
+            content_preview = content[:100] if content_length > 100 else content
 
             # Try to write the file
             success, message = write_file_safe(file_path, content, overwrite)
