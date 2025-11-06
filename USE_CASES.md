@@ -415,6 +415,174 @@ If the agent makes a wrong choice, it can self-correct:
 
 ---
 
+### 8. Git Operations (NEW in v0.2.9)
+
+WYN360 can now interact with git repositories to help you manage version control.
+
+**Example Interaction:**
+```
+You: What files have I changed?
+
+WYN360: [Calls git_status tool]
+Git Status:
+
+On branch main
+Changes not staged for commit:
+  modified:   agent.py
+  modified:   tests/test_agent.py
+
+Untracked files:
+  new_feature.py
+```
+
+**Available Git Operations:**
+
+| Command | Tool | Use Case |
+|---------|------|----------|
+| "Show git status" | `git_status()` | See modified and untracked files |
+| "What changed in agent.py?" | `git_diff(file_path)` | View specific file changes |
+| "Show recent commits" | `git_log(max_count)` | Review commit history |
+| "What branch am I on?" | `git_branch()` | List all branches |
+
+**Real-world scenarios:**
+```
+You: Show me what changed in my last session
+WYN360: [Shows git diff output with line-by-line changes]
+
+You: Show the last 5 commits
+WYN360: [Displays commit history with messages and SHAs]
+
+You: What branch am I working on?
+WYN360: [Shows current branch marked with *]
+```
+
+**Benefits:**
+- ✅ Quick status checks without leaving the CLI
+- ✅ Review changes before committing
+- ✅ Understand project history
+- ✅ Stay oriented in your git workflow
+
+---
+
+### 9. Code Search (NEW in v0.2.9)
+
+Find code patterns, definitions, and usage across your entire project.
+
+**Example Interaction:**
+```
+You: Where is the User class defined?
+
+WYN360: [Calls search_files("class User", "*.py")]
+Search Results for 'class User' in *.py:
+
+./models/user.py:15:class User(BaseModel):
+./tests/test_models.py:8:class UserTest(unittest.TestCase):
+```
+
+**Search Capabilities:**
+
+| Query | Tool Call | Result |
+|-------|-----------|--------|
+| "Find all TODO comments" | `search_files("TODO", "*.py")` | Lists files and line numbers |
+| "Where do I import requests?" | `search_files("import requests")` | Shows all import statements |
+| "Find database connections" | `search_files("connect", "*.py")` | Locates connection code |
+| "Show all API endpoints" | `search_files("@app.route")` | Lists Flask/FastAPI routes |
+
+**Advanced Search Examples:**
+```
+You: Find all functions that use the requests library
+WYN360: [Searches for 'requests.' across Python files]
+Found 12 matches across 4 files
+
+You: Show me all error logging statements
+WYN360: [Searches for 'logger.error' or 'logging.error']
+Located error handling in 8 different locations
+
+You: Where are environment variables used?
+WYN360: [Searches for 'os.getenv' and 'os.environ']
+Environment variables accessed in config.py and utils.py
+```
+
+**Search Features:**
+- ✅ Regex pattern support
+- ✅ File type filtering (*.py, *.txt, etc.)
+- ✅ Line numbers for easy navigation
+- ✅ Smart truncation (shows first 100 matches)
+- ✅ Case-insensitive searching
+
+---
+
+### 10. File Management (NEW in v0.2.9)
+
+Complete file system operations for organizing your project.
+
+**Delete Files:**
+```
+You: Delete the old_script.py file
+
+WYN360: [Calls delete_file("old_script.py")]
+✓ Successfully deleted file: old_script.py
+```
+
+**Move/Rename Files:**
+```
+You: Rename utils.py to helpers.py
+
+WYN360: [Calls move_file("utils.py", "helpers.py")]
+✓ Successfully moved 'utils.py' to 'helpers.py'
+
+You: Move config.py to the src directory
+
+WYN360: [Calls move_file("config.py", "src/config.py")]
+✓ Successfully moved 'config.py' to 'src/config.py'
+```
+
+**Create Directories:**
+```
+You: Create a tests directory
+
+WYN360: [Calls create_directory("tests")]
+✓ Successfully created directory: tests
+
+You: Create nested directories src/utils/helpers
+
+WYN360: [Calls create_directory("src/utils/helpers")]
+✓ Successfully created directory: src/utils/helpers
+```
+
+**Project Reorganization Workflow:**
+```
+You: I want to reorganize my project. Create src, tests, and docs directories
+
+WYN360:
+[Creates src directory]
+✓ Successfully created directory: src
+
+[Creates tests directory]
+✓ Successfully created directory: tests
+
+[Creates docs directory]
+✓ Successfully created directory: docs
+
+Your project structure is now organized with src/, tests/, and docs/ directories.
+
+You: Move all .py files except tests to src
+
+WYN360:
+[Moves files one by one, preserving structure]
+✓ Successfully moved 'app.py' to 'src/app.py'
+✓ Successfully moved 'utils.py' to 'src/utils.py'
+✓ Successfully moved 'config.py' to 'src/config.py'
+```
+
+**Safety Features:**
+- ⚠️ Delete operations are irreversible - use with caution
+- ✅ Move operations create parent directories automatically
+- ✅ Prevents overwriting existing files
+- ✅ Clear error messages for permission issues
+
+---
+
 ## 🛠️ Available Tools
 
 WYN360 has access to these specialized tools for file and project operations:
@@ -941,13 +1109,24 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 
 ---
 
-**Version:** 0.2.8
+**Version:** 0.2.9
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.2.8 (Latest)
+### v0.2.9 (Latest)
+- ✨ **NEW:** Git operation tools - status, diff, log, branch
+- ✨ **NEW:** Code search across files with pattern matching
+- ✨ **NEW:** File management tools - delete, move/rename, create directories
+- 🔧 Added 8 new tools for enhanced project management
+- 🧪 Added 17 new unit tests for Phase 2 tools (93 total tests)
+- 📊 Git integration for version control operations
+- 🔍 Search capabilities with regex support and file type filtering
+- 📁 Complete file system operations with safety features
+- 📚 Updated documentation with comprehensive Phase 2 examples
+
+### v0.2.8
 - ✨ **NEW:** Conversation history management - context persists across multiple interactions
 - ✨ **NEW:** Token usage tracking and cost estimation
 - ✨ **NEW:** Slash commands for quick access to context management features

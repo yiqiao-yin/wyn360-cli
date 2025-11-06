@@ -58,7 +58,15 @@ class WYN360Agent:
                 self.write_file,
                 self.list_files,
                 self.get_project_info,
-                self.execute_command
+                self.execute_command,
+                self.git_status,
+                self.git_diff,
+                self.git_log,
+                self.git_branch,
+                self.search_files,
+                self.delete_file,
+                self.move_file,
+                self.create_directory
             ],
             retries=3  # Allow up to 3 retries for tool calls
         )
@@ -290,6 +298,237 @@ Notes:
             result = f"❌ Command failed (exit code {return_code})\n\n"
             result += f"Error output:\n{output}"
             return result
+
+    async def git_status(self, ctx: RunContext[None]) -> str:
+        """
+        Get current git status showing modified, staged, and untracked files.
+
+        Returns:
+            Git status output or error message
+        """
+        from .utils import execute_command_safe
+        success, output, return_code = execute_command_safe("git status", timeout=10)
+
+        if success:
+            return f"Git Status:\n\n{output}"
+        else:
+            return f"Error getting git status: {output}"
+
+    async def git_diff(self, ctx: RunContext[None], file_path: str = None) -> str:
+        """
+        Show git diff for specific file or all changes.
+
+        Args:
+            file_path: Optional specific file to diff. If None, shows all changes.
+
+        Returns:
+            Git diff output or error message
+        """
+        from .utils import execute_command_safe
+
+        if file_path:
+            command = f"git diff {file_path}"
+        else:
+            command = "git diff"
+
+        success, output, return_code = execute_command_safe(command, timeout=15)
+
+        if success:
+            if not output.strip():
+                return "No changes to show."
+            return f"Git Diff:\n\n{output}"
+        else:
+            return f"Error getting git diff: {output}"
+
+    async def git_log(self, ctx: RunContext[None], max_count: int = 10) -> str:
+        """
+        Show recent git commit history.
+
+        Args:
+            max_count: Maximum number of commits to show (default: 10)
+
+        Returns:
+            Git log output or error message
+        """
+        from .utils import execute_command_safe
+
+        command = f"git log --oneline -n {max_count}"
+        success, output, return_code = execute_command_safe(command, timeout=10)
+
+        if success:
+            return f"Recent Commits (last {max_count}):\n\n{output}"
+        else:
+            return f"Error getting git log: {output}"
+
+    async def git_branch(self, ctx: RunContext[None]) -> str:
+        """
+        List all git branches and show current branch.
+
+        Returns:
+            Git branch list or error message
+        """
+        from .utils import execute_command_safe
+
+        success, output, return_code = execute_command_safe("git branch", timeout=10)
+
+        if success:
+            return f"Git Branches:\n\n{output}"
+        else:
+            return f"Error getting git branches: {output}"
+
+    async def search_files(
+        self,
+        ctx: RunContext[None],
+        pattern: str,
+        file_pattern: str = "*.py"
+    ) -> str:
+        """
+        Search for a pattern across files in the project.
+
+        Args:
+            pattern: The text pattern to search for (can be regex)
+            file_pattern: File pattern to search within (default: "*.py")
+
+        Returns:
+            Search results showing file paths and matching lines
+
+        Examples:
+            - search_files("class User") - Find User class definitions
+            - search_files("TODO", "*.py") - Find all TODO comments in Python files
+            - search_files("import requests") - Find files using requests library
+        """
+        from .utils import execute_command_safe
+        import os
+
+        # Use grep for searching (cross-platform compatible)
+        # -r: recursive, -n: line numbers, -i: case insensitive
+        command = f"grep -rn '{pattern}' --include='{file_pattern}' ."
+
+        success, output, return_code = execute_command_safe(command, timeout=20)
+
+        if success:
+            if not output.strip():
+                return f"No matches found for pattern '{pattern}' in {file_pattern} files."
+
+            # Limit output to prevent overwhelming responses
+            lines = output.split('\n')
+            if len(lines) > 100:
+                truncated = '\n'.join(lines[:100])
+                return f"Search Results (showing first 100 of {len(lines)} matches):\n\n{truncated}\n\n... ({len(lines) - 100} more matches)"
+
+            return f"Search Results for '{pattern}' in {file_pattern}:\n\n{output}"
+        else:
+            # grep returns exit code 1 when no matches found
+            if return_code == 1:
+                return f"No matches found for pattern '{pattern}' in {file_pattern} files."
+            return f"Error searching files: {output}"
+
+    async def delete_file(self, ctx: RunContext[None], file_path: str) -> str:
+        """
+        Delete a file from the filesystem.
+
+        Args:
+            file_path: Path to the file to delete
+
+        Returns:
+            Success or error message
+
+        Note:
+            This operation is irreversible. Use with caution.
+        """
+        import os
+        from pathlib import Path
+
+        try:
+            path = Path(file_path)
+
+            if not path.exists():
+                return f"Error: File '{file_path}' does not exist."
+
+            if not path.is_file():
+                return f"Error: '{file_path}' is not a file. Use create_directory tool for directories."
+
+            # Delete the file
+            path.unlink()
+            return f"✓ Successfully deleted file: {file_path}"
+
+        except Exception as e:
+            return f"Error deleting file '{file_path}': {str(e)}"
+
+    async def move_file(
+        self,
+        ctx: RunContext[None],
+        source: str,
+        destination: str
+    ) -> str:
+        """
+        Move or rename a file.
+
+        Args:
+            source: Source file path
+            destination: Destination file path
+
+        Returns:
+            Success or error message
+
+        Examples:
+            - move_file("old_name.py", "new_name.py") - Rename file
+            - move_file("script.py", "src/script.py") - Move to subdirectory
+        """
+        import shutil
+        from pathlib import Path
+
+        try:
+            source_path = Path(source)
+            dest_path = Path(destination)
+
+            if not source_path.exists():
+                return f"Error: Source file '{source}' does not exist."
+
+            if dest_path.exists():
+                return f"Error: Destination '{destination}' already exists."
+
+            # Create parent directories if needed
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Move the file
+            shutil.move(str(source_path), str(dest_path))
+            return f"✓ Successfully moved '{source}' to '{destination}'"
+
+        except Exception as e:
+            return f"Error moving file: {str(e)}"
+
+    async def create_directory(self, ctx: RunContext[None], dir_path: str) -> str:
+        """
+        Create a directory and any necessary parent directories.
+
+        Args:
+            dir_path: Path to the directory to create
+
+        Returns:
+            Success or error message
+
+        Examples:
+            - create_directory("src") - Create single directory
+            - create_directory("src/utils/helpers") - Create nested directories
+        """
+        from pathlib import Path
+
+        try:
+            path = Path(dir_path)
+
+            if path.exists():
+                if path.is_dir():
+                    return f"Directory '{dir_path}' already exists."
+                else:
+                    return f"Error: '{dir_path}' exists but is not a directory."
+
+            # Create directory and parents
+            path.mkdir(parents=True, exist_ok=True)
+            return f"✓ Successfully created directory: {dir_path}"
+
+        except Exception as e:
+            return f"Error creating directory '{dir_path}': {str(e)}"
 
     async def chat(self, user_message: str) -> str:
         """

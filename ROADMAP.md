@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.2.7)
+## 🎯 Current Capabilities (v0.2.9)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -12,12 +12,19 @@ This document outlines potential features and enhancements to expand WYN360 CLI'
 - ✅ Multi-line input support
 - ✅ Comprehensive error handling
 - ✅ Tool calling with retry logic
+- ✅ Conversation history and context management (Phase 1)
+- ✅ Token tracking and cost monitoring (Phase 1)
+- ✅ Session save/load functionality (Phase 1)
+- ✅ Slash commands for context management (Phase 1)
+- ✅ Git operations (status, diff, log, branch) (Phase 2)
+- ✅ Code search across files (Phase 2)
+- ✅ File management (delete, move, create dirs) (Phase 2)
 
 ---
 
 ## 🚀 Suggested Expansions
 
-### Phase 1: Enhanced Context Management (HIGH PRIORITY)
+### Phase 1: Enhanced Context Management ✅ COMPLETED (v0.2.8)
 
 #### 1.1 Conversation History in API Calls
 **Current:** History stored locally but not sent to API
@@ -66,7 +73,7 @@ result = await self.agent.run(user_message, message_history=messages)
 
 ---
 
-### Phase 2: Additional Tools (HIGH PRIORITY)
+### Phase 2: Additional Tools ✅ COMPLETED (v0.2.9)
 
 #### 2.1 Git Operations Tool
 **Why:** Most developers use git constantly

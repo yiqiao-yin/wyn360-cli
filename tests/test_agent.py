@@ -436,3 +436,231 @@ class TestHistoryManagement:
         assert agent.conversation_history[1]["content"] == "Response"
         assert agent.conversation_history[2]["content"] == "Second message"
         assert agent.conversation_history[3]["content"] == "Response"
+
+
+class TestGitTools:
+    """Tests for git operation tools"""
+
+    @pytest.mark.asyncio
+    async def test_git_status(self):
+        """Test git_status tool"""
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.git_status(None)
+
+        # Should return git status (in a git repo)
+        assert "Git Status" in result or "Error" in result
+
+    @pytest.mark.asyncio
+    async def test_git_diff_no_changes(self):
+        """Test git_diff with no changes"""
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.git_diff(None)
+
+        # Should return diff or no changes message
+        assert "Git Diff" in result or "No changes" in result or "Error" in result
+
+    @pytest.mark.asyncio
+    async def test_git_diff_specific_file(self):
+        """Test git_diff for specific file"""
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.git_diff(None, "README.md")
+
+        # Should return diff for specific file
+        assert "Git Diff" in result or "No changes" in result or "Error" in result
+
+    @pytest.mark.asyncio
+    async def test_git_log(self):
+        """Test git_log tool"""
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.git_log(None, max_count=5)
+
+        # Should return recent commits
+        assert "Recent Commits" in result or "Error" in result
+
+    @pytest.mark.asyncio
+    async def test_git_branch(self):
+        """Test git_branch tool"""
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.git_branch(None)
+
+        # Should return branch list
+        assert "Git Branches" in result or "Error" in result
+
+
+class TestSearchTool:
+    """Tests for search_files tool"""
+
+    def setup_method(self):
+        """Set up test fixtures"""
+        self.test_dir = tempfile.mkdtemp()
+        self.original_dir = Path.cwd()
+        import os
+        os.chdir(self.test_dir)
+
+    def teardown_method(self):
+        """Clean up after tests"""
+        import os
+        os.chdir(self.original_dir)
+        shutil.rmtree(self.test_dir)
+
+    @pytest.mark.asyncio
+    async def test_search_files_finds_pattern(self):
+        """Test search_files finds matching pattern"""
+        # Create test files with content
+        (Path(self.test_dir) / "test1.py").write_text("class User:\n    pass")
+        (Path(self.test_dir) / "test2.py").write_text("def hello():\n    print('hi')")
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.search_files(None, "class User", "*.py")
+
+        assert "test1.py" in result or "Search Results" in result
+
+    @pytest.mark.asyncio
+    async def test_search_files_no_matches(self):
+        """Test search_files when no matches found"""
+        # Create test file without the pattern
+        (Path(self.test_dir) / "test.py").write_text("def hello():\n    pass")
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.search_files(None, "NonexistentPattern", "*.py")
+
+        assert "No matches found" in result
+
+    @pytest.mark.asyncio
+    async def test_search_files_custom_file_pattern(self):
+        """Test search_files with custom file pattern"""
+        # Create different file types
+        (Path(self.test_dir) / "test.txt").write_text("TODO: fix this")
+        (Path(self.test_dir) / "test.py").write_text("print('hello')")
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.search_files(None, "TODO", "*.txt")
+
+        # Should find TODO in .txt file only
+        assert "test.txt" in result or "TODO" in result
+
+
+class TestFileManagementTools:
+    """Tests for file management tools"""
+
+    def setup_method(self):
+        """Set up test fixtures"""
+        self.test_dir = tempfile.mkdtemp()
+        self.original_dir = Path.cwd()
+        import os
+        os.chdir(self.test_dir)
+
+    def teardown_method(self):
+        """Clean up after tests"""
+        import os
+        os.chdir(self.original_dir)
+        shutil.rmtree(self.test_dir)
+
+    @pytest.mark.asyncio
+    async def test_delete_file_success(self):
+        """Test delete_file successfully deletes a file"""
+        # Create test file
+        test_file = Path(self.test_dir) / "to_delete.txt"
+        test_file.write_text("delete me")
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.delete_file(None, str(test_file))
+
+        assert "Successfully deleted" in result
+        assert not test_file.exists()
+
+    @pytest.mark.asyncio
+    async def test_delete_file_not_exists(self):
+        """Test delete_file when file doesn't exist"""
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.delete_file(None, "nonexistent.txt")
+
+        assert "does not exist" in result
+
+    @pytest.mark.asyncio
+    async def test_move_file_success(self):
+        """Test move_file successfully moves a file"""
+        # Create source file
+        source = Path(self.test_dir) / "source.txt"
+        source.write_text("content")
+
+        dest = Path(self.test_dir) / "destination.txt"
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.move_file(None, str(source), str(dest))
+
+        assert "Successfully moved" in result
+        assert not source.exists()
+        assert dest.exists()
+        assert dest.read_text() == "content"
+
+    @pytest.mark.asyncio
+    async def test_move_file_source_not_exists(self):
+        """Test move_file when source doesn't exist"""
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.move_file(None, "nonexistent.txt", "dest.txt")
+
+        assert "does not exist" in result
+
+    @pytest.mark.asyncio
+    async def test_move_file_dest_exists(self):
+        """Test move_file when destination already exists"""
+        source = Path(self.test_dir) / "source.txt"
+        source.write_text("content")
+
+        dest = Path(self.test_dir) / "dest.txt"
+        dest.write_text("existing")
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.move_file(None, str(source), str(dest))
+
+        assert "already exists" in result
+
+    @pytest.mark.asyncio
+    async def test_move_file_creates_parent_dirs(self):
+        """Test move_file creates parent directories"""
+        source = Path(self.test_dir) / "source.txt"
+        source.write_text("content")
+
+        dest = Path(self.test_dir) / "nested" / "dirs" / "dest.txt"
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.move_file(None, str(source), str(dest))
+
+        assert "Successfully moved" in result
+        assert dest.exists()
+
+    @pytest.mark.asyncio
+    async def test_create_directory_success(self):
+        """Test create_directory creates a new directory"""
+        new_dir = Path(self.test_dir) / "new_directory"
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.create_directory(None, str(new_dir))
+
+        assert "Successfully created" in result
+        assert new_dir.exists()
+        assert new_dir.is_dir()
+
+    @pytest.mark.asyncio
+    async def test_create_directory_nested(self):
+        """Test create_directory with nested path"""
+        nested_dir = Path(self.test_dir) / "level1" / "level2" / "level3"
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.create_directory(None, str(nested_dir))
+
+        assert "Successfully created" in result
+        assert nested_dir.exists()
+        assert nested_dir.is_dir()
+
+    @pytest.mark.asyncio
+    async def test_create_directory_already_exists(self):
+        """Test create_directory when directory already exists"""
+        existing_dir = Path(self.test_dir) / "existing"
+        existing_dir.mkdir()
+
+        agent = WYN360Agent(api_key="test_key")
+        result = await agent.create_directory(None, str(existing_dir))
+
+        assert "already exists" in result
