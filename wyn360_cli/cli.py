@@ -372,6 +372,15 @@ async def chat_loop(agent: WYN360Agent):
 
             # Stream response from agent
             console.print()
+
+            # Show thinking status while agent processes
+            with console.status("[bold blue]WYN360 is thinking...", spinner="dots"):
+                # Create the stream generator
+                stream = agent.chat_stream(user_input)
+                # Get the first chunk (this triggers agent.run())
+                first_chunk = await stream.__anext__()
+
+            # Now display the response
             console.print("[bold blue]WYN360:[/bold blue]")
             console.print()
 
@@ -379,8 +388,14 @@ async def chat_loop(agent: WYN360Agent):
             response_text = ""
             printed_length = 0
 
-            # Stream tokens as they arrive
-            async for chunk in agent.chat_stream(user_input):
+            # Print first chunk
+            new_text = first_chunk[printed_length:]
+            console.print(new_text, end='', style="white")
+            printed_length = len(first_chunk)
+            response_text = first_chunk
+
+            # Stream remaining chunks as they arrive
+            async for chunk in stream:
                 # Each chunk contains accumulated text, only print the new portion
                 new_text = chunk[printed_length:]
                 console.print(new_text, end='', style="white")

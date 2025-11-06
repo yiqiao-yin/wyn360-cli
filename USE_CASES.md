@@ -1698,13 +1698,19 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.4
+**Version:** 0.3.5
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.4 (Latest)
+### v0.3.5 (Latest)
+- ✨ **NEW:** Added back "thinking" spinner while agent processes
+- 🎨 Better UX - shows "WYN360 is thinking..." with animated dots
+- ⏳ Spinner appears before first response chunk is ready
+- 🔧 Improved visual feedback during processing time
+
+### v0.3.4
 - 🐛 **CRITICAL FIX:** Tool execution bug - tools weren't being called in streaming mode
 - 🔧 Switched to non-streaming backend with simulated chunking for reliability
 - ✅ All tools now work correctly (list_files, write_file, read_file, etc.)
