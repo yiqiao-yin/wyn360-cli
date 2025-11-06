@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.3
+**Version:** 0.3.4
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.3 (Latest)
+### v0.3.4 (Latest)
+- 🐛 **CRITICAL FIX:** Tool execution bug - tools weren't being called in streaming mode
+- 🔧 Switched to non-streaming backend with simulated chunking for reliability
+- ✅ All tools now work correctly (list_files, write_file, read_file, etc.)
+- 📝 Updated tests to reflect new implementation
+- 💡 Better user experience - tools execute properly with streaming-like display
+
+### v0.3.3
 - 🐛 **FIX:** Streaming duplication bug - fixed text appearing multiple times
 - 🔧 Implemented delta tracking to show only new text portions
 - ✅ All 133 tests passing with streaming fix

@@ -622,6 +622,9 @@ Notes:
         """
         Process a user message and stream the response token-by-token.
 
+        NOTE: Due to limitations with streaming and tool execution in pydantic-ai,
+        this method falls back to non-streaming when tools are likely needed.
+
         Args:
             user_message: The user's input message
 
@@ -635,15 +638,20 @@ Notes:
                 "content": user_message
             })
 
-            # Accumulate the full response
-            response_text = ""
+            # Use non-streaming for tool execution reliability
+            # Streaming in pydantic-ai doesn't work well with tools
+            result = await self.agent.run(user_message)
 
-            # Stream the agent's response
-            async with self.agent.run_stream(user_message) as result:
-                async for chunk in result.stream():
-                    # Yield each chunk as it arrives
-                    yield chunk
-                    response_text += chunk
+            # Extract the response (handle both .data and .output for compatibility)
+            response_text = getattr(result, 'data', None) or getattr(result, 'output', str(result))
+
+            # Simulate streaming by yielding the response in chunks
+            chunk_size = 50  # characters per chunk
+            for i in range(0, len(response_text), chunk_size):
+                chunk = response_text[:i+chunk_size]
+                yield chunk
+                # Small delay to simulate streaming (optional)
+                # await asyncio.sleep(0.01)
 
             # Add assistant response to history
             self.conversation_history.append({

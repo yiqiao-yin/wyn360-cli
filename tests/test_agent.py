@@ -774,35 +774,30 @@ class TestStreaming:
 
     @pytest.mark.asyncio
     async def test_chat_stream_is_async_generator(self):
-        """Test that chat_stream returns an async generator"""
+        """Test that chat_stream returns an async generator (simulated chunking)"""
         agent = WYN360Agent(api_key="test_key")
 
-        # Mock the agent.run_stream to return a simple async generator
+        # Mock the agent.run to return a simple result
         class MockResult:
-            async def stream(self):
-                yield "Hello"
-                yield " "
-                yield "World"
+            data = "Hello World"
 
-            async def __aenter__(self):
-                return self
-
-            async def __aexit__(self, exc_type, exc_val, exc_tb):
-                pass
-
-        def mock_stream(*args, **kwargs):
+        async def mock_run(*args, **kwargs):
             return MockResult()
 
-        # Patch the agent's run_stream method
-        agent.agent.run_stream = mock_stream
+        # Patch the agent's run method
+        agent.agent.run = mock_run
 
-        # Test streaming
+        # Test streaming (it now simulates streaming by chunking)
         chunks = []
         async for chunk in agent.chat_stream("Test message"):
             chunks.append(chunk)
 
-        # Verify we got chunks
-        assert len(chunks) == 3  # "Hello", " ", "World"
+        # Verify we got chunks (simulated streaming with 50 char chunks)
+        # "Hello World" is 11 chars, so we should get at least 1 chunk
+        assert len(chunks) >= 1
+
+        # Verify the last chunk contains the full message
+        assert "Hello World" in chunks[-1]
 
         # Verify conversation history was updated
         assert len(agent.conversation_history) == 2
@@ -816,11 +811,11 @@ class TestStreaming:
         """Test that chat_stream handles errors gracefully"""
         agent = WYN360Agent(api_key="test_key")
 
-        # Mock the agent.run_stream to raise an error
-        async def mock_stream_error(*args, **kwargs):
+        # Mock the agent.run to raise an error
+        async def mock_run_error(*args, **kwargs):
             raise Exception("Test error")
 
-        agent.agent.run_stream = mock_stream_error
+        agent.agent.run = mock_run_error
 
         # Test that error is yielded
         chunks = []
