@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.14
+**Version:** 0.3.15
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.14 (Latest)
+### v0.3.15 (Latest)
+- 📚 **DOCUMENTATION:** Created comprehensive SYSTEM.md with updated architecture
+- 📊 **DOCUMENTATION:** Updated mermaid diagram to include all Phase 1-5 features
+- 📝 **DOCUMENTATION:** Updated COST.md with Phase 2 tools (13 tools total)
+- 🏗️ **DOCUMENTATION:** Cleaned up README.md, moved architecture to SYSTEM.md
+- 🔧 **FIX:** Fixed mermaid syntax error for GitHub rendering
+
+### v0.3.14
 - 🎨 **UX IMPROVEMENT:** Added confirmation feedback after command execution prompt
 - ✓ When pressing 'y': Shows "✓ Confirmed. Executing command..." before spinner
 - ✗ When pressing 'N': Shows "✗ Cancelled (pressed 'N')." with clear feedback

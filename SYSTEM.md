@@ -2,7 +2,7 @@
 
 This document provides a detailed overview of the WYN360 CLI system architecture, including all components, layers, and data flows.
 
-**Version:** 0.3.14
+**Version:** 0.3.15
 **Last Updated:** January 2025
 
 ---
@@ -404,7 +404,7 @@ User: "/load my_session.json"
 - ✅ Custom instructions and project context
 - ✅ /config command to view settings
 
-### Phase 5: Streaming Responses (v0.3.2-v0.3.14)
+### Phase 5: Streaming Responses (v0.3.2-v0.3.15)
 - ✅ Word-by-word output simulation for smooth UX
 - ✅ Real-time feedback and progress visibility
 - ✅ Immediate command execution confirmation (v0.3.14)
@@ -443,6 +443,6 @@ See [ROADMAP.md](ROADMAP.md) for planned features including:
 
 ---
 
-**Version:** 0.3.14
+**Version:** 0.3.15
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
