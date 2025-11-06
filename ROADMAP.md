@@ -960,4 +960,4 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 
 **Last Updated:** January 2025
 **Current Version:** 0.3.17
-**Next Planned Release:** v0.4.0 (Advanced Workflows - Multi-File Refactoring, Test Generation)
+**Next Planned Release:** v0.3.18+ (Incremental improvements and bug fixes)
