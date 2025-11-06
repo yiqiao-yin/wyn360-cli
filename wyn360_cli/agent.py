@@ -113,11 +113,14 @@ Guidelines:
 - Asks to "write code to analyze", "write code to explore"
 
 ACTION:
+- **KEEP CODE CONCISE** - Write minimal, focused code under 50KB (approximately 500-800 lines)
+- For EDA/analysis scripts: include only essential imports, loading, and 3-5 key visualizations
+- If script would be >50KB, break into multiple smaller files (e.g., eda_part1.py, eda_part2.py)
 - Use write_file with overwrite=False (default)
 - If write_file returns an "already exists" error message, call write_file ONCE MORE with overwrite=True
 - Do NOT read_file first (the file doesn't exist yet)
 - Suggest a descriptive filename if user doesn't specify one
-- If a tool call fails with "exceeded max retries", this means there's a validation error - explain the issue to the user
+- If tool fails with "exceeded max retries count of 0", the content is likely too large - reduce code size
 
 EXAMPLES:
 - "write a .py script to analyze data.csv" → Create analyze_data.py with overwrite=False
@@ -219,20 +222,25 @@ Notes:
     async def write_file(
         self,
         ctx: RunContext[None],
-        file_path: str,
-        content: str,
+        file_path,  # Accept any type, validate manually
+        content,    # Accept any type, validate manually
         overwrite: bool = False
     ) -> str:
         """
         Write content to a file.
 
+        IMPORTANT: Keep code concise and under 50KB. For large scripts, break into smaller files.
+
         Args:
-            file_path: Path where to write the file
-            content: Content to write
-            overwrite: Whether to overwrite if file exists
+            file_path: Path where to write the file (string)
+            content: Content to write (string) - MUST be under 1MB
+            overwrite: Whether to overwrite if file exists (boolean, default False)
 
         Returns:
             Success or error message
+
+        Note: This tool has NO type validation at the framework level to prevent parameter errors.
+        All validation happens inside the function with clear error messages.
         """
         try:
             # Debug info

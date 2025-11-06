@@ -1698,13 +1698,20 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.7
+**Version:** 0.3.8
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.7 (Latest)
+### v0.3.8 (Latest)
+- 🐛 **CRITICAL FIX:** Removed type hints from write_file to bypass pydantic validation
+- 📏 Added 50KB size guidance - model now generates concise code
+- 🎯 Updated system prompt: "Keep code under 500-800 lines"
+- 💡 EDA scripts now include only essential visualizations (3-5 plots)
+- ✅ Prevents framework-level validation errors that caused "exceeded max retries"
+
+### v0.3.7
 - 🐛 **CRITICAL FIX:** Set retries=0 to completely disable retries
 - 📊 Added comprehensive debug logging to write_file tool
 - 🔍 Input validation with detailed type checking
