@@ -11,7 +11,8 @@ from .utils import (
     write_file_safe,
     get_project_summary,
     is_blank_project,
-    extract_code_blocks
+    extract_code_blocks,
+    PerformanceMetrics
 )
 from .config import WYN360Config
 
@@ -57,6 +58,9 @@ class WYN360Agent:
         self.total_output_tokens = 0
         self.request_count = 0
         self.token_history: List[Dict[str, Any]] = []
+
+        # Performance metrics tracking (Phase 10.2)
+        self.performance_metrics = PerformanceMetrics()
 
         # Set API key in environment for pydantic-ai to use
         os.environ['ANTHROPIC_API_KEY'] = api_key
@@ -300,6 +304,10 @@ You can automatically generate unit tests for Python files!
             File contents or error message
         """
         success, content = read_file_safe(file_path)
+
+        # Track tool call
+        self.performance_metrics.track_tool_call("read_file", success)
+
         if success:
             return f"Contents of {file_path}:\n\n{content}"
         else:
@@ -370,6 +378,9 @@ You can automatically generate unit tests for Python files!
             # Try to write the file
             success, message = write_file_safe(file_path, content, overwrite)
 
+            # Track tool call
+            self.performance_metrics.track_tool_call("write_file", success)
+
             # If file exists and overwrite is False, provide clear guidance
             if not success and "already exists" in message:
                 return f"{message}\n\nNote: If you want to update this file, you must explicitly set overwrite=True in your next write_file call."
@@ -395,6 +406,9 @@ You can automatically generate unit tests for Python files!
             Formatted list of files by category
         """
         files = scan_directory(directory)
+
+        # Track tool call (list_files always succeeds)
+        self.performance_metrics.track_tool_call("list_files", True)
 
         result = "Files in project:\n\n"
         for category, file_list in files.items():
@@ -478,6 +492,9 @@ You can automatically generate unit tests for Python files!
 
         success, output, return_code = execute_command_safe(command, timeout)
 
+        # Track tool call
+        self.performance_metrics.track_tool_call("execute_command", success)
+
         if success:
             result = f"✅ Command executed successfully (exit code {return_code})\n\n"
             result += f"Output:\n{output}"
@@ -496,6 +513,9 @@ You can automatically generate unit tests for Python files!
         """
         from .utils import execute_command_safe
         success, output, return_code = execute_command_safe("git status", timeout=10)
+
+        # Track tool call
+        self.performance_metrics.track_tool_call("git_status", success)
 
         if success:
             return f"Git Status:\n\n{output}"
@@ -593,6 +613,10 @@ You can automatically generate unit tests for Python files!
         command = f"grep -rn '{pattern}' --include='{file_pattern}' ."
 
         success, output, return_code = execute_command_safe(command, timeout=20)
+
+        # Track tool call (grep returns 1 for no matches, which is not really a failure)
+        tool_success = success or return_code == 1
+        self.performance_metrics.track_tool_call("search_files", tool_success)
 
         if success:
             if not output.strip():
@@ -1171,6 +1195,8 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         Returns:
             Complete response text from the agent
         """
+        import time
+
         try:
             # Add user message to history
             self.conversation_history.append({
@@ -1178,9 +1204,16 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                 "content": user_message
             })
 
+            # Track response time
+            start_time = time.time()
+
             # Use run() to get complete response (not run_stream)
             # This ensures tools execute properly
             result = await self.agent.run(user_message)
+
+            # Record response time
+            duration = time.time() - start_time
+            self.performance_metrics.track_request_time(duration)
 
             # Extract response text
             response_text = getattr(result, 'data', None) or getattr(result, 'output', str(result))
@@ -1216,6 +1249,10 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             return response_text
 
         except Exception as e:
+            # Track error
+            error_type = type(e).__name__
+            self.performance_metrics.track_error(error_type, str(e))
+
             error_msg = f"\n\nAn error occurred: {str(e)}"
             return error_msg
 
@@ -1244,12 +1281,13 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             return 'script.py'
 
     def clear_history(self) -> None:
-        """Clear conversation history and reset token counters."""
+        """Clear conversation history and reset token counters and performance metrics."""
         self.conversation_history = []
         self.total_input_tokens = 0
         self.total_output_tokens = 0
         self.request_count = 0
         self.token_history = []
+        self.performance_metrics = PerformanceMetrics()  # Reset performance metrics
 
     def get_history(self) -> List[Dict[str, str]]:
         """Get current conversation history."""
@@ -1276,6 +1314,7 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                 "total_output_tokens": self.total_output_tokens,
                 "request_count": self.request_count,
                 "token_history": self.token_history,
+                "performance_metrics": self.performance_metrics.to_dict(),
                 "timestamp": str(os.popen('date').read().strip())
             }
 
@@ -1318,6 +1357,10 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             self.request_count = session_data.get("request_count", 0)
             self.token_history = session_data.get("token_history", [])
 
+            # Load performance metrics if available
+            if "performance_metrics" in session_data:
+                self.performance_metrics.from_dict(session_data["performance_metrics"])
+
             return True
         except Exception as e:
             print(f"Error loading session: {e}")
@@ -1347,6 +1390,15 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             "input_cost": self.total_input_tokens / 1_000_000 * 3.0,
             "output_cost": self.total_output_tokens / 1_000_000 * 15.0,
         }
+
+    def get_performance_stats(self) -> Dict[str, Any]:
+        """
+        Get performance metrics statistics.
+
+        Returns:
+            Dictionary with performance metrics
+        """
+        return self.performance_metrics.get_statistics()
 
     def switch_model(self, model_name: str) -> bool:
         """

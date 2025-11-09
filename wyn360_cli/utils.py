@@ -267,3 +267,160 @@ def extract_username_from_hf_whoami(output: str) -> str:
             if len(parts) > 1:
                 return parts[1].strip()
     return "user"
+
+
+class PerformanceMetrics:
+    """
+    Track performance metrics for WYN360 CLI sessions.
+
+    Tracks:
+    - Response times for each request
+    - Tool usage and success rates
+    - Error frequency and types
+    """
+
+    def __init__(self):
+        """Initialize performance metrics tracking."""
+        import time
+
+        self.start_time = time.time()
+        self.request_times = []  # List of (timestamp, duration_seconds) tuples
+        self.tool_calls = {}  # {tool_name: {"success": count, "failed": count}}
+        self.errors = []  # List of {"timestamp": ..., "error_type": ..., "message": ...}
+
+    def track_request_time(self, duration: float) -> None:
+        """
+        Track the duration of a request.
+
+        Args:
+            duration: Time taken in seconds
+        """
+        import time
+        self.request_times.append((time.time(), duration))
+
+    def track_tool_call(self, tool_name: str, success: bool) -> None:
+        """
+        Track a tool call and its success/failure status.
+
+        Args:
+            tool_name: Name of the tool that was called
+            success: Whether the tool call succeeded
+        """
+        if tool_name not in self.tool_calls:
+            self.tool_calls[tool_name] = {"success": 0, "failed": 0}
+
+        if success:
+            self.tool_calls[tool_name]["success"] += 1
+        else:
+            self.tool_calls[tool_name]["failed"] += 1
+
+    def track_error(self, error_type: str, message: str) -> None:
+        """
+        Track an error occurrence.
+
+        Args:
+            error_type: Type/class of the error
+            message: Error message
+        """
+        import time
+        self.errors.append({
+            "timestamp": time.time(),
+            "error_type": error_type,
+            "message": message
+        })
+
+    def get_statistics(self) -> Dict[str, any]:
+        """
+        Calculate and return performance statistics.
+
+        Returns:
+            Dictionary containing performance metrics
+        """
+        import time
+
+        # Response time statistics
+        if self.request_times:
+            durations = [duration for _, duration in self.request_times]
+            avg_response_time = sum(durations) / len(durations)
+            min_response_time = min(durations)
+            max_response_time = max(durations)
+        else:
+            avg_response_time = 0.0
+            min_response_time = 0.0
+            max_response_time = 0.0
+
+        # Tool call statistics
+        total_tool_calls = 0
+        total_successful_calls = 0
+        total_failed_calls = 0
+
+        for tool_name, stats in self.tool_calls.items():
+            total_tool_calls += stats["success"] + stats["failed"]
+            total_successful_calls += stats["success"]
+            total_failed_calls += stats["failed"]
+
+        tool_success_rate = (
+            (total_successful_calls / total_tool_calls * 100)
+            if total_tool_calls > 0 else 0.0
+        )
+
+        # Most used tools (top 5)
+        sorted_tools = sorted(
+            self.tool_calls.items(),
+            key=lambda x: x[1]["success"] + x[1]["failed"],
+            reverse=True
+        )
+        most_used_tools = sorted_tools[:5]
+
+        # Error statistics
+        error_count = len(self.errors)
+        error_types = {}
+        for error in self.errors:
+            error_type = error["error_type"]
+            error_types[error_type] = error_types.get(error_type, 0) + 1
+
+        # Session duration
+        session_duration = time.time() - self.start_time
+
+        return {
+            "session_duration_seconds": session_duration,
+            "total_requests": len(self.request_times),
+            "avg_response_time": avg_response_time,
+            "min_response_time": min_response_time,
+            "max_response_time": max_response_time,
+            "total_tool_calls": total_tool_calls,
+            "successful_tool_calls": total_successful_calls,
+            "failed_tool_calls": total_failed_calls,
+            "tool_success_rate": tool_success_rate,
+            "most_used_tools": most_used_tools,
+            "tool_details": self.tool_calls,
+            "error_count": error_count,
+            "error_types": error_types,
+            "errors": self.errors
+        }
+
+    def to_dict(self) -> Dict[str, any]:
+        """
+        Convert metrics to dictionary for serialization.
+
+        Returns:
+            Dictionary representation of metrics
+        """
+        return {
+            "start_time": self.start_time,
+            "request_times": self.request_times,
+            "tool_calls": self.tool_calls,
+            "errors": self.errors
+        }
+
+    def from_dict(self, data: Dict[str, any]) -> None:
+        """
+        Load metrics from dictionary.
+
+        Args:
+            data: Dictionary containing metrics data
+        """
+        self.start_time = data.get("start_time", self.start_time)
+        self.request_times = data.get("request_times", [])
+        self.tool_calls = data.get("tool_calls", {})
+        self.errors = data.get("errors", [])

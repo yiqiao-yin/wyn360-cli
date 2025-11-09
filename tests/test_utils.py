@@ -12,7 +12,8 @@ from wyn360_cli.utils import (
     write_file_safe,
     get_project_summary,
     is_blank_project,
-    execute_command_safe
+    execute_command_safe,
+    PerformanceMetrics
 )
 
 
@@ -391,3 +392,195 @@ class TestExtractUsernameFromHFWhoami:
         username = extract_username_from_hf_whoami(output)
 
         assert username == "TESTUSER"
+
+
+class TestPerformanceMetrics:
+    """Tests for PerformanceMetrics class (Phase 10.2)"""
+
+    def test_initialization(self):
+        """Test PerformanceMetrics initialization"""
+        metrics = PerformanceMetrics()
+
+        assert metrics.request_times == []
+        assert metrics.tool_calls == {}
+        assert metrics.errors == []
+        assert metrics.start_time > 0
+
+    def test_track_request_time(self):
+        """Test tracking request times"""
+        metrics = PerformanceMetrics()
+
+        metrics.track_request_time(1.5)
+        metrics.track_request_time(2.3)
+        metrics.track_request_time(0.8)
+
+        assert len(metrics.request_times) == 3
+        assert metrics.request_times[0][1] == 1.5
+        assert metrics.request_times[1][1] == 2.3
+        assert metrics.request_times[2][1] == 0.8
+
+    def test_track_tool_call_success(self):
+        """Test tracking successful tool calls"""
+        metrics = PerformanceMetrics()
+
+        metrics.track_tool_call("read_file", True)
+        metrics.track_tool_call("read_file", True)
+        metrics.track_tool_call("write_file", True)
+
+        assert "read_file" in metrics.tool_calls
+        assert metrics.tool_calls["read_file"]["success"] == 2
+        assert metrics.tool_calls["read_file"]["failed"] == 0
+        assert metrics.tool_calls["write_file"]["success"] == 1
+
+    def test_track_tool_call_failure(self):
+        """Test tracking failed tool calls"""
+        metrics = PerformanceMetrics()
+
+        metrics.track_tool_call("read_file", False)
+        metrics.track_tool_call("read_file", True)
+        metrics.track_tool_call("read_file", False)
+
+        assert metrics.tool_calls["read_file"]["success"] == 1
+        assert metrics.tool_calls["read_file"]["failed"] == 2
+
+    def test_track_error(self):
+        """Test tracking errors"""
+        metrics = PerformanceMetrics()
+
+        metrics.track_error("ValueError", "Invalid input")
+        metrics.track_error("FileNotFoundError", "File missing")
+
+        assert len(metrics.errors) == 2
+        assert metrics.errors[0]["error_type"] == "ValueError"
+        assert metrics.errors[0]["message"] == "Invalid input"
+        assert metrics.errors[1]["error_type"] == "FileNotFoundError"
+
+    def test_get_statistics_empty(self):
+        """Test getting statistics when no data"""
+        metrics = PerformanceMetrics()
+        stats = metrics.get_statistics()
+
+        assert stats["total_requests"] == 0
+        assert stats["avg_response_time"] == 0.0
+        assert stats["total_tool_calls"] == 0
+        assert stats["tool_success_rate"] == 0.0
+        assert stats["error_count"] == 0
+
+    def test_get_statistics_with_data(self):
+        """Test getting statistics with data"""
+        import time
+
+        metrics = PerformanceMetrics()
+
+        # Track some request times
+        metrics.track_request_time(1.0)
+        metrics.track_request_time(2.0)
+        metrics.track_request_time(3.0)
+
+        # Track some tool calls
+        metrics.track_tool_call("read_file", True)
+        metrics.track_tool_call("read_file", True)
+        metrics.track_tool_call("write_file", False)
+        metrics.track_tool_call("execute_command", True)
+
+        # Track some errors
+        metrics.track_error("ValueError", "Test error 1")
+        metrics.track_error("ValueError", "Test error 2")
+        metrics.track_error("IOError", "Test error 3")
+
+        stats = metrics.get_statistics()
+
+        # Check request statistics
+        assert stats["total_requests"] == 3
+        assert stats["avg_response_time"] == 2.0
+        assert stats["min_response_time"] == 1.0
+        assert stats["max_response_time"] == 3.0
+
+        # Check tool statistics
+        assert stats["total_tool_calls"] == 4
+        assert stats["successful_tool_calls"] == 3
+        assert stats["failed_tool_calls"] == 1
+        assert stats["tool_success_rate"] == 75.0
+
+        # Check error statistics
+        assert stats["error_count"] == 3
+        assert stats["error_types"]["ValueError"] == 2
+        assert stats["error_types"]["IOError"] == 1
+
+        # Check most used tools
+        assert len(stats["most_used_tools"]) == 3
+        # read_file should be most used (2 calls)
+        assert stats["most_used_tools"][0][0] == "read_file"
+
+    def test_to_dict_and_from_dict(self):
+        """Test serialization and deserialization"""
+        metrics = PerformanceMetrics()
+
+        # Add some data
+        metrics.track_request_time(1.5)
+        metrics.track_tool_call("read_file", True)
+        metrics.track_error("ValueError", "Test error")
+
+        # Convert to dict
+        data = metrics.to_dict()
+
+        # Create new instance and load from dict
+        new_metrics = PerformanceMetrics()
+        new_metrics.from_dict(data)
+
+        # Verify data was loaded correctly
+        assert len(new_metrics.request_times) == 1
+        assert "read_file" in new_metrics.tool_calls
+        assert len(new_metrics.errors) == 1
+
+    def test_session_duration(self):
+        """Test session duration calculation"""
+        import time
+
+        metrics = PerformanceMetrics()
+
+        # Wait a short time
+        time.sleep(0.1)
+
+        stats = metrics.get_statistics()
+
+        # Session duration should be > 0
+        assert stats["session_duration_seconds"] > 0
+        assert stats["session_duration_seconds"] >= 0.1
+
+    def test_most_used_tools_ordering(self):
+        """Test that most used tools are ordered correctly"""
+        metrics = PerformanceMetrics()
+
+        # Tool A: 5 calls
+        for _ in range(5):
+            metrics.track_tool_call("tool_a", True)
+
+        # Tool B: 3 calls
+        for _ in range(3):
+            metrics.track_tool_call("tool_b", True)
+
+        # Tool C: 7 calls
+        for _ in range(7):
+            metrics.track_tool_call("tool_c", True)
+
+        stats = metrics.get_statistics()
+
+        # Should be ordered by total calls: tool_c (7), tool_a (5), tool_b (3)
+        assert stats["most_used_tools"][0][0] == "tool_c"
+        assert stats["most_used_tools"][1][0] == "tool_a"
+        assert stats["most_used_tools"][2][0] == "tool_b"
+
+    def test_tool_success_rate_calculation(self):
+        """Test tool success rate calculation"""
+        metrics = PerformanceMetrics()
+
+        # 8 successes, 2 failures = 80% success rate
+        for _ in range(8):
+            metrics.track_tool_call("test_tool", True)
+        for _ in range(2):
+            metrics.track_tool_call("test_tool", False)
+
+        stats = metrics.get_statistics()
+
+        assert stats["tool_success_rate"] == 80.0

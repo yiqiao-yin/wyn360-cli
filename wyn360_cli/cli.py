@@ -196,6 +196,98 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
         console.print(table)
         return True, ""
 
+    elif cmd == "stats":
+        # Get both token stats and performance stats
+        token_stats = agent.get_token_stats()
+        perf_stats = agent.get_performance_stats()
+
+        from rich.table import Table
+        from rich.panel import Panel
+        from rich.columns import Columns
+
+        # Token Usage Table
+        token_table = Table(title="Token Usage", show_header=False)
+        token_table.add_column("Metric", style="cyan")
+        token_table.add_column("Value", style="yellow")
+
+        token_table.add_row("Total Requests", str(token_stats["total_requests"]))
+        token_table.add_row("Input Tokens", f"{token_stats['total_input_tokens']:,}")
+        token_table.add_row("Output Tokens", f"{token_stats['total_output_tokens']:,}")
+        token_table.add_row("Total Cost", f"${token_stats['total_cost']:.4f}")
+
+        # Performance Table
+        perf_table = Table(title="Performance Metrics", show_header=False)
+        perf_table.add_column("Metric", style="cyan")
+        perf_table.add_column("Value", style="yellow")
+
+        # Session duration
+        duration = perf_stats["session_duration_seconds"]
+        hours = int(duration // 3600)
+        minutes = int((duration % 3600) // 60)
+        seconds = int(duration % 60)
+        if hours > 0:
+            duration_str = f"{hours}h {minutes}m {seconds}s"
+        elif minutes > 0:
+            duration_str = f"{minutes}m {seconds}s"
+        else:
+            duration_str = f"{seconds}s"
+
+        perf_table.add_row("Session Duration", duration_str)
+        perf_table.add_row("Avg Response Time", f"{perf_stats['avg_response_time']:.2f}s")
+        perf_table.add_row("Min Response Time", f"{perf_stats['min_response_time']:.2f}s")
+        perf_table.add_row("Max Response Time", f"{perf_stats['max_response_time']:.2f}s")
+        perf_table.add_row("Error Count", str(perf_stats['error_count']))
+
+        # Tool Usage Table
+        tool_table = Table(title="Tool Usage", show_header=False)
+        tool_table.add_column("Metric", style="cyan")
+        tool_table.add_column("Value", style="yellow")
+
+        tool_table.add_row("Total Tool Calls", str(perf_stats['total_tool_calls']))
+        tool_table.add_row("Successful Calls", str(perf_stats['successful_tool_calls']))
+        tool_table.add_row("Failed Calls", str(perf_stats['failed_tool_calls']))
+        tool_table.add_row("Success Rate", f"{perf_stats['tool_success_rate']:.1f}%")
+
+        # Print all tables
+        console.print()
+        console.print(Columns([token_table, perf_table]))
+        console.print()
+        console.print(tool_table)
+
+        # Show most used tools if any
+        if perf_stats['most_used_tools']:
+            console.print()
+            tools_list = Table(title="Most Used Tools", show_header=True)
+            tools_list.add_column("Tool", style="cyan")
+            tools_list.add_column("Success", style="green")
+            tools_list.add_column("Failed", style="red")
+            tools_list.add_column("Total", style="yellow")
+
+            for tool_name, stats in perf_stats['most_used_tools']:
+                total = stats['success'] + stats['failed']
+                tools_list.add_row(
+                    tool_name,
+                    str(stats['success']),
+                    str(stats['failed']),
+                    str(total)
+                )
+
+            console.print(tools_list)
+
+        # Show error summary if any
+        if perf_stats['error_types']:
+            console.print()
+            error_table = Table(title="Error Summary", show_header=True)
+            error_table.add_column("Error Type", style="red")
+            error_table.add_column("Count", style="yellow")
+
+            for error_type, count in perf_stats['error_types'].items():
+                error_table.add_row(error_type, str(count))
+
+            console.print(error_table)
+
+        return True, ""
+
     elif cmd == "model":
         if not arg:
             # Show current model info
@@ -304,6 +396,7 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
   [bold green]/save <file>[/bold green]     Save session to JSON file
   [bold green]/load <file>[/bold green]     Load session from JSON file
   [bold green]/tokens[/bold green]           Show token usage statistics
+  [bold green]/stats[/bold green]            Show comprehensive performance metrics
   [bold green]/model [name][/bold green]    Show/switch AI model (haiku/sonnet/opus)
   [bold green]/config[/bold green]           Show current configuration
   [bold green]/help[/bold green]             Show this help message
@@ -312,6 +405,7 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
   /save my_session.json       Save current conversation
   /load my_session.json       Continue previous conversation
   /tokens                     Check how much you've spent
+  /stats                      View performance metrics and tool usage
   /model                      Show current model info
   /model haiku                Switch to Haiku (fast & cheap)
   /model opus                 Switch to Opus (most capable)
@@ -321,6 +415,7 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
   • Use /clear if costs are getting high
   • Save important sessions for later reference
   • Token estimates are approximate (±10%)
+  • Use /stats to monitor response times and tool performance
 """
         console.print(help_text)
         return True, ""

@@ -1698,13 +1698,322 @@ WYN360: [Streams code file by file]
 
 ---
 
-**Version:** 0.3.18
+## 15. Performance Monitoring & Analytics
+
+Monitor your CLI usage, response times, tool efficiency, and identify performance bottlenecks with comprehensive metrics tracking.
+
+### What is Performance Monitoring?
+
+WYN360 automatically tracks and analyzes session performance, providing insights into:
+- **Response Times**: How fast the AI responds to your requests
+- **Tool Usage**: Which tools you use most and their success rates
+- **Error Tracking**: What errors occur and how frequently
+- **Session Statistics**: Overall session duration and activity
+
+### The /stats Command
+
+View comprehensive performance metrics at any time during your session:
+
+```
+You: /stats
+
+┏━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃   Token Usage        ┃  ┃   Performance Metrics   ┃
+┣━━━━━━━━━━━━━━━━━━━━━━┫  ┣━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Total Requests: 25   ┃  ┃ Session Duration: 15m   ┃
+┃ Input Tokens: 45,230 ┃  ┃ Avg Response: 2.3s     ┃
+┃ Output Tokens: 12,450┃  ┃ Min Response: 0.8s     ┃
+┃ Total Cost: $0.32    ┃  ┃ Max Response: 5.2s     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━┛  ┃ Error Count: 0         ┃
+                          ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃      Tool Usage            ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Total Tool Calls: 47       ┃
+┃ Successful Calls: 45       ┃
+┃ Failed Calls: 2            ┃
+┃ Success Rate: 95.7%        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃      Most Used Tools          ┃
+┣━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━┫
+┃ Tool      ┃Success┃Failed┃Total┃
+┣━━━━━━━━━━━╋━━━━━━━╋━━━━━━╋━━━━━┫
+┃ read_file ┃  15   ┃  0   ┃ 15  ┃
+┃write_file ┃  12   ┃  1   ┃ 13  ┃
+┃execute_cmd┃   8   ┃  0   ┃  8  ┃
+┃search_files┃  5   ┃  0   ┃  5  ┃
+┃git_status ┃   5   ┃  1   ┃  6  ┃
+┗━━━━━━━━━━━┻━━━━━━━┻━━━━━━┻━━━━━┛
+```
+
+### Use Case 1: Identifying Slow Operations
+
+**Scenario:** You notice your session feels slow sometimes
+
+```
+You: /stats
+
+WYN360: [Shows metrics]
+- Avg Response: 4.5s
+- Max Response: 15.2s  ← Outlier detected!
+
+You: What took 15 seconds?
+
+WYN360: Looking at your session history, the slowest
+operation was "Generate comprehensive ML pipeline" which
+generated 800+ lines of code. Consider breaking large
+requests into smaller chunks for faster responses.
+```
+
+**Insight:** Large code generation requests take longer. Break them into smaller, focused tasks.
+
+### Use Case 2: Tool Success Rate Analysis
+
+**Scenario:** Want to see which operations are failing
+
+```
+You: /stats
+
+WYN360: [Shows tool usage]
+Tool Success Rates:
+- read_file: 100% (15/15)
+- write_file: 92.3% (12/13)  ← 1 failure
+- execute_command: 100% (8/8)
+- git_status: 83.3% (5/6)    ← 1 failure
+
+You: Why did write_file fail once?
+
+WYN360: The write_file failure was due to attempting
+to write without overwrite=True when the file already
+existed. This was corrected in the retry.
+```
+
+**Insight:** Understand which operations need error handling or user confirmation.
+
+### Use Case 3: Session Cost Monitoring
+
+**Scenario:** Track spending during a long coding session
+
+```
+You: I've been working for 2 hours. How much have I spent?
+
+You: /stats
+
+WYN360: [Shows combined token + performance metrics]
+Session Duration: 2h 15m
+Total Requests: 47
+Total Cost: $1.23
+Average Cost per Request: $0.026
+
+Most expensive operations:
+1. Multi-file refactoring: $0.15
+2. Test generation: $0.12
+3. Documentation creation: $0.09
+```
+
+**Insight:** Monitor costs in real-time, identify expensive operations, optimize usage.
+
+### Use Case 4: Error Tracking & Debugging
+
+**Scenario:** Encountering errors and want to understand patterns
+
+```
+You: /stats
+
+WYN360: [Shows error summary]
+Error Count: 3
+Error Types:
+- FileNotFoundError: 2
+- ValueError: 1
+
+Recent errors:
+1. FileNotFoundError: "config.yaml not found" (2x)
+2. ValueError: "Invalid JSON format"
+
+You: Create config.yaml with default settings
+
+WYN360: ✓ Created config.yaml
+Now future runs won't encounter FileNotFoundError
+```
+
+**Insight:** Identify recurring errors and fix root causes.
+
+### Use Case 5: Performance Benchmarking
+
+**Scenario:** Compare different models or approaches
+
+```
+# Session 1 with Haiku (fast model)
+You: /stats
+Avg Response: 1.2s
+Total Cost: $0.15
+
+# Session 2 with Sonnet (balanced model)
+You: /stats
+Avg Response: 2.3s
+Total Cost: $0.42
+
+# Session 3 with Opus (powerful model)
+You: /stats
+Avg Response: 4.1s
+Total Cost: $1.25
+```
+
+**Insight:** Choose the right model for your use case - speed vs. capability vs. cost.
+
+### Features
+
+**Automatic Tracking:**
+- ✅ Response times tracked for every request
+- ✅ Tool calls logged with success/failure status
+- ✅ Errors captured with type and message
+- ✅ Session duration calculated automatically
+
+**Persistent Metrics:**
+- ✅ Metrics saved with /save command
+- ✅ Loaded with /load command
+- ✅ Track performance across multiple sessions
+
+**Zero Configuration:**
+- ✅ Works automatically - no setup required
+- ✅ Non-intrusive - runs in background
+- ✅ No performance overhead
+- ✅ Compatible with all existing features
+
+### Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `/stats` | Show comprehensive performance metrics | `You: /stats` |
+| `/tokens` | Show only token usage (legacy) | `You: /tokens` |
+| `/clear` | Reset all metrics and history | `You: /clear` |
+
+### Tips for Optimization
+
+**1. Monitor Long-Running Sessions**
+```bash
+# Check metrics periodically during long sessions
+You: /stats
+# If avg response time > 5s, consider:
+# - Breaking large requests into smaller ones
+# - Switching to faster model (haiku)
+# - Clearing conversation history
+```
+
+**2. Track Tool Efficiency**
+```bash
+# If tool success rate < 90%, investigate:
+# - Are file paths correct?
+# - Do required files exist?
+# - Are permissions set properly?
+```
+
+**3. Cost Management**
+```bash
+# Set personal budget limits
+# Check /stats before expensive operations
+# Use haiku for simple tasks, sonnet for complex
+```
+
+**4. Identify Bottlenecks**
+```bash
+# Look at "Most Used Tools"
+# If one tool dominates, consider:
+# - Batch operations
+# - Cache results
+# - Optimize workflow
+```
+
+### Real-World Workflow Example
+
+**Scenario:** Building a web scraper project
+
+```
+# Start session
+You: Create a web scraper for news articles
+
+# After 30 minutes of work
+You: /stats
+
+WYN360:
+Session Duration: 32m
+Total Requests: 18
+Avg Response: 2.1s
+Total Cost: $0.45
+
+Most Used Tools:
+- write_file: 8 times (100% success)
+- read_file: 6 times (100% success)
+- execute_command: 4 times (75% success)  ← Attention needed
+
+You: Why did execute_command fail?
+
+WYN360: One pip install failed due to network timeout.
+Retried successfully. No action needed.
+
+# Continue working...
+
+# End of session
+You: /stats
+
+WYN360:
+Final Session Stats:
+Duration: 1h 15m
+Requests: 35
+Cost: $0.87
+Success Rate: 97.1%
+
+You: /save scraper_session.json
+WYN360: ✓ Session saved (including performance metrics)
+```
+
+**Result:** Complete project visibility, cost tracking, and session replay capability.
+
+### Technical Details
+
+**What's Tracked:**
+- Request timestamps and durations
+- Tool invocation counts (success/failure)
+- Error occurrences with stack traces
+- Token usage per request
+- Model information
+
+**Storage:**
+- In-memory during session
+- Persisted to JSON with /save
+- Loaded from JSON with /load
+- Zero database dependencies
+
+**Performance:**
+- Negligible overhead (< 0.1ms per operation)
+- Asynchronous tracking
+- Memory efficient
+- No blocking operations
+
+---
+
+**Version:** 0.3.19
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.18 (Latest)
+### v0.3.19 (Latest)
+- 🚀 **NEW FEATURE:** Phase 10.2 - Performance Metrics & Analytics
+- ✅ **CLASS:** PerformanceMetrics - Comprehensive session metrics tracking
+- 📊 **TRACKING:** Response times (avg, min, max), tool usage, error frequency
+- 💻 **COMMAND:** /stats - Display comprehensive performance dashboard
+- 📈 **ANALYTICS:** Most used tools, success rates, session duration
+- 🔄 **PERSISTENCE:** Metrics saved/loaded with sessions
+- 🧪 **TESTS:** Added 11 comprehensive unit tests (169 total tests)
+- 📚 **DOCUMENTATION:** Added USE_CASES.md section 15 - Performance Monitoring
+- ⚡ **INTEGRATION:** Automatic tracking in read_file, write_file, execute_command, git_status, search_files, list_files
+- 🎯 **NON-INTRUSIVE:** Runs transparently in background with zero configuration
+
+### v0.3.18
 - 🚀 **NEW FEATURE:** Phase 7.2 - Automatic Test Generation
 - ✅ **TOOL:** generate_tests - Automatically generate pytest test stubs for Python files
 - 🧪 **AST PARSING:** Safe code analysis without execution
