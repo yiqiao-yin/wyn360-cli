@@ -20,7 +20,7 @@ console_width = max(80, min(200, terminal_width))
 console = Console(width=console_width, force_terminal=True)
 
 
-@click.command()
+@click.command(context_settings=dict(help_option_names=['-h', '--help']))
 @click.option(
     '--api-key',
     default=None,
@@ -36,6 +36,62 @@ def main(api_key, model):
     WYN360 - An intelligent AI coding assistant CLI tool.
 
     Interact with Claude to build projects, generate code, and improve your codebase.
+
+    \b
+    QUICK START:
+      $ export ANTHROPIC_API_KEY=your_api_key
+      $ wyn360
+      You: Create a Streamlit chatbot
+      WYN360: [Generates complete app.py with code]
+
+    \b
+    SLASH COMMANDS (use inside session):
+      /clear          Clear conversation history and reset metrics
+      /history        Show conversation history
+      /save <file>    Save session to JSON file
+      /load <file>    Load previous session
+      /tokens         Show token usage and costs
+      /stats          Show performance metrics (NEW in v0.3.19!)
+      /model [name]   Show/switch AI model (haiku/sonnet/opus)
+      /config         Show current configuration
+      /help           Show detailed help inside session
+
+    \b
+    AVAILABLE TOOLS (AI can use automatically):
+      File Operations:
+        - read_file, write_file, list_files, delete_file, move_file
+        - create_directory, get_project_info
+
+      Code Operations:
+        - execute_command (run scripts, install packages)
+        - search_files (grep code patterns)
+        - generate_tests (auto-generate pytest tests)
+
+      Git Operations:
+        - git_status, git_diff, git_log, git_branch
+
+      HuggingFace Integration:
+        - check_hf_authentication, authenticate_hf
+        - create_hf_readme, create_hf_space, push_to_hf_space
+
+    \b
+    EXAMPLES:
+      # Start with different models
+      $ wyn360 --model haiku              # Fast & cheap
+      $ wyn360 --model sonnet             # Balanced (default)
+      $ wyn360 --model opus               # Most capable
+
+      # Quick commands
+      $ wyn360 --api-key sk-ant-...       # Provide API key directly
+
+    \b
+    DOCUMENTATION:
+      PyPI:        https://pypi.org/project/wyn360-cli/
+      GitHub:      https://github.com/yiqiao-yin/wyn360-cli
+      Use Cases:   See USE_CASES.md for detailed examples
+      Get API Key: https://console.anthropic.com/
+
+    Version: 0.3.19
     """
     # Load environment variables from .env file if it exists
     load_dotenv()

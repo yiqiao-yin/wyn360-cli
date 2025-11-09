@@ -1995,13 +1995,20 @@ WYN360: ✓ Session saved (including performance metrics)
 
 ---
 
-**Version:** 0.3.19
+**Version:** 0.3.20
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.19 (Latest)
+### v0.3.20 (Latest)
+- 🎨 **UX IMPROVEMENT:** Enhanced CLI help output with comprehensive documentation
+- ✅ **NEW FLAG:** Added `-h` shorthand for `--help`
+- 📚 **DOCUMENTATION:** Help now shows all slash commands, available tools, examples
+- 💡 **QUICK REFERENCE:** Users can run `wyn360 -h` to see complete command reference
+- 🔧 **ORGANIZED:** Help structured into sections: Quick Start, Slash Commands, Available Tools, Examples, Documentation
+
+### v0.3.19
 - 🚀 **NEW FEATURE:** Phase 10.2 - Performance Metrics & Analytics
 - ✅ **CLASS:** PerformanceMetrics - Comprehensive session metrics tracking
 - 📊 **TRACKING:** Response times (avg, min, max), tool usage, error frequency

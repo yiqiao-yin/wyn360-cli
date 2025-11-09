@@ -653,4 +653,4 @@ For **most developers**, WYN360 CLI will cost **$1-3 per month** - significantly
 ---
 
 **Last Updated:** January 2025
-**Version:** 0.3.19
+**Version:** 0.3.20
