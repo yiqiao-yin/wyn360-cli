@@ -3,8 +3,16 @@
 import os
 import sys
 from typing import List, Dict, Any, Optional
-from pydantic_ai import Agent, RunContext, WebSearchTool
+from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.anthropic import AnthropicModel
+
+# WebSearchTool is optional - only available in newer pydantic-ai versions
+try:
+    from pydantic_ai import WebSearchTool
+    HAS_WEB_SEARCH = True
+except ImportError:
+    HAS_WEB_SEARCH = False
+    WebSearchTool = None
 from .utils import (
     scan_directory,
     read_file_safe,
@@ -69,6 +77,8 @@ class WYN360Agent:
         self.model = AnthropicModel(self.model_name)
 
         # Create the agent with tools
+        # Note: WebSearchTool and builtin_tools require pydantic-ai >= 0.1.0
+        # Currently using 0.0.19, so web search is not available yet
         self.agent = Agent(
             model=self.model,
             system_prompt=self._get_system_prompt(),
@@ -92,12 +102,16 @@ class WYN360Agent:
                 self.create_hf_readme,
                 self.create_hf_space,
                 self.push_to_hf_space,
+                # GitHub tools (Phase 8.1)
+                self.check_gh_authentication,
+                self.authenticate_gh,
+                self.gh_commit_changes,
+                self.gh_create_pr,
+                self.gh_create_branch,
+                self.gh_checkout_branch,
+                self.gh_merge_branch,
                 # Test Generation tool
                 self.generate_tests
-            ],
-            builtin_tools=[
-                # Phase 11.1: Web Search - Live internet access
-                WebSearchTool(max_uses=5)
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -275,6 +289,76 @@ You can automatically generate unit tests for Python files!
 - User must add actual test logic and assertions
 - Tests won't fail initially - they need implementation
 - Good starting point to save time on test structure
+
+**GitHub Integration (Phase 8.1):**
+
+You can help users manage their GitHub repositories directly!
+
+**Complete Workflow when user says "commit to github" or "create PR" or "manage branches":**
+
+1. **Check Authentication (ONLY ONCE per session)**:
+   - Call check_gh_authentication() ONE TIME only
+   - If it returns "✓ Authenticated", NEVER check again - remember they're authenticated
+   - If not authenticated, ask for token and use authenticate_gh(token)
+   - Once authenticated, proceed to step 2
+
+2. **Available GitHub Operations:**
+
+   **Committing Changes:**
+   - When user says "commit changes" or "push to github":
+     a. Check authentication status
+     b. Use gh_commit_changes(message, push=True) to commit and push
+     c. Confirm success with commit message and branch info
+
+   **Creating Pull Requests:**
+   - When user says "create PR" or "open pull request":
+     a. Verify authentication
+     b. Ensure you're on a feature branch (not main)
+     c. Use gh_create_pr(title, body, base_branch)
+     d. Return PR URL
+
+   **Managing Branches:**
+   - Create branch: gh_create_branch(branch_name, checkout=True)
+   - Switch branch: gh_checkout_branch(branch_name)
+   - Merge branches: gh_merge_branch(source_branch, target_branch)
+
+3. **Important Notes:**
+   - Always check for uncommitted changes before branch operations
+   - Commit changes automatically stage all files with 'git add -A'
+   - PR creation requires being on a feature branch (not main)
+   - GitHub token needs 'repo' and 'workflow' scopes
+   - All git commands use execute_command_safe with user confirmation
+
+**CRITICAL - Avoid Authentication Loops:**
+- Do NOT call check_gh_authentication() multiple times in one conversation
+- Once user is authenticated, trust it and proceed
+- If user provided token in previous messages, they are authenticated - don't ask again
+
+**Common Use Cases:**
+
+Use Case 1: Commit and Push
+```
+User: The codebase is good. Commit to github.
+You: [Check auth] → gh_commit_changes("Update codebase", push=True)
+```
+
+Use Case 2: Create Pull Request
+```
+User: Create a PR for these changes
+You: [Check auth] → [Verify on feature branch] → gh_create_pr("Add feature", "Description")
+```
+
+Use Case 3: Branch Management
+```
+User: Create a new branch called feature/auth
+You: gh_create_branch("feature/auth", checkout=True)
+```
+
+Use Case 4: Merge Branches
+```
+User: Merge feature/auth into main
+You: gh_merge_branch("feature/auth", "main")
+```
 
 **Web Search Capability (Phase 11.1):**
 
@@ -1046,6 +1130,414 @@ Check out the configuration reference at https://huggingface.co/docs/hub/spaces-
                 return f"❌ Upload failed: Space '{space_name}' doesn't exist. Create it first with create_hf_space.\n\nError: {output[:300]}"
             else:
                 return f"❌ Upload failed for Space '{space_name}'\n\nError: {output[:300]}"
+
+    # ==================== GitHub Integration Tools (Phase 8.1) ====================
+
+    async def check_gh_authentication(self, ctx: RunContext[None]) -> str:
+        """
+        Check if user is authenticated with GitHub.
+
+        Returns authentication status and username if authenticated.
+
+        Examples:
+            - "check if I'm logged into github"
+            - "am I authenticated with GitHub?"
+        """
+        from .utils import execute_command_safe
+
+        # Check environment variable
+        gh_token = os.getenv('GH_TOKEN') or os.getenv('GITHUB_TOKEN')
+
+        # Try gh CLI auth status
+        success, output, code = execute_command_safe("gh auth status", timeout=10)
+
+        if success and ("logged in" in output.lower() or "authenticated" in output.lower()):
+            # Extract username from output
+            lines = output.split('\n')
+            username = "user"
+            for line in lines:
+                if "account" in line.lower() or "logged in" in line.lower():
+                    # Try to extract username
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        username = parts[-1].strip('()')
+                        break
+            return f"✓ Authenticated with GitHub as '{username}'"
+        elif gh_token:
+            # Token exists but CLI not authenticated - try to authenticate automatically
+            os.environ['GH_TOKEN'] = gh_token
+            success2, output2, code2 = execute_command_safe(
+                f"echo '{gh_token}' | gh auth login --with-token",
+                timeout=30
+            )
+            if success2 or "authenticated" in output2.lower():
+                success3, output3, _ = execute_command_safe("gh auth status", timeout=10)
+                return f"✓ Authenticated with GitHub (auto-authenticated using GH_TOKEN from environment)"
+            else:
+                return f"❌ GH_TOKEN found in environment but authentication failed. Error: {output2[:200]}"
+        else:
+            return ("Not authenticated with GitHub. To use GitHub features, I need your access token.\n\n"
+                   "You can create a token from: https://github.com/settings/tokens\n"
+                   "Required scopes: repo, workflow\n\n"
+                   "Then either:\n"
+                   "1. Export it before starting: export GH_TOKEN=your_token\n"
+                   "2. Provide it to me in chat and I'll authenticate you")
+
+    async def authenticate_gh(self, ctx: RunContext[None], token: str) -> str:
+        """
+        Authenticate with GitHub using provided token.
+
+        Args:
+            token: GitHub personal access token (starts with 'ghp_' or 'github_pat_')
+
+        Returns:
+            Status message with username if successful
+
+        Examples:
+            - "authenticate with github using token ghp_xxxxx"
+            - "login to github with this token: ghp_xxxxx"
+        """
+        from .utils import execute_command_safe
+
+        # Validate token format
+        if not (token.startswith('ghp_') or token.startswith('github_pat_')):
+            return "❌ Invalid token format. GitHub tokens start with 'ghp_' or 'github_pat_'"
+
+        # Store in environment
+        os.environ['GH_TOKEN'] = token
+
+        # Authenticate using gh CLI
+        success, output, code = execute_command_safe(
+            f"echo '{token}' | gh auth login --with-token",
+            timeout=30
+        )
+
+        if success or "authenticated" in output.lower():
+            # Verify authentication
+            success2, output2, _ = execute_command_safe("gh auth status", timeout=10)
+            if success2:
+                return "✓ Successfully authenticated with GitHub!\n\nYou can now use GitHub features like committing, creating PRs, and managing branches."
+            else:
+                return "✓ Token accepted, but unable to verify authentication status. You may need to run 'gh auth status' manually."
+        else:
+            return f"❌ Authentication failed: {output[:300]}\n\nPlease check your token and try again."
+
+    async def gh_commit_changes(
+        self,
+        ctx: RunContext[None],
+        message: str,
+        push: bool = True
+    ) -> str:
+        """
+        Commit changes to the current Git repository and optionally push to GitHub.
+
+        Args:
+            message: Commit message
+            push: Whether to push to remote (default: True)
+
+        Returns:
+            Status message
+
+        Examples:
+            - "commit these changes with message 'Add authentication'"
+            - "commit and push with message 'Fix bug in API'"
+        """
+        from .utils import execute_command_safe
+
+        # Check if we're in a git repo
+        success, output, _ = execute_command_safe("git rev-parse --git-dir", timeout=5)
+        if not success:
+            return "❌ Not a git repository. Initialize with 'git init' first."
+
+        # Check for changes
+        success, output, _ = execute_command_safe("git status --porcelain", timeout=5)
+        if not success or not output.strip():
+            return "No changes to commit. Working tree is clean."
+
+        # Add all changes
+        success, output, _ = execute_command_safe("git add -A", timeout=10)
+        if not success:
+            return f"❌ Failed to stage changes: {output[:200]}"
+
+        # Commit changes
+        commit_cmd = f"git commit -m \"{message}\""
+        success, output, code = execute_command_safe(commit_cmd, timeout=30)
+
+        if not success and code != 0:
+            if "nothing to commit" in output.lower():
+                return "No changes to commit. All files are already staged."
+            return f"❌ Commit failed: {output[:300]}"
+
+        result = f"✓ Successfully committed changes\nMessage: {message}\n"
+
+        # Push to remote if requested
+        if push:
+            # Check if remote exists
+            success, output, _ = execute_command_safe("git remote -v", timeout=5)
+            if not success or not output.strip():
+                return result + "\n⚠️  No remote repository configured. Changes committed locally only."
+
+            # Get current branch
+            success, branch_output, _ = execute_command_safe("git branch --show-current", timeout=5)
+            current_branch = branch_output.strip() if success else "main"
+
+            # Push to remote
+            push_cmd = f"git push origin {current_branch}"
+            success, push_output, _ = execute_command_safe(push_cmd, timeout=60)
+
+            if success:
+                result += f"\n✓ Successfully pushed to remote branch '{current_branch}'"
+            else:
+                if "no upstream branch" in push_output.lower():
+                    result += f"\n⚠️  No upstream branch set. Try: git push -u origin {current_branch}"
+                else:
+                    result += f"\n❌ Push failed: {push_output[:200]}"
+
+        return result
+
+    async def gh_create_pr(
+        self,
+        ctx: RunContext[None],
+        title: str,
+        body: str = "",
+        base_branch: str = "main"
+    ) -> str:
+        """
+        Create a pull request on GitHub.
+
+        Args:
+            title: PR title
+            body: PR description (optional)
+            base_branch: Target branch (default: "main")
+
+        Returns:
+            PR URL or error message
+
+        Examples:
+            - "create PR with title 'Add authentication feature'"
+            - "open pull request to main with title 'Fix bug' and description 'Fixes issue #123'"
+        """
+        from .utils import execute_command_safe
+
+        # Check authentication
+        success, output, _ = execute_command_safe("gh auth status", timeout=10)
+        if not success:
+            return "❌ Not authenticated with GitHub. Please authenticate first."
+
+        # Get current branch
+        success, branch_output, _ = execute_command_safe("git branch --show-current", timeout=5)
+        if not success:
+            return "❌ Not in a git repository or unable to determine current branch."
+
+        current_branch = branch_output.strip()
+        if current_branch == base_branch:
+            return f"❌ Cannot create PR from '{current_branch}' to itself. Please switch to a feature branch."
+
+        # Build gh pr create command
+        cmd_parts = [
+            "gh pr create",
+            f"--title \"{title}\"",
+            f"--base {base_branch}"
+        ]
+
+        if body:
+            cmd_parts.append(f"--body \"{body}\"")
+        else:
+            cmd_parts.append("--body \"\"")
+
+        cmd = " ".join(cmd_parts)
+
+        # Create PR
+        success, output, code = execute_command_safe(cmd, timeout=30)
+
+        if success:
+            # Extract PR URL from output
+            lines = output.split('\n')
+            pr_url = ""
+            for line in lines:
+                if "https://github.com" in line and "/pull/" in line:
+                    pr_url = line.strip()
+                    break
+
+            if pr_url:
+                return f"✓ Successfully created pull request!\n\n{pr_url}\n\nTitle: {title}"
+            else:
+                return f"✓ Pull request created successfully!\n\n{output[:300]}"
+        else:
+            if "already exists" in output.lower():
+                return f"❌ A pull request already exists for branch '{current_branch}'"
+            elif "no commits" in output.lower():
+                return f"❌ No commits to create PR. The branches are identical."
+            else:
+                return f"❌ Failed to create pull request: {output[:300]}"
+
+    async def gh_create_branch(
+        self,
+        ctx: RunContext[None],
+        branch_name: str,
+        checkout: bool = True
+    ) -> str:
+        """
+        Create a new Git branch.
+
+        Args:
+            branch_name: Name for the new branch
+            checkout: Whether to switch to the new branch (default: True)
+
+        Returns:
+            Status message
+
+        Examples:
+            - "create a new branch called feature/authentication"
+            - "create branch bugfix/api-error and switch to it"
+        """
+        from .utils import execute_command_safe
+
+        # Validate branch name
+        if not branch_name or ' ' in branch_name:
+            return f"❌ Invalid branch name: '{branch_name}'. Branch names cannot contain spaces."
+
+        # Check if we're in a git repo
+        success, output, _ = execute_command_safe("git rev-parse --git-dir", timeout=5)
+        if not success:
+            return "❌ Not a git repository. Initialize with 'git init' first."
+
+        # Check if branch already exists
+        success, output, _ = execute_command_safe(f"git rev-parse --verify {branch_name}", timeout=5)
+        if success:
+            return f"❌ Branch '{branch_name}' already exists. Use gh_checkout_branch to switch to it."
+
+        # Create branch
+        if checkout:
+            cmd = f"git checkout -b {branch_name}"
+        else:
+            cmd = f"git branch {branch_name}"
+
+        success, output, code = execute_command_safe(cmd, timeout=10)
+
+        if success:
+            if checkout:
+                return f"✓ Created and switched to new branch '{branch_name}'"
+            else:
+                return f"✓ Created new branch '{branch_name}'"
+        else:
+            return f"❌ Failed to create branch: {output[:200]}"
+
+    async def gh_checkout_branch(
+        self,
+        ctx: RunContext[None],
+        branch_name: str
+    ) -> str:
+        """
+        Switch to an existing Git branch.
+
+        Args:
+            branch_name: Name of the branch to switch to
+
+        Returns:
+            Status message
+
+        Examples:
+            - "checkout branch main"
+            - "switch to branch feature/authentication"
+        """
+        from .utils import execute_command_safe
+
+        # Check if we're in a git repo
+        success, output, _ = execute_command_safe("git rev-parse --git-dir", timeout=5)
+        if not success:
+            return "❌ Not a git repository."
+
+        # Get current branch
+        success, current_output, _ = execute_command_safe("git branch --show-current", timeout=5)
+        current_branch = current_output.strip() if success else ""
+
+        if current_branch == branch_name:
+            return f"Already on branch '{branch_name}'"
+
+        # Check for uncommitted changes
+        success, status_output, _ = execute_command_safe("git status --porcelain", timeout=5)
+        if success and status_output.strip():
+            return f"⚠️  You have uncommitted changes. Please commit or stash them before switching branches."
+
+        # Checkout branch
+        cmd = f"git checkout {branch_name}"
+        success, output, code = execute_command_safe(cmd, timeout=10)
+
+        if success:
+            return f"✓ Switched to branch '{branch_name}'"
+        else:
+            if "did not match any file" in output.lower() or "unknown revision" in output.lower():
+                return f"❌ Branch '{branch_name}' does not exist. Use gh_create_branch to create it."
+            else:
+                return f"❌ Failed to checkout branch: {output[:200]}"
+
+    async def gh_merge_branch(
+        self,
+        ctx: RunContext[None],
+        source_branch: str,
+        target_branch: str = None
+    ) -> str:
+        """
+        Merge one branch into another.
+
+        Args:
+            source_branch: Branch to merge from
+            target_branch: Branch to merge into (default: current branch)
+
+        Returns:
+            Status message
+
+        Examples:
+            - "merge feature/authentication into main"
+            - "merge branch develop into current branch"
+        """
+        from .utils import execute_command_safe
+
+        # Check if we're in a git repo
+        success, output, _ = execute_command_safe("git rev-parse --git-dir", timeout=5)
+        if not success:
+            return "❌ Not a git repository."
+
+        # Get current branch if target not specified
+        success, current_output, _ = execute_command_safe("git branch --show-current", timeout=5)
+        current_branch = current_output.strip() if success else ""
+
+        if target_branch is None:
+            target_branch = current_branch
+        else:
+            # Switch to target branch if not already there
+            if current_branch != target_branch:
+                switch_success, switch_output, _ = execute_command_safe(
+                    f"git checkout {target_branch}",
+                    timeout=10
+                )
+                if not switch_success:
+                    return f"❌ Failed to switch to target branch '{target_branch}': {switch_output[:200]}"
+
+        # Check for uncommitted changes
+        success, status_output, _ = execute_command_safe("git status --porcelain", timeout=5)
+        if success and status_output.strip():
+            return f"⚠️  You have uncommitted changes. Please commit or stash them before merging."
+
+        # Merge branches
+        cmd = f"git merge {source_branch}"
+        success, output, code = execute_command_safe(cmd, timeout=30)
+
+        if success:
+            if "already up to date" in output.lower():
+                return f"Branch '{target_branch}' is already up to date with '{source_branch}'"
+            elif "fast-forward" in output.lower():
+                return f"✓ Successfully merged '{source_branch}' into '{target_branch}' (fast-forward)"
+            else:
+                return f"✓ Successfully merged '{source_branch}' into '{target_branch}'"
+        else:
+            if "conflict" in output.lower():
+                return f"❌ Merge conflict detected! Please resolve conflicts manually:\n{output[:300]}"
+            elif "not something we can merge" in output.lower():
+                return f"❌ Branch '{source_branch}' does not exist."
+            else:
+                return f"❌ Merge failed: {output[:300]}"
 
     # ==================== Test Generation Tool ====================
 

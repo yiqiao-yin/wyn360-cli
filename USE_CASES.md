@@ -2460,8 +2460,870 @@ Error: Could not fetch content from URL
 
 ---
 
-**Version:** 0.3.21
-**Last Updated:** January 2025
+## 17. GitHub Integration - Complete Git Workflow Management
+
+**Phase:** 8.1
+**Version:** 0.3.22
+**Feature:** Complete GitHub integration with commit, PR creation, and branch management
+
+### Overview
+
+WYN360 now provides seamless GitHub integration directly from the CLI! This feature enables complete git workflow management including committing changes, creating pull requests, managing branches, and merging code. All operations use the GitHub CLI (gh) for reliable interactions with GitHub's API, with built-in authentication and user confirmation for safety.
+
+### Key Features
+
+- 🔐 **GitHub Authentication** - Token-based authentication with GH_TOKEN/GITHUB_TOKEN
+- 💾 **Commit & Push** - Stage, commit, and push changes directly from CLI
+- 🔀 **Pull Requests** - Create PRs with title, body, and base branch
+- 🌿 **Branch Management** - Create, checkout, and list branches
+- 🔄 **Branch Merging** - Merge branches with conflict detection
+- 🔒 **User Confirmation** - All git operations require y/N approval
+- ✅ **Auto-Authentication** - Automatically uses environment token if found
+- 🎯 **Session Persistence** - Token stored in environment across session
+
+### Use Case 17.1: Commit and Push Changes
+
+Commit your changes to the current repository and push to GitHub with a single command.
+
+**User Interaction:**
+```
+You: Commit these changes
+
+WYN360: [Checks GitHub authentication]
+
+Let me check your GitHub authentication first...
+
+✓ Authenticated with GitHub as 'yiqiao-yin'
+
+I'll now commit your changes. Let me check what's been modified:
+
+[Runs git status]
+Changes to be committed:
+  modified:   agent.py
+  modified:   USE_CASES.md
+  new file:   tests/test_github.py
+
+[Runs git add -A to stage all changes]
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: git commit -m "Add GitHub integration tools"
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+Commit created: a1b2c3d
+Author: Yiqiao Yin <yiqiao.yin@wyn-associates.com>
+Message: Add GitHub integration tools
+
+Now pushing to remote...
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: git push origin main
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Successfully committed and pushed changes to GitHub!
+```
+
+**If Not Authenticated:**
+```
+You: Commit to github
+
+WYN360: [Checks authentication]
+
+Not authenticated with GitHub. To use GitHub features, I need your access token.
+
+To get a GitHub token:
+1. Visit: https://github.com/settings/tokens/new
+2. Generate a Personal Access Token with 'repo' and 'workflow' scopes
+3. Copy the token (format: ghp_... or github_pat_...)
+
+Please provide your GitHub token (it will be stored in GH_TOKEN environment variable):
+
+You: ghp_abc123xyz789...
+
+WYN360: [Authenticates]
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: echo 'ghp_abc123xyz789...' | gh auth login --with-token
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Authenticated with GitHub (auto-authenticated using provided token)
+
+Now let me commit your changes...
+
+[Proceeds with commit workflow as shown above]
+```
+
+**How It Works:**
+1. User requests to commit changes
+2. Agent checks GitHub authentication status (one time per session)
+3. If not authenticated, asks for token and authenticates
+4. Stages all changes with git add -A
+5. Commits with user-provided or generated message
+6. Optionally pushes to remote (default: yes)
+7. Shows commit SHA and confirmation
+
+**Cost:**
+- Authentication check: ~$0.001-0.003
+- Commit workflow: ~$0.005-0.010
+- Total: ~$0.006-0.013 per commit operation
+
+### Use Case 17.2: Create Pull Request
+
+Open a pull request from your current branch to the main branch with a single command.
+
+**User Interaction:**
+```
+You: Create a pull request for my feature
+
+WYN360: [Checks authentication - already authenticated this session]
+
+✓ Authenticated with GitHub as 'yiqiao-yin'
+
+Let me gather information about your branch...
+
+[Runs git branch --show-current]
+Current branch: feature/github-integration
+
+[Runs git diff main...feature/github-integration]
+Changes include:
+- agent.py: +150 lines (7 new tools)
+- SYSTEM.md: +75 lines (architecture updates)
+- USE_CASES.md: +200 lines (documentation)
+
+I'll create a pull request with the following details:
+
+**Title:** Add GitHub Integration Tools (Phase 8.1)
+
+**Body:**
+This PR implements Phase 8.1 - GitHub Integration with 7 new tools:
+
+## Changes
+- ✅ GitHub authentication (check_gh_authentication, authenticate_gh)
+- ✅ Commit and push (gh_commit_changes)
+- ✅ Create PRs (gh_create_pr)
+- ✅ Branch management (gh_create_branch, gh_checkout_branch)
+- ✅ Branch merging (gh_merge_branch)
+
+## Documentation
+- Updated SYSTEM.md with GitHub integration layer
+- Added Section 17 to USE_CASES.md
+- Updated system prompt with GitHub workflow
+
+## Testing
+- Unit tests to be added in next commit
+
+**Base branch:** main
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: gh pr create --title "Add GitHub Integration Tools (Phase 8.1)" \
+         --base main --body "..."
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Successfully created pull request!
+
+PR URL: https://github.com/yiqiao-yin/wyn360-cli/pull/42
+Title: Add GitHub Integration Tools (Phase 8.1)
+Base: main ← feature/github-integration
+Status: Open
+
+View or merge at: https://github.com/yiqiao-yin/wyn360-cli/pull/42
+```
+
+**Custom PR with User Input:**
+```
+You: Create PR titled "Fix authentication bug" with body "Fixes #123"
+
+WYN360: [Authentication already verified]
+
+Current branch: bugfix/auth-loop
+Target branch: main (default)
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: gh pr create --title "Fix authentication bug" \
+         --base main --body "Fixes #123"
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Successfully created pull request!
+
+PR URL: https://github.com/yiqiao-yin/wyn360-cli/pull/43
+Title: Fix authentication bug
+Base: main ← bugfix/auth-loop
+Status: Open
+```
+
+**How It Works:**
+1. User requests PR creation
+2. Agent checks current branch (must not be main/master)
+3. Optionally analyzes changes with git diff
+4. Generates or uses user-provided title and body
+5. Creates PR using gh pr create command
+6. Returns PR URL for immediate access
+
+**Cost:**
+- PR creation workflow: ~$0.010-0.020
+- With change analysis: ~$0.015-0.030
+- Total: ~$0.010-0.030 per PR
+
+### Use Case 17.3: Branch Management (Create & Checkout)
+
+Create new branches and switch between them seamlessly.
+
+**Create New Branch:**
+```
+You: Create a new branch called feature/auth
+
+WYN360: I'll create a new branch 'feature/auth' and check it out.
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: git checkout -b feature/auth
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Successfully created and checked out branch 'feature/auth'
+
+Current branch: feature/auth
+Base commit: a1b2c3d (from main)
+
+You can now make changes on this branch. When ready:
+- Commit: "commit these changes"
+- Push: "push to github"
+- PR: "create pull request"
+```
+
+**Create Without Checkout:**
+```
+You: Create branch bugfix/typo but don't switch to it
+
+WYN360: I'll create the branch 'bugfix/typo' without checking it out.
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: git branch bugfix/typo
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Successfully created branch 'bugfix/typo'
+
+Current branch: main (unchanged)
+New branch: bugfix/typo (created but not checked out)
+
+To switch to it later: "checkout bugfix/typo"
+```
+
+**Checkout Existing Branch:**
+```
+You: Switch to the develop branch
+
+WYN360: I'll check out the 'develop' branch.
+
+[First checks if branch exists with git branch]
+Branch 'develop' exists.
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: git checkout develop
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Successfully checked out branch 'develop'
+
+Previous branch: main
+Current branch: develop
+Last commit: x9y8z7 "Update documentation"
+```
+
+**Branch Doesn't Exist:**
+```
+You: Checkout feature/new-api
+
+WYN360: [Checks for branch]
+
+Branch 'feature/new-api' doesn't exist.
+
+Would you like me to:
+1. Create the branch and check it out? (create + checkout)
+2. List all available branches?
+
+You: Create and checkout
+
+WYN360: [Proceeds with create + checkout workflow as shown above]
+```
+
+**How It Works:**
+1. **Create Branch:**
+   - Validates branch name format
+   - Uses git checkout -b (create + checkout) or git branch (create only)
+   - Confirms creation with current base commit
+
+2. **Checkout Branch:**
+   - Checks if branch exists first
+   - If exists: switches with git checkout
+   - If not: offers to create it
+   - Shows previous and current branch
+
+**Cost:**
+- Branch creation: ~$0.003-0.008
+- Branch checkout: ~$0.003-0.008
+- Total: ~$0.003-0.008 per operation
+
+### Use Case 17.4: Merge Branches
+
+Merge feature branches into target branches with conflict detection.
+
+**Successful Merge:**
+```
+You: Merge feature/auth into main
+
+WYN360: I'll merge 'feature/auth' into 'main'.
+
+[Checks current branch]
+Current branch: main ✓
+
+[Checks if source branch exists]
+Source branch 'feature/auth' exists ✓
+
+[Checks for uncommitted changes]
+Working directory clean ✓
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: git merge feature/auth
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+✅ Command executed successfully (exit code 0)
+
+✓ Successfully merged 'feature/auth' into 'main'
+
+Merge type: Fast-forward
+Files changed: 5
+Insertions: +230 lines
+Deletions: -15 lines
+
+Changes:
+  modified: agent.py (+150, -10)
+  modified: SYSTEM.md (+45, -0)
+  modified: USE_CASES.md (+30, -5)
+  new file: tests/test_auth.py (+5, -0)
+
+Next steps:
+- Push to remote: "push to github"
+- Create PR: "create pull request"
+```
+
+**Merge with Conflicts:**
+```
+You: Merge feature/conflicting into main
+
+WYN360: I'll merge 'feature/conflicting' into 'main'.
+
+[Pre-checks all pass]
+
+======================================================================
+⚠️  COMMAND EXECUTION CONFIRMATION
+======================================================================
+Command: git merge feature/conflicting
+Directory: /home/workbench/wyn360-cli/wyn360-cli
+Permissions: Full user permissions
+======================================================================
+
+>>> WAITING FOR YOUR RESPONSE <<<
+
+Execute this command? (y/N): y
+
+❌ Command failed (exit code 1)
+
+⚠️ Merge conflict detected!
+
+Conflicting files:
+- agent.py (both modified)
+- config.py (both modified)
+
+The merge has been started but not completed. You need to:
+
+1. Resolve conflicts in the files listed above
+2. Stage resolved files: git add <file>
+3. Complete the merge: git commit
+
+Or abort the merge: git merge --abort
+
+Would you like me to:
+1. Show the conflicting sections?
+2. Abort the merge?
+3. Guide you through manual resolution?
+
+You: Show conflicts
+
+WYN360: [Reads conflicting files and shows conflict markers]
+
+In agent.py (lines 150-160):
+<<<<<<< HEAD
+def authenticate_gh(self, token: str) -> str:
+    # Current implementation
+    return "authenticated"
+=======
+def authenticate_gh(self, token: str, force: bool = False) -> str:
+    # New feature with force parameter
+    return "force authenticated" if force else "authenticated"
+>>>>>>> feature/conflicting
+
+In config.py (lines 25-30):
+<<<<<<< HEAD
+GH_TOKEN_ENV = "GH_TOKEN"
+=======
+GH_TOKEN_ENV = "GITHUB_TOKEN"
+>>>>>>> feature/conflicting
+
+Recommendation:
+- Keep both changes in agent.py (add force parameter)
+- Choose one token env name in config.py (suggest: GH_TOKEN)
+
+[User resolves manually, then:]
+
+You: Stage agent.py and config.py
+
+WYN360: [Runs git add agent.py config.py]
+✓ Files staged
+
+You: Complete the merge
+
+WYN360: [Runs git commit with merge message]
+✓ Merge completed successfully
+```
+
+**Wrong Branch Error:**
+```
+You: Merge main into feature/auth
+
+WYN360: [Checks current branch]
+
+Current branch: main
+
+Error: You're trying to merge 'main' into 'feature/auth', but you're currently on 'main'.
+
+To merge main into feature/auth:
+1. First checkout feature/auth: "checkout feature/auth"
+2. Then merge: "merge main into feature/auth"
+
+Or did you mean to merge feature/auth into main?
+```
+
+**How It Works:**
+1. Validates source and target branches exist
+2. Ensures user is on the target branch
+3. Checks for uncommitted changes (warns if found)
+4. Executes git merge with confirmation
+5. Detects conflicts and provides guidance
+6. Shows merge summary (files changed, lines added/removed)
+
+**Cost:**
+- Merge workflow: ~$0.010-0.020
+- With conflict resolution: ~$0.020-0.040
+- Total: ~$0.010-0.040 per merge
+
+### When GitHub Tools are Used
+
+**WILL Use GitHub Tools:**
+- ✅ "Commit to github" / "Commit these changes"
+- ✅ "Create pull request" / "Open PR"
+- ✅ "Create branch feature/name"
+- ✅ "Switch to develop branch"
+- ✅ "Merge feature/auth into main"
+- ✅ "Push changes to github"
+- ✅ "Check github authentication"
+
+**WILL NOT Use GitHub Tools:**
+- ❌ File operations ("Write app.py")
+- ❌ Code generation ("Create a FastAPI app")
+- ❌ Local git commands without pushing ("Show git status")
+- ❌ General questions ("What is git?")
+
+### Cost Analysis
+
+**Pricing:**
+- **GitHub CLI Commands:** Free (uses GitHub API)
+- **Token Costs:** Standard model pricing ($3/$15 per M tokens for Sonnet)
+- **No Extra Fees:** No additional GitHub API costs
+
+**Example Costs:**
+
+| Operation | Token Cost | Total Cost |
+|-----------|-----------|------------|
+| Commit + Push | $0.005-0.010 | $0.005-0.010 |
+| Create PR | $0.010-0.020 | $0.010-0.020 |
+| Branch Create | $0.003-0.008 | $0.003-0.008 |
+| Branch Checkout | $0.003-0.008 | $0.003-0.008 |
+| Merge (no conflict) | $0.010-0.020 | $0.010-0.020 |
+| Merge (with conflict) | $0.020-0.040 | $0.020-0.040 |
+
+**Session Example:**
+```
+- 1 authentication check: $0.003
+- 2 commits with push: $0.020
+- 1 PR creation: $0.015
+- 2 branch operations: $0.012
+Total: ~$0.050 per session
+```
+
+**Monthly Estimate (active developer):**
+- 20 working days
+- 5 commits per day = 100 commits/month
+- 10 PRs per month
+- 20 branch operations per month
+- Cost: (100 × $0.008) + (10 × $0.015) + (20 × $0.006) ≈ $1.07/month
+
+### Configuration
+
+**Environment Variables:**
+```bash
+# Set GitHub token for automatic authentication
+export GH_TOKEN="ghp_your_token_here"
+
+# Or use GITHUB_TOKEN (both work)
+export GITHUB_TOKEN="ghp_your_token_here"
+```
+
+**Token Requirements:**
+- Format: `ghp_*` or `github_pat_*`
+- Required scopes: `repo`, `workflow`
+- Generate at: https://github.com/settings/tokens/new
+
+**.env File (Recommended):**
+```bash
+# .env file in your project root
+ANTHROPIC_API_KEY=your_anthropic_key
+GH_TOKEN=ghp_your_github_token
+```
+
+**Project-Specific Config (.wyn360.yaml):**
+```yaml
+context: |
+  This project follows GitHub Flow:
+  - main branch is always deployable
+  - feature branches for new work
+  - PRs required for all changes
+
+commands:
+  commit: "commit to github"
+  pr: "create pull request"
+  deploy: "merge to main and push"
+```
+
+### Technical Implementation
+
+**Integration Method:**
+```python
+# In agent.py
+
+@agent.tool
+async def check_gh_authentication(ctx: RunContext[None]) -> str:
+    """Check if user is authenticated with GitHub."""
+    gh_token = os.getenv('GH_TOKEN') or os.getenv('GITHUB_TOKEN')
+    success, output, _ = execute_command_safe("gh auth status", timeout=10)
+
+    if success and "logged in" in output.lower():
+        return f"✓ Authenticated with GitHub as '{username}'"
+    elif gh_token:
+        # Auto-authenticate with token
+        return "✓ Authenticated (auto-authenticated using GH_TOKEN)"
+    else:
+        return "Not authenticated. Please provide GitHub token..."
+
+@agent.tool
+async def gh_commit_changes(
+    ctx: RunContext[None],
+    message: str,
+    push: bool = True
+) -> str:
+    """Commit changes and optionally push to GitHub."""
+    # Stage all changes
+    execute_command_safe("git add -A", timeout=10)
+
+    # Commit
+    execute_command_safe(f"git commit -m \"{message}\"", timeout=30)
+
+    # Push if requested
+    if push:
+        execute_command_safe(f"git push origin {branch}", timeout=60)
+
+    return "✓ Successfully committed and pushed changes"
+```
+
+**Key Points:**
+- Uses GitHub CLI (gh) for all GitHub operations
+- All operations use execute_command_safe with confirmation
+- Token validation (ghp_* or github_pat_*)
+- Environment variables: GH_TOKEN or GITHUB_TOKEN
+- Auto-authentication from environment
+
+### Best Practices
+
+**For Users:**
+
+1. **Set Up Token Once:**
+   ```bash
+   echo "GH_TOKEN=ghp_your_token" >> .env
+   ```
+
+2. **Descriptive Commit Messages:**
+   ```
+   Good: "commit with message 'Add GitHub tools (Phase 8.1)'"
+   Bad: "commit changes"
+   ```
+
+3. **Feature Branch Workflow:**
+   ```
+   1. Create branch: "create branch feature/auth"
+   2. Make changes: [code generation]
+   3. Commit: "commit these changes"
+   4. PR: "create pull request"
+   ```
+
+4. **Review Before Confirming:**
+   - Always check the command in confirmation prompt
+   - Verify branch names before merging
+   - Review files being committed
+
+**For Teams:**
+
+1. **Shared Configuration:**
+   ```yaml
+   # .wyn360.yaml (committed to repo)
+   context: |
+     Follow team conventions:
+     - Branch naming: feature/, bugfix/, hotfix/
+     - PR requires 2 approvals
+     - All tests must pass before merge
+   ```
+
+2. **Protected Branches:**
+   - Configure on GitHub to prevent direct pushes to main
+   - Require PRs for all changes
+   - Use branch protection rules
+
+3. **CI/CD Integration:**
+   - Use WYN360 for local commits
+   - Let CI/CD handle builds and deployments
+   - Review test results before merging
+
+### Troubleshooting
+
+**Issue: Not authenticated**
+```
+Error: Not authenticated with GitHub
+```
+**Solution:**
+1. Set GH_TOKEN or GITHUB_TOKEN environment variable
+2. Or run `gh auth login` manually first
+3. Verify token format (ghp_* or github_pat_*)
+
+**Issue: Permission denied**
+```
+Error: Permission denied (publickey)
+```
+**Solution:**
+1. Check SSH keys: `ssh -T git@github.com`
+2. Or use HTTPS instead of SSH
+3. Verify token has correct scopes
+
+**Issue: Branch already exists**
+```
+Error: Branch 'feature/auth' already exists
+```
+**Solution:**
+1. Checkout existing branch: "checkout feature/auth"
+2. Or delete and recreate: "delete branch feature/auth"
+3. Or use different branch name
+
+**Issue: Merge conflict**
+```
+Error: Merge conflict in agent.py
+```
+**Solution:**
+1. Ask WYN360 to show conflicts
+2. Resolve manually in editor
+3. Stage resolved files: "stage agent.py"
+4. Complete merge: "complete the merge"
+
+**Issue: Nothing to commit**
+```
+Error: nothing to commit, working tree clean
+```
+**Solution:**
+1. Make changes first before committing
+2. Or check if changes were already committed
+
+### Performance
+
+**Response Times:**
+- Authentication check: 0.5-1.5 seconds
+- Commit + push: 2-5 seconds (depends on changes)
+- Create PR: 1-3 seconds
+- Branch operations: 0.5-1 second
+- Merge: 1-3 seconds (no conflicts)
+
+**Reliability:**
+- Uses GitHub CLI (gh) for robust API interactions
+- All operations have error handling
+- Confirmation prompts prevent accidents
+- Session-based authentication (check once per session)
+
+**Limitations:**
+- Requires GitHub CLI (gh) installed
+- Requires git repository
+- Cannot resolve merge conflicts automatically
+- Limited to repositories user has access to
+- Session limit: Authentication valid for session duration only
+
+### Example Workflow: Complete Feature Development
+
+**Scenario:** Building a new authentication feature
+
+```
+# 1. Create feature branch
+You: Create a new branch called feature/auth
+
+WYN360: [Creates and checks out branch]
+✓ Branch 'feature/auth' created and checked out
+
+# 2. Generate code
+You: Create an authentication module with JWT support
+
+WYN360: [Generates auth.py with JWT implementation]
+✓ Created auth.py
+
+# 3. Write tests
+You: Generate tests for the authentication module
+
+WYN360: [Generates tests/test_auth.py]
+✓ Created tests/test_auth.py
+
+# 4. Commit changes
+You: Commit these changes with message "Add JWT authentication"
+
+WYN360: [Authentication already verified]
+[Stages all changes]
+[Commits with message]
+[Pushes to origin]
+✓ Successfully committed and pushed changes
+
+# 5. Create PR
+You: Create a pull request titled "Add JWT Authentication Feature"
+
+WYN360: [Analyzes changes]
+[Generates PR description]
+[Creates PR on GitHub]
+✓ PR created: https://github.com/username/repo/pull/42
+
+# 6. After review, merge to main
+You: Checkout main
+
+WYN360: [Switches to main branch]
+✓ Checked out main
+
+You: Merge feature/auth into main
+
+WYN360: [Merges branch]
+[No conflicts]
+✓ Successfully merged feature/auth into main
+
+You: Push to github
+
+WYN360: [Pushes main branch]
+✓ Pushed to origin/main
+
+✅ Complete workflow: Branch → Code → Commit → PR → Merge → Deploy
+```
+
+**Time Saved:**
+- Manual workflow: 10-15 minutes
+- With WYN360: 2-3 minutes
+- **Efficiency gain: 70-80%**
+
+---
+
+**Version:** 0.3.22
+**Last Updated:** December 10, 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog

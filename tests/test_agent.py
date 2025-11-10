@@ -1195,3 +1195,307 @@ def subtract(a, b):
         assert "✓ Generated test file" in result
         assert str(custom_output) in result
         assert custom_output.exists()
+
+
+class TestGitHubTools:
+    """Tests for GitHub integration tools (Phase 8.1)"""
+
+    @pytest.mark.asyncio
+    async def test_check_gh_authentication_not_authenticated(self, mocker):
+        """Test GitHub authentication check when not authenticated"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock execute_command_safe to simulate not authenticated
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (False, "not logged in", 1),  # gh auth status fails
+        ]
+
+        # No GH_TOKEN in environment
+        mocker.patch.dict('os.environ', {}, clear=True)
+
+        result = await agent.check_gh_authentication(None)
+
+        assert "Not authenticated" in result
+        assert "https://github.com/settings/tokens" in result
+
+    @pytest.mark.asyncio
+    async def test_check_gh_authentication_authenticated(self, mocker):
+        """Test GitHub authentication check when authenticated"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock execute_command_safe to simulate authenticated
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(True, "✓ Logged in to github.com as testuser", 0)
+        )
+
+        result = await agent.check_gh_authentication(None)
+
+        assert "Authenticated" in result
+        assert "testuser" in result
+
+    @pytest.mark.asyncio
+    async def test_check_gh_authentication_auto_auth(self, mocker):
+        """Test auto-authentication when GH_TOKEN is in environment"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Set GH_TOKEN in environment
+        mocker.patch.dict('os.environ', {'GH_TOKEN': 'ghp_test_token_12345'})
+
+        # Mock execute_command_safe to simulate:
+        # 1. gh auth status fails (not authenticated yet)
+        # 2. auth login succeeds
+        # 3. gh auth status succeeds (verification)
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (False, "not logged in", 1),  # First status check fails
+            (True, "Authentication complete", 0),   # auth login succeeds
+            (True, "✓ Logged in to github.com", 0),  # Second status check succeeds
+        ]
+
+        result = await agent.check_gh_authentication(None)
+
+        assert "Authenticated" in result
+        assert "auto-authenticated" in result.lower()
+
+    @pytest.mark.asyncio
+    async def test_authenticate_gh_invalid_token(self):
+        """Test GitHub authentication with invalid token"""
+        agent = WYN360Agent(api_key="test_key")
+
+        result = await agent.authenticate_gh(None, "short")
+
+        assert "Invalid token" in result
+
+    @pytest.mark.asyncio
+    async def test_authenticate_gh_success(self, mocker):
+        """Test successful GitHub authentication"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock auth login success
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(True, "Authentication complete", 0)
+        )
+
+        result = await agent.authenticate_gh(None, "ghp_validtoken1234567890")
+
+        assert "Successfully authenticated" in result
+        assert "GitHub features" in result
+
+    @pytest.mark.asyncio
+    async def test_authenticate_gh_failure(self, mocker):
+        """Test failed GitHub authentication"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock auth login failure
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(False, "invalid token", 1)
+        )
+
+        result = await agent.authenticate_gh(None, "ghp_invalidtoken")
+
+        assert "Authentication failed" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_commit_changes_success(self, mocker):
+        """Test successful commit and push"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (True, "M file.py\nA new_file.py", 0),  # git status --porcelain (has changes)
+            (True, "", 0),  # git add -A
+            (True, "[main abc123] Test commit", 0),  # git commit
+            (True, "origin\tgit@github.com:user/repo.git (fetch)", 0),  # git remote -v
+            (True, "main", 0),  # git branch --show-current
+            (True, "To github.com:user/repo.git", 0),  # git push
+        ]
+
+        result = await agent.gh_commit_changes(None, "Test commit", push=True)
+
+        assert "Successfully committed" in result
+        assert "pushed" in result.lower()
+
+    @pytest.mark.asyncio
+    async def test_gh_commit_changes_not_a_repo(self, mocker):
+        """Test commit when not in a git repository"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git rev-parse failure
+        mocker.patch(
+            'wyn360_cli.utils.execute_command_safe',
+            return_value=(False, "not a git repository", 128)
+        )
+
+        result = await agent.gh_commit_changes(None, "Test commit")
+
+        assert "Not a git repository" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_create_pr_success(self, mocker):
+        """Test successful PR creation"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "✓ Logged in", 0),  # gh auth status
+            (True, "feature/test", 0),  # git branch --show-current
+            (True, "https://github.com/user/repo/pull/42", 0),  # gh pr create
+        ]
+
+        result = await agent.gh_create_pr(None, "Test PR", "Description", "main")
+
+        assert "Successfully created pull request" in result
+        assert "https://github.com/user/repo/pull/42" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_create_pr_on_main_branch(self, mocker):
+        """Test PR creation fails when on main branch"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "✓ Logged in", 0),  # gh auth status
+            (True, "main", 0),  # git branch --show-current
+        ]
+
+        result = await agent.gh_create_pr(None, "Test PR", "Description", "main")
+
+        assert "Cannot create PR" in result
+        assert "from 'main' to itself" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_create_branch_success(self, mocker):
+        """Test successful branch creation"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (False, "fatal: Needed a single revision", 128),  # git rev-parse --verify (branch doesn't exist)
+            (True, "Switched to a new branch 'feature/test'", 0),  # git checkout -b
+        ]
+
+        result = await agent.gh_create_branch(None, "feature/test", checkout=True)
+
+        assert "Created" in result
+        assert "switched" in result
+        assert "feature/test" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_create_branch_no_checkout(self, mocker):
+        """Test branch creation without checkout"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (False, "fatal: Needed a single revision", 128),  # git rev-parse --verify (branch doesn't exist)
+            (True, "", 0),  # git branch
+        ]
+
+        result = await agent.gh_create_branch(None, "feature/test", checkout=False)
+
+        assert "Created new branch" in result
+        assert "feature/test" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_checkout_branch_success(self, mocker):
+        """Test successful branch checkout"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (True, "main", 0),  # git branch --show-current
+            (True, "", 0),  # git status --porcelain (no uncommitted changes)
+            (True, "Switched to branch 'feature/test'", 0),  # git checkout
+        ]
+
+        result = await agent.gh_checkout_branch(None, "feature/test")
+
+        assert "Switched to branch" in result
+        assert "feature/test" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_checkout_branch_not_exists(self, mocker):
+        """Test checkout when branch doesn't exist"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (True, "main", 0),  # git branch --show-current
+            (True, "", 0),  # git status --porcelain (no uncommitted changes)
+            (False, "error: pathspec 'nonexistent' did not match any file(s) known to git", 1),  # git checkout fails
+        ]
+
+        result = await agent.gh_checkout_branch(None, "nonexistent")
+
+        assert "does not exist" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_merge_branch_success(self, mocker):
+        """Test successful branch merge"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (True, "main", 0),  # git branch --show-current
+            (True, "", 0),  # git status --porcelain (clean, no uncommitted changes)
+            (True, "Updating abc123..def456\nFast-forward", 0),  # git merge
+        ]
+
+        result = await agent.gh_merge_branch(None, "feature/test", "main")
+
+        assert "Successfully merged" in result
+        assert "feature/test" in result
+        assert "main" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_merge_branch_wrong_branch(self, mocker):
+        """Test merge fails when on wrong branch"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock: currently on feature branch, trying to merge main into develop, but checkout fails
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (True, "feature/test", 0),  # git branch --show-current (on wrong branch)
+            (False, "error: pathspec 'develop' did not match any file(s) known to git", 1),  # git checkout develop fails
+        ]
+
+        result = await agent.gh_merge_branch(None, "main", "develop")
+
+        assert "Failed to switch to target branch" in result
+
+    @pytest.mark.asyncio
+    async def test_gh_merge_branch_conflict(self, mocker):
+        """Test merge with conflicts"""
+        agent = WYN360Agent(api_key="test_key")
+
+        # Mock git commands
+        mock_execute = mocker.patch('wyn360_cli.utils.execute_command_safe')
+        mock_execute.side_effect = [
+            (True, "", 0),  # git rev-parse --git-dir
+            (True, "main", 0),  # git branch --show-current
+            (True, "", 0),  # git status --porcelain (clean, no uncommitted changes)
+            (False, "CONFLICT (content): Merge conflict in file.py", 1),  # git merge fails
+        ]
+
+        result = await agent.gh_merge_branch(None, "feature/test", "main")
+
+        assert "conflict" in result.lower() or "failed" in result.lower()

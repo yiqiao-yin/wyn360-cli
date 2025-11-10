@@ -74,6 +74,13 @@ def main(api_key, model):
         - check_hf_authentication, authenticate_hf
         - create_hf_readme, create_hf_space, push_to_hf_space
 
+      GitHub Integration (NEW in v0.3.22):
+        - check_gh_authentication, authenticate_gh
+        - gh_commit_changes (commit and push to GitHub)
+        - gh_create_pr (create pull requests)
+        - gh_create_branch, gh_checkout_branch (branch management)
+        - gh_merge_branch (merge branches)
+
       Web Search (NEW in v0.3.21):
         - web_search (weather, URLs, current info)
         - Real-time internet access with proper citations
@@ -96,7 +103,7 @@ def main(api_key, model):
       Use Cases:   See USE_CASES.md for detailed examples
       Get API Key: https://console.anthropic.com/
 
-    Version: 0.3.21
+    Version: 0.3.22
     """
     # Load environment variables from .env file if it exists
     load_dotenv()

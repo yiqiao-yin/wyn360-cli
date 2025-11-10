@@ -57,6 +57,16 @@ graph TB
         WebSearch[web_search<br/>Real-time web search<br/>Weather, URLs, current info<br/>$10 per 1K searches]
     end
 
+    subgraph "GitHub Integration Tools (Phase 8.1)"
+        CheckGHAuth[check_gh_authentication<br/>Check GitHub auth status]
+        AuthGH[authenticate_gh<br/>Authenticate with token]
+        GHCommit[gh_commit_changes<br/>Commit and push changes]
+        GHCreatePR[gh_create_pr<br/>Create pull request]
+        GHCreateBranch[gh_create_branch<br/>Create new branch]
+        GHCheckoutBranch[gh_checkout_branch<br/>Switch branch]
+        GHMergeBranch[gh_merge_branch<br/>Merge branches]
+    end
+
     subgraph "Utility Layer"
         FileOps[File Operations<br/>Safe read/write<br/>Backup handling]
         Scanner[Directory Scanner<br/>Categorize files<br/>Ignore patterns]
@@ -97,6 +107,13 @@ graph TB
     Agent --> MoveFile
     Agent --> CreateDir
     Agent --> WebSearch
+    Agent --> CheckGHAuth
+    Agent --> AuthGH
+    Agent --> GHCommit
+    Agent --> GHCreatePR
+    Agent --> GHCreateBranch
+    Agent --> GHCheckoutBranch
+    Agent --> GHMergeBranch
 
     ReadFile --> FileOps
     WriteFile --> FileOps
@@ -111,6 +128,13 @@ graph TB
     DeleteFile --> FileOps
     MoveFile --> FileOps
     CreateDir --> FileOps
+    CheckGHAuth --> CmdExec
+    AuthGH --> CmdExec
+    GHCommit --> CmdExec
+    GHCreatePR --> CmdExec
+    GHCreateBranch --> CmdExec
+    GHCheckoutBranch --> CmdExec
+    GHMergeBranch --> CmdExec
 
     WriteFile --> CodeExt
     History --> TokenTrack
@@ -295,6 +319,83 @@ graph TB
 - No conflicts with file operations or git tools
 - Invoked automatically by Claude when needed for current information
 
+### GitHub Integration Tools (Phase 8.1)
+
+**Authentication Tools**
+- `check_gh_authentication` - Check GitHub CLI authentication status
+  - Checks GH_TOKEN or GITHUB_TOKEN environment variables
+  - Auto-authenticates if token found
+  - Returns username if authenticated
+
+- `authenticate_gh(token)` - Authenticate with GitHub token
+  - Validates token format (ghp_* or github_pat_*)
+  - Stores token in environment
+  - Uses gh CLI login command
+  - Required scopes: repo, workflow
+
+**Repository Operations**
+- `gh_commit_changes(message, push)` - Commit and push changes
+  - Stages all changes with 'git add -A'
+  - Commits with provided message
+  - Optionally pushes to remote (default: True)
+  - Checks for git repo and remote configuration
+
+- `gh_create_pr(title, body, base_branch)` - Create pull request
+  - Creates PR using gh CLI
+  - Validates not on base branch (e.g., main)
+  - Returns PR URL on success
+  - Handles existing PR detection
+
+**Branch Management**
+- `gh_create_branch(branch_name, checkout)` - Create new branch
+  - Validates branch name (no spaces)
+  - Optionally switches to new branch (default: True)
+  - Checks for existing branch with same name
+
+- `gh_checkout_branch(branch_name)` - Switch to existing branch
+  - Checks for uncommitted changes
+  - Returns error if branch doesn't exist
+  - Safe branch switching with status checks
+
+- `gh_merge_branch(source_branch, target_branch)` - Merge branches
+  - Merges source into target (default: current branch)
+  - Checks for uncommitted changes
+  - Detects and reports merge conflicts
+  - Supports fast-forward and 3-way merges
+
+**Common Workflows:**
+
+1. **Commit and Push:**
+   ```
+   User: "Commit these changes"
+   → check_gh_authentication() → gh_commit_changes("message", push=True)
+   ```
+
+2. **Create Feature Branch:**
+   ```
+   User: "Create branch feature/auth"
+   → gh_create_branch("feature/auth", checkout=True)
+   ```
+
+3. **Open Pull Request:**
+   ```
+   User: "Create PR for my changes"
+   → check_gh_authentication() → gh_create_pr("title", "body", "main")
+   ```
+
+4. **Merge Feature:**
+   ```
+   User: "Merge feature/auth into main"
+   → gh_merge_branch("feature/auth", "main")
+   ```
+
+**Integration Notes:**
+- All tools use execute_command_safe with user confirmation
+- GitHub CLI (gh) must be installed on system
+- Uses existing git repository in current directory
+- Authentication persists across session
+- Follows same pattern as HuggingFace integration
+
 ### Utility Layer
 
 **File Operations**
@@ -457,6 +558,15 @@ User: "/load my_session.json"
 - ✅ Current information retrieval (docs, news, trends)
 - ✅ Cost-controlled with 5 searches per session max
 - ✅ Integrated via pydantic-ai's WebSearchTool builtin
+
+### Phase 8.1: GitHub Integration (v0.3.22)
+- ✅ GitHub authentication with token management (GH_TOKEN/GITHUB_TOKEN)
+- ✅ Commit and push changes directly from CLI
+- ✅ Create pull requests with title, body, and base branch
+- ✅ Branch management: create, checkout, merge branches
+- ✅ Auto-authentication from environment variables
+- ✅ Integration with GitHub CLI (gh) for seamless operations
+- ✅ 7 new tools for complete GitHub workflow management
 
 ---
 
