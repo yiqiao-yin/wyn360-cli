@@ -2,7 +2,7 @@
 
 This document provides a detailed overview of the WYN360 CLI system architecture, including all components, layers, and data flows.
 
-**Version:** 0.3.20
+**Version:** 0.3.21
 **Last Updated:** January 2025
 
 ---
@@ -53,6 +53,10 @@ graph TB
         CreateDir[create_directory<br/>Create nested dirs]
     end
 
+    subgraph "Builtin Tools Layer (Phase 11.1)"
+        WebSearch[web_search<br/>Real-time web search<br/>Weather, URLs, current info<br/>$10 per 1K searches]
+    end
+
     subgraph "Utility Layer"
         FileOps[File Operations<br/>Safe read/write<br/>Backup handling]
         Scanner[Directory Scanner<br/>Categorize files<br/>Ignore patterns]
@@ -92,6 +96,7 @@ graph TB
     Agent --> DeleteFile
     Agent --> MoveFile
     Agent --> CreateDir
+    Agent --> WebSearch
 
     ReadFile --> FileOps
     WriteFile --> FileOps
@@ -255,6 +260,41 @@ graph TB
 - `move_file` - Move/rename files with directory creation
 - `create_directory` - Create nested directory structures
 
+### Builtin Tools Layer (Phase 11.1)
+
+**Web Search (pydantic-ai WebSearchTool)**
+- Real-time internet search using Claude's native web_search_20250305 tool
+- Integrated via pydantic-ai's `builtin_tools` parameter
+- Configured with `max_uses=5` to control costs
+
+**Use Cases:**
+1. **Weather Queries**
+   - User asks: "What's the weather in [location]?"
+   - Asks for location if not provided
+   - Searches and displays current weather with source
+
+2. **Website Reading**
+   - User provides URL: "Read https://example.com"
+   - Fetches and summarizes website content
+   - Displays key points with proper citations
+
+3. **Current Information**
+   - Latest documentation and package updates
+   - Recent news and events
+   - Real-time data and trends
+   - Examples: "What's new in Python 3.13?", "Latest React features"
+
+**Cost Structure:**
+- $10.00 per 1,000 searches
+- Plus standard token costs for input/output
+- Limited to 5 searches per session by default
+
+**Integration:**
+- Separate from custom @tool decorated functions
+- Works alongside 19 existing custom tools
+- No conflicts with file operations or git tools
+- Invoked automatically by Claude when needed for current information
+
 ### Utility Layer
 
 **File Operations**
@@ -410,6 +450,14 @@ User: "/load my_session.json"
 - ✅ Immediate command execution confirmation (v0.3.14)
 - ✅ No text duplication (fixed in v0.3.13)
 
+### Phase 11.1: Web Search (v0.3.21)
+- ✅ Real-time web search using Claude's native web_search_20250305 tool
+- ✅ Weather queries with location handling
+- ✅ Website content fetching and summarization
+- ✅ Current information retrieval (docs, news, trends)
+- ✅ Cost-controlled with 5 searches per session max
+- ✅ Integrated via pydantic-ai's WebSearchTool builtin
+
 ---
 
 ## 🎯 Design Principles
@@ -443,6 +491,6 @@ See [ROADMAP.md](ROADMAP.md) for planned features including:
 
 ---
 
-**Version:** 0.3.20
+**Version:** 0.3.21
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)

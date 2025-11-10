@@ -74,6 +74,11 @@ def main(api_key, model):
         - check_hf_authentication, authenticate_hf
         - create_hf_readme, create_hf_space, push_to_hf_space
 
+      Web Search (NEW in v0.3.21):
+        - web_search (weather, URLs, current info)
+        - Real-time internet access with proper citations
+        - Limited to 5 searches per session ($0.01 per search)
+
     \b
     EXAMPLES:
       # Start with different models
@@ -91,7 +96,7 @@ def main(api_key, model):
       Use Cases:   See USE_CASES.md for detailed examples
       Get API Key: https://console.anthropic.com/
 
-    Version: 0.3.19
+    Version: 0.3.21
     """
     # Load environment variables from .env file if it exists
     load_dotenv()

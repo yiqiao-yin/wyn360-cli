@@ -4,35 +4,56 @@ This document provides a detailed breakdown of the costs associated with using W
 
 ## 💰 Pricing (Anthropic Claude Sonnet 4)
 
-As of November 2025, the default model `claude-sonnet-4-20250514` pricing:
+As of January 2025, the default model `claude-sonnet-4-20250514` pricing:
+
+### Token Costs
 
 | Token Type | Cost per Million Tokens |
 |------------|------------------------|
 | **Input Tokens** | $3.00 |
 | **Output Tokens** | $15.00 |
 
+### Web Search Costs (Phase 11.1 - v0.3.21)
+
+| Feature | Cost |
+|---------|------|
+| **Web Search** | $10.00 per 1,000 searches |
+| **Session Limit** | 5 searches (default, configurable) |
+| **Per Search** | $0.01 |
+
+**Important:** Web search costs are **in addition to** token costs. Each search incurs:
+- Fixed search cost: $0.01
+- Token costs for processing results: ~$0.001-0.015 (varies by result size)
+- Total per search: ~$0.011-0.025
+
 **Formula:**
 ```
-Total Cost = (Input Tokens / 1,000,000 × $3) + (Output Tokens / 1,000,000 × $15)
+Total Cost = (Input Tokens / 1,000,000 × $3)
+           + (Output Tokens / 1,000,000 × $15)
+           + (Web Searches × $0.01)
+           + (Search Result Token Processing)
 ```
 
 ## 📊 Token Breakdown Per Request
 
 Every interaction with WYN360 CLI consists of several components that contribute to token usage:
 
-### 1. System Prompt (~850 tokens)
+### 1. System Prompt (~1,000 tokens)
 
 The system prompt is sent with **every request** and includes:
 - Role description and capabilities (~100 tokens)
 - File operation intelligence guidelines (~200 tokens)
 - Command execution guidelines (~150 tokens)
-- Best practices and examples (~400 tokens)
+- HuggingFace integration guidelines (~100 tokens)
+- Test generation guidelines (~100 tokens)
+- **Web search guidelines (~100 tokens)** - NEW in v0.3.21
+- Best practices and examples (~250 tokens)
 
-**Cost per request:** ~$0.00255 (input only)
+**Cost per request:** ~$0.003 (input only)
 
-### 2. Tool Definitions (~1,200 tokens)
+### 2. Tool Definitions (~1,800 tokens)
 
-All 13 tools are registered with the agent and their schemas are sent with each request:
+All 20 tools are registered with the agent and their schemas are sent with each request (19 custom + 1 builtin):
 
 **Core Tools (Phase 1):**
 - `read_file` - Read file contents (~100 tokens)
@@ -51,7 +72,23 @@ All 13 tools are registered with the agent and their schemas are sent with each 
 - `move_file` - Move/rename files (~80 tokens)
 - `create_directory` - Create nested directories (~80 tokens)
 
-**Cost per request:** ~$0.0036 (input only)
+**HuggingFace Tools (Phase 6/7 - Added in v0.3.16-v0.3.17):**
+- `check_hf_authentication` - Check HF auth status (~80 tokens)
+- `authenticate_hf` - Authenticate with HF (~80 tokens)
+- `create_hf_readme` - Create Space README (~100 tokens)
+- `create_hf_space` - Create new HF Space (~100 tokens)
+- `push_to_hf_space` - Push files to Space (~100 tokens)
+
+**Test Generation Tool (Phase 7.2 - Added in v0.3.18):**
+- `generate_tests` - Auto-generate pytest test stubs (~100 tokens)
+
+**Web Search Builtin Tool (Phase 11.1 - Added in v0.3.21):**
+- `web_search` - Real-time internet search (~60 tokens for definition)
+  - **Note:** This is a builtin tool, not a custom @tool function
+  - Invoked automatically by Claude when current information is needed
+  - Additional cost: $0.01 per search (5 searches max per session)
+
+**Cost per request:** ~$0.0054 (input only, excluding web search usage costs)
 
 ### 3. User Message (~50-500 tokens)
 
@@ -83,10 +120,12 @@ Starting with v0.2.8, conversation history is maintained across interactions to 
 Without history (v0.2.7 and earlier):
   Each request: ~1,500 tokens baseline (5 tools)
 
-With history + extended tools (v0.2.9+):
-  Turn 1:  ~2,100 tokens baseline (13 tools)
-  Turn 5:  ~4,100-6,100 tokens (includes 4 previous turns)
-  Turn 10: ~7,100-11,100 tokens (includes 9 previous turns)
+With history + all tools (v0.3.21):
+  Turn 1:  ~2,850 tokens baseline (20 tools, web search capable)
+  Turn 5:  ~5,350-7,850 tokens (includes 4 previous turns)
+  Turn 10: ~9,350-13,850 tokens (includes 9 previous turns)
+
+Note: Add $0.01-0.025 per web search if used
 ```
 
 **Average conversation history cost per turn:**
@@ -309,6 +348,120 @@ Total Cost: $0.02055 (~$0.021 per request)
 ```
 
 **Monthly estimate (5 setups):** ~$0.11
+
+---
+
+### Use Case 6: Web Search - Weather Query (NEW in v0.3.21)
+
+**Scenario:** "What's the weather in San Francisco?"
+
+**Token Breakdown:**
+```
+System Prompt:      1,000 tokens (input, includes web search guidelines)
+Tool Definitions:   1,800 tokens (input, 20 tools)
+User Message:          15 tokens (input)
+---------------------------------------------------
+Web Search Call:
+  Request:             50 tokens (input)
+  Search Cost:         $0.01 (flat fee per search)
+  Response:           300 tokens (input, weather data from web)
+---------------------------------------------------
+Assistant Response:   250 tokens (output, formatted weather info)
+---------------------------------------------------
+Total Input:        3,165 tokens
+Total Output:         250 tokens
+Web Search:         1 search
+```
+
+**Cost Calculation:**
+```
+Input:  3,165 / 1,000,000 × $3  = $0.009495
+Output:   250 / 1,000,000 × $15 = $0.003750
+Web Search: 1 × $0.01          = $0.010000
+---------------------------------------------------
+Total Cost: $0.023245 (~$0.023 per weather query)
+```
+
+**Monthly estimate (20 weather queries):** ~$0.46
+
+**Note:** Session limit of 5 searches prevents excessive costs. Start new session if limit reached.
+
+---
+
+### Use Case 7: Web Search - URL Reading (NEW in v0.3.21)
+
+**Scenario:** "Read this article: https://python.org/downloads/release/python-3130/"
+
+**Token Breakdown:**
+```
+System Prompt:      1,000 tokens (input)
+Tool Definitions:   1,800 tokens (input)
+User Message:          20 tokens (input)
+---------------------------------------------------
+Web Search Call:
+  Request:             60 tokens (input)
+  Search Cost:         $0.01 (flat fee per search)
+  Response:         1,200 tokens (input, article content)
+---------------------------------------------------
+Assistant Response:   800 tokens (output, summary and analysis)
+---------------------------------------------------
+Total Input:        4,080 tokens
+Total Output:         800 tokens
+Web Search:         1 search
+```
+
+**Cost Calculation:**
+```
+Input:  4,080 / 1,000,000 × $3  = $0.012240
+Output:   800 / 1,000,000 × $15 = $0.012000
+Web Search: 1 × $0.01          = $0.010000
+---------------------------------------------------
+Total Cost: $0.034240 (~$0.034 per URL read)
+```
+
+**Monthly estimate (10 URL reads):** ~$0.34
+
+---
+
+### Use Case 8: Web Search - Latest Information (NEW in v0.3.21)
+
+**Scenario:** "What's new in Python 3.13?"
+
+**Token Breakdown:**
+```
+System Prompt:      1,000 tokens (input)
+Tool Definitions:   1,800 tokens (input)
+User Message:          15 tokens (input)
+---------------------------------------------------
+Web Search Call 1 (main query):
+  Request:             50 tokens (input)
+  Search Cost:         $0.01 (flat fee)
+  Response:           800 tokens (input, search results)
+---------------------------------------------------
+Web Search Call 2 (follow-up for details):
+  Request:             50 tokens (input)
+  Search Cost:         $0.01 (flat fee)
+  Response:           600 tokens (input, additional details)
+---------------------------------------------------
+Assistant Response: 1,200 tokens (output, comprehensive summary)
+---------------------------------------------------
+Total Input:        4,315 tokens
+Total Output:       1,200 tokens
+Web Searches:       2 searches
+```
+
+**Cost Calculation:**
+```
+Input:  4,315 / 1,000,000 × $3  = $0.012945
+Output: 1,200 / 1,000,000 × $15 = $0.018000
+Web Searches: 2 × $0.01        = $0.020000
+---------------------------------------------------
+Total Cost: $0.050945 (~$0.051 per info query)
+```
+
+**Monthly estimate (8 info queries):** ~$0.41
+
+**Note:** Complex queries may use 1-2 searches. Simple queries typically use 1 search.
 
 ---
 
@@ -653,4 +806,4 @@ For **most developers**, WYN360 CLI will cost **$1-3 per month** - significantly
 ---
 
 **Last Updated:** January 2025
-**Version:** 0.3.20
+**Version:** 0.3.21

@@ -414,5 +414,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.20
+**Current Version:** 0.3.21
 **Last Updated:** January 2025

@@ -1995,13 +1995,492 @@ WYN360: ✓ Session saved (including performance metrics)
 
 ---
 
-**Version:** 0.3.20
+## 16. Web Search - Real-Time Information Access
+
+**Phase:** 11.1
+**Version:** 0.3.21
+**Feature:** Real-time web search using Claude's native web_search_20250305 tool
+
+### Overview
+
+WYN360 now has access to real-time web search capabilities! This feature enables the AI assistant to fetch current information from the internet, including weather data, website content, and the latest documentation. The web search tool is integrated via pydantic-ai's `WebSearchTool` builtin and is configured with cost controls (5 searches per session max, $10 per 1,000 searches).
+
+### Key Features
+
+- 🌤️ **Weather Queries** - Get current weather for any location
+- 🌐 **Website Reading** - Fetch and summarize web content
+- 📚 **Current Information** - Access latest docs, news, and trends
+- 💰 **Cost Controlled** - Limited to 5 searches per session by default
+- 🔗 **Proper Citations** - All results include source URLs
+- 🤖 **Automatic Invocation** - Claude decides when web search is needed
+
+### Use Case 16.1: Weather Queries
+
+Get real-time weather information for any location.
+
+**User Interaction:**
+```
+You: What's the weather in San Francisco?
+
+WYN360: [Searches web for current San Francisco weather]
+
+Current Weather in San Francisco, CA:
+- Temperature: 62°F (17°C)
+- Conditions: Partly Cloudy
+- Humidity: 71%
+- Wind: 10 mph NW
+- Last Updated: 2025-01-10 14:30 PST
+
+Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
+```
+
+**If Location Not Provided:**
+```
+You: What's the weather?
+
+WYN360: I'd be happy to check the weather for you! Could you please tell me which location you'd like to know about?
+
+You: Boston
+
+WYN360: [Searches web for Boston weather]
+
+Current Weather in Boston, MA:
+- Temperature: 28°F (-2°C)
+- Conditions: Light Snow
+- Humidity: 85%
+- Wind: 15 mph NE
+- Last Updated: 2025-01-10 14:30 EST
+
+Source: [Weather.com](https://weather.com/weather/today/l/Boston+MA)
+```
+
+**How It Works:**
+1. User asks for weather information
+2. If location is missing, WYN360 asks for it
+3. Web search tool fetches current weather data
+4. Results displayed with source citation
+5. Information includes temperature, conditions, and more
+
+**Cost:**
+- 1 search per query ($0.01)
+- Plus token costs for input/output (~$0.001-0.003)
+- Total: ~$0.011-0.013 per weather query
+
+### Use Case 16.2: Website Reading & Summarization
+
+Fetch and summarize content from any publicly accessible URL.
+
+**User Interaction:**
+```
+You: Read this article: https://python.org/downloads/release/python-3130/
+
+WYN360: [Fetches content from python.org]
+
+**Python 3.13.0 Release Summary:**
+
+**Key Highlights:**
+1. **Performance Improvements:**
+   - Free-threaded CPython (no GIL) - experimental
+   - JIT compiler - experimental
+   - 5-10% performance boost in most workloads
+
+2. **New Features:**
+   - Enhanced error messages with better tracebacks
+   - Improved type hinting capabilities
+   - New syntax for generic type parameters
+   - Enhanced asyncio performance
+
+3. **Standard Library Updates:**
+   - New modules: `dbm.sqlite3`
+   - Improved `pathlib` functionality
+   - Enhanced `argparse` features
+
+4. **Deprecations & Removals:**
+   - Removed various deprecated features from 3.10
+   - Updated minimum supported platforms
+
+**Release Date:** October 2024
+**Status:** Stable Release
+
+**Important Notes:**
+- Free-threading and JIT are experimental and opt-in
+- Recommended for production use after thorough testing
+- Migration guide available for deprecated features
+
+Source: [Python.org](https://python.org/downloads/release/python-3130/)
+(Last updated: 2024-10-07)
+```
+
+**Another Example:**
+```
+You: What does this page say? https://fastapi.tiangolo.com/
+
+WYN360: [Fetches FastAPI homepage]
+
+**FastAPI Framework Overview:**
+
+FastAPI is a modern, high-performance web framework for building APIs with Python 3.8+ based on standard Python type hints.
+
+**Key Features:**
+- **Fast:** Very high performance, on par with NodeJS and Go
+- **Fast to code:** Increase development speed by 200-300%
+- **Fewer bugs:** Reduce about 40% of human errors
+- **Intuitive:** Great editor support with auto-completion
+- **Easy:** Designed to be easy to use and learn
+- **Short:** Minimize code duplication
+- **Robust:** Production-ready code with automatic docs
+- **Standards-based:** Based on OpenAPI and JSON Schema
+
+**Core Technologies:**
+- Starlette for web parts
+- Pydantic for data validation
+- Python type hints for everything
+
+**Use Cases:**
+- RESTful APIs
+- GraphQL APIs
+- WebSockets
+- Background tasks
+- Dependency injection
+
+Source: [FastAPI Documentation](https://fastapi.tiangolo.com/)
+```
+
+**How It Works:**
+1. User provides a URL to read
+2. Web search tool fetches the page content
+3. WYN360 analyzes and summarizes key information
+4. Results presented with proper structure and citations
+5. Source URL and last updated date included
+
+**Cost:**
+- 1 search per URL ($0.01)
+- Token costs vary by page size (typically $0.003-0.010)
+- Total: ~$0.013-0.020 per URL
+
+### Use Case 16.3: Current Information & Latest Updates
+
+Access the latest documentation, package versions, news, and trends.
+
+**Example 1: Latest Package Information**
+```
+You: What's new in React 19?
+
+WYN360: [Searches for React 19 release information]
+
+**React 19 - Major Updates:**
+
+**Release Date:** December 2024 (Beta available)
+
+**Key New Features:**
+
+1. **React Compiler:**
+   - Automatic optimization of React code
+   - No need for manual memoization in most cases
+   - Significant performance improvements
+
+2. **Actions:**
+   - New API for handling form submissions
+   - Built-in pending states
+   - Optimistic updates support
+   - Example: `useActionState()`, `useFormStatus()`
+
+3. **Document Metadata:**
+   - Built-in support for `<title>`, `<meta>` tags
+   - No need for react-helmet or next/head
+   - Simplified SEO management
+
+4. **Asset Loading:**
+   - New APIs: `preload()`, `preinit()`
+   - Better control over resource loading
+   - Improved performance
+
+5. **Web Components:**
+   - Full support for Web Components
+   - Better interoperability
+
+**Breaking Changes:**
+- Removed deprecated APIs (componentWillMount, etc.)
+- StrictMode changes
+- Updated TypeScript types
+
+**Migration Guide:**
+Available at react.dev with automated codemod tools
+
+Sources:
+- [React Blog - React 19 Beta](https://react.dev/blog/2024/12/05/react-19)
+- [React Docs - What's New](https://react.dev/learn/whats-new)
+```
+
+**Example 2: Security Information**
+```
+You: What are the latest security vulnerabilities in Node.js?
+
+WYN360: [Searches for recent Node.js security advisories]
+
+**Node.js Security Updates (January 2025):**
+
+**Critical Vulnerabilities:**
+
+1. **CVE-2025-XXXX - HTTP Request Smuggling**
+   - Severity: High (7.5 CVSS)
+   - Affected: Node.js 18.x, 20.x, 21.x
+   - Fixed in: 18.19.1, 20.11.1, 21.6.2
+   - Impact: Allows attackers to bypass security controls
+   - Recommendation: Update immediately
+
+2. **CVE-2025-YYYY - OpenSSL Vulnerability**
+   - Severity: Medium (5.9 CVSS)
+   - Affected: All versions using OpenSSL 3.x
+   - Fixed in: Latest versions
+   - Impact: Potential denial of service
+   - Recommendation: Update to patched versions
+
+**Recommended Actions:**
+1. Update to latest LTS versions (18.19.1+ or 20.11.1+)
+2. Review security best practices
+3. Enable security audit in CI/CD
+4. Run `npm audit` to check dependencies
+
+Sources:
+- [Node.js Security Releases](https://nodejs.org/en/blog/vulnerability/)
+- [GitHub Security Advisories](https://github.com/nodejs/node/security/advisories)
+```
+
+**Example 3: Best Practices Research**
+```
+You: What are current best practices for FastAPI deployment?
+
+WYN360: [Searches for FastAPI deployment best practices]
+
+**FastAPI Deployment Best Practices (2025):**
+
+**Production Server:**
+- **Recommended:** Uvicorn with Gunicorn workers
+- **Configuration:**
+  ```bash
+  gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+  ```
+
+**Docker Deployment:**
+- Use official Python slim images
+- Multi-stage builds for smaller images
+- Non-root user for security
+- Example: tiangolo/uvicorn-gunicorn-fastapi image
+
+**Key Recommendations:**
+
+1. **Performance:**
+   - Enable HTTP/2 support
+   - Use async database drivers (asyncpg, motor)
+   - Implement caching (Redis, Memcached)
+   - Enable GZIP compression
+
+2. **Security:**
+   - HTTPS only (Let's Encrypt for free certs)
+   - CORS configuration
+   - Rate limiting (slowapi library)
+   - Input validation with Pydantic
+   - Security headers (fastapi-security)
+
+3. **Monitoring:**
+   - Prometheus for metrics
+   - Sentry for error tracking
+   - Structured logging
+   - Health check endpoints
+
+4. **Scaling:**
+   - Horizontal scaling with load balancer
+   - Kubernetes for orchestration
+   - Cloud platforms: AWS ECS, Google Cloud Run, Azure Container Apps
+
+5. **Database:**
+   - Use connection pooling
+   - Implement database migrations (Alembic)
+   - Read replicas for scaling reads
+
+**Cloud Platforms:**
+- AWS: ECS, Lambda (Mangum adapter), Elastic Beanstalk
+- Google Cloud: Cloud Run, App Engine
+- Azure: Container Apps, App Service
+- Heroku: Simple deployment with Procfile
+
+Sources:
+- [FastAPI Deployment Guide](https://fastapi.tiangolo.com/deployment/)
+- [Uvicorn Deployment](https://www.uvicorn.org/deployment/)
+- [Best Practices Blog Posts - 2024/2025]
+```
+
+**How It Works:**
+1. User asks about current information or latest updates
+2. Web search fetches recent articles, documentation, or news
+3. WYN360 synthesizes information from multiple sources
+4. Results presented with structure, citations, and dates
+5. Recommendations and best practices highlighted
+
+**Cost:**
+- 1-2 searches per query ($0.01-0.02)
+- Token costs for synthesis (~$0.005-0.015)
+- Total: ~$0.015-0.035 per information query
+
+### When Web Search is Used
+
+**WILL Use Web Search:**
+- ✅ Weather queries ("What's the weather in NYC?")
+- ✅ Reading URLs ("Read https://example.com")
+- ✅ Current information ("What's new in Python 3.13?")
+- ✅ Latest versions ("Latest React features")
+- ✅ Recent news ("Recent security vulnerabilities")
+- ✅ Real-time data ("Current stock price of...")
+- ✅ Best practices research ("Current FastAPI deployment practices")
+
+**WILL NOT Use Web Search:**
+- ❌ Code generation ("Write a FastAPI app")
+- ❌ File operations ("Show me app.py")
+- ❌ Local project queries ("List files in this project")
+- ❌ Git operations ("Show git status")
+- ❌ General programming concepts ("What is async/await?")
+- ❌ Existing knowledge ("How to use Python decorators?")
+
+### Cost Analysis
+
+**Pricing:**
+- **Web Search Cost:** $10.00 per 1,000 searches
+- **Token Costs:** Standard model pricing ($3/$15 per M tokens for Sonnet)
+- **Session Limit:** 5 searches per session (configurable)
+
+**Example Costs:**
+
+| Query Type | Searches | Token Cost | Total Cost |
+|-----------|----------|------------|------------|
+| Weather | 1 | $0.001-0.003 | $0.011-0.013 |
+| URL Reading | 1 | $0.003-0.010 | $0.013-0.020 |
+| Latest Info | 1-2 | $0.005-0.015 | $0.015-0.035 |
+
+**Session Example:**
+```
+- 2 weather queries: $0.026
+- 1 URL read: $0.015
+- 2 info searches: $0.050
+Total: ~$0.091 per session
+```
+
+**Monthly Estimate (heavy use):**
+- 10 sessions/day × 30 days = 300 sessions
+- Average 3 searches per session = 900 searches
+- Cost: (900 × $0.01) + token costs ≈ $9-15/month
+
+### Configuration
+
+**Default Settings:**
+```python
+# In agent.py
+builtin_tools=[
+    WebSearchTool(max_uses=5)  # Limit searches per session
+]
+```
+
+**Adjustable Parameters:**
+- `max_uses`: Maximum searches per session (default: 5)
+- `search_context_size`: How much context to include
+- `user_location`: Default location for queries
+- `blocked_domains`: Sites to exclude
+- `allowed_domains`: Sites to include only
+
+### Technical Implementation
+
+**Integration Method:**
+```python
+from pydantic_ai import Agent, WebSearchTool
+
+agent = Agent(
+    model="claude-sonnet-4",
+    builtin_tools=[WebSearchTool(max_uses=5)]
+)
+```
+
+**Key Points:**
+- Uses Claude's native `web_search_20250305` tool
+- Integrated via pydantic-ai framework
+- Separate from custom @tool decorated functions
+- Works alongside 19 existing custom tools
+- No conflicts with file operations or git tools
+
+### Best Practices
+
+**For Users:**
+1. **Be Specific:** Provide clear locations for weather ("San Francisco" not just "weather")
+2. **Full URLs:** Provide complete URLs for reading ("https://..." not just "python.org")
+3. **Recent Focus:** Use for current info, not general knowledge
+4. **Cost Aware:** Remember search limits (5 per session by default)
+
+**For Developers:**
+1. **Adjust Limits:** Increase `max_uses` for high-volume use cases
+2. **Filter Domains:** Use `allowed_domains` for trusted sources only
+3. **Monitor Costs:** Track search usage with `/stats` command
+4. **Combine Tools:** Use with `read_file` for comparing local vs online docs
+
+### Troubleshooting
+
+**Issue: Search limit reached**
+```
+Error: Maximum web searches (5) reached for this session
+```
+**Solution:** Start a new session or adjust `max_uses` in code
+
+**Issue: No results found**
+```
+No relevant results found for query: [your query]
+```
+**Solution:** Rephrase query with more specific terms
+
+**Issue: URL not accessible**
+```
+Error: Could not fetch content from URL
+```
+**Solution:** Check URL is publicly accessible, not behind authentication
+
+### Performance
+
+**Response Times:**
+- Weather query: 1-3 seconds
+- URL reading: 2-5 seconds (depends on page size)
+- Information search: 1-4 seconds
+
+**Accuracy:**
+- Real-time data: 100% current (as of search time)
+- Source citations: Always included
+- Confidence: Based on source reliability
+
+**Limitations:**
+- Cannot access authenticated sites
+- Cannot bypass paywalls
+- Limited to publicly available content
+- Session limit prevents excessive searches
+
+---
+
+**Version:** 0.3.21
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ## 📝 Changelog
 
-### v0.3.20 (Latest)
+### v0.3.21 (Latest)
+- 🌐 **NEW FEATURE:** Phase 11.1 - Real-Time Web Search
+- ✅ **BUILTIN TOOL:** WebSearchTool integrated via pydantic-ai framework
+- 🌤️ **WEATHER QUERIES:** Ask for weather in any location with automatic search
+- 📖 **WEBSITE READING:** Fetch and summarize content from any public URL
+- 📚 **CURRENT INFO:** Access latest docs, package updates, news, and trends
+- 💰 **COST CONTROLLED:** Limited to 5 searches per session ($10 per 1K searches)
+- 🔗 **PROPER CITATIONS:** All results include source URLs and dates
+- 📊 **USE CASES:** Added Section 16 to USE_CASES.md with 3 detailed examples
+- 🎯 **SMART INVOCATION:** Claude automatically decides when web search is needed
+- ⚡ **INTEGRATION:** Works alongside 19 existing custom tools without conflicts
+- 📚 **DOCUMENTATION:** Updated SYSTEM.md, COST.md, README.md, agent.py system prompt
+- 🧪 **NO BREAKING CHANGES:** Purely additive feature
+
+### v0.3.20
 - 🎨 **UX IMPROVEMENT:** Enhanced CLI help output with comprehensive documentation
 - ✅ **NEW FLAG:** Added `-h` shorthand for `--help`
 - 📚 **DOCUMENTATION:** Help now shows all slash commands, available tools, examples

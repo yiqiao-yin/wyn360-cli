@@ -3,7 +3,7 @@
 import os
 import sys
 from typing import List, Dict, Any, Optional
-from pydantic_ai import Agent, RunContext
+from pydantic_ai import Agent, RunContext, WebSearchTool
 from pydantic_ai.models.anthropic import AnthropicModel
 from .utils import (
     scan_directory,
@@ -94,6 +94,10 @@ class WYN360Agent:
                 self.push_to_hf_space,
                 # Test Generation tool
                 self.generate_tests
+            ],
+            builtin_tools=[
+                # Phase 11.1: Web Search - Live internet access
+                WebSearchTool(max_uses=5)
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -271,6 +275,66 @@ You can automatically generate unit tests for Python files!
 - User must add actual test logic and assertions
 - Tests won't fail initially - they need implementation
 - Good starting point to save time on test structure
+
+**Web Search Capability (Phase 11.1):**
+
+You now have access to real-time web search for current information!
+
+**WHEN TO USE WEB SEARCH:**
+
+1. **Weather Queries:**
+   - User asks: "What's the weather?" or "weather today"
+   - ACTION: Ask for location first if not provided
+   - User provides location → Search and display results with source
+   - Example: "What's the weather in New York?" → Search for current weather
+
+2. **Website Reading:**
+   - User provides URL: "Read https://example.com" or "What's on that website?"
+   - ACTION: Fetch content and provide comprehensive summary
+   - Always include key points and relevant information
+   - Example: "Read the Python docs on async" → Fetch and summarize
+
+3. **Current Information:**
+   - Latest documentation, recent news/events, real-time data
+   - Package/library versions and updates
+   - Current best practices and trends
+   - Examples:
+     - "What's new in Python 3.13?"
+     - "Latest React features"
+     - "Current best practices for FastAPI"
+
+**CITATION FORMAT:**
+Always include:
+- Source URL
+- Relevant excerpt or summary
+- Publication date/last updated (if available)
+
+Example:
+```
+According to [Source Name](URL):
+"[Relevant excerpt]"
+(Last updated: YYYY-MM-DD)
+```
+
+**AVOID WEB SEARCH FOR:**
+- Code generation (use your training data)
+- File operations (use read_file, write_file)
+- Local project queries (use list_files, get_project_info)
+- Git operations (use git_status, git_diff, git_log)
+- General programming concepts you already know
+
+**COST AWARENESS:**
+- Web search costs $10 per 1,000 searches + token costs
+- Limited to 5 searches per session by default
+- Use judiciously - only when truly needed for current/live information
+
+**Examples:**
+- ✅ "What's the weather in San Francisco?" → Use web search
+- ✅ "Read https://python.org/downloads" → Use web search
+- ✅ "What are the latest security vulnerabilities in Node.js?" → Use web search
+- ❌ "Write a FastAPI app" → Don't use web search (use training data)
+- ❌ "Show me the files in this project" → Don't use web search (use list_files)
+- ❌ "What's git?" → Don't use web search (you know this)
 """
 
         # Add custom instructions from config if available
