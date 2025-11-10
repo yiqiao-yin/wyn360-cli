@@ -750,6 +750,115 @@ Total monthly cost: $1.32
 
 ---
 
+## ⚙️ Controlling Response Length (max_tokens)
+
+**What is max_tokens?**
+
+The `max_tokens` setting controls the maximum length of Claude's response. By default, WYN360 CLI is configured with `max_tokens: 4096`, which provides balanced responses for most use cases.
+
+**How it Affects Cost:**
+
+Higher `max_tokens` values allow longer responses but increase output token costs:
+- Output tokens cost **$15 per million tokens** (5× more expensive than input tokens)
+- A response using 8,000 tokens costs **$0.12** vs 4,000 tokens at **$0.06**
+- Longer responses = higher costs per request
+
+**Important:** The `max_tokens` limit doesn't guarantee Claude will use all tokens—it sets a ceiling. Claude typically uses only what's needed, but having a higher limit allows for longer responses when necessary.
+
+### View Current Configuration
+
+You can check your current `max_tokens` setting using the `/config` command:
+
+```bash
+wyn360
+You: /config
+
+# Output shows:
+Model            claude-sonnet-4-20250514
+Max Tokens       4096  ← Current limit
+Temperature      0.7
+```
+
+### How to Change max_tokens
+
+You have full control over `max_tokens` without updating the package. Choose one of these options:
+
+#### Option 1: Globally (All Projects)
+
+Edit your user configuration file to apply the setting across all projects:
+
+```bash
+# Edit user config
+nano ~/.wyn360/config.yaml
+
+# Change line:
+max_tokens: 8192  # Or 16384, 32768, etc.
+```
+
+**User Config Location:** `~/.wyn360/config.yaml`
+
+#### Option 2: Per Project
+
+Override the setting for a specific project by creating/editing a project configuration:
+
+```bash
+# Create/edit project config in your project root
+nano .wyn360.yaml
+
+# Add:
+max_tokens: 16384
+```
+
+**Project Config Location:** `.wyn360.yaml` (in your project root directory)
+
+**Note:** Project config overrides user config, which overrides the default (4096).
+
+### Recommended Values
+
+Choose a `max_tokens` value based on your typical use case:
+
+| Value  | Use Case                                    | Cost Impact       |
+|--------|---------------------------------------------|-------------------|
+| 4096   | Default - balanced responses                | Baseline          |
+| 8192   | Longer explanations, more code              | ~2× potential cost |
+| 16384  | Very long responses, large file generation  | ~4× potential cost |
+| 32768  | Maximum for complex documentation           | ~8× potential cost |
+
+### Cost Examples
+
+**Example 1: Simple Code Generation (4096 tokens limit)**
+```
+Request: "Create a FastAPI hello world app"
+Response: ~800 tokens
+Cost: $0.012 (output only)
+```
+
+**Example 2: With 8192 tokens limit**
+```
+Request: "Create a FastAPI app with detailed explanations"
+Response: ~2,500 tokens
+Cost: $0.0375 (output only) - 3× more expensive
+```
+
+**Example 3: With 16384 tokens limit**
+```
+Request: "Generate complete FastAPI app with tests and docs"
+Response: ~6,000 tokens
+Cost: $0.09 (output only) - 7.5× more expensive
+```
+
+### Best Practices
+
+1. **Start with default (4096)** - Suitable for 90% of use cases
+2. **Increase for specific projects** - Use project config (`.wyn360.yaml`) when you need longer responses
+3. **Monitor with `/tokens`** - Check actual usage to see if you're hitting limits
+4. **Use `/clear` regularly** - Reset conversation history to control input token costs
+5. **Balance quality vs cost** - Higher limits enable longer responses but cost more
+
+**Note:** Higher `max_tokens` values allow longer responses but cost more. Claude will use only what's needed, but setting a higher ceiling enables more comprehensive responses when required.
+
+---
+
 ## 💰 Cost Comparison with Alternatives
 
 | Tool | Pricing Model | Typical Monthly Cost |
@@ -805,5 +914,5 @@ For **most developers**, WYN360 CLI will cost **$1-3 per month** - significantly
 
 ---
 
-**Last Updated:** January 2025
-**Version:** 0.3.21
+**Last Updated:** December 2025
+**Version:** 0.3.23

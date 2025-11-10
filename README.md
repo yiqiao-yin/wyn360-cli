@@ -263,13 +263,12 @@ You: /load my_analysis_session.json
 
 ## 📚 Documentation
 
-For comprehensive documentation including:
-- Detailed use cases and examples
-- Tool descriptions and capabilities
-- UV workflow integration
-- Best practices and tips
+For comprehensive documentation:
 
-See: [USE_CASES.md](USE_CASES.md)
+- **[USE_CASES.md](USE_CASES.md)** - Detailed use cases, examples, and workflows
+- **[COST.md](COST.md)** - Token usage, pricing, cost optimization, and `max_tokens` configuration
+- **[SYSTEM.md](SYSTEM.md)** - System architecture, design principles, and technical details
+- **[ROADMAP.md](ROADMAP.md)** - Feature roadmap and planned enhancements
 
 ## 🛠️ Development & Testing
 
@@ -490,7 +489,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - **PyPI:** https://pypi.org/project/wyn360-cli/
 - **GitHub:** https://github.com/yiqiao-yin/wyn360-cli
-- **Documentation:** [USE_CASES.md](USE_CASES.md)
+- **Documentation:**
+  - [USE_CASES.md](USE_CASES.md) - Usage examples and workflows
+  - [COST.md](COST.md) - Pricing and token configuration
+  - [SYSTEM.md](SYSTEM.md) - Architecture overview
 - **Get API Key:** https://console.anthropic.com/
 
 ---
