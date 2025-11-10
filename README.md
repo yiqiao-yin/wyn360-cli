@@ -95,6 +95,34 @@ WYN360: I'll create a Streamlit app for you...
 - 📺 **Progress Visibility** - Watch code and explanations appear in real-time
 - 💨 **Faster Perceived Speed** - Feels 2-3x faster with instant feedback
 
+### HuggingFace Integration (v0.3.3 - v0.3.13)
+- 🤗 **HuggingFace Authentication** - Auto-login with HF_TOKEN environment variable
+- 📝 **README Generation** - Create professional README files for Spaces
+- 🚀 **Space Creation** - Create Streamlit/Gradio Spaces directly from CLI
+- 📤 **File Upload** - Push your code to HuggingFace Spaces automatically
+- 🎯 **One-Command Deploy** - From code to live Space in seconds
+
+### Automatic Test Generation (v0.3.18)
+- 🧪 **Test Generation** - Automatically generate pytest tests for Python files
+- 📊 **Smart Analysis** - Analyzes functions and classes to create comprehensive tests
+- ⚡ **Quick Setup** - Creates test files with proper structure and imports
+- 🎯 **Code Coverage** - Generates tests for edge cases and error handling
+
+### GitHub Integration (v0.3.22)
+- 🔐 **GitHub Authentication** - Auto-login with GH_TOKEN/GITHUB_TOKEN
+- 💾 **Commit & Push** - Stage, commit, and push changes with one command
+- 🔀 **Pull Requests** - Create PRs with generated descriptions
+- 🌿 **Branch Management** - Create, checkout, and merge branches seamlessly
+- 🔄 **Merge Operations** - Smart branch merging with conflict detection
+
+### Web Search (v0.3.21, Enhanced v0.3.23)
+- 🔍 **Real-Time Search** - Access current information from the web
+- 🌦️ **Weather Queries** - Get current weather for any location
+- 🔗 **URL Reading** - Fetch and summarize web page content
+- 📚 **Resource Finding** - Find GitHub repos, libraries, and tutorials
+- 📊 **Current Data** - Latest package versions, documentation, and trends
+- 💰 **Cost Effective** - Limited to 5 searches per session, $10 per 1K searches
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
@@ -142,6 +170,46 @@ Execute this command? (y/N): y
 ```
 
 **Note:** When you see the confirmation prompt, the "thinking" spinner may still appear in the background. This is normal - just type `y` and press Enter to proceed, or `N` to cancel.
+
+### Web Search & Resource Finding
+```
+You: Find a popular GitHub repo for machine learning
+
+WYN360: [Searches the web]
+
+Here are some popular GitHub repositories for machine learning:
+
+1. **tensorflow/tensorflow** ⭐ 185k stars
+   https://github.com/tensorflow/tensorflow
+   - End-to-end machine learning platform
+   - Used by Google and industry leaders
+
+2. **pytorch/pytorch** ⭐ 82k stars
+   https://github.com/pytorch/pytorch
+   - Deep learning framework by Meta
+   - Popular in research and production
+
+3. **scikit-learn/scikit-learn** ⭐ 59k stars
+   https://github.com/scikit-learn/scikit-learn
+   - Classic ML algorithms for Python
+   - Great for beginners and experts
+
+[Sources: GitHub search results, updated recently]
+```
+
+```
+You: What's the weather in San Francisco?
+
+WYN360: [Searches for current weather]
+
+Current weather in San Francisco:
+🌤️ 62°F (17°C), Partly cloudy
+💨 Wind: 12 mph
+💧 Humidity: 65%
+🌅 Sunrise: 7:15 AM | Sunset: 5:02 PM
+
+Source: [Weather service URL]
+```
 
 ## 🎯 Commands
 
@@ -362,20 +430,33 @@ git push origin main
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `ANTHROPIC_API_KEY` | Anthropic API key (required) | None |
+| `HF_TOKEN` or `HUGGINGFACE_TOKEN` | HuggingFace API token (optional, for HF features) | None |
+| `GH_TOKEN` or `GITHUB_TOKEN` | GitHub access token (optional, for GitHub features) | None |
 | `WYN360_SKIP_CONFIRM` | Skip command execution confirmations | `0` (disabled) |
+
+**Setup Example:**
+```bash
+# .env file
+ANTHROPIC_API_KEY=your_anthropic_key
+GH_TOKEN=ghp_your_github_token
+HF_TOKEN=hf_your_huggingface_token
+WYN360_SKIP_CONFIRM=0
+```
 
 Set `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts (useful for testing or automation).
 
 ## 📋 Requirements
 
-- Python >= 3.10
+- Python >= 3.10, < 4.0
 - Dependencies (automatically installed):
   - `click>=8.1.0` - CLI framework
-  - `pydantic-ai>=0.0.1` - AI agent framework
+  - `pydantic-ai>=1.13.0` - AI agent framework with web search support
   - `anthropic>=0.39.0` - Anthropic API client
   - `rich>=13.0.0` - Terminal formatting
   - `python-dotenv>=1.2.1` - Environment variable management
   - `prompt-toolkit>=3.0.0` - Advanced input handling
+  - `pyyaml>=6.0.0` - Configuration file support
+  - `huggingface-hub>=0.20.0` - HuggingFace integration
 
 ## 🤝 Contributing
 
@@ -414,5 +495,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.22
+**Current Version:** 0.3.23
 **Last Updated:** December 10, 2025

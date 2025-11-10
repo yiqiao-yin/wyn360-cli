@@ -76,12 +76,17 @@ class WYN360Agent:
         # Initialize Anthropic model (it will use the environment variable)
         self.model = AnthropicModel(self.model_name)
 
-        # Create the agent with tools
-        # Note: WebSearchTool and builtin_tools require pydantic-ai >= 0.1.0
-        # Currently using 0.0.19, so web search is not available yet
+        # Create the agent with tools and web search
+        # WebSearchTool is now enabled with pydantic-ai >= 1.13.0
+        builtin_tools = []
+        if HAS_WEB_SEARCH:
+            # Enable web search with max 5 uses per session
+            builtin_tools.append(WebSearchTool(max_uses=5))
+
         self.agent = Agent(
             model=self.model,
             system_prompt=self._get_system_prompt(),
+            builtin_tools=builtin_tools,
             tools=[
                 self.read_file,
                 self.write_file,
@@ -378,7 +383,15 @@ You now have access to real-time web search for current information!
    - Always include key points and relevant information
    - Example: "Read the Python docs on async" → Fetch and summarize
 
-3. **Current Information:**
+3. **Finding Resources/Repositories:**
+   - User asks to find GitHub repos, libraries, tools, or resources
+   - ACTION: Search for the requested resources and provide recommendations
+   - Examples:
+     - "Find a popular GitHub repo for machine learning" → Search and list top repos
+     - "What are good Python libraries for data visualization?" → Search and recommend
+     - "Find tutorials for FastAPI" → Search and share links
+
+4. **Current Information:**
    - Latest documentation, recent news/events, real-time data
    - Package/library versions and updates
    - Current best practices and trends
@@ -414,8 +427,10 @@ According to [Source Name](URL):
 
 **Examples:**
 - ✅ "What's the weather in San Francisco?" → Use web search
+- ✅ "Find a popular GitHub repo for machine learning" → Use web search
 - ✅ "Read https://python.org/downloads" → Use web search
 - ✅ "What are the latest security vulnerabilities in Node.js?" → Use web search
+- ✅ "Show me good Python data science libraries" → Use web search
 - ❌ "Write a FastAPI app" → Don't use web search (use training data)
 - ❌ "Show me the files in this project" → Don't use web search (use list_files)
 - ❌ "What's git?" → Don't use web search (you know this)

@@ -551,13 +551,16 @@ User: "/load my_session.json"
 - ✅ Immediate command execution confirmation (v0.3.14)
 - ✅ No text duplication (fixed in v0.3.13)
 
-### Phase 11.1: Web Search (v0.3.21)
+### Phase 11.1: Web Search (v0.3.21, Enhanced v0.3.23)
 - ✅ Real-time web search using Claude's native web_search_20250305 tool
 - ✅ Weather queries with location handling
 - ✅ Website content fetching and summarization
 - ✅ Current information retrieval (docs, news, trends)
+- ✅ **Resource finding** - GitHub repos, libraries, tutorials (v0.3.23)
 - ✅ Cost-controlled with 5 searches per session max
 - ✅ Integrated via pydantic-ai's WebSearchTool builtin
+- ✅ **Upgraded to pydantic-ai 1.13.0** for improved stability (v0.3.23)
+- ✅ **Enhanced system prompt** with clearer intent examples (v0.3.23)
 
 ### Phase 8.1: GitHub Integration (v0.3.22)
 - ✅ GitHub authentication with token management (GH_TOKEN/GITHUB_TOKEN)

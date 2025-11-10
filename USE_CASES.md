@@ -1998,18 +1998,25 @@ WYN360: ✓ Session saved (including performance metrics)
 ## 16. Web Search - Real-Time Information Access
 
 **Phase:** 11.1
-**Version:** 0.3.21
+**Version:** 0.3.21, Enhanced in 0.3.23
 **Feature:** Real-time web search using Claude's native web_search_20250305 tool
 
 ### Overview
 
-WYN360 now has access to real-time web search capabilities! This feature enables the AI assistant to fetch current information from the internet, including weather data, website content, and the latest documentation. The web search tool is integrated via pydantic-ai's `WebSearchTool` builtin and is configured with cost controls (5 searches per session max, $10 per 1,000 searches).
+WYN360 now has access to real-time web search capabilities! This feature enables the AI assistant to fetch current information from the internet, including weather data, website content, latest documentation, and **finding GitHub repositories and libraries** (enhanced in v0.3.23). The web search tool is integrated via pydantic-ai's `WebSearchTool` builtin and is configured with cost controls (5 searches per session max, $10 per 1,000 searches).
+
+**v0.3.23 Enhancements:**
+- ⬆️ Upgraded from pydantic-ai 0.0.19 to 1.13.0 for improved stability
+- 🔧 Fixed web search tool integration with proper `builtin_tools` configuration
+- 📝 Enhanced system prompt with explicit examples for finding resources
+- ✅ Now properly recognizes queries like "find a popular GitHub repo for X"
 
 ### Key Features
 
 - 🌤️ **Weather Queries** - Get current weather for any location
 - 🌐 **Website Reading** - Fetch and summarize web content
 - 📚 **Current Information** - Access latest docs, news, and trends
+- 🔍 **Resource Finding** - Find GitHub repos, libraries, and tutorials **(NEW in v0.3.23)**
 - 💰 **Cost Controlled** - Limited to 5 searches per session by default
 - 🔗 **Proper Citations** - All results include source URLs
 - 🤖 **Automatic Invocation** - Claude decides when web search is needed
@@ -2323,11 +2330,139 @@ Sources:
 - Token costs for synthesis (~$0.005-0.015)
 - Total: ~$0.015-0.035 per information query
 
+### Use Case 16.4: Finding Resources & GitHub Repositories **(NEW in v0.3.23)**
+
+Find popular GitHub repositories, libraries, tools, and learning resources based on specific topics or technologies.
+
+**User Interaction:**
+```
+You: Find a popular GitHub repo for machine learning
+
+WYN360: [Searches web for popular ML repositories]
+
+Here are some of the most popular GitHub repositories for machine learning:
+
+1. **tensorflow/tensorflow** ⭐ 185,000+ stars
+   https://github.com/tensorflow/tensorflow
+   - End-to-end open source machine learning platform
+   - Developed and maintained by Google
+   - Comprehensive ecosystem for model development and deployment
+   - Supports neural networks, deep learning, and production ML
+
+2. **pytorch/pytorch** ⭐ 82,000+ stars
+   https://github.com/pytorch/pytorch
+   - Deep learning framework by Meta AI (Facebook)
+   - Dynamic computational graphs (imperative programming)
+   - Popular in research and academic communities
+   - Excellent for prototyping and experimentation
+
+3. **scikit-learn/scikit-learn** ⭐ 59,000+ stars
+   https://github.com/scikit-learn/scikit-learn
+   - Classic machine learning library for Python
+   - Built on NumPy, SciPy, and matplotlib
+   - Great for traditional ML algorithms (not deep learning)
+   - Excellent documentation and beginner-friendly
+
+4. **keras-team/keras** ⭐ 61,000+ stars
+   https://github.com/keras-team/keras
+   - High-level neural networks API
+   - Runs on top of TensorFlow
+   - User-friendly and modular
+   - Perfect for quick prototyping
+
+**Recommendation for Beginners:** Start with scikit-learn for traditional ML, then move to TensorFlow or PyTorch for deep learning.
+
+Sources:
+- [GitHub Search Results - Most Stars in ML category]
+- [GitHub Trending - Machine Learning]
+(Last updated: December 2025)
+```
+
+**Finding Libraries by Language:**
+```
+You: What are good Python libraries for data visualization?
+
+WYN360: [Searches for Python data viz libraries]
+
+Top Python libraries for data visualization:
+
+1. **Matplotlib** ⭐ 19,500+ stars
+   - Standard plotting library, similar to MATLAB
+   - Highly customizable, extensive documentation
+   - Best for: Static plots, scientific visualizations
+
+2. **Plotly** ⭐ 16,000+ stars
+   - Interactive web-based visualizations
+   - Dash framework for dashboards
+   - Best for: Interactive charts, web apps, dashboards
+
+3. **Seaborn** ⭐ 12,000+ stars
+   - Built on matplotlib, statistical focus
+   - Beautiful default styles
+   - Best for: Statistical analysis, heatmaps, distributions
+
+4. **Bokeh** ⭐ 19,000+ stars
+   - Interactive visualizations for web browsers
+   - Real-time streaming and big data
+   - Best for: Interactive web apps, large datasets
+
+Sources: GitHub, Python Package Index, Stack Overflow trends
+```
+
+**Finding Tutorials:**
+```
+You: Find tutorials for FastAPI
+
+WYN360: [Searches for FastAPI tutorials]
+
+Top FastAPI Learning Resources:
+
+**Official Documentation:**
+- FastAPI Tutorial - https://fastapi.tiangolo.com/tutorial/
+  Comprehensive, step-by-step guide by the creator
+
+**GitHub Repositories:**
+- awesome-fastapi/awesome-fastapi ⭐ 7,500+ stars
+  Curated list of FastAPI resources, projects, and tutorials
+
+**Tutorial Series:**
+- "FastAPI - The Complete Course" (GitHub: codingforentrepreneurs)
+- Real-world examples with authentication, databases, testing
+
+**Video Tutorials:**
+- FreeCodeCamp FastAPI full course (YouTube)
+- Traversy Media FastAPI crash course
+
+Sources: GitHub, FastAPI documentation, YouTube, Dev.to
+```
+
+**How It Works:**
+1. User asks to find repositories, libraries, or learning resources
+2. Web search queries GitHub, package registries, and tech communities
+3. Results ranked by popularity (stars, downloads, community activity)
+4. Provides URLs, descriptions, star counts, and recommendations
+5. Includes comparisons and use case suggestions
+
+**What You Can Find:**
+- ✅ GitHub repositories by topic ("find repos for X")
+- ✅ Python/JS/Go libraries ("best libraries for Y")
+- ✅ Learning resources ("tutorials for Z")
+- ✅ Tools and frameworks ("tools for web scraping")
+- ✅ Code examples ("example projects using A")
+
+**Cost:**
+- 1-2 searches per query ($0.01-0.02)
+- Token costs for formatting (~$0.005-0.010)
+- Total: ~$0.015-0.030 per resource search
+
 ### When Web Search is Used
 
 **WILL Use Web Search:**
 - ✅ Weather queries ("What's the weather in NYC?")
 - ✅ Reading URLs ("Read https://example.com")
+- ✅ **Finding resources** ("Find a popular GitHub repo for machine learning") **(NEW v0.3.23)**
+- ✅ **Library recommendations** ("What are good Python data viz libraries?") **(NEW v0.3.23)**
+- ✅ **Tutorial finding** ("Find tutorials for FastAPI") **(NEW v0.3.23)**
 - ✅ Current information ("What's new in Python 3.13?")
 - ✅ Latest versions ("Latest React features")
 - ✅ Recent news ("Recent security vulnerabilities")
@@ -2463,7 +2598,7 @@ Error: Could not fetch content from URL
 ## 17. GitHub Integration - Complete Git Workflow Management
 
 **Phase:** 8.1
-**Version:** 0.3.22
+**Version:** 0.3.23
 **Feature:** Complete GitHub integration with commit, PR creation, and branch management
 
 ### Overview
@@ -3322,7 +3457,7 @@ WYN360: [Pushes main branch]
 
 ---
 
-**Version:** 0.3.22
+**Version:** 0.3.23
 **Last Updated:** December 10, 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 

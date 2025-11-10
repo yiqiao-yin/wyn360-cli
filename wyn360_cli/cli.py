@@ -74,7 +74,7 @@ def main(api_key, model):
         - check_hf_authentication, authenticate_hf
         - create_hf_readme, create_hf_space, push_to_hf_space
 
-      GitHub Integration (NEW in v0.3.22):
+      GitHub Integration (NEW in v0.3.23):
         - check_gh_authentication, authenticate_gh
         - gh_commit_changes (commit and push to GitHub)
         - gh_create_pr (create pull requests)
@@ -103,7 +103,7 @@ def main(api_key, model):
       Use Cases:   See USE_CASES.md for detailed examples
       Get API Key: https://console.anthropic.com/
 
-    Version: 0.3.22
+    Version: 0.3.23
     """
     # Load environment variables from .env file if it exists
     load_dotenv()

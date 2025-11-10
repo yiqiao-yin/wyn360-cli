@@ -2,7 +2,7 @@
 
 This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.
 
-## 🎯 Current Capabilities (v0.3.22)
+## 🎯 Current Capabilities (v0.3.23)
 
 **What We Have:**
 - ✅ File operations (read, write, list, get project info)
@@ -34,8 +34,14 @@ This document outlines potential features and enhancements to expand WYN360 CLI'
 - ✅ Automatic test generation for Python files (Phase 7.2)
 - ✅ Performance metrics tracking - response times, tool usage, error rates (Phase 10.2)
 - ✅ Enhanced CLI help with `-h` flag - comprehensive command reference (UX Improvement)
-- ✅ Real-time web search - weather, URLs, current information (Phase 11.1)
+- ✅ Real-time web search - weather, URLs, current information (Phase 11.1) - **Enhanced in v0.3.23**
 - ✅ GitHub integration - commit, PR creation, branch management, merge (Phase 8.1)
+
+**Recent Improvements (v0.3.23):**
+- ⬆️ Upgraded pydantic-ai from 0.0.19 to 1.13.0 for improved stability and features
+- 🔧 Fixed web search tool integration - now properly recognizes resource/repo search queries
+- 📝 Enhanced system prompt with clearer web search intent examples
+- ✅ Web search now works for queries like "find a popular GitHub repo for X"
 
 ---
 
@@ -522,7 +528,7 @@ Creating API_DOCS.md with:
 
 ### Phase 8: Integration Features
 
-#### 8.1 GitHub Integration ✅ COMPLETED (v0.3.22)
+#### 8.1 GitHub Integration ✅ COMPLETED (v0.3.23)
 **Feature:** Complete GitHub workflow management with commit, PR creation, and branch operations
 
 **Implemented Tools:**
@@ -1047,5 +1053,5 @@ WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v
 ---
 
 **Last Updated:** December 10, 2025
-**Current Version:** 0.3.22
+**Current Version:** 0.3.23
 **Next Planned Release:** v0.3.23+ (Phase 7.1 Multi-File Refactoring or Phase 7.3 Documentation Generation)
