@@ -1,10 +1,78 @@
-# WYN360 CLI - Use Cases & Capabilities
+# WYN360 CLI - Complete User Guide & Use Cases
 
-This document provides a comprehensive overview of what WYN360 CLI can do and how to use it effectively.
+**A comprehensive guide to WYN360 CLI - from simple to complex workflows**
 
-## 🎯 Core Use Cases
+**Version:** 0.3.23
+**Last Updated:** December 10, 2025
+**Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
-### 1. Start New Projects from Scratch (Blank Directory)
+---
+
+## Part 1: Introduction & Getting Started
+
+### Welcome to WYN360 CLI
+
+WYN360 CLI is an AI-powered command-line assistant that helps you build, analyze, and manage Python projects through natural language conversations. This guide will walk you through everything from simple file operations to complex multi-turn development workflows.
+
+### Quick Start Guide
+
+**Installation:**
+```bash
+pip install wyn360-cli
+```
+
+**Set up your API key:**
+```bash
+export ANTHROPIC_API_KEY='your-key-here'
+```
+
+**Launch WYN360:**
+```bash
+wyn360
+```
+
+**Your first interaction:**
+```
+You: What files do I have?
+WYN360: [Lists all files in your directory]
+
+You: Create a hello world Python script
+WYN360: [Generates and saves hello_world.py]
+```
+
+### How to Read This Document
+
+This guide is organized as a progressive learning path:
+
+1. **Part 1 (This section)** - Introduction and setup
+2. **Part 2** - 18 use cases organized from simple to complex:
+   - **Use Cases 1-9:** Simple single-turn operations (file ops, git, search)
+   - **Use Cases 10-11:** Configuration and setup
+   - **Use Cases 12-14:** Deployment and integration
+   - **Use Cases 15-16:** Advanced features (performance, web search)
+   - **Use Cases 17-18:** Complex multi-turn workflows
+3. **Part 3** - Appendices with reference materials
+4. **Part 4** - Changelog and version history
+
+**Reading Tips:**
+- Beginners: Read sequentially from Use Case 1
+- Intermediate users: Jump to use cases that match your needs
+- Advanced users: Check appendices for technical details
+- All users: Review "Pro Tips" and "Learning Path" sections
+
+---
+
+## Part 2: Core Use Cases (1-18)
+
+### Simple Single-Turn Use Cases
+
+---
+
+## Use Case 1: Start New Projects from Scratch
+
+**Complexity:** Simple
+**Type:** Single-turn
+**Best For:** Rapid prototyping, learning, quick demos
 
 When you're in an empty directory and want to build something from scratch, WYN360 becomes your coding partner.
 
@@ -39,7 +107,11 @@ WYN360:
 
 ---
 
-### 2. Analyze Existing Projects
+## Use Case 2: Analyze Existing Projects
+
+**Complexity:** Simple
+**Type:** Single-turn
+**Best For:** Understanding codebases, code review, onboarding
 
 WYN360 can understand your existing codebase before making suggestions or changes.
 
@@ -78,41 +150,11 @@ WYN360:
 
 ---
 
-### 3. Add Features to Existing Code
+## Use Case 3: Code Generation & Refactoring
 
-Enhance your existing projects with new functionality while maintaining code quality and consistency.
-
-**How it works:**
-1. Agent reads your current code structure
-2. Understands existing patterns and conventions
-3. Generates new features that integrate seamlessly
-4. Can modify/enhance existing files
-5. Maintains your coding style
-
-**Example Interaction:**
-```
-You: Add authentication to my FastAPI app
-
-WYN360:
-1. Reads your existing app structure
-2. Identifies route definitions
-3. Generates authentication middleware
-4. Updates routes with auth decorators
-5. Provides implementation guide
-```
-
-**Common Feature Additions:**
-- Authentication and authorization
-- Database integration
-- API endpoints
-- Error handling and logging
-- Input validation
-- Caching mechanisms
-- Testing utilities
-
----
-
-### 4. Code Generation & Refactoring
+**Complexity:** Simple to Moderate
+**Type:** Single-turn
+**Best For:** Writing new code, improving existing code, documentation
 
 Write high-quality Python code or improve existing code.
 
@@ -151,59 +193,12 @@ WYN360:
 
 ---
 
-### 5. Interactive Coding Assistant
+## Use Case 4: Execute Commands and Scripts
 
-Get help, guidance, and answers to your Python questions.
-
-**Capabilities:**
-- Answer coding questions
-- Debug issues and errors
-- Explain complex concepts
-- Provide implementation guidance
-- Review code quality
-- Suggest improvements
-
-**Example Interactions:**
-
-**Debugging:**
-```
-You: My script has a connection timeout error
-
-WYN360:
-1. Reads your code
-2. Identifies the issue
-3. Explains the root cause
-4. Suggests fix with retry logic
-5. Can update the file directly
-```
-
-**Learning:**
-```
-You: How do I implement async in Python?
-
-WYN360:
-- Explains async/await concepts
-- Provides working examples
-- Shows best practices
-- Demonstrates common patterns
-- Warns about pitfalls
-```
-
-**Code Review:**
-```
-You: Review my API implementation
-
-WYN360:
-- Analyzes code structure
-- Checks error handling
-- Reviews security considerations
-- Suggests improvements
-- Provides specific fixes
-```
-
----
-
-### 6. Execute Commands and Scripts (NEW in v0.2.2)
+**Complexity:** Simple
+**Type:** Single-turn
+**Best For:** Running scripts, package management, testing
+**Version:** NEW in v0.2.2
 
 Run any shell command, Python script, or CLI tool directly through WYN360 with built-in safety confirmations.
 
@@ -261,44 +256,17 @@ Accuracy: 0.85
 Results saved to results.csv
 ```
 
-**Note:** The confirmation prompt appears while the "thinking" spinner may still be visible. This is normal - just type your response and press Enter.
-
-**UV Workflow Example:**
-```
-You: Initialize a new UV project called my-app and add streamlit
-
-WYN360: I'll help you set up a UV project:
-
-1. First, initializing the project...
-
-======================================================================
-⚠️  COMMAND EXECUTION CONFIRMATION
-======================================================================
-Command: uv init my-app
-Directory: /current/directory
-Permissions: Full user permissions
-======================================================================
-
->>> WAITING FOR YOUR RESPONSE <<<
-
-Execute this command? (y/N): y
-
-✅ Project initialized
-
-2. Now adding Streamlit...
-
-[Similar confirmation prompt]
-Execute this command? (y/N): y
-
-✅ Streamlit added to dependencies
-```
-
 **Bypass Confirmation (For Testing):**
 Set environment variable `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts.
 
 ---
 
-### 7. Multi-line Input Support (NEW in v0.2.2)
+## Use Case 5: Multi-line Input Support
+
+**Complexity:** Simple
+**Type:** Feature
+**Best For:** Complex prompts, code pasting, detailed instructions
+**Version:** NEW in v0.2.2
 
 Write complex, multi-line prompts with ease using keyboard shortcuts.
 
@@ -327,95 +295,12 @@ WYN360: [Generates complete multi-featured app]
 
 ---
 
-## 🤖 Intelligent File Operation Handling (NEW in v0.2.1)
+## Use Case 6: Git Operations
 
-WYN360 now includes advanced intelligence for understanding user intent when working with files, automatically determining whether to create new files or update existing ones.
-
-### Intent Recognition
-
-The agent analyzes your natural language to understand what you want:
-
-**Update Existing Files** - When you say:
-- "Add feature to my app"
-- "Update the chatbot"
-- "Improve my script"
-- "Modify the config"
-- "Change the API endpoint"
-
-**Action taken:**
-1. Agent reads the existing file first to understand current state
-2. Makes the requested modifications
-3. Writes back with `overwrite=True`
-4. Shows you what changed
-
-**Create New Files** - When you say:
-- "Create a new script called utils.py"
-- "Make another chatbot"
-- "Build a separate module"
-- "Generate a helper file"
-
-**Action taken:**
-1. Agent creates the new file
-2. Uses `overwrite=False` to prevent accidents
-3. Leaves existing files untouched
-
-### Context-Aware Updates
-
-**Before updating any file, the agent:**
-1. ✓ Reads the current file contents
-2. ✓ Understands the existing structure
-3. ✓ Makes intelligent modifications
-4. ✓ Preserves what shouldn't change
-5. ✓ Explains what was updated
-
-**Example:**
-```
-You: Add a feature to run hello_world.py when user asks
-
-WYN360:
-1. Reading your current app.py...
-2. Creating hello_world.py...
-3. Updating app.py with new functionality...
-✓ Created: hello_world.py
-✓ Updated: app.py (added script execution feature)
-```
-
-### Self-Correcting Behavior
-
-If the agent makes a wrong choice, it can self-correct:
-
-**Scenario:**
-- Agent tries to create file but it already exists
-- Gets clear error: "File exists. Use overwrite=True to update"
-- Automatically retries with correct settings (up to 3 retries)
-- Succeeds on retry
-
-**Benefits:**
-- No more "max retries exceeded" errors
-- Agent learns from mistakes
-- Seamless user experience
-- Natural language understanding
-
-### Smart Retry Mechanism
-
-**Configuration:** 3 retries for tool operations
-
-**How it works:**
-1. First attempt based on intent recognition
-2. If error occurs, analyzes the error message
-3. Adjusts parameters (e.g., sets overwrite=True)
-4. Retries with corrected parameters
-5. Repeats up to 3 times
-
-**This handles:**
-- File existence conflicts
-- Permission issues
-- Temporary failures
-- Ambiguous user requests
-
----
-
-### 8. Git Operations (NEW in v0.2.9)
+**Complexity:** Simple
+**Type:** Single-turn
+**Best For:** Version control, reviewing changes
+**Version:** NEW in v0.2.9
 
 WYN360 can now interact with git repositories to help you manage version control.
 
@@ -464,7 +349,12 @@ WYN360: [Shows current branch marked with *]
 
 ---
 
-### 9. Code Search (NEW in v0.2.9)
+## Use Case 7: Code Search
+
+**Complexity:** Simple
+**Type:** Single-turn
+**Best For:** Finding code patterns, definitions, usage
+**Version:** NEW in v0.2.9
 
 Find code patterns, definitions, and usage across your entire project.
 
@@ -512,7 +402,12 @@ Environment variables accessed in config.py and utils.py
 
 ---
 
-### 10. File Management (NEW in v0.2.9)
+## Use Case 8: File Management
+
+**Complexity:** Simple
+**Type:** Single-turn
+**Best For:** Project organization, cleanup, restructuring
+**Version:** NEW in v0.2.9
 
 Complete file system operations for organizing your project.
 
@@ -583,7 +478,12 @@ WYN360:
 
 ---
 
-### 11. Model Selection & Optimization (NEW in v0.3.0)
+## Use Case 9: Model Selection & Optimization
+
+**Complexity:** Moderate
+**Type:** Configuration
+**Best For:** Cost optimization, performance tuning
+**Version:** NEW in v0.3.0
 
 Choose the right AI model for your task to optimize cost and performance.
 
@@ -727,535 +627,16 @@ wyn360 --model claude-sonnet-4-20250514
 
 ---
 
-## 🛠️ Available Tools
-
-WYN360 has access to these specialized tools for file and project operations:
-
-### `read_file(file_path: str)`
-**Purpose:** Read the contents of any file in your project
-
-**Parameters:**
-- `file_path` - Path to the file to read
-
-**Use cases:**
-- "What's in my config.py?"
-- "Show me the main.py file"
-- "Read my requirements.txt"
-
-**Safety features:**
-- File size limits (1MB default)
-- UTF-8 encoding
-- Error handling for missing files
+### Configuration & Setup
 
 ---
 
-### `write_file(file_path: str, content: str, overwrite: bool)`
-**Purpose:** Create new files or update existing ones
-
-**Parameters:**
-- `file_path` - Where to write the file
-- `content` - What to write
-- `overwrite` - Whether to replace existing files (default: False)
-
-**Use cases:**
-- "Create a utils.py with helper functions"
-- "Update my config.json"
-- "Save this code as script.py"
-
-**Safety features:**
-- Prevents accidental overwrites
-- Creates parent directories automatically
-- Validates file paths
-
----
-
-### `list_files(directory: str)`
-**Purpose:** Show all files in a directory, organized by category
-
-**Parameters:**
-- `directory` - Directory to scan (default: current directory)
-
-**Returns:**
-- Python files
-- Text/documentation files
-- Configuration files
-- Other files
-
-**Use cases:**
-- "What files do I have?"
-- "Show me all Python files"
-- "List the project structure"
-
-**Features:**
-- Ignores common patterns (`__pycache__`, `.git`, `node_modules`, etc.)
-- Categorizes by file type
-- Recursive directory scanning
-
----
-
-### `get_project_info()`
-**Purpose:** Generate a comprehensive project summary
-
-**Returns:**
-- Total file count
-- Files by category
-- Project structure overview
-- Blank vs existing project status
-
-**Use cases:**
-- "Summarize my project"
-- "What kind of project is this?"
-- "Give me an overview"
-
-**Analysis includes:**
-- File counts and distribution
-- Directory structure
-- Main components
-- Technology stack indicators
-
----
-
-## 📁 Smart File Handling
-
-### Automatic Code Saving
-
-When you're in a **blank project** (no Python or text files), WYN360 automatically saves generated code:
-
-**Process:**
-1. Detects Python code blocks in responses (using ``` regex)
-2. Extracts the code
-3. Suggests appropriate filename based on content
-4. Saves automatically
-5. Confirms with message: `✓ Code saved to: filename.py`
-
-**Filename Detection Logic:**
-```python
-if 'streamlit' in code:
-    filename = 'app.py'
-elif 'fastapi' in code or 'FastAPI' in code:
-    filename = 'app.py'
-elif 'def main' in code:
-    filename = 'main.py'
-elif 'class ' in code:
-    filename = 'main.py'
-else:
-    filename = 'script.py'
-```
-
-### File Type Recognition
-
-WYN360 categorizes files to understand your project:
-
-| Category | Extensions | Purpose |
-|----------|-----------|----------|
-| Python | `.py` | Source code |
-| Text | `.md`, `.txt`, `.rst` | Documentation |
-| Config | `.json`, `.yaml`, `.toml`, `.ini`, `.cfg` | Configuration |
-| Other | All others | Resources, data, etc. |
-
----
-
-## 💡 Example Workflows
-
-### Workflow 1: Brand New Project
-```
-Step 1: Navigate to empty directory
-$ cd my-new-project
-
-Step 2: Start WYN360
-$ wyn360
-
-Step 3: Describe what you want
-You: Build a CLI tool that converts CSV to JSON
-
-Step 4: Agent generates and saves code
-WYN360:
-- Generates complete script with argparse
-- Includes CSV parsing logic
-- Adds JSON output formatting
-- ✓ Code saved to: main.py
-
-Step 5: Review and run
-You: How do I use it?
-
-WYN360:
-- Provides usage instructions
-- Shows example commands
-- Explains options
-```
-
----
-
-### Workflow 2: Enhance Existing Project
-```
-Step 1: Navigate to your project
-$ cd my-existing-project
-
-Step 2: Start WYN360
-$ wyn360
-
-Step 3: Request enhancement
-You: Add logging to my data pipeline
-
-Step 4: Agent analyzes and modifies
-WYN360:
-- Reads existing pipeline.py
-- Understands current structure
-- Generates logging configuration
-- Shows you the changes
-- Explains the additions
-
-Step 5: Review and accept
-You: Apply these changes
-
-WYN360:
-- Updates the file
-- Confirms changes made
-- Provides testing guidance
-```
-
----
-
-### Workflow 3: Debug & Fix
-```
-Step 1: Encounter an error
-$ python script.py
-Error: Connection timeout
-
-Step 2: Ask WYN360 for help
-You: My script has a connection timeout error
-
-Step 3: Agent diagnoses
-WYN360:
-- Reads your script
-- Identifies the problematic code
-- Explains the root cause
-- Shows the exact issue
-
-Step 4: Get the fix
-You: How do I fix it?
-
-WYN360:
-- Suggests retry logic
-- Provides complete code
-- Explains the solution
-- Offers to update the file
-
-Step 5: Apply fix
-You: Update my script
-
-WYN360:
-- Modifies the file
-- Confirms the change
-- ✓ Code updated successfully
-```
-
----
-
-### Workflow 4: Learning & Guidance
-```
-You: How do I implement async in Python?
-
-WYN360:
-📚 Explanation:
-- What async/await does
-- When to use it
-- How it works
-
-💻 Working Examples:
-- Simple async function
-- Using asyncio.gather()
-- Error handling in async
-
-✨ Best Practices:
-- When NOT to use async
-- Common pitfalls
-- Performance tips
-
-🎯 Real-world Example:
-- Complete async HTTP client
-- Concurrent API requests
-- Proper exception handling
-```
-
----
-
-## 🚀 Key Strengths
-
-### 1. Context-Aware Development
-- Reads and understands your project structure before making changes
-- Maintains consistency with your existing code style
-- Suggests changes that integrate seamlessly
-
-### 2. Production-Ready Code
-- Proper error handling and edge cases
-- Comprehensive docstrings
-- Type hints where appropriate
-- Follows best practices
-
-### 3. Interactive & Iterative
-- Chat-based interface for natural interaction
-- Ask follow-up questions
-- Refine solutions iteratively
-- Get explanations anytime
-
-### 4. Automatic File Management
-- Saves generated code automatically (in blank projects)
-- Smart file naming based on content
-- Creates directory structures as needed
-
-### 5. Intelligent Code Analysis
-- Detects code patterns (Streamlit, FastAPI, etc.)
-- Suggests appropriate file names
-- Understands project structure
-
----
-
-## ⚠️ Current Limitations
-
-### 1. Python-Focused
-- **Optimized for:** Python projects and development
-- **Can discuss:** Other languages, but tooling is Python-centric
-- **Best for:** Python developers and learners
-
-### 2. Local Files Only
-- **Works with:** Files in current directory and subdirectories
-- **Cannot access:** Remote repositories, databases, external APIs
-- **Scope:** Local file system only
-
-### 3. No Git Operations
-- **Cannot:** Commit, push, pull, or manage git
-- **Can:** Generate code that you commit manually
-- **Workaround:** Use git commands yourself after agent makes changes
-
-### 4. No Package Installation
-- **Cannot:** Run `pip install` or install dependencies
-- **Can:** Generate requirements.txt
-- **Workaround:** Install packages manually
-
-### 5. Session-Based Memory
-- **No persistent memory** between CLI sessions
-- Each session starts fresh
-- **Workaround:** Provide context in each session
-
-### 6. File Size Limits
-- Maximum file size: 1MB per file
-- Prevents reading very large files
-- **Workaround:** Process large files in chunks
-
----
-
-## 🎯 Best Use Cases
-
-### ✅ Excellent For:
-
-#### Rapid Prototyping
-- Build MVPs quickly
-- Test ideas fast
-- Create proof-of-concepts
-- Generate starter templates
-
-#### Learning Python
-- Get explanations for concepts
-- See working examples
-- Understand best practices
-- Debug learning projects
-
-#### Starting New Projects
-- Generate project structure
-- Create boilerplate code
-- Set up configurations
-- Initialize common patterns
-
-#### Adding Features
-- Extend existing code
-- Integrate new functionality
-- Refactor safely
-- Improve code quality
-
-#### Code Review & Suggestions
-- Get improvement ideas
-- Identify potential issues
-- Learn better patterns
-- Optimize performance
-
----
-
-### ❌ Not Ideal For:
-
-#### Non-Python Projects
-- JavaScript/TypeScript (can advise, but limited tooling)
-- Java, C++, Go (conceptual help only)
-- Mobile development (limited support)
-
-#### Large-Scale Refactoring
-- Entire codebase restructuring (better in IDE)
-- Renaming across many files (use IDE refactoring tools)
-- Complex merge operations
-
-#### Production Deployments
-- CI/CD pipeline execution
-- Server deployments
-- Container orchestration
-- Infrastructure as code
-
-#### Version Control Operations
-- Git workflows
-- Branch management
-- Merge conflict resolution
-- Pull request creation
-
-#### Database Operations
-- Direct database queries
-- Schema migrations
-- Data manipulation
-- Backup/restore operations
-
----
-
-## 💡 Pro Tips
-
-### 1. Be Specific
-**Instead of:** "Make my code better"
-**Try:** "Add error handling to my API endpoints"
-
-### 2. Provide Context
-**Instead of:** "This doesn't work"
-**Try:** "My FastAPI app returns 500 errors when the database is down"
-
-### 3. Iterate
-- Start with basic version
-- Ask for improvements
-- Refine step by step
-- Build incrementally
-
-### 4. Use in Combination with IDE
-- Generate code with WYN360
-- Refine in your IDE
-- Use IDE for complex refactoring
-- Use WYN360 for quick generation
-
-### 5. Review Generated Code
-- Always read generated code
-- Understand what it does
-- Test before deploying
-- Customize as needed
-
-### 6. Use Clear Intent Language
-- Say "add feature" or "update" when modifying existing files
-- Say "create new" or "make another" for new files
-- Be explicit about what you want to change
-- The agent understands natural language intent
-
-**Examples:**
-- ✅ "Add authentication to my app" (updates existing)
-- ✅ "Create a new helper module" (creates new)
-- ✅ "Improve error handling" (updates existing)
-- ✅ "Build a separate API client" (creates new)
-
-### 7. Manage Context with Slash Commands (NEW in v0.2.8)
-- Use `/tokens` to monitor API costs during long sessions
-- Use `/save` to preserve important conversations for later
-- Use `/load` to continue previous work sessions
-- Use `/clear` when starting fresh to reduce token usage
-- Use `/history` to review what you've discussed
-
-**Example Workflow:**
-```
-You: Build a data analysis pipeline
-WYN360: [Creates initial pipeline]
-
-You: Add visualization features
-WYN360: [Enhances the pipeline]
-
-You: /tokens
-[Token Usage Statistics]
-Total Cost: $0.03
-
-You: /save my_pipeline_session.json
-✓ Session saved
-
-[Later...]
-You: /load my_pipeline_session.json
-✓ Session loaded (conversation history restored)
-
-You: Add export to Excel feature
-WYN360: [Continues from where you left off with full context]
-```
-
-**Cost Management Tips:**
-- Check `/tokens` regularly to track spending
-- Use `/clear` after completing a major feature to reset context
-- Save sessions before clearing to preserve your work
-- Long conversations cost more due to conversation history in each API call
-- Balance between context (better results) and cost (fewer tokens)
-
----
-
-## 🎓 Learning Path
-
-### Beginner
-1. Start in blank directory
-2. Ask to build simple scripts
-3. Learn from generated code
-4. Ask "why" and "how" questions
-
-### Intermediate
-1. Bring existing projects
-2. Ask for feature additions
-3. Request refactoring help
-4. Learn best practices
-
-### Advanced
-1. Use for rapid prototyping
-2. Generate complex architectures
-3. Get design pattern suggestions
-4. Review and optimize code
-
----
-
-## 📞 Need Help?
-
-If you run into issues or have questions:
-
-1. **Ask the agent:** WYN360 can explain its own capabilities
-2. **Check GitHub:** https://github.com/yiqiao-yin/wyn360-cli
-3. **Read the README:** Basic setup and usage
-4. **Report issues:** GitHub Issues page
-
----
-
-## 🚀 Quick Start Examples
-
-### Example 1: Build a Web Scraper
-```
-You: Create a web scraper that extracts article titles from a news site
-
-WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
-✓ Code saved to: scraper.py
-```
-
-### Example 2: Data Processing Pipeline
-```
-You: Build a script that reads CSV, cleans data, and outputs to JSON
-
-WYN360: [Creates comprehensive data pipeline with pandas]
-✓ Code saved to: process_data.py
-```
-
-### Example 3: API Client
-```
-You: Create an async HTTP client for a REST API
-
-WYN360: [Generates async client with aiohttp, retry logic, error handling]
-✓ Code saved to: api_client.py
-```
-
----
-
-## Use Case 12: Configuration & Personalization
-
-**Feature:** User and project-specific configuration files (v0.3.1)
+## Use Case 10: Configuration & Personalization
+
+**Complexity:** Moderate
+**Type:** Setup/Configuration
+**Best For:** Team collaboration, personal preferences, project-specific context
+**Version:** NEW in v0.3.1
 
 **Problem:** Every developer has different preferences and every project has unique requirements. Repeating instructions manually is tedious.
 
@@ -1491,9 +872,12 @@ model: claude-sonnet-4-20250514  # Use more capable model
 
 ---
 
-## Use Case 13: Streaming Responses
+## Use Case 11: Streaming Responses
 
-**Feature:** Real-time token-by-token streaming (v0.3.2)
+**Complexity:** Simple
+**Type:** Feature
+**Best For:** Better UX, long responses, real-time feedback
+**Version:** NEW in v0.3.2
 
 **Problem:** Waiting for entire responses can feel slow, especially for long code generations or explanations. Users want immediate feedback.
 
@@ -1698,912 +1082,252 @@ WYN360: [Streams code file by file]
 
 ---
 
-## 15. Performance Monitoring & Analytics
-
-Monitor your CLI usage, response times, tool efficiency, and identify performance bottlenecks with comprehensive metrics tracking.
-
-### What is Performance Monitoring?
-
-WYN360 automatically tracks and analyzes session performance, providing insights into:
-- **Response Times**: How fast the AI responds to your requests
-- **Tool Usage**: Which tools you use most and their success rates
-- **Error Tracking**: What errors occur and how frequently
-- **Session Statistics**: Overall session duration and activity
-
-### The /stats Command
-
-View comprehensive performance metrics at any time during your session:
-
-```
-You: /stats
-
-┏━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃   Token Usage        ┃  ┃   Performance Metrics   ┃
-┣━━━━━━━━━━━━━━━━━━━━━━┫  ┣━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃ Total Requests: 25   ┃  ┃ Session Duration: 15m   ┃
-┃ Input Tokens: 45,230 ┃  ┃ Avg Response: 2.3s     ┃
-┃ Output Tokens: 12,450┃  ┃ Min Response: 0.8s     ┃
-┃ Total Cost: $0.32    ┃  ┃ Max Response: 5.2s     ┃
-┗━━━━━━━━━━━━━━━━━━━━━━┛  ┃ Error Count: 0         ┃
-                          ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃      Tool Usage            ┃
-┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃ Total Tool Calls: 47       ┃
-┃ Successful Calls: 45       ┃
-┃ Failed Calls: 2            ┃
-┃ Success Rate: 95.7%        ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
-
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃      Most Used Tools          ┃
-┣━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━┫
-┃ Tool      ┃Success┃Failed┃Total┃
-┣━━━━━━━━━━━╋━━━━━━━╋━━━━━━╋━━━━━┫
-┃ read_file ┃  15   ┃  0   ┃ 15  ┃
-┃write_file ┃  12   ┃  1   ┃ 13  ┃
-┃execute_cmd┃   8   ┃  0   ┃  8  ┃
-┃search_files┃  5   ┃  0   ┃  5  ┃
-┃git_status ┃   5   ┃  1   ┃  6  ┃
-┗━━━━━━━━━━━┻━━━━━━━┻━━━━━━┻━━━━━┛
-```
-
-### Use Case 1: Identifying Slow Operations
-
-**Scenario:** You notice your session feels slow sometimes
-
-```
-You: /stats
-
-WYN360: [Shows metrics]
-- Avg Response: 4.5s
-- Max Response: 15.2s  ← Outlier detected!
-
-You: What took 15 seconds?
-
-WYN360: Looking at your session history, the slowest
-operation was "Generate comprehensive ML pipeline" which
-generated 800+ lines of code. Consider breaking large
-requests into smaller chunks for faster responses.
-```
-
-**Insight:** Large code generation requests take longer. Break them into smaller, focused tasks.
-
-### Use Case 2: Tool Success Rate Analysis
-
-**Scenario:** Want to see which operations are failing
-
-```
-You: /stats
-
-WYN360: [Shows tool usage]
-Tool Success Rates:
-- read_file: 100% (15/15)
-- write_file: 92.3% (12/13)  ← 1 failure
-- execute_command: 100% (8/8)
-- git_status: 83.3% (5/6)    ← 1 failure
-
-You: Why did write_file fail once?
-
-WYN360: The write_file failure was due to attempting
-to write without overwrite=True when the file already
-existed. This was corrected in the retry.
-```
-
-**Insight:** Understand which operations need error handling or user confirmation.
-
-### Use Case 3: Session Cost Monitoring
-
-**Scenario:** Track spending during a long coding session
-
-```
-You: I've been working for 2 hours. How much have I spent?
-
-You: /stats
-
-WYN360: [Shows combined token + performance metrics]
-Session Duration: 2h 15m
-Total Requests: 47
-Total Cost: $1.23
-Average Cost per Request: $0.026
-
-Most expensive operations:
-1. Multi-file refactoring: $0.15
-2. Test generation: $0.12
-3. Documentation creation: $0.09
-```
-
-**Insight:** Monitor costs in real-time, identify expensive operations, optimize usage.
-
-### Use Case 4: Error Tracking & Debugging
-
-**Scenario:** Encountering errors and want to understand patterns
-
-```
-You: /stats
-
-WYN360: [Shows error summary]
-Error Count: 3
-Error Types:
-- FileNotFoundError: 2
-- ValueError: 1
-
-Recent errors:
-1. FileNotFoundError: "config.yaml not found" (2x)
-2. ValueError: "Invalid JSON format"
-
-You: Create config.yaml with default settings
-
-WYN360: ✓ Created config.yaml
-Now future runs won't encounter FileNotFoundError
-```
-
-**Insight:** Identify recurring errors and fix root causes.
-
-### Use Case 5: Performance Benchmarking
-
-**Scenario:** Compare different models or approaches
-
-```
-# Session 1 with Haiku (fast model)
-You: /stats
-Avg Response: 1.2s
-Total Cost: $0.15
-
-# Session 2 with Sonnet (balanced model)
-You: /stats
-Avg Response: 2.3s
-Total Cost: $0.42
-
-# Session 3 with Opus (powerful model)
-You: /stats
-Avg Response: 4.1s
-Total Cost: $1.25
-```
-
-**Insight:** Choose the right model for your use case - speed vs. capability vs. cost.
-
-### Features
-
-**Automatic Tracking:**
-- ✅ Response times tracked for every request
-- ✅ Tool calls logged with success/failure status
-- ✅ Errors captured with type and message
-- ✅ Session duration calculated automatically
-
-**Persistent Metrics:**
-- ✅ Metrics saved with /save command
-- ✅ Loaded with /load command
-- ✅ Track performance across multiple sessions
-
-**Zero Configuration:**
-- ✅ Works automatically - no setup required
-- ✅ Non-intrusive - runs in background
-- ✅ No performance overhead
-- ✅ Compatible with all existing features
-
-### Commands
-
-| Command | Purpose | Example |
-|---------|---------|---------|
-| `/stats` | Show comprehensive performance metrics | `You: /stats` |
-| `/tokens` | Show only token usage (legacy) | `You: /tokens` |
-| `/clear` | Reset all metrics and history | `You: /clear` |
-
-### Tips for Optimization
-
-**1. Monitor Long-Running Sessions**
-```bash
-# Check metrics periodically during long sessions
-You: /stats
-# If avg response time > 5s, consider:
-# - Breaking large requests into smaller ones
-# - Switching to faster model (haiku)
-# - Clearing conversation history
-```
-
-**2. Track Tool Efficiency**
-```bash
-# If tool success rate < 90%, investigate:
-# - Are file paths correct?
-# - Do required files exist?
-# - Are permissions set properly?
-```
-
-**3. Cost Management**
-```bash
-# Set personal budget limits
-# Check /stats before expensive operations
-# Use haiku for simple tasks, sonnet for complex
-```
-
-**4. Identify Bottlenecks**
-```bash
-# Look at "Most Used Tools"
-# If one tool dominates, consider:
-# - Batch operations
-# - Cache results
-# - Optimize workflow
-```
-
-### Real-World Workflow Example
-
-**Scenario:** Building a web scraper project
-
-```
-# Start session
-You: Create a web scraper for news articles
-
-# After 30 minutes of work
-You: /stats
-
-WYN360:
-Session Duration: 32m
-Total Requests: 18
-Avg Response: 2.1s
-Total Cost: $0.45
-
-Most Used Tools:
-- write_file: 8 times (100% success)
-- read_file: 6 times (100% success)
-- execute_command: 4 times (75% success)  ← Attention needed
-
-You: Why did execute_command fail?
-
-WYN360: One pip install failed due to network timeout.
-Retried successfully. No action needed.
-
-# Continue working...
-
-# End of session
-You: /stats
-
-WYN360:
-Final Session Stats:
-Duration: 1h 15m
-Requests: 35
-Cost: $0.87
-Success Rate: 97.1%
-
-You: /save scraper_session.json
-WYN360: ✓ Session saved (including performance metrics)
-```
-
-**Result:** Complete project visibility, cost tracking, and session replay capability.
-
-### Technical Details
-
-**What's Tracked:**
-- Request timestamps and durations
-- Tool invocation counts (success/failure)
-- Error occurrences with stack traces
-- Token usage per request
-- Model information
-
-**Storage:**
-- In-memory during session
-- Persisted to JSON with /save
-- Loaded from JSON with /load
-- Zero database dependencies
-
-**Performance:**
-- Negligible overhead (< 0.1ms per operation)
-- Asynchronous tracking
-- Memory efficient
-- No blocking operations
+### Deployment & Integration
 
 ---
 
-## 16. Web Search - Real-Time Information Access
+## Use Case 12: HuggingFace Deployment
 
-**Phase:** 11.1
-**Version:** 0.3.21, Enhanced in 0.3.23
-**Feature:** Real-time web search using Claude's native web_search_20250305 tool
+**Complexity:** Moderate
+**Type:** Deployment
+**Best For:** Sharing apps, demos, public deployment
+**Version:** v0.3.16 (Phase 1), v0.3.17 (Phase 2 - Full Deployment)
 
-### Overview
+Deploy Streamlit or Gradio applications to HuggingFace Spaces with automatic setup and authentication.
 
-WYN360 now has access to real-time web search capabilities! This feature enables the AI assistant to fetch current information from the internet, including weather data, website content, latest documentation, and **finding GitHub repositories and libraries** (enhanced in v0.3.23). The web search tool is integrated via pydantic-ai's `WebSearchTool` builtin and is configured with cost controls (5 searches per session max, $10 per 1,000 searches).
+**Phase 1: Authentication (v0.3.16)**
+- Check HuggingFace CLI authentication status
+- Authenticate with HuggingFace using access token
+- Generate README.md with Space configuration
 
-**v0.3.23 Enhancements:**
-- ⬆️ Upgraded from pydantic-ai 0.0.19 to 1.13.0 for improved stability
-- 🔧 Fixed web search tool integration with proper `builtin_tools` configuration
-- 📝 Enhanced system prompt with explicit examples for finding resources
-- ✅ Now properly recognizes queries like "find a popular GitHub repo for X"
+**Phase 2: Full Deployment (v0.3.17)**
+- Create HuggingFace Space repository via CLI
+- Upload files to HuggingFace Space automatically
+- Complete end-to-end deployment automation
 
-### Key Features
+**Available Tools:**
 
-- 🌤️ **Weather Queries** - Get current weather for any location
-- 🌐 **Website Reading** - Fetch and summarize web content
-- 📚 **Current Information** - Access latest docs, news, and trends
-- 🔍 **Resource Finding** - Find GitHub repos, libraries, and tutorials **(NEW in v0.3.23)**
-- 💰 **Cost Controlled** - Limited to 5 searches per session by default
-- 🔗 **Proper Citations** - All results include source URLs
-- 🤖 **Automatic Invocation** - Claude decides when web search is needed
+| Tool | Purpose | Version |
+|------|---------|---------|
+| `check_hf_authentication()` | Check authentication status | v0.3.16 |
+| `authenticate_hf(token)` | Authenticate with HF token | v0.3.16 |
+| `create_hf_readme()` | Generate Space README | v0.3.16 |
+| `create_hf_space(name, type)` | Create Space repository | v0.3.17 |
+| `push_to_hf_space(space_name)` | Upload files to Space | v0.3.17 |
 
-### Use Case 16.1: Weather Queries
+**Example Workflow:**
 
-Get real-time weather information for any location.
-
-**User Interaction:**
 ```
-You: What's the weather in San Francisco?
+# Step 1: Build your app
+You: Create a Streamlit chatbot app
 
-WYN360: [Searches web for current San Francisco weather]
+WYN360: [Generates app.py with chatbot code]
+✓ Created app.py
 
-Current Weather in San Francisco, CA:
-- Temperature: 62°F (17°C)
-- Conditions: Partly Cloudy
-- Humidity: 71%
-- Wind: 10 mph NW
-- Last Updated: 2025-01-10 14:30 PST
+# Step 2: Deploy to HuggingFace
+You: Deploy this to HuggingFace
 
-Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
-```
+WYN360: I'll help you deploy to HuggingFace Spaces.
 
-**If Location Not Provided:**
-```
-You: What's the weather?
+[Checks authentication]
+Not authenticated with HuggingFace. Please provide your token.
 
-WYN360: I'd be happy to check the weather for you! Could you please tell me which location you'd like to know about?
+You: [Provides HF token]
 
-You: Boston
+WYN360:
+✓ Authenticated with HuggingFace as 'username'
 
-WYN360: [Searches web for Boston weather]
+[Creates Space]
+✓ Created Space: username/chatbot-demo
 
-Current Weather in Boston, MA:
-- Temperature: 28°F (-2°C)
-- Conditions: Light Snow
-- Humidity: 85%
-- Wind: 15 mph NE
-- Last Updated: 2025-01-10 14:30 EST
+[Generates README.md with Space config]
+✓ Created README.md with Space configuration
 
-Source: [Weather.com](https://weather.com/weather/today/l/Boston+MA)
-```
+[Pushes files to Space]
+✓ Uploaded app.py to Space
+✓ Uploaded requirements.txt to Space
 
-**How It Works:**
-1. User asks for weather information
-2. If location is missing, WYN360 asks for it
-3. Web search tool fetches current weather data
-4. Results displayed with source citation
-5. Information includes temperature, conditions, and more
-
-**Cost:**
-- 1 search per query ($0.01)
-- Plus token costs for input/output (~$0.001-0.003)
-- Total: ~$0.011-0.013 per weather query
-
-### Use Case 16.2: Website Reading & Summarization
-
-Fetch and summarize content from any publicly accessible URL.
-
-**User Interaction:**
-```
-You: Read this article: https://python.org/downloads/release/python-3130/
-
-WYN360: [Fetches content from python.org]
-
-**Python 3.13.0 Release Summary:**
-
-**Key Highlights:**
-1. **Performance Improvements:**
-   - Free-threaded CPython (no GIL) - experimental
-   - JIT compiler - experimental
-   - 5-10% performance boost in most workloads
-
-2. **New Features:**
-   - Enhanced error messages with better tracebacks
-   - Improved type hinting capabilities
-   - New syntax for generic type parameters
-   - Enhanced asyncio performance
-
-3. **Standard Library Updates:**
-   - New modules: `dbm.sqlite3`
-   - Improved `pathlib` functionality
-   - Enhanced `argparse` features
-
-4. **Deprecations & Removals:**
-   - Removed various deprecated features from 3.10
-   - Updated minimum supported platforms
-
-**Release Date:** October 2024
-**Status:** Stable Release
-
-**Important Notes:**
-- Free-threading and JIT are experimental and opt-in
-- Recommended for production use after thorough testing
-- Migration guide available for deprecated features
-
-Source: [Python.org](https://python.org/downloads/release/python-3130/)
-(Last updated: 2024-10-07)
+🚀 Your app is now live at:
+https://huggingface.co/spaces/username/chatbot-demo
 ```
 
-**Another Example:**
+**Authentication:**
 ```
-You: What does this page say? https://fastapi.tiangolo.com/
+# Set token in environment (recommended)
+export HF_TOKEN="hf_your_token_here"
 
-WYN360: [Fetches FastAPI homepage]
+# Or provide when prompted
+You: Authenticate with huggingface
 
-**FastAPI Framework Overview:**
+WYN360: Please provide your HuggingFace token...
+You: hf_abc123xyz...
 
-FastAPI is a modern, high-performance web framework for building APIs with Python 3.8+ based on standard Python type hints.
-
-**Key Features:**
-- **Fast:** Very high performance, on par with NodeJS and Go
-- **Fast to code:** Increase development speed by 200-300%
-- **Fewer bugs:** Reduce about 40% of human errors
-- **Intuitive:** Great editor support with auto-completion
-- **Easy:** Designed to be easy to use and learn
-- **Short:** Minimize code duplication
-- **Robust:** Production-ready code with automatic docs
-- **Standards-based:** Based on OpenAPI and JSON Schema
-
-**Core Technologies:**
-- Starlette for web parts
-- Pydantic for data validation
-- Python type hints for everything
-
-**Use Cases:**
-- RESTful APIs
-- GraphQL APIs
-- WebSockets
-- Background tasks
-- Dependency injection
-
-Source: [FastAPI Documentation](https://fastapi.tiangolo.com/)
+WYN360: ✓ Authenticated successfully
 ```
 
-**How It Works:**
-1. User provides a URL to read
-2. Web search tool fetches the page content
-3. WYN360 analyzes and summarizes key information
-4. Results presented with proper structure and citations
-5. Source URL and last updated date included
-
-**Cost:**
-- 1 search per URL ($0.01)
-- Token costs vary by page size (typically $0.003-0.010)
-- Total: ~$0.013-0.020 per URL
-
-### Use Case 16.3: Current Information & Latest Updates
-
-Access the latest documentation, package versions, news, and trends.
-
-**Example 1: Latest Package Information**
-```
-You: What's new in React 19?
-
-WYN360: [Searches for React 19 release information]
-
-**React 19 - Major Updates:**
-
-**Release Date:** December 2024 (Beta available)
-
-**Key New Features:**
-
-1. **React Compiler:**
-   - Automatic optimization of React code
-   - No need for manual memoization in most cases
-   - Significant performance improvements
-
-2. **Actions:**
-   - New API for handling form submissions
-   - Built-in pending states
-   - Optimistic updates support
-   - Example: `useActionState()`, `useFormStatus()`
-
-3. **Document Metadata:**
-   - Built-in support for `<title>`, `<meta>` tags
-   - No need for react-helmet or next/head
-   - Simplified SEO management
-
-4. **Asset Loading:**
-   - New APIs: `preload()`, `preinit()`
-   - Better control over resource loading
-   - Improved performance
-
-5. **Web Components:**
-   - Full support for Web Components
-   - Better interoperability
-
-**Breaking Changes:**
-- Removed deprecated APIs (componentWillMount, etc.)
-- StrictMode changes
-- Updated TypeScript types
-
-**Migration Guide:**
-Available at react.dev with automated codemod tools
-
-Sources:
-- [React Blog - React 19 Beta](https://react.dev/blog/2024/12/05/react-19)
-- [React Docs - What's New](https://react.dev/learn/whats-new)
+**Space Configuration (README.md):**
+```yaml
+---
+title: My Chatbot
+emoji: 🤖
+colorFrom: blue
+colorTo: purple
+sdk: streamlit
+sdk_version: 1.28.0
+app_file: app.py
+pinned: false
+---
 ```
 
-**Example 2: Security Information**
-```
-You: What are the latest security vulnerabilities in Node.js?
-
-WYN360: [Searches for recent Node.js security advisories]
-
-**Node.js Security Updates (January 2025):**
-
-**Critical Vulnerabilities:**
-
-1. **CVE-2025-XXXX - HTTP Request Smuggling**
-   - Severity: High (7.5 CVSS)
-   - Affected: Node.js 18.x, 20.x, 21.x
-   - Fixed in: 18.19.1, 20.11.1, 21.6.2
-   - Impact: Allows attackers to bypass security controls
-   - Recommendation: Update immediately
-
-2. **CVE-2025-YYYY - OpenSSL Vulnerability**
-   - Severity: Medium (5.9 CVSS)
-   - Affected: All versions using OpenSSL 3.x
-   - Fixed in: Latest versions
-   - Impact: Potential denial of service
-   - Recommendation: Update to patched versions
-
-**Recommended Actions:**
-1. Update to latest LTS versions (18.19.1+ or 20.11.1+)
-2. Review security best practices
-3. Enable security audit in CI/CD
-4. Run `npm audit` to check dependencies
-
-Sources:
-- [Node.js Security Releases](https://nodejs.org/en/blog/vulnerability/)
-- [GitHub Security Advisories](https://github.com/nodejs/node/security/advisories)
-```
-
-**Example 3: Best Practices Research**
-```
-You: What are current best practices for FastAPI deployment?
-
-WYN360: [Searches for FastAPI deployment best practices]
-
-**FastAPI Deployment Best Practices (2025):**
-
-**Production Server:**
-- **Recommended:** Uvicorn with Gunicorn workers
-- **Configuration:**
-  ```bash
-  gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
-  ```
-
-**Docker Deployment:**
-- Use official Python slim images
-- Multi-stage builds for smaller images
-- Non-root user for security
-- Example: tiangolo/uvicorn-gunicorn-fastapi image
-
-**Key Recommendations:**
-
-1. **Performance:**
-   - Enable HTTP/2 support
-   - Use async database drivers (asyncpg, motor)
-   - Implement caching (Redis, Memcached)
-   - Enable GZIP compression
-
-2. **Security:**
-   - HTTPS only (Let's Encrypt for free certs)
-   - CORS configuration
-   - Rate limiting (slowapi library)
-   - Input validation with Pydantic
-   - Security headers (fastapi-security)
-
-3. **Monitoring:**
-   - Prometheus for metrics
-   - Sentry for error tracking
-   - Structured logging
-   - Health check endpoints
-
-4. **Scaling:**
-   - Horizontal scaling with load balancer
-   - Kubernetes for orchestration
-   - Cloud platforms: AWS ECS, Google Cloud Run, Azure Container Apps
-
-5. **Database:**
-   - Use connection pooling
-   - Implement database migrations (Alembic)
-   - Read replicas for scaling reads
-
-**Cloud Platforms:**
-- AWS: ECS, Lambda (Mangum adapter), Elastic Beanstalk
-- Google Cloud: Cloud Run, App Engine
-- Azure: Container Apps, App Service
-- Heroku: Simple deployment with Procfile
-
-Sources:
-- [FastAPI Deployment Guide](https://fastapi.tiangolo.com/deployment/)
-- [Uvicorn Deployment](https://www.uvicorn.org/deployment/)
-- [Best Practices Blog Posts - 2024/2025]
-```
-
-**How It Works:**
-1. User asks about current information or latest updates
-2. Web search fetches recent articles, documentation, or news
-3. WYN360 synthesizes information from multiple sources
-4. Results presented with structure, citations, and dates
-5. Recommendations and best practices highlighted
-
-**Cost:**
-- 1-2 searches per query ($0.01-0.02)
-- Token costs for synthesis (~$0.005-0.015)
-- Total: ~$0.015-0.035 per information query
-
-### Use Case 16.4: Finding Resources & GitHub Repositories **(NEW in v0.3.23)**
-
-Find popular GitHub repositories, libraries, tools, and learning resources based on specific topics or technologies.
-
-**User Interaction:**
-```
-You: Find a popular GitHub repo for machine learning
-
-WYN360: [Searches web for popular ML repositories]
-
-Here are some of the most popular GitHub repositories for machine learning:
-
-1. **tensorflow/tensorflow** ⭐ 185,000+ stars
-   https://github.com/tensorflow/tensorflow
-   - End-to-end open source machine learning platform
-   - Developed and maintained by Google
-   - Comprehensive ecosystem for model development and deployment
-   - Supports neural networks, deep learning, and production ML
-
-2. **pytorch/pytorch** ⭐ 82,000+ stars
-   https://github.com/pytorch/pytorch
-   - Deep learning framework by Meta AI (Facebook)
-   - Dynamic computational graphs (imperative programming)
-   - Popular in research and academic communities
-   - Excellent for prototyping and experimentation
-
-3. **scikit-learn/scikit-learn** ⭐ 59,000+ stars
-   https://github.com/scikit-learn/scikit-learn
-   - Classic machine learning library for Python
-   - Built on NumPy, SciPy, and matplotlib
-   - Great for traditional ML algorithms (not deep learning)
-   - Excellent documentation and beginner-friendly
-
-4. **keras-team/keras** ⭐ 61,000+ stars
-   https://github.com/keras-team/keras
-   - High-level neural networks API
-   - Runs on top of TensorFlow
-   - User-friendly and modular
-   - Perfect for quick prototyping
-
-**Recommendation for Beginners:** Start with scikit-learn for traditional ML, then move to TensorFlow or PyTorch for deep learning.
-
-Sources:
-- [GitHub Search Results - Most Stars in ML category]
-- [GitHub Trending - Machine Learning]
-(Last updated: December 2025)
-```
-
-**Finding Libraries by Language:**
-```
-You: What are good Python libraries for data visualization?
-
-WYN360: [Searches for Python data viz libraries]
-
-Top Python libraries for data visualization:
-
-1. **Matplotlib** ⭐ 19,500+ stars
-   - Standard plotting library, similar to MATLAB
-   - Highly customizable, extensive documentation
-   - Best for: Static plots, scientific visualizations
-
-2. **Plotly** ⭐ 16,000+ stars
-   - Interactive web-based visualizations
-   - Dash framework for dashboards
-   - Best for: Interactive charts, web apps, dashboards
-
-3. **Seaborn** ⭐ 12,000+ stars
-   - Built on matplotlib, statistical focus
-   - Beautiful default styles
-   - Best for: Statistical analysis, heatmaps, distributions
-
-4. **Bokeh** ⭐ 19,000+ stars
-   - Interactive visualizations for web browsers
-   - Real-time streaming and big data
-   - Best for: Interactive web apps, large datasets
-
-Sources: GitHub, Python Package Index, Stack Overflow trends
-```
-
-**Finding Tutorials:**
-```
-You: Find tutorials for FastAPI
-
-WYN360: [Searches for FastAPI tutorials]
-
-Top FastAPI Learning Resources:
-
-**Official Documentation:**
-- FastAPI Tutorial - https://fastapi.tiangolo.com/tutorial/
-  Comprehensive, step-by-step guide by the creator
-
-**GitHub Repositories:**
-- awesome-fastapi/awesome-fastapi ⭐ 7,500+ stars
-  Curated list of FastAPI resources, projects, and tutorials
-
-**Tutorial Series:**
-- "FastAPI - The Complete Course" (GitHub: codingforentrepreneurs)
-- Real-world examples with authentication, databases, testing
-
-**Video Tutorials:**
-- FreeCodeCamp FastAPI full course (YouTube)
-- Traversy Media FastAPI crash course
-
-Sources: GitHub, FastAPI documentation, YouTube, Dev.to
-```
-
-**How It Works:**
-1. User asks to find repositories, libraries, or learning resources
-2. Web search queries GitHub, package registries, and tech communities
-3. Results ranked by popularity (stars, downloads, community activity)
-4. Provides URLs, descriptions, star counts, and recommendations
-5. Includes comparisons and use case suggestions
-
-**What You Can Find:**
-- ✅ GitHub repositories by topic ("find repos for X")
-- ✅ Python/JS/Go libraries ("best libraries for Y")
-- ✅ Learning resources ("tutorials for Z")
-- ✅ Tools and frameworks ("tools for web scraping")
-- ✅ Code examples ("example projects using A")
-
-**Cost:**
-- 1-2 searches per query ($0.01-0.02)
-- Token costs for formatting (~$0.005-0.010)
-- Total: ~$0.015-0.030 per resource search
-
-### When Web Search is Used
-
-**WILL Use Web Search:**
-- ✅ Weather queries ("What's the weather in NYC?")
-- ✅ Reading URLs ("Read https://example.com")
-- ✅ **Finding resources** ("Find a popular GitHub repo for machine learning") **(NEW v0.3.23)**
-- ✅ **Library recommendations** ("What are good Python data viz libraries?") **(NEW v0.3.23)**
-- ✅ **Tutorial finding** ("Find tutorials for FastAPI") **(NEW v0.3.23)**
-- ✅ Current information ("What's new in Python 3.13?")
-- ✅ Latest versions ("Latest React features")
-- ✅ Recent news ("Recent security vulnerabilities")
-- ✅ Real-time data ("Current stock price of...")
-- ✅ Best practices research ("Current FastAPI deployment practices")
-
-**WILL NOT Use Web Search:**
-- ❌ Code generation ("Write a FastAPI app")
-- ❌ File operations ("Show me app.py")
-- ❌ Local project queries ("List files in this project")
-- ❌ Git operations ("Show git status")
-- ❌ General programming concepts ("What is async/await?")
-- ❌ Existing knowledge ("How to use Python decorators?")
-
-### Cost Analysis
-
-**Pricing:**
-- **Web Search Cost:** $10.00 per 1,000 searches
-- **Token Costs:** Standard model pricing ($3/$15 per M tokens for Sonnet)
-- **Session Limit:** 5 searches per session (configurable)
-
-**Example Costs:**
-
-| Query Type | Searches | Token Cost | Total Cost |
-|-----------|----------|------------|------------|
-| Weather | 1 | $0.001-0.003 | $0.011-0.013 |
-| URL Reading | 1 | $0.003-0.010 | $0.013-0.020 |
-| Latest Info | 1-2 | $0.005-0.015 | $0.015-0.035 |
-
-**Session Example:**
-```
-- 2 weather queries: $0.026
-- 1 URL read: $0.015
-- 2 info searches: $0.050
-Total: ~$0.091 per session
-```
-
-**Monthly Estimate (heavy use):**
-- 10 sessions/day × 30 days = 300 sessions
-- Average 3 searches per session = 900 searches
-- Cost: (900 × $0.01) + token costs ≈ $9-15/month
-
-### Configuration
-
-**Default Settings:**
-```python
-# In agent.py
-builtin_tools=[
-    WebSearchTool(max_uses=5)  # Limit searches per session
-]
-```
-
-**Adjustable Parameters:**
-- `max_uses`: Maximum searches per session (default: 5)
-- `search_context_size`: How much context to include
-- `user_location`: Default location for queries
-- `blocked_domains`: Sites to exclude
-- `allowed_domains`: Sites to include only
-
-### Technical Implementation
-
-**Integration Method:**
-```python
-from pydantic_ai import Agent, WebSearchTool
-
-agent = Agent(
-    model="claude-sonnet-4",
-    builtin_tools=[WebSearchTool(max_uses=5)]
-)
-```
-
-**Key Points:**
-- Uses Claude's native `web_search_20250305` tool
-- Integrated via pydantic-ai framework
-- Separate from custom @tool decorated functions
-- Works alongside 19 existing custom tools
-- No conflicts with file operations or git tools
-
-### Best Practices
-
-**For Users:**
-1. **Be Specific:** Provide clear locations for weather ("San Francisco" not just "weather")
-2. **Full URLs:** Provide complete URLs for reading ("https://..." not just "python.org")
-3. **Recent Focus:** Use for current info, not general knowledge
-4. **Cost Aware:** Remember search limits (5 per session by default)
-
-**For Developers:**
-1. **Adjust Limits:** Increase `max_uses` for high-volume use cases
-2. **Filter Domains:** Use `allowed_domains` for trusted sources only
-3. **Monitor Costs:** Track search usage with `/stats` command
-4. **Combine Tools:** Use with `read_file` for comparing local vs online docs
-
-### Troubleshooting
-
-**Issue: Search limit reached**
-```
-Error: Maximum web searches (5) reached for this session
-```
-**Solution:** Start a new session or adjust `max_uses` in code
-
-**Issue: No results found**
-```
-No relevant results found for query: [your query]
-```
-**Solution:** Rephrase query with more specific terms
-
-**Issue: URL not accessible**
-```
-Error: Could not fetch content from URL
-```
-**Solution:** Check URL is publicly accessible, not behind authentication
-
-### Performance
-
-**Response Times:**
-- Weather query: 1-3 seconds
-- URL reading: 2-5 seconds (depends on page size)
-- Information search: 1-4 seconds
-
-**Accuracy:**
-- Real-time data: 100% current (as of search time)
-- Source citations: Always included
-- Confidence: Based on source reliability
-
-**Limitations:**
-- Cannot access authenticated sites
-- Cannot bypass paywalls
-- Limited to publicly available content
-- Session limit prevents excessive searches
+**Supported SDKs:**
+- Streamlit
+- Gradio
+- Static (HTML/CSS/JS)
+
+**Benefits:**
+- ✅ One-command deployment
+- ✅ Automatic authentication
+- ✅ README generation
+- ✅ Public URL instantly
+- ✅ No manual git operations needed
 
 ---
 
-## 17. GitHub Integration - Complete Git Workflow Management
+## Use Case 13: Automatic Test Generation
 
-**Phase:** 8.1
-**Version:** 0.3.23
+**Complexity:** Moderate
+**Type:** Testing/Quality Assurance
+**Best For:** TDD, code coverage, test scaffolding
+**Version:** NEW in v0.3.18 (Phase 7.2)
+
+**Feature:** Automatically generate pytest test stubs for Python files
+
+Automatically generate pytest test scaffolding for your Python code using AST parsing.
+
+**How it works:**
+- Analyzes Python files using Abstract Syntax Tree (AST) parsing
+- Identifies functions and classes
+- Generates test stubs with TODO markers
+- Creates proper pytest structure
+- Safe code analysis without execution
+
+**Example Interaction:**
+```
+You: Generate tests for calculator.py
+
+WYN360: [Analyzes calculator.py using AST]
+
+Found:
+- 4 functions: add(), subtract(), multiply(), divide()
+- 1 class: Calculator
+
+[Generates tests/test_calculator.py]
+✓ Created tests/test_calculator.py with 5 test stubs
+
+Generated test file structure:
+```python
+import pytest
+from calculator import add, subtract, multiply, divide, Calculator
+
+def test_add():
+    # TODO: Implement test for add()
+    assert add(2, 3) == 5
+
+def test_subtract():
+    # TODO: Implement test for subtract()
+    pass
+
+def test_multiply():
+    # TODO: Implement test for multiply()
+    pass
+
+def test_divide():
+    # TODO: Implement test for divide()
+    pass
+
+class TestCalculator:
+    def test_init(self):
+        # TODO: Implement test for Calculator.__init__()
+        pass
+```
+
+Next steps: Complete the TODO sections with actual test logic.
+```
+
+**Advanced Example:**
+```
+You: Generate comprehensive tests for api.py
+
+WYN360: [Analyzes api.py]
+
+Found:
+- 8 API endpoints
+- 3 database models
+- 2 authentication functions
+- 5 helper functions
+
+[Generates tests/test_api.py]
+✓ Created test scaffolding with:
+  - 8 endpoint tests
+  - 3 model tests
+  - 2 authentication tests
+  - 5 helper function tests
+  - Fixtures for database setup
+  - Mock configurations
+
+Total: 18 test stubs generated
+```
+
+**Features:**
+- ✅ AST parsing (safe, no code execution)
+- ✅ Generates pytest-compatible tests
+- ✅ Includes TODO markers for easy completion
+- ✅ Proper import statements
+- ✅ Class and function test structure
+- ✅ Fixture suggestions
+
+**Workflow Integration:**
+```
+# 1. Write your code
+You: Create a user authentication module
+
+WYN360: [Generates auth.py]
+
+# 2. Generate tests automatically
+You: Generate tests for auth.py
+
+WYN360: [Creates tests/test_auth.py with stubs]
+
+# 3. Complete the tests
+You: Fill in the test logic
+
+WYN360: [Adds assertions and test data]
+
+# 4. Run tests
+You: Run pytest
+
+WYN360: [Executes tests]
+```
+
+**Productivity Benefits:**
+- ✅ Saves time on test boilerplate
+- ✅ Ensures consistent test structure
+- ✅ Encourages test-driven development
+- ✅ Quick scaffolding for TDD
+- ✅ Easy to complete TODO sections
+
+---
+
+## Use Case 14: GitHub Integration
+
+**Complexity:** Moderate to Complex
+**Type:** Version Control/CI/CD
+**Best For:** Complete git workflows, team collaboration
+**Version:** v0.3.23 (Phase 8.1)
+
 **Feature:** Complete GitHub integration with commit, PR creation, and branch management
 
-### Overview
-
-WYN360 now provides seamless GitHub integration directly from the CLI! This feature enables complete git workflow management including committing changes, creating pull requests, managing branches, and merging code. All operations use the GitHub CLI (gh) for reliable interactions with GitHub's API, with built-in authentication and user confirmation for safety.
+WYN360 provides seamless GitHub integration directly from the CLI! This feature enables complete git workflow management including committing changes, creating pull requests, managing branches, and merging code.
 
 ### Key Features
 
@@ -2616,7 +1340,7 @@ WYN360 now provides seamless GitHub integration directly from the CLI! This feat
 - ✅ **Auto-Authentication** - Automatically uses environment token if found
 - 🎯 **Session Persistence** - Token stored in environment across session
 
-### Use Case 17.1: Commit and Push Changes
+### Use Case 14.1: Commit and Push Changes
 
 Commit your changes to the current repository and push to GitHub with a single command.
 
@@ -2696,44 +1420,16 @@ You: ghp_abc123xyz789...
 
 WYN360: [Authenticates]
 
-======================================================================
-⚠️  COMMAND EXECUTION CONFIRMATION
-======================================================================
-Command: echo 'ghp_abc123xyz789...' | gh auth login --with-token
-Directory: /home/workbench/wyn360-cli/wyn360-cli
-Permissions: Full user permissions
-======================================================================
-
->>> WAITING FOR YOUR RESPONSE <<<
-
-Execute this command? (y/N): y
-
-✅ Command executed successfully (exit code 0)
-
 ✓ Authenticated with GitHub (auto-authenticated using provided token)
 
 Now let me commit your changes...
 
-[Proceeds with commit workflow as shown above]
+[Proceeds with commit workflow]
 ```
 
-**How It Works:**
-1. User requests to commit changes
-2. Agent checks GitHub authentication status (one time per session)
-3. If not authenticated, asks for token and authenticates
-4. Stages all changes with git add -A
-5. Commits with user-provided or generated message
-6. Optionally pushes to remote (default: yes)
-7. Shows commit SHA and confirmation
+### Use Case 14.2: Create Pull Request
 
-**Cost:**
-- Authentication check: ~$0.001-0.003
-- Commit workflow: ~$0.005-0.010
-- Total: ~$0.006-0.013 per commit operation
-
-### Use Case 17.2: Create Pull Request
-
-Open a pull request from your current branch to the main branch with a single command.
+Open a pull request from your current branch to the main branch.
 
 **User Interaction:**
 ```
@@ -2773,9 +1469,6 @@ This PR implements Phase 8.1 - GitHub Integration with 7 new tools:
 - Added Section 17 to USE_CASES.md
 - Updated system prompt with GitHub workflow
 
-## Testing
-- Unit tests to be added in next commit
-
 **Base branch:** main
 
 ======================================================================
@@ -2803,52 +1496,7 @@ Status: Open
 View or merge at: https://github.com/yiqiao-yin/wyn360-cli/pull/42
 ```
 
-**Custom PR with User Input:**
-```
-You: Create PR titled "Fix authentication bug" with body "Fixes #123"
-
-WYN360: [Authentication already verified]
-
-Current branch: bugfix/auth-loop
-Target branch: main (default)
-
-======================================================================
-⚠️  COMMAND EXECUTION CONFIRMATION
-======================================================================
-Command: gh pr create --title "Fix authentication bug" \
-         --base main --body "Fixes #123"
-Directory: /home/workbench/wyn360-cli/wyn360-cli
-Permissions: Full user permissions
-======================================================================
-
->>> WAITING FOR YOUR RESPONSE <<<
-
-Execute this command? (y/N): y
-
-✅ Command executed successfully (exit code 0)
-
-✓ Successfully created pull request!
-
-PR URL: https://github.com/yiqiao-yin/wyn360-cli/pull/43
-Title: Fix authentication bug
-Base: main ← bugfix/auth-loop
-Status: Open
-```
-
-**How It Works:**
-1. User requests PR creation
-2. Agent checks current branch (must not be main/master)
-3. Optionally analyzes changes with git diff
-4. Generates or uses user-provided title and body
-5. Creates PR using gh pr create command
-6. Returns PR URL for immediate access
-
-**Cost:**
-- PR creation workflow: ~$0.010-0.020
-- With change analysis: ~$0.015-0.030
-- Total: ~$0.010-0.030 per PR
-
-### Use Case 17.3: Branch Management (Create & Checkout)
+### Use Case 14.3: Branch Management
 
 Create new branches and switch between them seamlessly.
 
@@ -2883,34 +1531,6 @@ You can now make changes on this branch. When ready:
 - PR: "create pull request"
 ```
 
-**Create Without Checkout:**
-```
-You: Create branch bugfix/typo but don't switch to it
-
-WYN360: I'll create the branch 'bugfix/typo' without checking it out.
-
-======================================================================
-⚠️  COMMAND EXECUTION CONFIRMATION
-======================================================================
-Command: git branch bugfix/typo
-Directory: /home/workbench/wyn360-cli/wyn360-cli
-Permissions: Full user permissions
-======================================================================
-
->>> WAITING FOR YOUR RESPONSE <<<
-
-Execute this command? (y/N): y
-
-✅ Command executed successfully (exit code 0)
-
-✓ Successfully created branch 'bugfix/typo'
-
-Current branch: main (unchanged)
-New branch: bugfix/typo (created but not checked out)
-
-To switch to it later: "checkout bugfix/typo"
-```
-
 **Checkout Existing Branch:**
 ```
 You: Switch to the develop branch
@@ -2941,41 +1561,7 @@ Current branch: develop
 Last commit: x9y8z7 "Update documentation"
 ```
 
-**Branch Doesn't Exist:**
-```
-You: Checkout feature/new-api
-
-WYN360: [Checks for branch]
-
-Branch 'feature/new-api' doesn't exist.
-
-Would you like me to:
-1. Create the branch and check it out? (create + checkout)
-2. List all available branches?
-
-You: Create and checkout
-
-WYN360: [Proceeds with create + checkout workflow as shown above]
-```
-
-**How It Works:**
-1. **Create Branch:**
-   - Validates branch name format
-   - Uses git checkout -b (create + checkout) or git branch (create only)
-   - Confirms creation with current base commit
-
-2. **Checkout Branch:**
-   - Checks if branch exists first
-   - If exists: switches with git checkout
-   - If not: offers to create it
-   - Shows previous and current branch
-
-**Cost:**
-- Branch creation: ~$0.003-0.008
-- Branch checkout: ~$0.003-0.008
-- Total: ~$0.003-0.008 per operation
-
-### Use Case 17.4: Merge Branches
+### Use Case 14.4: Merge Branches
 
 Merge feature branches into target branches with conflict detection.
 
@@ -3026,167 +1612,6 @@ Next steps:
 - Create PR: "create pull request"
 ```
 
-**Merge with Conflicts:**
-```
-You: Merge feature/conflicting into main
-
-WYN360: I'll merge 'feature/conflicting' into 'main'.
-
-[Pre-checks all pass]
-
-======================================================================
-⚠️  COMMAND EXECUTION CONFIRMATION
-======================================================================
-Command: git merge feature/conflicting
-Directory: /home/workbench/wyn360-cli/wyn360-cli
-Permissions: Full user permissions
-======================================================================
-
->>> WAITING FOR YOUR RESPONSE <<<
-
-Execute this command? (y/N): y
-
-❌ Command failed (exit code 1)
-
-⚠️ Merge conflict detected!
-
-Conflicting files:
-- agent.py (both modified)
-- config.py (both modified)
-
-The merge has been started but not completed. You need to:
-
-1. Resolve conflicts in the files listed above
-2. Stage resolved files: git add <file>
-3. Complete the merge: git commit
-
-Or abort the merge: git merge --abort
-
-Would you like me to:
-1. Show the conflicting sections?
-2. Abort the merge?
-3. Guide you through manual resolution?
-
-You: Show conflicts
-
-WYN360: [Reads conflicting files and shows conflict markers]
-
-In agent.py (lines 150-160):
-<<<<<<< HEAD
-def authenticate_gh(self, token: str) -> str:
-    # Current implementation
-    return "authenticated"
-=======
-def authenticate_gh(self, token: str, force: bool = False) -> str:
-    # New feature with force parameter
-    return "force authenticated" if force else "authenticated"
->>>>>>> feature/conflicting
-
-In config.py (lines 25-30):
-<<<<<<< HEAD
-GH_TOKEN_ENV = "GH_TOKEN"
-=======
-GH_TOKEN_ENV = "GITHUB_TOKEN"
->>>>>>> feature/conflicting
-
-Recommendation:
-- Keep both changes in agent.py (add force parameter)
-- Choose one token env name in config.py (suggest: GH_TOKEN)
-
-[User resolves manually, then:]
-
-You: Stage agent.py and config.py
-
-WYN360: [Runs git add agent.py config.py]
-✓ Files staged
-
-You: Complete the merge
-
-WYN360: [Runs git commit with merge message]
-✓ Merge completed successfully
-```
-
-**Wrong Branch Error:**
-```
-You: Merge main into feature/auth
-
-WYN360: [Checks current branch]
-
-Current branch: main
-
-Error: You're trying to merge 'main' into 'feature/auth', but you're currently on 'main'.
-
-To merge main into feature/auth:
-1. First checkout feature/auth: "checkout feature/auth"
-2. Then merge: "merge main into feature/auth"
-
-Or did you mean to merge feature/auth into main?
-```
-
-**How It Works:**
-1. Validates source and target branches exist
-2. Ensures user is on the target branch
-3. Checks for uncommitted changes (warns if found)
-4. Executes git merge with confirmation
-5. Detects conflicts and provides guidance
-6. Shows merge summary (files changed, lines added/removed)
-
-**Cost:**
-- Merge workflow: ~$0.010-0.020
-- With conflict resolution: ~$0.020-0.040
-- Total: ~$0.010-0.040 per merge
-
-### When GitHub Tools are Used
-
-**WILL Use GitHub Tools:**
-- ✅ "Commit to github" / "Commit these changes"
-- ✅ "Create pull request" / "Open PR"
-- ✅ "Create branch feature/name"
-- ✅ "Switch to develop branch"
-- ✅ "Merge feature/auth into main"
-- ✅ "Push changes to github"
-- ✅ "Check github authentication"
-
-**WILL NOT Use GitHub Tools:**
-- ❌ File operations ("Write app.py")
-- ❌ Code generation ("Create a FastAPI app")
-- ❌ Local git commands without pushing ("Show git status")
-- ❌ General questions ("What is git?")
-
-### Cost Analysis
-
-**Pricing:**
-- **GitHub CLI Commands:** Free (uses GitHub API)
-- **Token Costs:** Standard model pricing ($3/$15 per M tokens for Sonnet)
-- **No Extra Fees:** No additional GitHub API costs
-
-**Example Costs:**
-
-| Operation | Token Cost | Total Cost |
-|-----------|-----------|------------|
-| Commit + Push | $0.005-0.010 | $0.005-0.010 |
-| Create PR | $0.010-0.020 | $0.010-0.020 |
-| Branch Create | $0.003-0.008 | $0.003-0.008 |
-| Branch Checkout | $0.003-0.008 | $0.003-0.008 |
-| Merge (no conflict) | $0.010-0.020 | $0.010-0.020 |
-| Merge (with conflict) | $0.020-0.040 | $0.020-0.040 |
-
-**Session Example:**
-```
-- 1 authentication check: $0.003
-- 2 commits with push: $0.020
-- 1 PR creation: $0.015
-- 2 branch operations: $0.012
-Total: ~$0.050 per session
-```
-
-**Monthly Estimate (active developer):**
-- 20 working days
-- 5 commits per day = 100 commits/month
-- 10 PRs per month
-- 20 branch operations per month
-- Cost: (100 × $0.008) + (10 × $0.015) + (20 × $0.006) ≈ $1.07/month
-
 ### Configuration
 
 **Environment Variables:**
@@ -3209,186 +1634,6 @@ export GITHUB_TOKEN="ghp_your_token_here"
 ANTHROPIC_API_KEY=your_anthropic_key
 GH_TOKEN=ghp_your_github_token
 ```
-
-**Project-Specific Config (.wyn360.yaml):**
-```yaml
-context: |
-  This project follows GitHub Flow:
-  - main branch is always deployable
-  - feature branches for new work
-  - PRs required for all changes
-
-commands:
-  commit: "commit to github"
-  pr: "create pull request"
-  deploy: "merge to main and push"
-```
-
-### Technical Implementation
-
-**Integration Method:**
-```python
-# In agent.py
-
-@agent.tool
-async def check_gh_authentication(ctx: RunContext[None]) -> str:
-    """Check if user is authenticated with GitHub."""
-    gh_token = os.getenv('GH_TOKEN') or os.getenv('GITHUB_TOKEN')
-    success, output, _ = execute_command_safe("gh auth status", timeout=10)
-
-    if success and "logged in" in output.lower():
-        return f"✓ Authenticated with GitHub as '{username}'"
-    elif gh_token:
-        # Auto-authenticate with token
-        return "✓ Authenticated (auto-authenticated using GH_TOKEN)"
-    else:
-        return "Not authenticated. Please provide GitHub token..."
-
-@agent.tool
-async def gh_commit_changes(
-    ctx: RunContext[None],
-    message: str,
-    push: bool = True
-) -> str:
-    """Commit changes and optionally push to GitHub."""
-    # Stage all changes
-    execute_command_safe("git add -A", timeout=10)
-
-    # Commit
-    execute_command_safe(f"git commit -m \"{message}\"", timeout=30)
-
-    # Push if requested
-    if push:
-        execute_command_safe(f"git push origin {branch}", timeout=60)
-
-    return "✓ Successfully committed and pushed changes"
-```
-
-**Key Points:**
-- Uses GitHub CLI (gh) for all GitHub operations
-- All operations use execute_command_safe with confirmation
-- Token validation (ghp_* or github_pat_*)
-- Environment variables: GH_TOKEN or GITHUB_TOKEN
-- Auto-authentication from environment
-
-### Best Practices
-
-**For Users:**
-
-1. **Set Up Token Once:**
-   ```bash
-   echo "GH_TOKEN=ghp_your_token" >> .env
-   ```
-
-2. **Descriptive Commit Messages:**
-   ```
-   Good: "commit with message 'Add GitHub tools (Phase 8.1)'"
-   Bad: "commit changes"
-   ```
-
-3. **Feature Branch Workflow:**
-   ```
-   1. Create branch: "create branch feature/auth"
-   2. Make changes: [code generation]
-   3. Commit: "commit these changes"
-   4. PR: "create pull request"
-   ```
-
-4. **Review Before Confirming:**
-   - Always check the command in confirmation prompt
-   - Verify branch names before merging
-   - Review files being committed
-
-**For Teams:**
-
-1. **Shared Configuration:**
-   ```yaml
-   # .wyn360.yaml (committed to repo)
-   context: |
-     Follow team conventions:
-     - Branch naming: feature/, bugfix/, hotfix/
-     - PR requires 2 approvals
-     - All tests must pass before merge
-   ```
-
-2. **Protected Branches:**
-   - Configure on GitHub to prevent direct pushes to main
-   - Require PRs for all changes
-   - Use branch protection rules
-
-3. **CI/CD Integration:**
-   - Use WYN360 for local commits
-   - Let CI/CD handle builds and deployments
-   - Review test results before merging
-
-### Troubleshooting
-
-**Issue: Not authenticated**
-```
-Error: Not authenticated with GitHub
-```
-**Solution:**
-1. Set GH_TOKEN or GITHUB_TOKEN environment variable
-2. Or run `gh auth login` manually first
-3. Verify token format (ghp_* or github_pat_*)
-
-**Issue: Permission denied**
-```
-Error: Permission denied (publickey)
-```
-**Solution:**
-1. Check SSH keys: `ssh -T git@github.com`
-2. Or use HTTPS instead of SSH
-3. Verify token has correct scopes
-
-**Issue: Branch already exists**
-```
-Error: Branch 'feature/auth' already exists
-```
-**Solution:**
-1. Checkout existing branch: "checkout feature/auth"
-2. Or delete and recreate: "delete branch feature/auth"
-3. Or use different branch name
-
-**Issue: Merge conflict**
-```
-Error: Merge conflict in agent.py
-```
-**Solution:**
-1. Ask WYN360 to show conflicts
-2. Resolve manually in editor
-3. Stage resolved files: "stage agent.py"
-4. Complete merge: "complete the merge"
-
-**Issue: Nothing to commit**
-```
-Error: nothing to commit, working tree clean
-```
-**Solution:**
-1. Make changes first before committing
-2. Or check if changes were already committed
-
-### Performance
-
-**Response Times:**
-- Authentication check: 0.5-1.5 seconds
-- Commit + push: 2-5 seconds (depends on changes)
-- Create PR: 1-3 seconds
-- Branch operations: 0.5-1 second
-- Merge: 1-3 seconds (no conflicts)
-
-**Reliability:**
-- Uses GitHub CLI (gh) for robust API interactions
-- All operations have error handling
-- Confirmation prompts prevent accidents
-- Session-based authentication (check once per session)
-
-**Limitations:**
-- Requires GitHub CLI (gh) installed
-- Requires git repository
-- Cannot resolve merge conflicts automatically
-- Limited to repositories user has access to
-- Session limit: Authentication valid for session duration only
 
 ### Example Workflow: Complete Feature Development
 
@@ -3457,13 +1702,1141 @@ WYN360: [Pushes main branch]
 
 ---
 
-**Version:** 0.3.23
-**Last Updated:** December 10, 2025
-**Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
+### Advanced Features
 
-## 📝 Changelog
+---
 
-### v0.3.21 (Latest)
+## Use Case 15: Performance Monitoring & Analytics
+
+**Complexity:** Advanced
+**Type:** Monitoring/Analytics
+**Best For:** Session optimization, cost tracking, performance tuning
+**Version:** v0.3.19 (Phase 10.2)
+
+Monitor your CLI usage, response times, tool efficiency, and identify performance bottlenecks with comprehensive metrics tracking.
+
+### What is Performance Monitoring?
+
+WYN360 automatically tracks and analyzes session performance, providing insights into:
+- **Response Times**: How fast the AI responds to your requests
+- **Tool Usage**: Which tools you use most and their success rates
+- **Error Tracking**: What errors occur and how frequently
+- **Session Statistics**: Overall session duration and activity
+
+### The /stats Command
+
+View comprehensive performance metrics at any time during your session:
+
+```
+You: /stats
+
+┏━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃   Token Usage        ┃  ┃   Performance Metrics   ┃
+┣━━━━━━━━━━━━━━━━━━━━━━┫  ┣━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Total Requests: 25   ┃  ┃ Session Duration: 15m   ┃
+┃ Input Tokens: 45,230 ┃  ┃ Avg Response: 2.3s     ┃
+┃ Output Tokens: 12,450┃  ┃ Min Response: 0.8s     ┃
+┃ Total Cost: $0.32    ┃  ┃ Max Response: 5.2s     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━┛  ┃ Error Count: 0         ┃
+                          ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃      Tool Usage            ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Total Tool Calls: 47       ┃
+┃ Successful Calls: 45       ┃
+┃ Failed Calls: 2            ┃
+┃ Success Rate: 95.7%        ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃      Most Used Tools          ┃
+┣━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━┫
+┃ Tool      ┃Success┃Failed┃Total┃
+┣━━━━━━━━━━━╋━━━━━━━╋━━━━━━╋━━━━━┫
+┃ read_file ┃  15   ┃  0   ┃ 15  ┃
+┃write_file ┃  12   ┃  1   ┃ 13  ┃
+┃execute_cmd┃   8   ┃  0   ┃  8  ┃
+┃search_files┃  5   ┃  0   ┃  5  ┃
+┃git_status ┃   5   ┃  1   ┃  6  ┃
+┗━━━━━━━━━━━┻━━━━━━━┻━━━━━━┻━━━━━┛
+```
+
+### Use Case 15.1: Identifying Slow Operations
+
+**Scenario:** You notice your session feels slow sometimes
+
+```
+You: /stats
+
+WYN360: [Shows metrics]
+- Avg Response: 4.5s
+- Max Response: 15.2s  ← Outlier detected!
+
+You: What took 15 seconds?
+
+WYN360: Looking at your session history, the slowest
+operation was "Generate comprehensive ML pipeline" which
+generated 800+ lines of code. Consider breaking large
+requests into smaller chunks for faster responses.
+```
+
+**Insight:** Large code generation requests take longer. Break them into smaller, focused tasks.
+
+### Use Case 15.2: Tool Success Rate Analysis
+
+**Scenario:** Want to see which operations are failing
+
+```
+You: /stats
+
+WYN360: [Shows tool usage]
+Tool Success Rates:
+- read_file: 100% (15/15)
+- write_file: 92.3% (12/13)  ← 1 failure
+- execute_command: 100% (8/8)
+- git_status: 83.3% (5/6)    ← 1 failure
+
+You: Why did write_file fail once?
+
+WYN360: The write_file failure was due to attempting
+to write without overwrite=True when the file already
+existed. This was corrected in the retry.
+```
+
+**Insight:** Understand which operations need error handling or user confirmation.
+
+### Use Case 15.3: Session Cost Monitoring
+
+**Scenario:** Track spending during a long coding session
+
+```
+You: I've been working for 2 hours. How much have I spent?
+
+You: /stats
+
+WYN360: [Shows combined token + performance metrics]
+Session Duration: 2h 15m
+Total Requests: 47
+Total Cost: $1.23
+Average Cost per Request: $0.026
+
+Most expensive operations:
+1. Multi-file refactoring: $0.15
+2. Test generation: $0.12
+3. Documentation creation: $0.09
+```
+
+**Insight:** Monitor costs in real-time, identify expensive operations, optimize usage.
+
+### Features
+
+**Automatic Tracking:**
+- ✅ Response times tracked for every request
+- ✅ Tool calls logged with success/failure status
+- ✅ Errors captured with type and message
+- ✅ Session duration calculated automatically
+
+**Persistent Metrics:**
+- ✅ Metrics saved with /save command
+- ✅ Loaded with /load command
+- ✅ Track performance across multiple sessions
+
+**Zero Configuration:**
+- ✅ Works automatically - no setup required
+- ✅ Non-intrusive - runs in background
+- ✅ No performance overhead
+- ✅ Compatible with all existing features
+
+### Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `/stats` | Show comprehensive performance metrics | `You: /stats` |
+| `/tokens` | Show only token usage (legacy) | `You: /tokens` |
+| `/clear` | Reset all metrics and history | `You: /clear` |
+
+---
+
+## Use Case 16: Web Search - Real-Time Information Access
+
+**Complexity:** Advanced
+**Type:** Information Retrieval
+**Best For:** Current info, weather, documentation, finding resources
+**Version:** v0.3.21, Enhanced in v0.3.23
+
+**Feature:** Real-time web search using Claude's native web_search_20250305 tool
+
+### Overview
+
+WYN360 now has access to real-time web search capabilities! This feature enables the AI assistant to fetch current information from the internet, including weather data, website content, latest documentation, and **finding GitHub repositories and libraries** (enhanced in v0.3.23).
+
+**v0.3.23 Enhancements:**
+- ⬆️ Upgraded from pydantic-ai 0.0.19 to 1.13.0 for improved stability
+- 🔧 Fixed web search tool integration with proper `builtin_tools` configuration
+- 📝 Enhanced system prompt with explicit examples for finding resources
+- ✅ Now properly recognizes queries like "find a popular GitHub repo for X"
+
+### Key Features
+
+- 🌤️ **Weather Queries** - Get current weather for any location
+- 🌐 **Website Reading** - Fetch and summarize web content
+- 📚 **Current Information** - Access latest docs, news, and trends
+- 🔍 **Resource Finding** - Find GitHub repos, libraries, and tutorials **(NEW in v0.3.23)**
+- 💰 **Cost Controlled** - Limited to 5 searches per session by default
+- 🔗 **Proper Citations** - All results include source URLs
+- 🤖 **Automatic Invocation** - Claude decides when web search is needed
+
+### Use Case 16.1: Weather Queries
+
+Get real-time weather information for any location.
+
+**User Interaction:**
+```
+You: What's the weather in San Francisco?
+
+WYN360: [Searches web for current San Francisco weather]
+
+Current Weather in San Francisco, CA:
+- Temperature: 62°F (17°C)
+- Conditions: Partly Cloudy
+- Humidity: 71%
+- Wind: 10 mph NW
+- Last Updated: 2025-01-10 14:30 PST
+
+Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
+```
+
+**Cost:**
+- 1 search per query ($0.01)
+- Plus token costs for input/output (~$0.001-0.003)
+- Total: ~$0.011-0.013 per weather query
+
+### Use Case 16.2: Website Reading & Summarization
+
+Fetch and summarize content from any publicly accessible URL.
+
+**User Interaction:**
+```
+You: Read this article: https://python.org/downloads/release/python-3130/
+
+WYN360: [Fetches content from python.org]
+
+**Python 3.13.0 Release Summary:**
+
+**Key Highlights:**
+1. **Performance Improvements:**
+   - Free-threaded CPython (no GIL) - experimental
+   - JIT compiler - experimental
+   - 5-10% performance boost in most workloads
+
+2. **New Features:**
+   - Enhanced error messages with better tracebacks
+   - Improved type hinting capabilities
+   - New syntax for generic type parameters
+   - Enhanced asyncio performance
+
+3. **Standard Library Updates:**
+   - New modules: `dbm.sqlite3`
+   - Improved `pathlib` functionality
+   - Enhanced `argparse` features
+
+**Release Date:** October 2024
+
+Source: [Python.org](https://python.org/downloads/release/python-3130/)
+```
+
+**Cost:**
+- 1 search per URL ($0.01)
+- Token costs vary by page size (typically $0.003-0.010)
+- Total: ~$0.013-0.020 per URL
+
+### Use Case 16.3: Current Information & Latest Updates
+
+Access the latest documentation, package versions, news, and trends.
+
+**Example:**
+```
+You: What's new in React 19?
+
+WYN360: [Searches for React 19 release information]
+
+**React 19 - Major Updates:**
+
+**Release Date:** December 2024 (Beta available)
+
+**Key New Features:**
+
+1. **React Compiler:**
+   - Automatic optimization of React code
+   - No need for manual memoization in most cases
+   - Significant performance improvements
+
+2. **Actions:**
+   - New API for handling form submissions
+   - Built-in pending states
+   - Optimistic updates support
+
+3. **Document Metadata:**
+   - Built-in support for `<title>`, `<meta>` tags
+   - No need for react-helmet or next/head
+
+Sources:
+- [React Blog - React 19 Beta](https://react.dev/blog/2024/12/05/react-19)
+- [React Docs - What's New](https://react.dev/learn/whats-new)
+```
+
+**Cost:**
+- 1-2 searches per query ($0.01-0.02)
+- Token costs for synthesis (~$0.005-0.015)
+- Total: ~$0.015-0.035 per information query
+
+### Use Case 16.4: Finding Resources & GitHub Repositories **(NEW in v0.3.23)**
+
+Find popular GitHub repositories, libraries, tools, and learning resources based on specific topics or technologies.
+
+**User Interaction:**
+```
+You: Find a popular GitHub repo for machine learning
+
+WYN360: [Searches web for popular ML repositories]
+
+Here are some of the most popular GitHub repositories for machine learning:
+
+1. **tensorflow/tensorflow** ⭐ 185,000+ stars
+   https://github.com/tensorflow/tensorflow
+   - End-to-end open source machine learning platform
+   - Developed and maintained by Google
+   - Comprehensive ecosystem for model development and deployment
+
+2. **pytorch/pytorch** ⭐ 82,000+ stars
+   https://github.com/pytorch/pytorch
+   - Deep learning framework by Meta AI (Facebook)
+   - Dynamic computational graphs (imperative programming)
+   - Popular in research and academic communities
+
+3. **scikit-learn/scikit-learn** ⭐ 59,000+ stars
+   https://github.com/scikit-learn/scikit-learn
+   - Classic machine learning library for Python
+   - Built on NumPy, SciPy, and matplotlib
+   - Great for traditional ML algorithms (not deep learning)
+
+**Recommendation for Beginners:** Start with scikit-learn for traditional ML, then move to TensorFlow or PyTorch for deep learning.
+
+Sources:
+- [GitHub Search Results - Most Stars in ML category]
+- [GitHub Trending - Machine Learning]
+```
+
+**Finding Libraries by Language:**
+```
+You: What are good Python libraries for data visualization?
+
+WYN360: [Searches for Python data viz libraries]
+
+Top Python libraries for data visualization:
+
+1. **Matplotlib** ⭐ 19,500+ stars
+   - Standard plotting library, similar to MATLAB
+   - Best for: Static plots, scientific visualizations
+
+2. **Plotly** ⭐ 16,000+ stars
+   - Interactive web-based visualizations
+   - Best for: Interactive charts, web apps, dashboards
+
+3. **Seaborn** ⭐ 12,000+ stars
+   - Built on matplotlib, statistical focus
+   - Best for: Statistical analysis, heatmaps, distributions
+
+Sources: GitHub, Python Package Index, Stack Overflow trends
+```
+
+**Cost:**
+- 1-2 searches per query ($0.01-0.02)
+- Token costs for formatting (~$0.005-0.010)
+- Total: ~$0.015-0.030 per resource search
+
+### When Web Search is Used
+
+**WILL Use Web Search:**
+- ✅ Weather queries ("What's the weather in NYC?")
+- ✅ Reading URLs ("Read https://example.com")
+- ✅ **Finding resources** ("Find a popular GitHub repo for machine learning") **(NEW v0.3.23)**
+- ✅ **Library recommendations** ("What are good Python data viz libraries?") **(NEW v0.3.23)**
+- ✅ **Tutorial finding** ("Find tutorials for FastAPI") **(NEW v0.3.23)**
+- ✅ Current information ("What's new in Python 3.13?")
+- ✅ Latest versions ("Latest React features")
+
+**WILL NOT Use Web Search:**
+- ❌ Code generation ("Write a FastAPI app")
+- ❌ File operations ("Show me app.py")
+- ❌ Local project queries ("List files in this project")
+- ❌ Git operations ("Show git status")
+- ❌ General programming concepts ("What is async/await?")
+
+### Cost Analysis
+
+**Pricing:**
+- **Web Search Cost:** $10.00 per 1,000 searches
+- **Token Costs:** Standard model pricing ($3/$15 per M tokens for Sonnet)
+- **Session Limit:** 5 searches per session (configurable)
+
+**Example Costs:**
+
+| Query Type | Searches | Token Cost | Total Cost |
+|-----------|----------|------------|------------|
+| Weather | 1 | $0.001-0.003 | $0.011-0.013 |
+| URL Reading | 1 | $0.003-0.010 | $0.013-0.020 |
+| Latest Info | 1-2 | $0.005-0.015 | $0.015-0.035 |
+| Resource Search | 1-2 | $0.005-0.010 | $0.015-0.030 |
+
+**Session Example:**
+```
+- 2 weather queries: $0.026
+- 1 URL read: $0.015
+- 2 resource searches: $0.050
+Total: ~$0.091 per session
+```
+
+### Configuration
+
+**Default Settings:**
+```python
+# In agent.py
+builtin_tools=[
+    WebSearchTool(max_uses=5)  # Limit searches per session
+]
+```
+
+**Adjustable Parameters:**
+- `max_uses`: Maximum searches per session (default: 5)
+- `search_context_size`: How much context to include
+- `user_location`: Default location for queries
+- `blocked_domains`: Sites to exclude
+- `allowed_domains`: Sites to include only
+
+---
+
+### Complex Multi-Turn Workflows
+
+---
+
+## Use Case 17: Add Features to Existing Code
+
+**Complexity:** Complex
+**Type:** Multi-turn
+**Best For:** Enhancing existing projects, iterative development
+
+Enhance your existing projects with new functionality while maintaining code quality and consistency.
+
+**How it works:**
+1. Agent reads your current code structure
+2. Understands existing patterns and conventions
+3. Generates new features that integrate seamlessly
+4. Can modify/enhance existing files
+5. Maintains your coding style
+
+**Example Interaction:**
+```
+You: Add authentication to my FastAPI app
+
+WYN360:
+1. Reads your existing app structure
+2. Identifies route definitions
+3. Generates authentication middleware
+4. Updates routes with auth decorators
+5. Provides implementation guide
+```
+
+**Common Feature Additions:**
+- Authentication and authorization
+- Database integration
+- API endpoints
+- Error handling and logging
+- Input validation
+- Caching mechanisms
+- Testing utilities
+
+---
+
+## Use Case 18: Interactive Coding Assistant
+
+**Complexity:** Complex
+**Type:** Multi-turn
+**Best For:** Learning, debugging, code review, ongoing development
+
+Get help, guidance, and answers to your Python questions through ongoing conversation.
+
+**Capabilities:**
+- Answer coding questions
+- Debug issues and errors
+- Explain complex concepts
+- Provide implementation guidance
+- Review code quality
+- Suggest improvements
+
+**Example Interactions:**
+
+**Debugging:**
+```
+You: My script has a connection timeout error
+
+WYN360:
+1. Reads your code
+2. Identifies the issue
+3. Explains the root cause
+4. Suggests fix with retry logic
+5. Can update the file directly
+```
+
+**Learning:**
+```
+You: How do I implement async in Python?
+
+WYN360:
+- Explains async/await concepts
+- Provides working examples
+- Shows best practices
+- Demonstrates common patterns
+- Warns about pitfalls
+```
+
+**Code Review:**
+```
+You: Review my API implementation
+
+WYN360:
+- Analyzes code structure
+- Checks error handling
+- Reviews security considerations
+- Suggests improvements
+- Provides specific fixes
+```
+
+---
+
+## Part 3: Appendices
+
+### Appendix A: Available Tools
+
+WYN360 has access to these specialized tools for file and project operations:
+
+#### `read_file(file_path: str)`
+**Purpose:** Read the contents of any file in your project
+
+**Parameters:**
+- `file_path` - Path to the file to read
+
+**Use cases:**
+- "What's in my config.py?"
+- "Show me the main.py file"
+- "Read my requirements.txt"
+
+**Safety features:**
+- File size limits (1MB default)
+- UTF-8 encoding
+- Error handling for missing files
+
+---
+
+#### `write_file(file_path: str, content: str, overwrite: bool)`
+**Purpose:** Create new files or update existing ones
+
+**Parameters:**
+- `file_path` - Where to write the file
+- `content` - What to write
+- `overwrite` - Whether to replace existing files (default: False)
+
+**Use cases:**
+- "Create a utils.py with helper functions"
+- "Update my config.json"
+- "Save this code as script.py"
+
+**Safety features:**
+- Prevents accidental overwrites
+- Creates parent directories automatically
+- Validates file paths
+
+---
+
+#### `list_files(directory: str)`
+**Purpose:** Show all files in a directory, organized by category
+
+**Parameters:**
+- `directory` - Directory to scan (default: current directory)
+
+**Returns:**
+- Python files
+- Text/documentation files
+- Configuration files
+- Other files
+
+**Use cases:**
+- "What files do I have?"
+- "Show me all Python files"
+- "List the project structure"
+
+**Features:**
+- Ignores common patterns (`__pycache__`, `.git`, `node_modules`, etc.)
+- Categorizes by file type
+- Recursive directory scanning
+
+---
+
+#### `get_project_info()`
+**Purpose:** Generate a comprehensive project summary
+
+**Returns:**
+- Total file count
+- Files by category
+- Project structure overview
+- Blank vs existing project status
+
+**Use cases:**
+- "Summarize my project"
+- "What kind of project is this?"
+- "Give me an overview"
+
+**Analysis includes:**
+- File counts and distribution
+- Directory structure
+- Main components
+- Technology stack indicators
+
+---
+
+### Appendix B: Smart File Handling
+
+#### Automatic Code Saving
+
+When you're in a **blank project** (no Python or text files), WYN360 automatically saves generated code:
+
+**Process:**
+1. Detects Python code blocks in responses (using ``` regex)
+2. Extracts the code
+3. Suggests appropriate filename based on content
+4. Saves automatically
+5. Confirms with message: `✓ Code saved to: filename.py`
+
+**Filename Detection Logic:**
+```python
+if 'streamlit' in code:
+    filename = 'app.py'
+elif 'fastapi' in code or 'FastAPI' in code:
+    filename = 'app.py'
+elif 'def main' in code:
+    filename = 'main.py'
+elif 'class ' in code:
+    filename = 'main.py'
+else:
+    filename = 'script.py'
+```
+
+#### File Type Recognition
+
+WYN360 categorizes files to understand your project:
+
+| Category | Extensions | Purpose |
+|----------|-----------|----------|
+| Python | `.py` | Source code |
+| Text | `.md`, `.txt`, `.rst` | Documentation |
+| Config | `.json`, `.yaml`, `.toml`, `.ini`, `.cfg` | Configuration |
+| Other | All others | Resources, data, etc. |
+
+---
+
+### Appendix C: Intelligent File Operation Handling
+
+**Version:** NEW in v0.2.1
+
+WYN360 includes advanced intelligence for understanding user intent when working with files, automatically determining whether to create new files or update existing ones.
+
+#### Intent Recognition
+
+The agent analyzes your natural language to understand what you want:
+
+**Update Existing Files** - When you say:
+- "Add feature to my app"
+- "Update the chatbot"
+- "Improve my script"
+- "Modify the config"
+- "Change the API endpoint"
+
+**Action taken:**
+1. Agent reads the existing file first to understand current state
+2. Makes the requested modifications
+3. Writes back with `overwrite=True`
+4. Shows you what changed
+
+**Create New Files** - When you say:
+- "Create a new script called utils.py"
+- "Make another chatbot"
+- "Build a separate module"
+- "Generate a helper file"
+
+**Action taken:**
+1. Agent creates the new file
+2. Uses `overwrite=False` to prevent accidents
+3. Leaves existing files untouched
+
+#### Context-Aware Updates
+
+**Before updating any file, the agent:**
+1. ✓ Reads the current file contents
+2. ✓ Understands the existing structure
+3. ✓ Makes intelligent modifications
+4. ✓ Preserves what shouldn't change
+5. ✓ Explains what was updated
+
+**Example:**
+```
+You: Add a feature to run hello_world.py when user asks
+
+WYN360:
+1. Reading your current app.py...
+2. Creating hello_world.py...
+3. Updating app.py with new functionality...
+✓ Created: hello_world.py
+✓ Updated: app.py (added script execution feature)
+```
+
+#### Self-Correcting Behavior
+
+If the agent makes a wrong choice, it can self-correct:
+
+**Scenario:**
+- Agent tries to create file but it already exists
+- Gets clear error: "File exists. Use overwrite=True to update"
+- Automatically retries with correct settings (up to 3 retries)
+- Succeeds on retry
+
+**Benefits:**
+- No more "max retries exceeded" errors
+- Agent learns from mistakes
+- Seamless user experience
+- Natural language understanding
+
+#### Smart Retry Mechanism
+
+**Configuration:** 3 retries for tool operations
+
+**How it works:**
+1. First attempt based on intent recognition
+2. If error occurs, analyzes the error message
+3. Adjusts parameters (e.g., sets overwrite=True)
+4. Retries with corrected parameters
+5. Repeats up to 3 times
+
+**This handles:**
+- File existence conflicts
+- Permission issues
+- Temporary failures
+- Ambiguous user requests
+
+---
+
+### Appendix D: Example Workflows
+
+#### Workflow 1: Brand New Project
+```
+Step 1: Navigate to empty directory
+$ cd my-new-project
+
+Step 2: Start WYN360
+$ wyn360
+
+Step 3: Describe what you want
+You: Build a CLI tool that converts CSV to JSON
+
+Step 4: Agent generates and saves code
+WYN360:
+- Generates complete script with argparse
+- Includes CSV parsing logic
+- Adds JSON output formatting
+- ✓ Code saved to: main.py
+
+Step 5: Review and run
+You: How do I use it?
+
+WYN360:
+- Provides usage instructions
+- Shows example commands
+- Explains options
+```
+
+---
+
+#### Workflow 2: Enhance Existing Project
+```
+Step 1: Navigate to your project
+$ cd my-existing-project
+
+Step 2: Start WYN360
+$ wyn360
+
+Step 3: Request enhancement
+You: Add logging to my data pipeline
+
+Step 4: Agent analyzes and modifies
+WYN360:
+- Reads existing pipeline.py
+- Understands current structure
+- Generates logging configuration
+- Shows you the changes
+- Explains the additions
+
+Step 5: Review and accept
+You: Apply these changes
+
+WYN360:
+- Updates the file
+- Confirms changes made
+- Provides testing guidance
+```
+
+---
+
+#### Workflow 3: Debug & Fix
+```
+Step 1: Encounter an error
+$ python script.py
+Error: Connection timeout
+
+Step 2: Ask WYN360 for help
+You: My script has a connection timeout error
+
+Step 3: Agent diagnoses
+WYN360:
+- Reads your script
+- Identifies the problematic code
+- Explains the root cause
+- Shows the exact issue
+
+Step 4: Get the fix
+You: How do I fix it?
+
+WYN360:
+- Suggests retry logic
+- Provides complete code
+- Explains the solution
+- Offers to update the file
+
+Step 5: Apply fix
+You: Update my script
+
+WYN360:
+- Modifies the file
+- Confirms the change
+- ✓ Code updated successfully
+```
+
+---
+
+#### Workflow 4: Learning & Guidance
+```
+You: How do I implement async in Python?
+
+WYN360:
+📚 Explanation:
+- What async/await does
+- When to use it
+- How it works
+
+💻 Working Examples:
+- Simple async function
+- Using asyncio.gather()
+- Error handling in async
+
+✨ Best Practices:
+- When NOT to use async
+- Common pitfalls
+- Performance tips
+
+🎯 Real-world Example:
+- Complete async HTTP client
+- Concurrent API requests
+- Proper exception handling
+```
+
+---
+
+### Appendix E: Key Strengths
+
+#### 1. Context-Aware Development
+- Reads and understands your project structure before making changes
+- Maintains consistency with your existing code style
+- Suggests changes that integrate seamlessly
+
+#### 2. Production-Ready Code
+- Proper error handling and edge cases
+- Comprehensive docstrings
+- Type hints where appropriate
+- Follows best practices
+
+#### 3. Interactive & Iterative
+- Chat-based interface for natural interaction
+- Ask follow-up questions
+- Refine solutions iteratively
+- Get explanations anytime
+
+#### 4. Automatic File Management
+- Saves generated code automatically (in blank projects)
+- Smart file naming based on content
+- Creates directory structures as needed
+
+#### 5. Intelligent Code Analysis
+- Detects code patterns (Streamlit, FastAPI, etc.)
+- Suggests appropriate file names
+- Understands project structure
+
+---
+
+### Appendix F: Current Limitations
+
+#### 1. Python-Focused
+- **Optimized for:** Python projects and development
+- **Can discuss:** Other languages, but tooling is Python-centric
+- **Best for:** Python developers and learners
+
+#### 2. Local Files Only
+- **Works with:** Files in current directory and subdirectories
+- **Cannot access:** Remote repositories, databases, external APIs
+- **Scope:** Local file system only
+
+#### 3. Session-Based Memory
+- **No persistent memory** between CLI sessions
+- Each session starts fresh
+- **Workaround:** Provide context in each session or use /save and /load
+
+#### 4. File Size Limits
+- Maximum file size: 1MB per file
+- Prevents reading very large files
+- **Workaround:** Process large files in chunks
+
+---
+
+### Appendix G: Best Use Cases Summary
+
+#### ✅ Excellent For:
+
+**Rapid Prototyping**
+- Build MVPs quickly
+- Test ideas fast
+- Create proof-of-concepts
+- Generate starter templates
+
+**Learning Python**
+- Get explanations for concepts
+- See working examples
+- Understand best practices
+- Debug learning projects
+
+**Starting New Projects**
+- Generate project structure
+- Create boilerplate code
+- Set up configurations
+- Initialize common patterns
+
+**Adding Features**
+- Extend existing code
+- Integrate new functionality
+- Refactor safely
+- Improve code quality
+
+**Code Review & Suggestions**
+- Get improvement ideas
+- Identify potential issues
+- Learn better patterns
+- Optimize performance
+
+---
+
+#### ❌ Not Ideal For:
+
+**Non-Python Projects**
+- JavaScript/TypeScript (can advise, but limited tooling)
+- Java, C++, Go (conceptual help only)
+- Mobile development (limited support)
+
+**Large-Scale Refactoring**
+- Entire codebase restructuring (better in IDE)
+- Renaming across many files (use IDE refactoring tools)
+- Complex merge operations
+
+**Production Deployments**
+- CI/CD pipeline execution
+- Server deployments
+- Container orchestration
+- Infrastructure as code
+
+**Database Operations**
+- Direct database queries
+- Schema migrations
+- Data manipulation
+- Backup/restore operations
+
+---
+
+### Appendix H: Pro Tips
+
+#### 1. Be Specific
+**Instead of:** "Make my code better"
+**Try:** "Add error handling to my API endpoints"
+
+#### 2. Provide Context
+**Instead of:** "This doesn't work"
+**Try:** "My FastAPI app returns 500 errors when the database is down"
+
+#### 3. Iterate
+- Start with basic version
+- Ask for improvements
+- Refine step by step
+- Build incrementally
+
+#### 4. Use in Combination with IDE
+- Generate code with WYN360
+- Refine in your IDE
+- Use IDE for complex refactoring
+- Use WYN360 for quick generation
+
+#### 5. Review Generated Code
+- Always read generated code
+- Understand what it does
+- Test before deploying
+- Customize as needed
+
+#### 6. Use Clear Intent Language
+- Say "add feature" or "update" when modifying existing files
+- Say "create new" or "make another" for new files
+- Be explicit about what you want to change
+- The agent understands natural language intent
+
+**Examples:**
+- ✅ "Add authentication to my app" (updates existing)
+- ✅ "Create a new helper module" (creates new)
+- ✅ "Improve error handling" (updates existing)
+- ✅ "Build a separate API client" (creates new)
+
+#### 7. Manage Context with Slash Commands
+- Use `/tokens` to monitor API costs during long sessions
+- Use `/save` to preserve important conversations for later
+- Use `/load` to continue previous work sessions
+- Use `/clear` when starting fresh to reduce token usage
+- Use `/history` to review what you've discussed
+
+**Example Workflow:**
+```
+You: Build a data analysis pipeline
+WYN360: [Creates initial pipeline]
+
+You: Add visualization features
+WYN360: [Enhances the pipeline]
+
+You: /tokens
+[Token Usage Statistics]
+Total Cost: $0.03
+
+You: /save my_pipeline_session.json
+✓ Session saved
+
+[Later...]
+You: /load my_pipeline_session.json
+✓ Session loaded (conversation history restored)
+
+You: Add export to Excel feature
+WYN360: [Continues from where you left off with full context]
+```
+
+**Cost Management Tips:**
+- Check `/tokens` regularly to track spending
+- Use `/clear` after completing a major feature to reset context
+- Save sessions before clearing to preserve your work
+- Long conversations cost more due to conversation history in each API call
+- Balance between context (better results) and cost (fewer tokens)
+
+---
+
+### Appendix I: Learning Path
+
+#### Beginner
+1. Start in blank directory
+2. Ask to build simple scripts
+3. Learn from generated code
+4. Ask "why" and "how" questions
+
+#### Intermediate
+1. Bring existing projects
+2. Ask for feature additions
+3. Request refactoring help
+4. Learn best practices
+
+#### Advanced
+1. Use for rapid prototyping
+2. Generate complex architectures
+3. Get design pattern suggestions
+4. Review and optimize code
+
+---
+
+## Part 4: Reference
+
+### Quick Start Examples
+
+#### Example 1: Build a Web Scraper
+```
+You: Create a web scraper that extracts article titles from a news site
+
+WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
+✓ Code saved to: scraper.py
+```
+
+#### Example 2: Data Processing Pipeline
+```
+You: Build a script that reads CSV, cleans data, and outputs to JSON
+
+WYN360: [Creates comprehensive data pipeline with pandas]
+✓ Code saved to: process_data.py
+```
+
+#### Example 3: API Client
+```
+You: Create an async HTTP client for a REST API
+
+WYN360: [Generates async client with aiohttp, retry logic, error handling]
+✓ Code saved to: api_client.py
+```
+
+---
+
+### Need Help?
+
+If you run into issues or have questions:
+
+1. **Ask the agent:** WYN360 can explain its own capabilities
+2. **Check GitHub:** https://github.com/yiqiao-yin/wyn360-cli
+3. **Read the README:** Basic setup and usage
+4. **Report issues:** GitHub Issues page
+
+---
+
+## Changelog
+
+### v0.3.23
+- 🚀 **NEW FEATURE:** Phase 8.1 - Complete GitHub Integration
+- ✅ **TOOLS:** 7 new GitHub tools (authentication, commit, PR, branches, merge)
+- 🔐 **AUTHENTICATION:** Token-based authentication with GH_TOKEN/GITHUB_TOKEN
+- 💾 **COMMIT & PUSH:** Stage, commit, and push changes directly from CLI
+- 🔀 **PULL REQUESTS:** Create PRs with title, body, and base branch
+- 🌿 **BRANCH MANAGEMENT:** Create, checkout, and list branches
+- 🔄 **BRANCH MERGING:** Merge branches with conflict detection
+- 🔒 **USER CONFIRMATION:** All git operations require y/N approval
+- ⬆️ **WEB SEARCH FIX:** Upgraded pydantic-ai to v1.13.0
+- 🔧 **WEB SEARCH FIX:** Fixed web search tool integration with builtin_tools
+- 📝 **WEB SEARCH ENHANCEMENT:** Enhanced system prompt for finding GitHub repos and resources
+- 🧪 **TESTS:** Added comprehensive tests for GitHub integration tools
+- 📚 **DOCUMENTATION:** Added Use Case 14 (GitHub Integration) and Use Case 17 expansion
+
+### v0.3.21
 - 🌐 **NEW FEATURE:** Phase 11.1 - Real-Time Web Search
 - ✅ **BUILTIN TOOL:** WebSearchTool integrated via pydantic-ai framework
 - 🌤️ **WEATHER QUERIES:** Ask for weather in any location with automatic search
@@ -3523,7 +2896,7 @@ WYN360: [Pushes main branch]
 - ✅ **TOOL:** authenticate_hf - Authenticate with HuggingFace using access token
 - ✅ **TOOL:** create_hf_readme - Generate README.md with Space configuration
 - 📦 **DEPENDENCY:** Added huggingface-hub>=0.20.0
-- 🧪 **TESTS:** Added 12 new unit tests for HuggingFace tools (7 in test_agent.py, 5 in test_utils.py)
+- 🧪 **TESTS:** Added 12 new unit tests for HuggingFace tools
 - 📚 **DOCUMENTATION:** Updated ROADMAP.md with Phase 6 HuggingFace Integration
 - 🛠️ **UTILS:** Added extract_username_from_hf_whoami() helper function
 - 💡 **SYSTEM PROMPT:** Added HuggingFace workflow instructions
@@ -3750,3 +3123,9 @@ WYN360: [Pushes main branch]
 
 ### v0.1.0
 - 🎉 Initial release
+
+---
+
+**End of WYN360 CLI Complete User Guide**
+
+This comprehensive guide covered all 18 use cases from simple to complex, with detailed appendices for reference. For the latest updates and version history, see the Changelog section above.
