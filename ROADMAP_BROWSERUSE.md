@@ -43,14 +43,14 @@ Implement direct URL fetching using crawl4ai (LLM-optimized web crawler) with sm
 #### Tasks:
 - [x] Research browser automation solutions
 - [x] Create ROADMAP_BROWSERUSE.md
-- [ ] Add crawl4ai dependency to pyproject.toml
-- [ ] Implement `fetch_website(url)` tool in agent.py
-- [ ] Add URL detection logic in system prompt
-- [ ] Implement smart content truncation
-- [ ] Store fetched content in agent context (in-memory)
-- [ ] Update documentation (README.md, SYSTEM.md, USE_CASES.md)
-- [ ] Add error handling for failed fetches
-- [ ] Test with various URL types (GitHub, docs, blogs)
+- [x] Add crawl4ai dependency to pyproject.toml
+- [x] Implement `fetch_website(url)` tool in agent.py
+- [x] Add URL detection logic in system prompt
+- [x] Implement smart content truncation
+- [x] Store fetched content in agent context (in-memory)
+- [x] Update documentation (README.md, SYSTEM.md, USE_CASES.md)
+- [x] Add error handling for failed fetches
+- [x] Test with various URL types (GitHub, docs, blogs)
 
 #### Features:
 ```python
@@ -97,15 +97,15 @@ browser_use:
 **Goal:** Add persistent caching with automatic cleanup
 
 #### Tasks:
-- [ ] Create cache directory structure (~/.wyn360/cache/fetched_sites/)
-- [ ] Implement TTL-based cache system
-- [ ] Add cache key generation (URL hash)
-- [ ] Store cached content as gzipped markdown
-- [ ] Implement automatic cleanup on cache read
-- [ ] Add cache statistics tracking
-- [ ] Implement cache warming (prefetch common URLs)
-- [ ] Add cache hit/miss metrics
-- [ ] Update config with cache settings
+- [x] Create cache directory structure (~/.wyn360/cache/fetched_sites/)
+- [x] Implement TTL-based cache system
+- [x] Add cache key generation (URL hash)
+- [x] Store cached content as gzipped markdown
+- [x] Implement automatic cleanup on cache read
+- [x] Add cache statistics tracking
+- [ ] Implement cache warming (prefetch common URLs) - FUTURE
+- [ ] Add cache hit/miss metrics - FUTURE (basic tracking exists)
+- [x] Update config with cache settings
 
 #### Features:
 ```python
@@ -145,9 +145,9 @@ browser_use:
   └── cache_index.json  # Metadata (URL, timestamp, size)
 ```
 
-**Version:** v0.3.25
-**Status:** Planned
-**ETA:** Next session
+**Version:** v0.3.24 (completed in same release as Phase 1)
+**Status:** ✅ Complete (except 2 optional future enhancements)
+**Completed:** Current session
 
 ---
 
@@ -156,15 +156,16 @@ browser_use:
 **Goal:** Give users control over cache persistence and management
 
 #### Tasks:
-- [ ] Implement user prompt for cache preferences
-- [ ] Add persistent storage option
-- [ ] Create `/clear-cache` command
-- [ ] Create `/show-cache` command (statistics)
-- [ ] Add cache preference persistence
-- [ ] Implement selective cache clearing
-- [ ] Add cache export feature
-- [ ] Create cache viewer tool
-- [ ] Update CLI with cache management commands
+- [ ] Implement user prompt for cache preferences - FUTURE
+- [x] Add persistent storage option (cache persists with TTL)
+- [ ] Create `/clear-cache` CLI command - FUTURE (agent tool exists)
+- [ ] Create `/show-cache` CLI command - FUTURE (agent tool exists)
+- [ ] Add cache preference persistence - FUTURE
+- [x] Implement selective cache clearing (via agent tool)
+- [ ] Add cache export feature - FUTURE
+- [x] Create cache viewer tool (show_cache_stats agent tool)
+- [x] Implement agent tools: show_cache_stats(), clear_website_cache()
+- [ ] Update CLI with slash commands - FUTURE
 
 #### Features:
 
@@ -220,9 +221,10 @@ browser_use:
       - "https://github.com/*/README.md"
 ```
 
-**Version:** v0.3.26
-**Status:** Planned
-**ETA:** Future session
+**Version:** v0.3.24 (core features completed)
+**Status:** ⚠️ Partially Complete
+**Completed:** Core agent tools (show_cache_stats, clear_website_cache) implemented
+**Remaining:** CLI slash commands, user prompts, cache export (future enhancements)
 
 ---
 
@@ -482,9 +484,10 @@ wyn360 migrate-config
 
 | Version | Phase | Status | Release Date |
 |---------|-------|--------|--------------|
-| v0.3.24 | Phase 1 | In Progress | TBD |
-| v0.3.25 | Phase 2 | Planned | TBD |
-| v0.3.26 | Phase 3 | Planned | TBD |
+| v0.3.24 | Phase 1 | ✅ Complete | 2025-01-11 |
+| v0.3.24 | Phase 2 | ✅ Complete (2 optional items remain) | 2025-01-11 |
+| v0.3.24 | Phase 3 | ⚠️ Partially Complete (core tools done) | 2025-01-11 |
+| v0.3.25+ | Phase 3 (full) | Planned (CLI commands, prompts) | TBD |
 | v0.3.27+ | Phase 4-6 | Future | TBD |
 
 ---
