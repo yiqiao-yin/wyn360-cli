@@ -474,48 +474,91 @@ April expenses totaled $2,400 with breakdown:
 
 **Goal:** Advanced features and optimizations
 
-#### Future Enhancements:
-- [ ] **Vision Mode for Images (High Priority)**
-  - [ ] Integrate Claude vision API for Word/PDF images
-  - [ ] Extract meaningful descriptions from charts, diagrams
-  - [ ] Cost warnings for users
-  - [ ] Batch image processing for efficiency
+#### Phase 5.1: Vision Mode for Images ✅ COMPLETED (v0.3.30)
+- ✅ **Vision Mode Implementation**
+  - ✅ ImageProcessor class with Claude Vision API integration
+  - ✅ WordReader image extraction and processing
+  - ✅ PDFReader image extraction (pymupdf & pdfplumber)
+  - ✅ Agent integration with vision token tracking
+  - ✅ Three processing modes: skip, describe, vision
+  - ✅ Cost transparency and separate tracking
+  - ✅ Batch image processing for efficiency
+  - ✅ 23 comprehensive tests, all 359 tests passing
+  - ✅ Documentation: ROADMAP_VISION.md, README.md, COST.md
 
-- [ ] **Semantic Matching (High Priority)**
-  - [ ] Replace keyword matching with embeddings
-  - [ ] Use sentence transformers or similar
-  - [ ] Compute embeddings for chunk tags
-  - [ ] Cosine similarity for query matching
+**See:** [ROADMAP_VISION.md](ROADMAP_VISION.md) for detailed implementation
+
+#### Phase 5.2: Semantic Matching (High Priority) 🚧 PLANNED
+- [ ] **Embedding-based Retrieval System**
+  - [ ] Replace keyword matching with semantic embeddings
+  - [ ] Integrate sentence-transformers or similar library
+  - [ ] Compute embeddings for chunk summaries and tags
+  - [ ] Cosine similarity for query-chunk matching
+  - [ ] Fallback to keyword matching if embeddings fail
   - [ ] Significantly better retrieval accuracy
+  - [ ] Embedding cache with chunk cache
+  - [ ] Performance benchmarking vs keyword matching
 
-- [ ] **OCR Support for Scanned PDFs (Medium Priority)**
-  - [ ] Integrate Tesseract OCR
+**Estimated Effort:** 2-3 weeks | **Version:** v0.3.31-v0.3.32
+
+#### Phase 5.3: OCR Support for Scanned PDFs (Medium Priority) 📋 PLANNED
+- [ ] **OCR Integration**
+  - [ ] Integrate Tesseract OCR or similar
   - [ ] Detect scanned vs text-based PDFs
   - [ ] Extract text from images in PDFs
-  - [ ] Warning about OCR accuracy
+  - [ ] Warning about OCR accuracy and costs
+  - [ ] Combine OCR text with Vision API for images
+  - [ ] Language detection and multi-language support
+  - [ ] Quality assessment of OCR results
 
-- [ ] **Excel Enhancements (Medium Priority)**
-  - [ ] Chart/graph descriptions
-  - [ ] Pivot table support
+**Estimated Effort:** 2-3 weeks | **Version:** v0.3.33-v0.3.34
+
+#### Phase 5.4: Excel Enhancements (Medium Priority) 📋 PLANNED
+- [ ] **Advanced Excel Features**
+  - [ ] Chart/graph extraction and vision processing
+  - [ ] Pivot table detection and summarization
   - [ ] Formula dependency analysis
   - [ ] Cross-sheet reference tracking
+  - [ ] Named ranges support
+  - [ ] Data validation rules extraction
+  - [ ] Conditional formatting descriptions
 
-- [ ] **Multi-Document Queries (Low Priority)**
+**Estimated Effort:** 2 weeks | **Version:** v0.3.35
+
+#### Phase 5.5: Multi-Document Queries (Low Priority) 📋 PLANNED
+- [ ] **Cross-Document Intelligence**
   - [ ] Query across multiple cached documents
   - [ ] "Compare expenses.xlsx and budget.xlsx"
-  - [ ] Cross-reference information
+  - [ ] Cross-reference information between documents
   - [ ] Unified search across document cache
+  - [ ] Document relationship detection
+  - [ ] Aggregated summaries across documents
+  - [ ] Smart document selection based on query
 
-- [ ] **Performance Optimizations (Ongoing)**
-  - [ ] Parallel chunk summarization
-  - [ ] Streaming for large files
-  - [ ] Incremental caching (only process new/changed chunks)
-  - [ ] Background cache warming
+**Estimated Effort:** 3 weeks | **Version:** v0.3.36-v0.3.37
 
-- [ ] **Advanced Chunking Strategies (Low Priority)**
+#### Phase 5.6: Performance Optimizations (Ongoing) 🔄
+- [ ] **Performance Improvements**
+  - [ ] Parallel chunk summarization (async/await)
+  - [ ] Streaming for large files (progressive processing)
+  - [ ] Incremental caching (only process changed chunks)
+  - [ ] Background cache warming (pre-compute common queries)
+  - [ ] Compression for cached data
+  - [ ] LRU cache eviction strategy
+  - [ ] Performance monitoring and metrics
+
+**Estimated Effort:** Ongoing | **Version:** Incremental improvements
+
+#### Phase 5.7: Advanced Chunking Strategies (Low Priority) 📋 PLANNED
+- [ ] **Smart Chunking**
   - [ ] Adaptive chunk sizes based on content density
-  - [ ] Overlap between chunks for context
-  - [ ] Hierarchical chunking (sections → paragraphs)
+  - [ ] Overlap between chunks for context preservation
+  - [ ] Hierarchical chunking (sections → paragraphs → sentences)
+  - [ ] Content-aware boundaries (don't split tables, code blocks)
+  - [ ] Configurable chunking strategies per document type
+  - [ ] Chunk quality scoring
+
+**Estimated Effort:** 2 weeks | **Version:** v0.3.38
 
 ---
 
