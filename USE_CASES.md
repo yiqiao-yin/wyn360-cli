@@ -32,7 +32,7 @@ wyn360
 ```
 
 **Your first interaction:**
-```
+```bash
 You: What files do I have?
 WYN360: [Lists all files in your directory]
 
@@ -88,7 +88,7 @@ When you're in an empty directory and want to build something from scratch, WYN3
 - `script.py` - For simple utility scripts
 
 **Example Interaction:**
-```
+```bash
 You: Build a Streamlit chatbot that echoes user input
 
 WYN360:
@@ -131,7 +131,7 @@ WYN360 can understand your existing codebase before making suggestions or change
 | `get_project_info()` | Generate comprehensive project summary | "Summarize my project structure" |
 
 **Example Interaction:**
-```
+```bash
 You: What does my project do?
 
 WYN360:
@@ -180,7 +180,7 @@ Write high-quality Python code or improve existing code.
 - Considers edge cases
 
 **Example Interaction:**
-```
+```bash
 You: Refactor my data processing script to use async
 
 WYN360:
@@ -229,7 +229,7 @@ Run any shell command, Python script, or CLI tool directly through WYN360 with b
 - 🔒 Runs with user's permissions in current directory
 
 **Example Interaction:**
-```
+```bash
 You: Run the adult.py analysis script
 
 WYN360: [Prepares to execute]
@@ -275,7 +275,7 @@ Write complex, multi-line prompts with ease using keyboard shortcuts.
 - **Ctrl+Enter** → Add a new line (continue typing)
 
 **Example:**
-```
+```bash
 You: [Ctrl+Enter for each line]
 Create a Streamlit app that:
 1. Loads a CSV file
@@ -305,7 +305,7 @@ WYN360: [Generates complete multi-featured app]
 WYN360 can now interact with git repositories to help you manage version control.
 
 **Example Interaction:**
-```
+```bash
 You: What files have I changed?
 
 WYN360: [Calls git_status tool]
@@ -330,7 +330,7 @@ Untracked files:
 | "What branch am I on?" | `git_branch()` | List all branches |
 
 **Real-world scenarios:**
-```
+```bash
 You: Show me what changed in my last session
 WYN360: [Shows git diff output with line-by-line changes]
 
@@ -359,7 +359,7 @@ WYN360: [Shows current branch marked with *]
 Find code patterns, definitions, and usage across your entire project.
 
 **Example Interaction:**
-```
+```bash
 You: Where is the User class defined?
 
 WYN360: [Calls search_files("class User", "*.py")]
@@ -379,7 +379,7 @@ Search Results for 'class User' in *.py:
 | "Show all API endpoints" | `search_files("@app.route")` | Lists Flask/FastAPI routes |
 
 **Advanced Search Examples:**
-```
+```bash
 You: Find all functions that use the requests library
 WYN360: [Searches for 'requests.' across Python files]
 Found 12 matches across 4 files
@@ -412,7 +412,7 @@ Environment variables accessed in config.py and utils.py
 Complete file system operations for organizing your project.
 
 **Delete Files:**
-```
+```bash
 You: Delete the old_script.py file
 
 WYN360: [Calls delete_file("old_script.py")]
@@ -420,7 +420,7 @@ WYN360: [Calls delete_file("old_script.py")]
 ```
 
 **Move/Rename Files:**
-```
+```bash
 You: Rename utils.py to helpers.py
 
 WYN360: [Calls move_file("utils.py", "helpers.py")]
@@ -433,7 +433,7 @@ WYN360: [Calls move_file("config.py", "src/config.py")]
 ```
 
 **Create Directories:**
-```
+```bash
 You: Create a tests directory
 
 WYN360: [Calls create_directory("tests")]
@@ -446,7 +446,7 @@ WYN360: [Calls create_directory("src/utils/helpers")]
 ```
 
 **Project Reorganization Workflow:**
-```
+```bash
 You: I want to reorganize my project. Create src, tests, and docs directories
 
 WYN360:
@@ -496,7 +496,7 @@ Choose the right AI model for your task to optimize cost and performance.
 | **Opus** | Slower | Premium ($15/$75 per M) | Complex reasoning, architecture |
 
 **Viewing Current Model:**
-```
+```bash
 You: /model
 
 [Model Information Table]
@@ -511,7 +511,7 @@ Usage: /model <name>  (e.g., /model haiku)
 ```
 
 **Switching Models Mid-Session:**
-```
+```bash
 You: /model haiku
 ✓ Switched to Haiku (claude-3-5-haiku-20241022)
 
@@ -528,7 +528,7 @@ WYN360: [Uses Opus - most capable for complex reasoning]
 **Cost Optimization Strategies:**
 
 **Strategy 1: Start with Haiku, upgrade as needed**
-```
+```bash
 You: /model haiku
 
 You: Show me the files in this project
@@ -541,7 +541,7 @@ WYN360: [Switches to Opus for complex architectural decision]
 ```
 
 **Strategy 2: Use Sonnet for most work, Haiku for repetitive tasks**
-```
+```bash
 You: /model sonnet
 
 You: Add error handling to api.py
@@ -577,7 +577,7 @@ WYN360: [Haiku handles these simple operations cheaply]
 
 **Real-World Cost Comparison:**
 
-```
+```yaml
 Scenario: Adding a new feature (10 interactions)
 
 With Haiku only:
@@ -753,7 +753,7 @@ commands:
 ```
 
 **When you run wyn360 in this directory:**
-```
+```bash
 $ wyn360
 
 • Loaded user config from: ~/.wyn360/config.yaml
@@ -772,7 +772,7 @@ your existing training pipeline...
 
 #### Workflow 3: Viewing Current Configuration
 
-```
+```bash
 You: /config
 
 Current Configuration
@@ -885,7 +885,7 @@ model: claude-sonnet-4-20250514  # Use more capable model
 
 ### Before Streaming (Old Behavior)
 
-```
+```bash
 You: Generate a large Python script for data analysis
 
 [Spinner animation for 10-15 seconds]
@@ -901,7 +901,7 @@ WYN360: [Entire response appears at once after waiting]
 
 ### After Streaming (New Behavior)
 
-```
+```bash
 You: Generate a large Python script for data analysis
 
 WYN360: I'll create a comprehensive data analysis script...
@@ -914,7 +914,7 @@ Let me build this step by step:
 ```python
 import pandas as pd
 ...
-```
+```yaml
 
 **User Experience:**
 - ✅ Immediate feedback
@@ -987,7 +987,7 @@ Here's how it works:
 #### Workflow 3: Large Script Generation
 
 **Before (Non-Streaming):**
-```
+```bash
 You: Generate a comprehensive data pipeline script
 
 [Wait 15 seconds with spinner]
@@ -997,7 +997,7 @@ WYN360: [500 lines of code appear instantly]
 ```
 
 **After (Streaming):**
-```
+```bash
 You: Generate a comprehensive data pipeline script
 
 WYN360: I'll create a data pipeline with these components:
@@ -1013,7 +1013,7 @@ WYN360: I'll create a data pipeline with these components:
 [More code streams in]
 
 [You're already reading Step 1 while Step 3 is being generated]
-```
+```yaml
 
 ### Technical Details
 
@@ -1049,7 +1049,7 @@ WYN360: [Streams documentation as it writes]
 ```
 
 **2. Code Refactoring**
-```
+```bash
 You: Refactor this 500-line script
 
 WYN360: [Shows refactored code streaming]
@@ -1057,7 +1057,7 @@ WYN360: [Shows refactored code streaming]
 ```
 
 **3. Explanations and Tutorials**
-```
+```bash
 You: Explain design patterns with examples
 
 WYN360: [Explanation streams naturally]
@@ -1065,12 +1065,12 @@ WYN360: [Explanation streams naturally]
 ```
 
 **4. Large File Generation**
-```
+```bash
 You: Create a complete API client with all endpoints
 
 WYN360: [Streams code file by file]
 # Start planning implementation while rest generates
-```
+```yaml
 
 ### Tips
 
@@ -1152,7 +1152,7 @@ https://huggingface.co/spaces/username/chatbot-demo
 ```
 
 **Authentication:**
-```
+```bash
 # Set token in environment (recommended)
 export HF_TOKEN="hf_your_token_here"
 
@@ -1177,7 +1177,7 @@ sdk_version: 1.28.0
 app_file: app.py
 pinned: false
 ---
-```
+```yaml
 
 **Supported SDKs:**
 - Streamlit
@@ -1212,7 +1212,7 @@ Automatically generate pytest test scaffolding for your Python code using AST pa
 - Safe code analysis without execution
 
 **Example Interaction:**
-```
+```bash
 You: Generate tests for calculator.py
 
 WYN360: [Analyzes calculator.py using AST]
@@ -1255,7 +1255,7 @@ Next steps: Complete the TODO sections with actual test logic.
 ```
 
 **Advanced Example:**
-```
+```bash
 You: Generate comprehensive tests for api.py
 
 WYN360: [Analyzes api.py]
@@ -1276,7 +1276,7 @@ Found:
   - Mock configurations
 
 Total: 18 test stubs generated
-```
+```bash
 
 **Features:**
 - ✅ AST parsing (safe, no code execution)
@@ -1307,7 +1307,7 @@ WYN360: [Adds assertions and test data]
 You: Run pytest
 
 WYN360: [Executes tests]
-```
+```bash
 
 **Productivity Benefits:**
 - ✅ Saves time on test boilerplate
@@ -1345,7 +1345,7 @@ WYN360 provides seamless GitHub integration directly from the CLI! This feature 
 Commit your changes to the current repository and push to GitHub with a single command.
 
 **User Interaction:**
-```
+```bash
 You: Commit these changes
 
 WYN360: [Checks GitHub authentication]
@@ -1402,7 +1402,7 @@ Execute this command? (y/N): y
 ```
 
 **If Not Authenticated:**
-```
+```bash
 You: Commit to github
 
 WYN360: [Checks authentication]
@@ -1432,7 +1432,7 @@ Now let me commit your changes...
 Open a pull request from your current branch to the main branch.
 
 **User Interaction:**
-```
+```bash
 You: Create a pull request for my feature
 
 WYN360: [Checks authentication - already authenticated this session]
@@ -1501,7 +1501,7 @@ View or merge at: https://github.com/yiqiao-yin/wyn360-cli/pull/42
 Create new branches and switch between them seamlessly.
 
 **Create New Branch:**
-```
+```bash
 You: Create a new branch called feature/auth
 
 WYN360: I'll create a new branch 'feature/auth' and check it out.
@@ -1532,7 +1532,7 @@ You can now make changes on this branch. When ready:
 ```
 
 **Checkout Existing Branch:**
-```
+```bash
 You: Switch to the develop branch
 
 WYN360: I'll check out the 'develop' branch.
@@ -1566,7 +1566,7 @@ Last commit: x9y8z7 "Update documentation"
 Merge feature branches into target branches with conflict detection.
 
 **Successful Merge:**
-```
+```bash
 You: Merge feature/auth into main
 
 WYN360: I'll merge 'feature/auth' into 'main'.
@@ -1621,7 +1621,7 @@ export GH_TOKEN="ghp_your_token_here"
 
 # Or use GITHUB_TOKEN (both work)
 export GITHUB_TOKEN="ghp_your_token_here"
-```
+```yaml
 
 **Token Requirements:**
 - Format: `ghp_*` or `github_pat_*`
@@ -1693,7 +1693,7 @@ WYN360: [Pushes main branch]
 ✓ Pushed to origin/main
 
 ✅ Complete workflow: Branch → Code → Commit → PR → Merge → Deploy
-```
+```bash
 
 **Time Saved:**
 - Manual workflow: 10-15 minutes
@@ -1825,7 +1825,7 @@ Most expensive operations:
 1. Multi-file refactoring: $0.15
 2. Test generation: $0.12
 3. Documentation creation: $0.09
-```
+```bash
 
 **Insight:** Monitor costs in real-time, identify expensive operations, optimize usage.
 
@@ -1892,7 +1892,7 @@ WYN360 now has access to real-time web search capabilities! This feature enables
 Get real-time weather information for any location.
 
 **User Interaction:**
-```
+```bash
 You: What's the weather in San Francisco?
 
 WYN360: [Searches web for current San Francisco weather]
@@ -1905,7 +1905,7 @@ Current Weather in San Francisco, CA:
 - Last Updated: 2025-01-10 14:30 PST
 
 Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
-```
+```yaml
 
 **Cost:**
 - 1 search per query ($0.01)
@@ -1944,7 +1944,7 @@ WYN360: [Fetches content from python.org]
 **Release Date:** October 2024
 
 Source: [Python.org](https://python.org/downloads/release/python-3130/)
-```
+```yaml
 
 **Cost:**
 - 1 search per URL ($0.01)
@@ -1956,7 +1956,7 @@ Source: [Python.org](https://python.org/downloads/release/python-3130/)
 Access the latest documentation, package versions, news, and trends.
 
 **Example:**
-```
+```bash
 You: What's new in React 19?
 
 WYN360: [Searches for React 19 release information]
@@ -1984,7 +1984,7 @@ WYN360: [Searches for React 19 release information]
 Sources:
 - [React Blog - React 19 Beta](https://react.dev/blog/2024/12/05/react-19)
 - [React Docs - What's New](https://react.dev/learn/whats-new)
-```
+```yaml
 
 **Cost:**
 - 1-2 searches per query ($0.01-0.02)
@@ -2029,7 +2029,7 @@ Sources:
 ```
 
 **Finding Libraries by Language:**
-```
+```bash
 You: What are good Python libraries for data visualization?
 
 WYN360: [Searches for Python data viz libraries]
@@ -2049,7 +2049,7 @@ Top Python libraries for data visualization:
    - Best for: Statistical analysis, heatmaps, distributions
 
 Sources: GitHub, Python Package Index, Stack Overflow trends
-```
+```yaml
 
 **Cost:**
 - 1-2 searches per query ($0.01-0.02)
@@ -2137,7 +2137,7 @@ Enhance your existing projects with new functionality while maintaining code qua
 5. Maintains your coding style
 
 **Example Interaction:**
-```
+```bash
 You: Add authentication to my FastAPI app
 
 WYN360:
@@ -2146,7 +2146,7 @@ WYN360:
 3. Generates authentication middleware
 4. Updates routes with auth decorators
 5. Provides implementation guide
-```
+```yaml
 
 **Common Feature Additions:**
 - Authentication and authorization
@@ -2190,7 +2190,7 @@ WYN360:
 ```
 
 **Learning:**
-```
+```bash
 You: How do I implement async in Python?
 
 WYN360:
@@ -2202,7 +2202,7 @@ WYN360:
 ```
 
 **Code Review:**
-```
+```bash
 You: Review my API implementation
 
 WYN360:
@@ -2211,7 +2211,7 @@ WYN360:
 - Reviews security considerations
 - Suggests improvements
 - Provides specific fixes
-```
+```yaml
 
 ---
 
@@ -2389,7 +2389,7 @@ The agent analyzes your natural language to understand what you want:
 5. ✓ Explains what was updated
 
 **Example:**
-```
+```bash
 You: Add a feature to run hello_world.py when user asks
 
 WYN360:
@@ -2438,7 +2438,7 @@ If the agent makes a wrong choice, it can self-correct:
 ### Appendix D: Example Workflows
 
 #### Workflow 1: Brand New Project
-```
+```bash
 Step 1: Navigate to empty directory
 $ cd my-new-project
 
@@ -2467,7 +2467,7 @@ WYN360:
 ---
 
 #### Workflow 2: Enhance Existing Project
-```
+```bash
 Step 1: Navigate to your project
 $ cd my-existing-project
 
@@ -2497,7 +2497,7 @@ WYN360:
 ---
 
 #### Workflow 3: Debug & Fix
-```
+```bash
 Step 1: Encounter an error
 $ python script.py
 Error: Connection timeout
@@ -2533,7 +2533,7 @@ WYN360:
 ---
 
 #### Workflow 4: Learning & Guidance
-```
+```bash
 You: How do I implement async in Python?
 
 WYN360:
@@ -2725,7 +2725,7 @@ WYN360:
 - Use `/history` to review what you've discussed
 
 **Example Workflow:**
-```
+```bash
 You: Build a data analysis pipeline
 WYN360: [Creates initial pipeline]
 
@@ -2783,7 +2783,7 @@ WYN360: [Continues from where you left off with full context]
 ### Quick Start Examples
 
 #### Example 1: Build a Web Scraper
-```
+```bash
 You: Create a web scraper that extracts article titles from a news site
 
 WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
@@ -2791,7 +2791,7 @@ WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
 ```
 
 #### Example 2: Data Processing Pipeline
-```
+```bash
 You: Build a script that reads CSV, cleans data, and outputs to JSON
 
 WYN360: [Creates comprehensive data pipeline with pandas]
@@ -2799,7 +2799,7 @@ WYN360: [Creates comprehensive data pipeline with pandas]
 ```
 
 #### Example 3: API Client
-```
+```bash
 You: Create an async HTTP client for a REST API
 
 WYN360: [Generates async client with aiohttp, retry logic, error handling]
