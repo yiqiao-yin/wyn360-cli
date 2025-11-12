@@ -359,6 +359,182 @@ class ImageProcessor:
 
 
 # ============================================================================
+# OCRProcessor Class (Phase 5.3.1)
+# ============================================================================
+
+# Try importing OCR dependencies
+HAS_PYTESSERACT = True
+HAS_PDF2IMAGE = True
+try:
+    import pytesseract
+    from PIL import Image, ImageEnhance
+except ImportError:
+    HAS_PYTESSERACT = False
+
+try:
+    from pdf2image import convert_from_path
+except ImportError:
+    HAS_PDF2IMAGE = False
+
+
+class OCRProcessor:
+    """
+    Extract text from images using Tesseract OCR.
+
+    Features:
+    - Detect scanned PDF pages (image-based)
+    - Extract text from images with confidence scoring
+    - Image preprocessing (grayscale, contrast enhancement)
+    - Language detection and multi-language support
+    - Quality assessment
+
+    Usage:
+        processor = OCRProcessor(language="eng")
+        result = processor.extract_text(image)
+        # {"text": "...", "confidence": 85.5, "word_count": 120}
+    """
+
+    def __init__(self, language: str = "eng"):
+        """
+        Initialize OCR processor.
+
+        Args:
+            language: Tesseract language code (eng, spa, fra, deu, etc.)
+        """
+        self.language = language
+        self._check_tesseract()
+
+    def _check_tesseract(self):
+        """Verify Tesseract is installed."""
+        if not HAS_PYTESSERACT:
+            raise RuntimeError(
+                "Tesseract OCR not installed. "
+                "Install: pip install pytesseract Pillow\n"
+                "System: apt-get install tesseract-ocr (Linux) "
+                "or brew install tesseract (Mac)"
+            )
+
+        try:
+            # Test if tesseract binary is accessible
+            pytesseract.get_tesseract_version()
+        except Exception as e:
+            raise RuntimeError(
+                f"Tesseract binary not found: {e}\n"
+                "Install: apt-get install tesseract-ocr (Linux) "
+                "or brew install tesseract (Mac)"
+            )
+
+    def extract_text(
+        self,
+        image: "Image.Image",
+        preprocess: bool = True
+    ) -> Dict[str, Any]:
+        """
+        Extract text from image using OCR.
+
+        Args:
+            image: PIL Image object
+            preprocess: Apply preprocessing (grayscale, contrast)
+
+        Returns:
+            {
+                "text": str,
+                "confidence": float (0-100),
+                "word_count": int
+            }
+        """
+        if preprocess:
+            image = self._preprocess_image(image)
+
+        # Extract text with confidence data
+        data = pytesseract.image_to_data(
+            image,
+            lang=self.language,
+            output_type=pytesseract.Output.DICT
+        )
+
+        # Calculate average confidence (excluding -1 values)
+        confidences = [c for c in data['conf'] if c != -1]
+        avg_confidence = sum(confidences) / len(confidences) if confidences else 0
+
+        # Extract text
+        text = pytesseract.image_to_string(image, lang=self.language)
+
+        return {
+            "text": text.strip(),
+            "confidence": avg_confidence,
+            "word_count": len(text.split())
+        }
+
+    def _preprocess_image(self, image: "Image.Image") -> "Image.Image":
+        """
+        Preprocess image for better OCR results.
+
+        Args:
+            image: PIL Image object
+
+        Returns:
+            Preprocessed PIL Image
+        """
+        from PIL import Image, ImageEnhance
+
+        # Convert to grayscale
+        image = image.convert('L')
+
+        # Increase contrast
+        enhancer = ImageEnhance.Contrast(image)
+        image = enhancer.enhance(2.0)
+
+        return image
+
+    def is_scanned_page(
+        self,
+        page_image: "Image.Image",
+        text_from_pdf: str,
+        min_words_threshold: int = 20
+    ) -> bool:
+        """
+        Detect if PDF page is scanned (image-based).
+
+        Args:
+            page_image: Page rendered as image
+            text_from_pdf: Text extracted directly from PDF
+            min_words_threshold: Minimum words to consider page as scanned
+
+        Returns:
+            True if page appears to be scanned
+        """
+        # If PDF has very little text but page has visual content, likely scanned
+        if len(text_from_pdf.strip()) < 10:
+            # Try quick OCR to see if there's text
+            result = self.extract_text(page_image, preprocess=False)
+            return result["word_count"] > min_words_threshold
+
+        return False
+
+    def assess_quality(self, ocr_result: Dict[str, Any]) -> str:
+        """
+        Assess OCR quality based on confidence score.
+
+        Args:
+            ocr_result: Result from extract_text()
+
+        Returns:
+            Quality rating: "excellent", "good", "fair", "poor"
+        """
+        confidence = ocr_result["confidence"]
+
+        if confidence > 90:
+            return "excellent"
+        elif confidence > 75:
+            return "good"
+        elif confidence > 60:
+            return "fair"
+        else:
+            return "poor"
+
+
+# ============================================================================
 # EmbeddingModel Class (Phase 5.2.1)
 # ============================================================================
 
