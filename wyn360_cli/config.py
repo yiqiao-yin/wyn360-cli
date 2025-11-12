@@ -39,6 +39,13 @@ class WYN360Config:
     aliases: Dict[str, str] = field(default_factory=dict)
     workspaces: list = field(default_factory=list)
 
+    # Browser use settings (Phase 12.1)
+    browser_use_max_tokens: int = 50000
+    browser_use_truncate_strategy: str = "smart"  # smart, head, tail
+    browser_use_cache_enabled: bool = True
+    browser_use_cache_ttl: int = 1800  # 30 minutes
+    browser_use_cache_max_size_mb: int = 100
+
     # Config file paths (for reference)
     user_config_path: Optional[str] = None
     project_config_path: Optional[str] = None
@@ -135,6 +142,18 @@ def merge_configs(user_config: Dict[str, Any], project_config: Dict[str, Any]) -
         config.custom_instructions = user_config.get("custom_instructions", "")
         config.aliases = user_config.get("aliases", {})
         config.workspaces = user_config.get("workspaces", [])
+
+        # Browser use settings
+        browser_use_config = user_config.get("browser_use", {})
+        if browser_use_config:
+            config.browser_use_max_tokens = browser_use_config.get("max_tokens", config.browser_use_max_tokens)
+            config.browser_use_truncate_strategy = browser_use_config.get("truncate_strategy", config.browser_use_truncate_strategy)
+            cache_config = browser_use_config.get("cache", {})
+            if cache_config:
+                config.browser_use_cache_enabled = cache_config.get("enabled", config.browser_use_cache_enabled)
+                config.browser_use_cache_ttl = cache_config.get("ttl", config.browser_use_cache_ttl)
+                config.browser_use_cache_max_size_mb = cache_config.get("max_size_mb", config.browser_use_cache_max_size_mb)
+
         config.user_config_path = str(get_user_config_path()) if get_user_config_path().exists() else None
 
     # Apply project config (overrides user config and defaults)
@@ -207,6 +226,15 @@ custom_instructions: |
   - Always use type hints in Python code
   - Follow PEP 8 style guidelines
   - Add docstrings to all functions and classes
+
+# Browser use settings (for website fetching)
+browser_use:
+  max_tokens: 50000  # Max tokens per fetched website (configurable)
+  truncate_strategy: "smart"  # Options: smart, head, tail
+  cache:
+    enabled: true
+    ttl: 1800  # Cache duration in seconds (30 minutes)
+    max_size_mb: 100  # Maximum cache size in MB
 
 # Command aliases for quick access
 aliases:

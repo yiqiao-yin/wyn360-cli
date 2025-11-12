@@ -562,6 +562,56 @@ User: "/load my_session.json"
 - ✅ **Upgraded to pydantic-ai 1.13.0** for improved stability (v0.3.23)
 - ✅ **Enhanced system prompt** with clearer intent examples (v0.3.23)
 
+### Phase 12: Browser Use / Direct Website Fetching (v0.3.24)
+
+**Phase 12.1: Basic Website Fetching**
+- ✅ Direct URL fetching using crawl4ai (LLM-optimized web crawler)
+- ✅ Full DOM extraction with JavaScript execution support
+- ✅ Automatic HTML → Markdown conversion for LLM consumption
+- ✅ Smart truncation preserving document structure
+- ✅ Configurable max tokens (default: 50,000)
+- ✅ URL validation and error handling
+- ✅ Integration with agent tool system
+
+**Phase 12.2: TTL-Based Caching**
+- ✅ Automatic caching with 30-minute TTL (configurable)
+- ✅ Gzip compression for efficient storage
+- ✅ Cache directory: `~/.wyn360/cache/fetched_sites/`
+- ✅ Automatic cleanup of expired entries
+- ✅ Size-based cache management (max 100MB)
+- ✅ Cache hit/miss tracking
+- ✅ JSON index for metadata management
+
+**Phase 12.3: User-Controlled Cache Management**
+- ✅ `show_cache_stats` - View cache statistics and cached URLs
+- ✅ `clear_website_cache` - Clear specific URL or all cache
+- ✅ Cache age tracking and expiration display
+- ✅ User-friendly cache information
+- ✅ Integration with agent conversation flow
+
+**Technical Architecture:**
+- **crawl4ai**: Playwright-based async web crawler
+- **browser_use.py**: Core fetching, caching, and truncation logic
+- **WebsiteCache**: TTL-based cache with automatic cleanup
+- **Smart Truncation**: Preserves headers, keeps first 70% + last 30%
+- **Token Estimation**: ~4 chars per token for truncation decisions
+
+**Configuration (config.yaml):**
+```yaml
+browser_use:
+  max_tokens: 50000  # Configurable per user
+  truncate_strategy: "smart"  # smart, head, tail
+  cache:
+    enabled: true
+    ttl: 1800  # 30 minutes
+    max_size_mb: 100
+```
+
+**Key Differentiators from WebSearchTool:**
+- **WebSearchTool**: Searches for keywords → Returns top 5 results
+- **fetch_website**: Fetches specific URL → Returns full page content
+- **Use Case Split**: Search (find things) vs Fetch (get specific pages)
+
 ### Phase 8.1: GitHub Integration (v0.3.22)
 - ✅ GitHub authentication with token management (GH_TOKEN/GITHUB_TOKEN)
 - ✅ Commit and push changes directly from CLI
@@ -600,10 +650,11 @@ See [ROADMAP.md](ROADMAP.md) for planned features including:
 - [README.md](README.md) - Quick start and basic usage
 - [USE_CASES.md](USE_CASES.md) - Detailed examples and use cases
 - [ROADMAP.md](ROADMAP.md) - Feature roadmap and expansion ideas
+- [ROADMAP_BROWSERUSE.md](ROADMAP_BROWSERUSE.md) - Browser use implementation roadmap
 - [COST.md](COST.md) - Cost analysis and optimization strategies
 
 ---
 
-**Version:** 0.3.21
+**Version:** 0.3.24
 **Last Updated:** January 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)

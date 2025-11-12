@@ -907,14 +907,15 @@ You: Generate a large Python script for data analysis
 WYN360: I'll create a comprehensive data analysis script...
 
 [Text appears word-by-word as it's generated]
+```
 
 Let me build this step by step:
 
 1. First, import the necessary libraries:
-```
+
+```python
 import pandas as pd
-...
-```yaml
+```
 
 **User Experience:**
 - ✅ Immediate feedback
@@ -943,7 +944,7 @@ import pandas as pd
 
 #### Workflow 1: Long Code Generation
 
-```
+```bash
 You: Create a FastAPI application with authentication, database models,
      and CRUD endpoints for a blog system
 
@@ -997,7 +998,7 @@ WYN360: [500 lines of code appear instantly]
 ```
 
 **After (Streaming):**
-```
+```bash
 You: Generate a comprehensive data pipeline script
 
 WYN360: I'll create a data pipeline with these components:
@@ -1041,7 +1042,7 @@ WYN360: I'll create a data pipeline with these components:
 ### Use Cases Where Streaming Shines
 
 **1. Documentation Generation**
-```
+```bash
 You: Document this module with detailed docstrings
 
 WYN360: [Streams documentation as it writes]
@@ -1049,7 +1050,7 @@ WYN360: [Streams documentation as it writes]
 ```
 
 **2. Code Refactoring**
-```
+```bash
 You: Refactor this 500-line script
 
 WYN360: [Shows refactored code streaming]
@@ -1057,7 +1058,7 @@ WYN360: [Shows refactored code streaming]
 ```
 
 **3. Explanations and Tutorials**
-```
+```bash
 You: Explain design patterns with examples
 
 WYN360: [Explanation streams naturally]
@@ -1065,12 +1066,12 @@ WYN360: [Explanation streams naturally]
 ```
 
 **4. Large File Generation**
-```
+```bash
 You: Create a complete API client with all endpoints
 
 WYN360: [Streams code file by file]
 # Start planning implementation while rest generates
-```yaml
+```
 
 ### Tips
 
@@ -1117,7 +1118,7 @@ Deploy Streamlit or Gradio applications to HuggingFace Spaces with automatic set
 
 **Example Workflow:**
 
-```
+```bash
 # Step 1: Build your app
 You: Create a Streamlit chatbot app
 
@@ -1287,7 +1288,7 @@ Total: 18 test stubs generated
 - ✅ Fixture suggestions
 
 **Workflow Integration:**
-```
+```bash
 # 1. Write your code
 You: Create a user authentication module
 
@@ -1345,7 +1346,7 @@ WYN360 provides seamless GitHub integration directly from the CLI! This feature 
 Commit your changes to the current repository and push to GitHub with a single command.
 
 **User Interaction:**
-```
+```bash
 You: Commit these changes
 
 WYN360: [Checks GitHub authentication]
@@ -1629,7 +1630,7 @@ export GITHUB_TOKEN="ghp_your_token_here"
 - Generate at: https://github.com/settings/tokens/new
 
 **.env File (Recommended):**
-```
+```bash
 # .env file in your project root
 ANTHROPIC_API_KEY=your_anthropic_key
 GH_TOKEN=ghp_your_github_token
@@ -1639,7 +1640,7 @@ GH_TOKEN=ghp_your_github_token
 
 **Scenario:** Building a new authentication feature
 
-```
+```bash
 # 1. Create feature branch
 You: Create a new branch called feature/auth
 
@@ -1693,7 +1694,7 @@ WYN360: [Pushes main branch]
 ✓ Pushed to origin/main
 
 ✅ Complete workflow: Branch → Code → Commit → PR → Merge → Deploy
-```bash
+```
 
 **Time Saved:**
 - Manual workflow: 10-15 minutes
@@ -1727,7 +1728,7 @@ WYN360 automatically tracks and analyzes session performance, providing insights
 
 View comprehensive performance metrics at any time during your session:
 
-```
+```bash
 You: /stats
 
 ┏━━━━━━━━━━━━━━━━━━━━━━┓  ┏━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -1766,7 +1767,7 @@ You: /stats
 
 **Scenario:** You notice your session feels slow sometimes
 
-```
+```bash
 You: /stats
 
 WYN360: [Shows metrics]
@@ -1787,7 +1788,7 @@ requests into smaller chunks for faster responses.
 
 **Scenario:** Want to see which operations are failing
 
-```
+```bash
 You: /stats
 
 WYN360: [Shows tool usage]
@@ -1810,7 +1811,7 @@ existed. This was corrected in the retry.
 
 **Scenario:** Track spending during a long coding session
 
-```
+```bash
 You: I've been working for 2 hours. How much have I spent?
 
 You: /stats
@@ -1914,13 +1915,15 @@ Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
 
 ### Use Case 16.2: Website Reading & Summarization
 
-Fetch and summarize content from any publicly accessible URL.
+**Note:** As of v0.3.24, specific URL fetching uses the new `fetch_website` tool for direct DOM extraction. See Use Case 16.5 for details.
+
+Fetch and summarize content from any publicly accessible URL using web search.
 
 **User Interaction:**
 ```
-You: Read this article: https://python.org/downloads/release/python-3130/
+You: What's on the Python 3.13 release page?
 
-WYN360: [Fetches content from python.org]
+WYN360: [Searches for Python 3.13 release information]
 
 **Python 3.13.0 Release Summary:**
 
@@ -2056,18 +2059,130 @@ Sources: GitHub, Python Package Index, Stack Overflow trends
 - Token costs for formatting (~$0.005-0.010)
 - Total: ~$0.015-0.030 per resource search
 
+### Use Case 16.5: Direct Website Fetching **(NEW in v0.3.24)**
+
+Fetch full content from specific URLs directly using the `fetch_website` tool. Unlike web search which returns search results, this fetches the complete DOM and converts it to LLM-friendly markdown.
+
+**Key Features:**
+- 🌐 **Full Page Content** - Complete DOM extraction, not just snippets
+- 🧠 **LLM-Optimized** - Automatic HTML → Markdown conversion
+- ⚡ **Smart Caching** - 30-minute TTL cache (configurable)
+- 📏 **Smart Truncation** - Preserves structure, stays under token limits
+- 💾 **Cache Management** - View stats, clear cache
+
+**User Interaction:**
+```
+You: Read https://github.com/britbrat0/cs676
+
+WYN360: [Fetches the URL directly using fetch_website tool]
+
+📄 **Fetched:** https://github.com/britbrat0/cs676
+
+# CS676 - Computer Vision Course Repository
+
+## 📚 Course Information
+- **Institution:** [University Name]
+- **Semester:** Fall 2024
+- **Instructor:** [Instructor Name]
+
+## 📂 Repository Structure
+- `/assignments` - Weekly problem sets
+- `/projects` - Major course projects
+- `/lectures` - Lecture notes and slides
+- `/resources` - Additional learning materials
+
+## 🎯 Projects
+
+### Project 1: Image Classification
+Implementation of a CNN-based image classifier using PyTorch.
+Technologies: Python, PyTorch, NumPy, Matplotlib
+
+### Project 2: Object Detection
+YOLO-based object detection system for real-time video analysis.
+Technologies: YOLO, OpenCV, Python
+
+### Project 3: Semantic Segmentation
+U-Net architecture for medical image segmentation.
+Technologies: TensorFlow, Keras, Medical Imaging
+
+[Full page content extracted - showing first 70% and last 30% of 45,000 tokens]
+
+---
+**[Content truncated - Original: 52,341 tokens, Showing: ~50,000 tokens]**
+---
+
+## 📖 Additional Resources
+- [Course Website](...)
+- [Discussion Forum](...)
+- [Office Hours Schedule](...)
+```
+
+**Cache Management:**
+```
+You: Show cache stats
+
+WYN360: 📊 **Website Cache Statistics**
+
+**Location:** `~/.wyn360/cache/fetched_sites`
+
+**Total Entries:** 3
+**Total Size:** 2.4 MB
+**Expired Entries:** 0
+
+**Cached URLs:**
+- ✓ 2m old: https://github.com/britbrat0/cs676
+- ✓ 15m old: https://python.org/downloads
+- ✓ 28m old: https://docs.anthropic.com
+
+💡 *Tip: Cache expires after 30 minutes*
+```
+
+**Clear Cache:**
+```
+You: Clear cache for https://github.com/britbrat0/cs676
+
+WYN360: ✓ Cleared cache for: https://github.com/britbrat0/cs676
+```
+
+**Configuration:**
+```yaml
+# ~/.wyn360/config.yaml
+browser_use:
+  max_tokens: 50000  # Max tokens per fetched site
+  truncate_strategy: "smart"  # Options: smart, head, tail
+  cache:
+    enabled: true
+    ttl: 1800  # 30 minutes in seconds
+    max_size_mb: 100  # Maximum cache size
+```
+
+**Cost:**
+- No search cost (direct fetching)
+- Token costs only (~$0.005-0.030 depending on page size)
+- Cache hits: Nearly free (just retrieval)
+- Total: ~$0.005-0.030 per fetch (first time), ~$0.001 (cached)
+
+**When to Use:**
+- ✅ **fetch_website**: "Read https://example.com" (specific URL)
+- ✅ **WebSearchTool**: "Find ML repos" (search/discovery)
+
 ### When Web Search is Used
 
 **WILL Use Web Search:**
 - ✅ Weather queries ("What's the weather in NYC?")
-- ✅ Reading URLs ("Read https://example.com")
-- ✅ **Finding resources** ("Find a popular GitHub repo for machine learning") **(NEW v0.3.23)**
-- ✅ **Library recommendations** ("What are good Python data viz libraries?") **(NEW v0.3.23)**
-- ✅ **Tutorial finding** ("Find tutorials for FastAPI") **(NEW v0.3.23)**
+- ✅ **Finding/Searching** ("Find ML repos", "What are good libraries?")
+- ✅ **Finding resources** ("Find a popular GitHub repo for machine learning") **(v0.3.23)**
+- ✅ **Library recommendations** ("What are good Python data viz libraries?") **(v0.3.23)**
+- ✅ **Tutorial finding** ("Find tutorials for FastAPI") **(v0.3.23)**
 - ✅ Current information ("What's new in Python 3.13?")
 - ✅ Latest versions ("Latest React features")
 
-**WILL NOT Use Web Search:**
+**WILL Use fetch_website:** **(NEW v0.3.24)**
+- ✅ Specific URLs ("Read https://github.com/user/repo")
+- ✅ Direct page fetching ("Get content from https://example.com")
+- ✅ Full DOM extraction ("Fetch https://docs.site.com/api")
+
+**WILL NOT Use Web Tools:**
 - ❌ Code generation ("Write a FastAPI app")
 - ❌ File operations ("Show me app.py")
 - ❌ Local project queries ("List files in this project")
@@ -2101,7 +2216,7 @@ Total: ~$0.091 per session
 ### Configuration
 
 **Default Settings:**
-```
+```bash
 # In agent.py
 builtin_tools=[
     WebSearchTool(max_uses=5)  # Limit searches per session

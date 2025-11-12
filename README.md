@@ -123,6 +123,15 @@ WYN360: I'll create a Streamlit app for you...
 - 📊 **Current Data** - Latest package versions, documentation, and trends
 - 💰 **Cost Effective** - Limited to 5 searches per session, $10 per 1K searches
 
+### Browser Use / Direct Website Fetching (v0.3.24)
+- 🌐 **Direct URL Fetching** - Fetch specific websites directly (not just search results)
+- 📄 **Full DOM Extraction** - Get complete page content, not just search snippets
+- 🧠 **LLM-Optimized** - Automatic conversion to clean, structured markdown
+- ⚡ **Smart Caching** - 30-minute TTL cache for faster repeated access
+- 📏 **Smart Truncation** - Preserves document structure while staying under token limits
+- 🎯 **Configurable** - Adjust max tokens, cache settings, truncation strategy
+- 💾 **Cache Management** - View stats, clear cache, manage storage
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
@@ -209,6 +218,48 @@ Current weather in San Francisco:
 🌅 Sunrise: 7:15 AM | Sunset: 5:02 PM
 
 Source: [Weather service URL]
+```
+
+### Direct Website Fetching
+```
+You: Read https://github.com/britbrat0/cs676
+
+WYN360: [Fetches the specific URL directly]
+
+📄 **Fetched:** https://github.com/britbrat0/cs676
+
+# CS676 Computer Vision Repository
+
+## Overview
+This repository contains course materials for CS676 - Computer Vision...
+
+## Projects
+1. **Image Classification** - CNN-based classifier for...
+2. **Object Detection** - YOLO implementation for...
+3. **Semantic Segmentation** - U-Net architecture for...
+
+[Full page content extracted and converted to markdown]
+```
+
+**When to use what:**
+- **fetch_website**: When you have a specific URL → `Read https://example.com`
+- **Web Search**: When you want to find something → `Find ML repos`
+
+```
+You: Show cache stats
+
+WYN360: 📊 **Website Cache Statistics**
+
+**Location:** `~/.wyn360/cache/fetched_sites`
+
+**Total Entries:** 3
+**Total Size:** 2.4 MB
+**Expired Entries:** 0
+
+**Cached URLs:**
+- ✓ 5m old: https://github.com/britbrat0/cs676
+- ✓ 12m old: https://python.org/downloads
+- ✓ 25m old: https://docs.anthropic.com
 ```
 
 ## 🎯 Commands
@@ -456,6 +507,12 @@ Set `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts (useful for testing or 
   - `prompt-toolkit>=3.0.0` - Advanced input handling
   - `pyyaml>=6.0.0` - Configuration file support
   - `huggingface-hub>=0.20.0` - HuggingFace integration
+  - `crawl4ai>=0.7.6` - LLM-optimized web crawler for browser use
+
+**Note:** Browser use requires Playwright browser binaries (~200MB):
+```bash
+playwright install chromium
+```
 
 ## 🤝 Contributing
 

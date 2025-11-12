@@ -2,6 +2,8 @@
 
 import os
 import sys
+import time
+from pathlib import Path
 from typing import List, Dict, Any, Optional
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.anthropic import AnthropicModel
@@ -13,6 +15,7 @@ try:
 except ImportError:
     HAS_WEB_SEARCH = False
     WebSearchTool = None
+
 from .utils import (
     scan_directory,
     read_file_safe,
@@ -23,6 +26,12 @@ from .utils import (
     PerformanceMetrics
 )
 from .config import WYN360Config
+from .browser_use import (
+    fetch_website_content,
+    is_valid_url,
+    WebsiteCache,
+    HAS_CRAWL4AI
+)
 
 
 class WYN360Agent:
@@ -70,6 +79,17 @@ class WYN360Agent:
         # Performance metrics tracking (Phase 10.2)
         self.performance_metrics = PerformanceMetrics()
 
+        # Browser use / website fetching (Phase 12.1, 12.2)
+        if config and config.browser_use_cache_enabled and HAS_CRAWL4AI:
+            cache_dir = Path.home() / ".wyn360" / "cache" / "fetched_sites"
+            self.website_cache = WebsiteCache(
+                cache_dir=cache_dir,
+                ttl=config.browser_use_cache_ttl,
+                max_size_mb=config.browser_use_cache_max_size_mb
+            )
+        else:
+            self.website_cache = None
+
         # Set API key in environment for pydantic-ai to use
         os.environ['ANTHROPIC_API_KEY'] = api_key
 
@@ -116,7 +136,11 @@ class WYN360Agent:
                 self.gh_checkout_branch,
                 self.gh_merge_branch,
                 # Test Generation tool
-                self.generate_tests
+                self.generate_tests,
+                # Browser use / website fetching (Phase 12.1, 12.2, 12.3)
+                self.fetch_website,
+                self.clear_website_cache,
+                self.show_cache_stats
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -365,40 +389,48 @@ User: Merge feature/auth into main
 You: gh_merge_branch("feature/auth", "main")
 ```
 
-**Web Search Capability (Phase 11.1):**
+**Web Capabilities (Phase 11.1 + 12.1):**
 
-You now have access to real-time web search for current information!
+You now have TWO tools for web access:
+1. **WebSearchTool** - For searching the web (limited to 5 uses)
+2. **fetch_website** - For fetching specific URLs directly (Phase 12.1)
 
-**WHEN TO USE WEB SEARCH:**
+**CRITICAL - When to use each tool:**
 
-1. **Weather Queries:**
-   - User asks: "What's the weather?" or "weather today"
-   - ACTION: Ask for location first if not provided
-   - User provides location → Search and display results with source
-   - Example: "What's the weather in New York?" → Search for current weather
+**Use fetch_website() when:**
+- User provides a SPECIFIC URL: "Read https://github.com/user/repo"
+- User wants content from an exact webpage: "What's on https://example.com"
+- User says "fetch", "read", "get", or "load" with a URL
+- Examples:
+  - ✅ "Read https://github.com/britbrat0/cs676" → fetch_website()
+  - ✅ "What's on https://python.org/downloads" → fetch_website()
+  - ✅ "Fetch https://docs.anthropic.com" → fetch_website()
+  - ✅ "Load the content from https://example.com" → fetch_website()
 
-2. **Website Reading:**
-   - User provides URL: "Read https://example.com" or "What's on that website?"
-   - ACTION: Fetch content and provide comprehensive summary
-   - Always include key points and relevant information
-   - Example: "Read the Python docs on async" → Fetch and summarize
+**Use WebSearchTool when:**
+- User asks to FIND or SEARCH for something (no specific URL)
+- User asks about weather, current events, or general queries
+- User wants recommendations or lists of resources
+- Examples:
+  - ✅ "Find a popular GitHub repo for machine learning" → WebSearchTool
+  - ✅ "What's the weather in New York?" → WebSearchTool
+  - ✅ "What are good Python libraries for data visualization?" → WebSearchTool
+  - ✅ "Find tutorials for FastAPI" → WebSearchTool
+  - ✅ "What's new in Python 3.13?" → WebSearchTool
 
-3. **Finding Resources/Repositories:**
-   - User asks to find GitHub repos, libraries, tools, or resources
-   - ACTION: Search for the requested resources and provide recommendations
-   - Examples:
-     - "Find a popular GitHub repo for machine learning" → Search and list top repos
-     - "What are good Python libraries for data visualization?" → Search and recommend
-     - "Find tutorials for FastAPI" → Search and share links
+**fetch_website Details:**
+- Fetches full DOM content from the URL
+- Converts to LLM-friendly markdown
+- Smart truncation to stay under token limits
+- Cached for 30 minutes (configurable)
+- Returns: Full page content, structure preserved
+- Max tokens: 50,000 (configurable via config)
 
-4. **Current Information:**
-   - Latest documentation, recent news/events, real-time data
-   - Package/library versions and updates
-   - Current best practices and trends
-   - Examples:
-     - "What's new in Python 3.13?"
-     - "Latest React features"
-     - "Current best practices for FastAPI"
+**WebSearchTool Details:**
+- Searches the web and returns top results
+- Limited to 5 searches per session
+- Returns: Search results with snippets
+- Use when you need to FIND something, not fetch a specific URL
 
 **CITATION FORMAT:**
 Always include:
@@ -413,7 +445,7 @@ According to [Source Name](URL):
 (Last updated: YYYY-MM-DD)
 ```
 
-**AVOID WEB SEARCH FOR:**
+**AVOID WEB TOOLS FOR:**
 - Code generation (use your training data)
 - File operations (use read_file, write_file)
 - Local project queries (use list_files, get_project_info)
@@ -422,18 +454,29 @@ According to [Source Name](URL):
 
 **COST AWARENESS:**
 - Web search costs $10 per 1,000 searches + token costs
-- Limited to 5 searches per session by default
+- fetch_website uses tokens but no search cost
 - Use judiciously - only when truly needed for current/live information
 
-**Examples:**
-- ✅ "What's the weather in San Francisco?" → Use web search
-- ✅ "Find a popular GitHub repo for machine learning" → Use web search
-- ✅ "Read https://python.org/downloads" → Use web search
-- ✅ "What are the latest security vulnerabilities in Node.js?" → Use web search
-- ✅ "Show me good Python data science libraries" → Use web search
-- ❌ "Write a FastAPI app" → Don't use web search (use training data)
-- ❌ "Show me the files in this project" → Don't use web search (use list_files)
-- ❌ "What's git?" → Don't use web search (you know this)
+**Decision Tree:**
+```
+User mentions URL? (https://...)
+  → YES: Use fetch_website()
+  → NO: Does user want to FIND/SEARCH something?
+    → YES: Use WebSearchTool
+    → NO: Don't use web tools
+```
+
+**Complete Examples:**
+- ✅ "Read https://github.com/britbrat0/cs676" → fetch_website()
+- ✅ "What's on https://python.org/downloads" → fetch_website()
+- ✅ "Fetch https://docs.anthropic.com/api" → fetch_website()
+- ✅ "What's the weather in San Francisco?" → WebSearchTool
+- ✅ "Find a popular GitHub repo for machine learning" → WebSearchTool
+- ✅ "What are the latest security vulnerabilities in Node.js?" → WebSearchTool
+- ✅ "Show me good Python data science libraries" → WebSearchTool
+- ❌ "Write a FastAPI app" → Don't use web tools (use training data)
+- ❌ "Show me the files in this project" → Don't use web tools (use list_files)
+- ❌ "What's git?" → Don't use web tools (you know this)
 """
 
         # Add custom instructions from config if available
@@ -1699,6 +1742,184 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             return summary
         else:
             return f"❌ Failed to write test file: {msg}"
+
+    async def fetch_website(
+        self,
+        ctx: RunContext[None],
+        url: str
+    ) -> str:
+        """
+        Fetch and extract content from a specific website URL.
+
+        This tool fetches the full DOM content from a website, converts it to
+        LLM-friendly markdown format, and applies smart truncation to stay under
+        token limits. Content is cached for 30 minutes by default (configurable).
+
+        Args:
+            url: Full URL to fetch (e.g., https://github.com/user/repo)
+
+        Returns:
+            Markdown-formatted website content or error message
+
+        Examples:
+            - "Read https://github.com/britbrat0/cs676"
+            - "What's on https://python.org/downloads"
+            - "Fetch https://docs.anthropic.com/api"
+
+        Note:
+            - Use this for SPECIFIC URLs
+            - Use WebSearchTool for FINDING/SEARCHING content
+            - Content is truncated smartly to preserve structure
+            - Cached for improved performance
+        """
+        # Check if crawl4ai is available
+        if not HAS_CRAWL4AI:
+            return ("❌ Website fetching is not available. The crawl4ai package is not installed.\n\n"
+                   "To enable this feature, install it with:\n"
+                   "```bash\n"
+                   "pip install crawl4ai\n"
+                   "playwright install chromium\n"
+                   "```")
+
+        # Validate URL
+        if not is_valid_url(url):
+            return f"❌ Invalid URL format: {url}\n\nPlease provide a valid URL starting with http:// or https://"
+
+        # Track tool call
+        self.performance_metrics.track_tool_call("fetch_website", True)
+
+        # Check cache first (Phase 12.2)
+        if self.website_cache:
+            cached_content = await self.website_cache.get(url)
+            if cached_content:
+                return f"📄 **Fetched from cache:** {url}\n\n{cached_content}\n\n---\n*Note: Content cached, may not reflect latest changes*"
+
+        # Get config values
+        max_tokens = 50000  # default
+        truncate_strategy = "smart"  # default
+
+        if self.config:
+            max_tokens = self.config.browser_use_max_tokens
+            truncate_strategy = self.config.browser_use_truncate_strategy
+
+        # Fetch website content
+        success, content = await fetch_website_content(
+            url=url,
+            max_tokens=max_tokens,
+            truncate_strategy=truncate_strategy
+        )
+
+        if not success:
+            # Track failure
+            self.performance_metrics.track_tool_call("fetch_website", False)
+            return content  # Error message
+
+        # Cache the content (Phase 12.2)
+        if self.website_cache:
+            await self.website_cache.set(url, content)
+
+        # Format response
+        response = f"📄 **Fetched:** {url}\n\n{content}"
+
+        return response
+
+    async def clear_website_cache(
+        self,
+        ctx: RunContext[None],
+        url: Optional[str] = None
+    ) -> str:
+        """
+        Clear cached website content.
+
+        Args:
+            url: Specific URL to clear from cache, or None to clear all cached content
+
+        Returns:
+            Success message indicating what was cleared
+
+        Examples:
+            - "Clear the cache"
+            - "Clear cache for https://github.com/user/repo"
+            - "Delete all cached websites"
+
+        Note:
+            - Clearing cache will require re-fetching content on next access
+            - Useful when you need fresh content or to free up space
+        """
+        if not self.website_cache:
+            return "ℹ️  Website caching is not enabled. No cache to clear."
+
+        try:
+            if url:
+                # Clear specific URL
+                if not is_valid_url(url):
+                    return f"❌ Invalid URL format: {url}"
+
+                await self.website_cache.clear(url)
+                return f"✓ Cleared cache for: {url}"
+            else:
+                # Clear all cache
+                await self.website_cache.clear()
+                return "✓ All website cache cleared successfully"
+
+        except Exception as e:
+            return f"❌ Error clearing cache: {str(e)}"
+
+    async def show_cache_stats(
+        self,
+        ctx: RunContext[None]
+    ) -> str:
+        """
+        Show website cache statistics and information.
+
+        Returns:
+            Formatted cache statistics including size, entries, and location
+
+        Examples:
+            - "Show cache stats"
+            - "How much cache is being used?"
+            - "What's cached?"
+
+        Note:
+            - Shows total cache size, number of entries, expired entries
+            - Helps monitor cache usage and decide when to clear
+        """
+        if not self.website_cache:
+            return ("ℹ️  Website caching is not enabled.\n\n"
+                   "To enable caching, add to your ~/.wyn360/config.yaml:\n"
+                   "```yaml\n"
+                   "browser_use:\n"
+                   "  cache:\n"
+                   "    enabled: true\n"
+                   "```")
+
+        try:
+            stats = self.website_cache.get_stats()
+
+            response = "📊 **Website Cache Statistics**\n\n"
+            response += f"**Location:** `{stats['cache_dir']}`\n\n"
+            response += f"**Total Entries:** {stats['total_entries']}\n"
+            response += f"**Total Size:** {stats['total_size_mb']} MB\n"
+            response += f"**Expired Entries:** {stats['expired_entries']}\n\n"
+
+            if stats['expired_entries'] > 0:
+                response += "💡 *Tip: Expired entries will be automatically cleaned up on next cache access*\n\n"
+
+            if stats['total_entries'] > 0:
+                # List cached URLs
+                response += "**Cached URLs:**\n"
+                for key, entry in self.website_cache.index.items():
+                    age_seconds = time.time() - entry['timestamp']
+                    age_minutes = int(age_seconds / 60)
+                    expired = age_seconds > self.website_cache.ttl
+
+                    status = "❌ Expired" if expired else f"✓ {age_minutes}m old"
+                    response += f"- {status}: {entry['url']}\n"
+
+            return response
+
+        except Exception as e:
+            return f"❌ Error getting cache stats: {str(e)}"
 
     async def chat(self, user_message: str) -> str:
         """
