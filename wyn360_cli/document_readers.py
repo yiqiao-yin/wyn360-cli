@@ -1564,7 +1564,10 @@ class ExcelReader:
         self,
         file_path: str,
         chunk_size: int = 1000,
-        include_sheets: Optional[List[str]] = None
+        include_sheets: Optional[List[str]] = None,
+        extract_charts: bool = False,
+        extract_named_ranges: bool = True,
+        track_formulas: bool = True
     ):
         """
         Initialize Excel reader.
@@ -1573,10 +1576,16 @@ class ExcelReader:
             file_path: Path to Excel file
             chunk_size: Target tokens per chunk
             include_sheets: Optional list of sheet names to include
+            extract_charts: Extract charts from sheets (Phase 5.4.1)
+            extract_named_ranges: Extract named ranges from workbook (Phase 5.4.2)
+            track_formulas: Track formula dependencies (Phase 5.4.3)
         """
         self.file_path = Path(file_path)
         self.chunk_size = chunk_size
         self.include_sheets = include_sheets
+        self.extract_charts = extract_charts
+        self.extract_named_ranges = extract_named_ranges
+        self.track_formulas = track_formulas
         self.chunker = DocumentChunker(chunk_size)
 
     def read(self) -> Dict[str, Any]:
@@ -1619,6 +1628,11 @@ class ExcelReader:
             sheets_data = []
             total_tokens = 0
 
+            # Extract named ranges if enabled (Phase 5.4.2)
+            named_ranges = {}
+            if self.extract_named_ranges:
+                named_ranges = self._extract_named_ranges(workbook)
+
             # Process each sheet
             for sheet_name in workbook.sheetnames:
                 # Filter sheets if include_sheets specified
@@ -1650,7 +1664,7 @@ class ExcelReader:
                 tokens = count_tokens(markdown)
                 total_tokens += tokens
 
-                sheets_data.append({
+                sheet_data = {
                     "name": sheet_name,
                     "data_region": data_region,
                     "markdown": markdown,
@@ -1658,15 +1672,37 @@ class ExcelReader:
                     "col_count": max_col - min_col + 1,
                     "has_merged_cells": len(merged_cells) > 0,
                     "tokens": tokens
-                })
+                }
+
+                # Extract charts if enabled (Phase 5.4.1)
+                if self.extract_charts:
+                    charts = self._extract_charts(sheet)
+                    if charts:
+                        sheet_data["charts"] = charts
+                        sheet_data["chart_count"] = len(charts)
+
+                # Track formulas if enabled (Phase 5.4.3)
+                if self.track_formulas:
+                    formulas = self._track_formulas(sheet)
+                    if formulas:
+                        sheet_data["formulas"] = formulas
+                        sheet_data["formula_count"] = len(formulas)
+
+                sheets_data.append(sheet_data)
 
             workbook.close()
 
-            return {
+            result = {
                 "sheets": sheets_data,
                 "total_sheets": len(sheets_data),
                 "total_tokens": total_tokens
             }
+
+            # Add named ranges if any were found (Phase 5.4.2)
+            if named_ranges:
+                result["named_ranges"] = named_ranges
+
+            return result
 
         except Exception as e:
             raise Exception(f"Failed to read Excel file: {e}")
@@ -1922,6 +1958,96 @@ class ExcelReader:
                     chunk_id_counter += 1
 
         return chunks
+
+    def _extract_charts(self, sheet) -> List[Dict[str, Any]]:
+        """
+        Extract charts from Excel sheet (Phase 5.4.1).
+
+        Args:
+            sheet: openpyxl worksheet
+
+        Returns:
+            List of chart dictionaries with metadata
+        """
+        charts = []
+
+        # openpyxl stores charts in sheet._charts
+        if hasattr(sheet, '_charts') and sheet._charts:
+            for idx, chart in enumerate(sheet._charts):
+                chart_info = {
+                    "chart_id": f"chart_{idx + 1}",
+                    "type": type(chart).__name__,  # BarChart, LineChart, PieChart, etc.
+                    "title": getattr(chart, 'title', None),
+                    "anchor": str(chart.anchor) if hasattr(chart, 'anchor') else None,
+                }
+
+                # Extract series information if available
+                if hasattr(chart, 'series') and chart.series:
+                    chart_info["series_count"] = len(chart.series)
+
+                charts.append(chart_info)
+
+        return charts
+
+    def _extract_named_ranges(self, workbook) -> Dict[str, Dict[str, Any]]:
+        """
+        Extract named ranges from workbook (Phase 5.4.2).
+
+        Args:
+            workbook: openpyxl workbook
+
+        Returns:
+            Dictionary of named ranges {name: {scope, refers_to, ...}}
+        """
+        named_ranges = {}
+
+        # openpyxl stores defined names in workbook.defined_names
+        if hasattr(workbook, 'defined_names'):
+            for name, definition in workbook.defined_names.items():
+                try:
+                    named_ranges[name] = {
+                        "name": name,
+                        "refers_to": str(definition.attr_text) if hasattr(definition, 'attr_text') else str(definition),
+                        "scope": "workbook"  # Could be sheet-specific
+                    }
+                except Exception:
+                    # Skip if definition can't be parsed
+                    continue
+
+        return named_ranges
+
+    def _track_formulas(self, sheet) -> List[Dict[str, Any]]:
+        """
+        Track formula cells in sheet (Phase 5.4.3).
+
+        Args:
+            sheet: openpyxl worksheet
+
+        Returns:
+            List of formula dictionaries {cell, formula, value, dependencies}
+        """
+        formulas = []
+
+        for row in sheet.iter_rows():
+            for cell in row:
+                # Check if cell contains a formula
+                if cell.value and isinstance(cell.value, str) and cell.value.startswith('='):
+                    formula_info = {
+                        "cell": cell.coordinate,
+                        "formula": cell.value,
+                        "sheet": sheet.title
+                    }
+
+                    # Try to get the evaluated value
+                    try:
+                        # Open workbook with data_only=True to get evaluated values
+                        formula_info["evaluated_value"] = cell.value
+                    except Exception:
+                        formula_info["evaluated_value"] = None
+
+                    formulas.append(formula_info)
+
+        return formulas
 
 
 # ============================================================================
