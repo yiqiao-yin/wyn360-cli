@@ -2369,7 +2369,9 @@ class PDFReader:
         chunk_size: int = 1000,
         engine: str = "pymupdf",
         pages_per_chunk: int = 3,
-        image_handling: str = "describe"
+        image_handling: str = "describe",
+        enable_ocr: bool = False,
+        ocr_language: str = "eng"
     ):
         """
         Initialize PDF reader.
@@ -2380,12 +2382,16 @@ class PDFReader:
             engine: PDF engine to use ("pymupdf" or "pdfplumber")
             pages_per_chunk: Target pages per chunk (3-5 recommended)
             image_handling: How to handle images ("skip", "describe", "vision")
+            enable_ocr: Enable OCR for scanned PDFs (Phase 5.3)
+            ocr_language: Tesseract language code (eng, spa, fra, etc.)
         """
         self.file_path = Path(file_path)
         self.chunk_size = chunk_size
         self.engine = engine.lower()
         self.pages_per_chunk = pages_per_chunk
         self.image_handling = image_handling
+        self.enable_ocr = enable_ocr
+        self.ocr_language = ocr_language
         self.chunker = DocumentChunker(chunk_size)
 
         # Validate engine
@@ -2460,12 +2466,42 @@ class PDFReader:
         has_tables = False
         all_images = []
 
+        # Initialize OCR processor if enabled (Phase 5.3.2)
+        ocr_processor = None
+        if self.enable_ocr and HAS_PYTESSERACT:
+            try:
+                ocr_processor = OCRProcessor(language=self.ocr_language)
+            except RuntimeError:
+                # Tesseract not installed, skip OCR
+                pass
+
         # Extract pages
         for page_num in range(start_page - 1, end_page):
             page = doc[page_num]
 
             # Extract text
             text = page.get_text()
+
+            # Check if page is scanned and use OCR if needed (Phase 5.3.2)
+            ocr_used = False
+            ocr_confidence = None
+            if ocr_processor and len(text.strip()) < 50:
+                # Page might be scanned, render as image and check
+                try:
+                    from PIL import Image
+                    pix = page.get_pixmap(dpi=300)
+                    image = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+
+                    # Check if truly scanned
+                    if ocr_processor.is_scanned_page(image, text):
+                        # Extract text with OCR
+                        ocr_result = ocr_processor.extract_text(image)
+                        text = ocr_result["text"]
+                        ocr_used = True
+                        ocr_confidence = ocr_result["confidence"]
+                except Exception:
+                    # OCR failed, continue with original text
+                    pass
 
             # Try to detect tables (basic detection)
             tables = []
@@ -2496,12 +2532,19 @@ class PDFReader:
             tokens = count_tokens(content)
             total_tokens += tokens
 
-            pages.append({
+            page_data = {
                 "page_number": page_num + 1,
                 "content": content,
                 "tokens": tokens,
                 "has_tables": bool(tables)
-            })
+            }
+
+            # Add OCR metadata if used (Phase 5.3.2)
+            if ocr_used:
+                page_data["ocr_used"] = True
+                page_data["ocr_confidence"] = ocr_confidence
+
+            pages.append(page_data)
 
         doc.close()
 
@@ -2539,6 +2582,15 @@ class PDFReader:
         """Read PDF using pdfplumber (better for complex tables)."""
         all_images = []
 
+        # Initialize OCR processor if enabled (Phase 5.3.2)
+        ocr_processor = None
+        if self.enable_ocr and HAS_PYTESSERACT and HAS_PDF2IMAGE:
+            try:
+                ocr_processor = OCRProcessor(language=self.ocr_language)
+            except RuntimeError:
+                # Tesseract not installed, skip OCR
+                pass
+
         with pdfplumber.open(str(self.file_path)) as pdf:
             total_pages = len(pdf.pages)
 
@@ -2560,6 +2612,36 @@ class PDFReader:
 
                 # Extract text
                 text = page.extract_text() or ""
+
+                # Check if page is scanned and use OCR if needed (Phase 5.3.2)
+                ocr_used = False
+                ocr_confidence = None
+                if ocr_processor and len(text.strip()) < 50:
+                    # Page might be scanned, render as image
+                    try:
+                        from pdf2image import convert_from_path
+                        from PIL import Image
+
+                        # Convert single page to image
+                        images = convert_from_path(
+                            str(self.file_path),
+                            first_page=page_num + 1,
+                            last_page=page_num + 1,
+                            dpi=300
+                        )
+
+                        if images:
+                            image = images[0]
+                            # Check if truly scanned
+                            if ocr_processor.is_scanned_page(image, text):
+                                # Extract text with OCR
+                                ocr_result = ocr_processor.extract_text(image)
+                                text = ocr_result["text"]
+                                ocr_used = True
+                                ocr_confidence = ocr_result["confidence"]
+                    except Exception:
+                        # OCR failed, continue with original text
+                        pass
 
                 # Extract tables
                 tables = []
@@ -2584,12 +2666,19 @@ class PDFReader:
                 tokens = count_tokens(content)
                 total_tokens += tokens
 
-                pages.append({
+                page_data = {
                     "page_number": page_num + 1,
                     "content": content,
                     "tokens": tokens,
                     "has_tables": bool(tables)
-                })
+                }
+
+                # Add OCR metadata if used (Phase 5.3.2)
+                if ocr_used:
+                    page_data["ocr_used"] = True
+                    page_data["ocr_confidence"] = ocr_confidence
+
+                pages.append(page_data)
 
         # Process images with vision API if enabled
         image_descriptions = []
