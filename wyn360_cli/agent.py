@@ -2667,11 +2667,20 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             if not chunks_data:
                 return "❌ No content extracted from PDF."
 
-            # Initialize summarizer
+            # Initialize summarizer (Phase 5.2: Enable semantic matching)
             summarizer = ChunkSummarizer(
                 api_key=self.api_key,
-                model="claude-3-5-haiku-20241022"
+                model="claude-3-5-haiku-20241022",
+                enable_embeddings=True
             )
+
+            # Initialize embedding model for semantic matching (Phase 5.2)
+            embedding_model = None
+            try:
+                embedding_model = EmbeddingModel()
+            except Exception as e:
+                # If embeddings fail, continue without them
+                pass
 
             # Summarize each chunk
             chunks_with_metadata = []
@@ -2716,13 +2725,34 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             # Track document processing tokens
             self.track_document_processing(total_summary_tokens)
 
+            # Add semantic embeddings to chunks (Phase 5.2.2)
+            if summarizer.enable_embeddings:
+                # Extract summary/tags from metadata for embedding
+                chunks_for_embedding = []
+                for chunk in chunks_with_metadata:
+                    chunks_for_embedding.append({
+                        "summary": chunk["metadata"]["summary"],
+                        "tags": chunk["metadata"]["tags"]
+                    })
+
+                # Add embeddings
+                chunks_for_embedding = summarizer.add_embeddings_to_chunks(chunks_for_embedding)
+
+                # Update original chunks with embeddings
+                for i, chunk in enumerate(chunks_with_metadata):
+                    if "embedding" in chunks_for_embedding[i]:
+                        chunk["metadata"]["embedding"] = chunks_for_embedding[i]["embedding"]
+
             # Cache chunks
             cache.save_chunks(cache_key, chunks_with_metadata, file_size=file_path_obj.stat().st_size)
 
-            # Filter by query if provided
+            # Filter by query if provided (Phase 5.2.3: Semantic matching)
             if query:
-                retriever = ChunkRetriever(top_k=5)
-                chunks_with_metadata = retriever.get_relevant_chunks(chunks_with_metadata, query)
+                retriever = ChunkRetriever(
+                    top_k=5,
+                    embedding_model=embedding_model  # Use semantic matching if available
+                )
+                chunks_with_metadata = retriever.get_relevant_chunks(query, chunks_with_metadata)
 
             # Format output
             response = "📄 **PDF File**\n\n"
