@@ -1041,7 +1041,7 @@ WYN360: I'll create a data pipeline with these components:
 ### Use Cases Where Streaming Shines
 
 **1. Documentation Generation**
-```
+```bash
 You: Document this module with detailed docstrings
 
 WYN360: [Streams documentation as it writes]
