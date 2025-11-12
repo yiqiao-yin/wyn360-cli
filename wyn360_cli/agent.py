@@ -34,13 +34,15 @@ from .browser_use import (
 )
 from .document_readers import (
     ExcelReader,
+    WordReader,
     ChunkSummarizer,
     ChunkCache,
     ChunkRetriever,
     ChunkMetadata,
     DocumentMetadata,
     count_tokens,
-    HAS_OPENPYXL
+    HAS_OPENPYXL,
+    HAS_PYTHON_DOCX
 )
 
 
@@ -165,8 +167,9 @@ class WYN360Agent:
                 self.fetch_website,
                 self.clear_website_cache,
                 self.show_cache_stats,
-                # Document readers (Phase 13.2)
-                self.read_excel
+                # Document readers (Phase 13.2, 13.3)
+                self.read_excel,
+                self.read_word
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -2153,6 +2156,225 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             tags = chunk.get("tags", [])
 
             response += f"### {sheet_name}\n\n"
+            response += f"{summary}\n\n"
+            response += f"**Tags:** {', '.join(tags)}\n\n"
+            response += "---\n\n"
+
+        # Add cache note
+        response += f"\n*Note: Content cached for 1 hour. Use regenerate_cache=True to refresh.*"
+
+        return response
+
+    async def read_word(
+        self,
+        ctx: RunContext[None],
+        file_path: str,
+        max_tokens: Optional[int] = None,
+        use_chunking: bool = True,
+        image_handling: Optional[str] = None,
+        regenerate_cache: bool = False,
+        query: Optional[str] = None
+    ) -> str:
+        """
+        Read and intelligently process Word documents (.docx).
+
+        This tool reads Word documents with structure-aware chunking, summarization,
+        and retrieval. It extracts headings, paragraphs, tables, and lists, converting
+        to markdown format. Handles document hierarchy and preserves structure. Results
+        are cached for 1 hour by default.
+
+        Args:
+            file_path: Path to Word file (absolute or relative)
+            max_tokens: Maximum tokens to process (default: from config, 15000)
+            use_chunking: Whether to use intelligent chunking (default: True)
+            image_handling: How to handle images (skip|describe|vision, default: from config)
+            regenerate_cache: Force regenerate cache (ignore existing)
+            query: Optional query to filter relevant sections
+
+        Returns:
+            Formatted Word content with summaries and tags
+
+        Examples:
+            - "Read paper.docx"
+            - "Read report.docx and show only the methodology section"
+            - "What are the conclusions in thesis.docx?"
+            - "Summarize document.docx"
+
+        Features:
+            - Extracts document structure (headings, paragraphs, tables, lists)
+            - Preserves hierarchy (H1, H2, H3 → #, ##, ###)
+            - Converts tables to markdown
+            - Structure-aware chunking by sections
+            - Claude Haiku summarization (~100 tokens per chunk)
+            - Tag generation for efficient retrieval
+            - 1-hour TTL cache
+            - Image handling: skip/describe/vision
+
+        Note:
+            Requires python-docx: pip install python-docx
+        """
+        # Check if python-docx is available
+        if not HAS_PYTHON_DOCX:
+            return ("❌ **python-docx not installed**\n\n"
+                   "The Word reader requires python-docx to be installed.\n\n"
+                   "**Install it with:**\n"
+                   "```bash\n"
+                   "pip install python-docx\n"
+                   "```\n\n"
+                   "Then try again.")
+
+        # Track tool call
+        self.performance_metrics.track_tool_call("read_word", True)
+
+        # Resolve file path
+        file_path_obj = Path(file_path)
+        if not file_path_obj.is_absolute():
+            file_path_obj = Path.cwd() / file_path
+
+        if not file_path_obj.exists():
+            self.performance_metrics.track_tool_call("read_word", False)
+            return f"❌ File not found: {file_path}"
+
+        # Get max_tokens from config if not specified
+        if max_tokens is None:
+            max_tokens = self.doc_token_limits.get("word", 15000)
+
+        # Get image_handling from config if not specified
+        if image_handling is None:
+            image_handling = self.image_handling_mode
+
+        # Initialize cache
+        cache = ChunkCache()
+
+        # Check cache (unless regenerate requested)
+        cached_data = None
+        if not regenerate_cache:
+            cached_data = cache.load_chunks(str(file_path_obj))
+
+        if cached_data:
+            # Use cached data
+            metadata = cached_data["metadata"]
+            chunks = cached_data["chunks"]
+
+            response = f"📄 **Word Document (from cache):** `{file_path_obj.name}`\n\n"
+            response += f"**Sections:** {metadata['chunk_count']} | "
+            response += f"**Total Tokens:** {metadata['total_tokens']:,}\n\n"
+        else:
+            # Read Word file
+            try:
+                # Determine chunk size
+                chunk_size = min(max_tokens // 2, 1000)  # Use half of max for chunking
+
+                reader = WordReader(
+                    file_path=str(file_path_obj),
+                    chunk_size=chunk_size,
+                    image_handling=image_handling
+                )
+
+                # Read sections
+                word_data = reader.read()
+
+                if word_data["total_sections"] == 0:
+                    return f"❌ No content found in {file_path_obj.name}"
+
+                # Chunk sections
+                chunks_data = reader.chunk_sections(word_data["sections"])
+
+                # Summarize chunks using Claude Haiku (if chunking enabled)
+                chunks_metadata = []
+                summarizer = ChunkSummarizer(api_key=self.api_key) if use_chunking else None
+
+                for chunk_data in chunks_data:
+                    chunk_content = chunk_data["content"]
+                    chunk_tokens = chunk_data["tokens"]
+
+                    if use_chunking and chunk_tokens > 200:
+                        # Summarize chunk
+                        context = {
+                            "doc_type": "word",
+                            "section_title": chunk_data["section_title"]
+                        }
+
+                        summary_result = await summarizer.summarize_chunk(
+                            chunk_content,
+                            context
+                        )
+
+                        # Track document processing tokens
+                        if "api_tokens" in summary_result:
+                            self.track_document_processing(
+                                summary_result["api_tokens"]["input"],
+                                summary_result["api_tokens"]["output"]
+                            )
+
+                        chunk_metadata = ChunkMetadata(
+                            chunk_id=chunk_data["chunk_id"],
+                            position=chunk_data["position"],
+                            summary=summary_result["summary"],
+                            tags=summary_result["tags"],
+                            token_count=chunk_tokens,
+                            summary_tokens=summary_result.get("summary_tokens", 0),
+                            tag_tokens=summary_result.get("tag_tokens", 0),
+                            section_title=chunk_data["section_title"]
+                        )
+                    else:
+                        # Small chunk - use as-is
+                        chunk_metadata = ChunkMetadata(
+                            chunk_id=chunk_data["chunk_id"],
+                            position=chunk_data["position"],
+                            summary=chunk_content[:400] + "..." if len(chunk_content) > 400 else chunk_content,
+                            tags=[chunk_data["section_title"]],
+                            token_count=chunk_tokens,
+                            summary_tokens=chunk_tokens,
+                            tag_tokens=0,
+                            section_title=chunk_data["section_title"]
+                        )
+
+                    chunks_metadata.append(chunk_metadata)
+
+                # Save to cache
+                doc_metadata = DocumentMetadata(
+                    file_path=str(file_path_obj),
+                    file_hash=cache.get_file_hash(str(file_path_obj)),
+                    file_size=file_path_obj.stat().st_size,
+                    total_tokens=word_data["total_tokens"],
+                    chunk_count=len(chunks_metadata),
+                    chunk_size=chunk_size,
+                    created_at=time.time(),
+                    ttl=cache.ttl,
+                    doc_type="word"
+                )
+
+                cache.save_chunks(str(file_path_obj), doc_metadata, chunks_metadata)
+
+                metadata = doc_metadata
+                chunks = [chunk.__dict__ if hasattr(chunk, '__dict__') else chunk for chunk in chunks_metadata]
+
+                response = f"📄 **Word Document:** `{file_path_obj.name}`\n\n"
+                response += f"**Sections:** {word_data['total_sections']} | "
+                response += f"**Total Tokens:** {word_data['total_tokens']:,} | "
+                response += f"**Chunks:** {len(chunks)}\n\n"
+
+            except Exception as e:
+                self.performance_metrics.track_tool_call("read_word", False)
+                return f"❌ Error reading Word file: {str(e)}"
+
+        # Filter chunks by query if provided
+        if query:
+            retriever = ChunkRetriever(top_k=3)
+            chunks = retriever.get_relevant_chunks(query, chunks)
+            response += f"🔍 **Query:** \"{query}\"\n"
+            response += f"**Relevant Chunks:** {len(chunks)}\n\n"
+
+        # Format output
+        response += "---\n\n"
+
+        for chunk in chunks:
+            section_title = chunk.get("section_title", "Unknown")
+            summary = chunk.get("summary", "")
+            tags = chunk.get("tags", [])
+
+            response += f"### {section_title}\n\n"
             response += f"{summary}\n\n"
             response += f"**Tags:** {', '.join(tags)}\n\n"
             response += "---\n\n"

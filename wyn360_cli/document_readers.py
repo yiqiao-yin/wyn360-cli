@@ -1151,3 +1151,299 @@ class ExcelReader:
                     chunk_id_counter += 1
 
         return chunks
+
+
+# ============================================================================
+# WordReader Class (Phase 3)
+# ============================================================================
+
+class WordReader:
+    """Read and process Word documents with intelligent chunking."""
+
+    def __init__(
+        self,
+        file_path: str,
+        chunk_size: int = 1000,
+        image_handling: str = "describe"
+    ):
+        """
+        Initialize Word reader.
+
+        Args:
+            file_path: Path to Word file
+            chunk_size: Target tokens per chunk
+            image_handling: How to handle images (skip|describe|vision)
+        """
+        self.file_path = Path(file_path)
+        self.chunk_size = chunk_size
+        self.image_handling = image_handling
+        self.chunker = DocumentChunker(chunk_size)
+
+    def read(self) -> Dict[str, Any]:
+        """
+        Read Word file and return structured data.
+
+        Returns:
+            {
+                "sections": [
+                    {
+                        "level": 1,
+                        "title": "Introduction",
+                        "content": "...",  # markdown
+                        "tokens": 500
+                    },
+                    ...
+                ],
+                "total_sections": 5,
+                "total_tokens": 5000,
+                "has_tables": True,
+                "has_images": True
+            }
+        """
+        if not HAS_PYTHON_DOCX:
+            raise ImportError(
+                "python-docx not installed. Install with: pip install python-docx"
+            )
+
+        if not self.file_path.exists():
+            raise FileNotFoundError(f"Word file not found: {self.file_path}")
+
+        try:
+            # Open document
+            doc = Document(str(self.file_path))
+
+            # Extract sections with structure
+            sections = self._extract_sections(doc)
+
+            # Calculate totals
+            total_tokens = sum(s["tokens"] for s in sections)
+            has_tables = any(s.get("has_tables", False) for s in sections)
+            has_images = any(s.get("has_images", False) for s in sections)
+
+            return {
+                "sections": sections,
+                "total_sections": len(sections),
+                "total_tokens": total_tokens,
+                "has_tables": has_tables,
+                "has_images": has_images
+            }
+
+        except Exception as e:
+            raise Exception(f"Failed to read Word file: {e}")
+
+    def _extract_sections(self, doc) -> List[Dict[str, Any]]:
+        """
+        Extract document structure with headings as section boundaries.
+
+        Args:
+            doc: python-docx Document object
+
+        Returns:
+            List of section dicts with title, content, level
+        """
+        sections = []
+        current_section = None
+        current_content = []
+
+        for element in doc.element.body:
+            # Check if paragraph
+            if element.tag.endswith('p'):
+                para = None
+                # Find the paragraph object
+                for p in doc.paragraphs:
+                    if p._element == element:
+                        para = p
+                        break
+
+                if para is None:
+                    continue
+
+                # Check if heading
+                if para.style.name.startswith('Heading'):
+                    # Flush current section
+                    if current_section is not None:
+                        content_md = "\n\n".join(current_content)
+                        current_section["content"] = content_md
+                        current_section["tokens"] = count_tokens(content_md)
+                        sections.append(current_section)
+
+                    # Start new section
+                    level = int(para.style.name.replace('Heading ', '').replace('Heading', '1'))
+                    current_section = {
+                        "level": level,
+                        "title": para.text,
+                        "has_tables": False,
+                        "has_images": False
+                    }
+                    current_content = []
+                else:
+                    # Regular paragraph
+                    if para.text.strip():
+                        current_content.append(para.text)
+
+            # Check if table
+            elif element.tag.endswith('tbl'):
+                # Find the table object
+                table = None
+                for t in doc.tables:
+                    if t._element == element:
+                        table = t
+                        break
+
+                if table is not None:
+                    # Convert table to markdown
+                    table_md = self._table_to_markdown(table)
+                    current_content.append(table_md)
+
+                    if current_section:
+                        current_section["has_tables"] = True
+
+        # Flush final section
+        if current_section is not None:
+            content_md = "\n\n".join(current_content)
+            current_section["content"] = content_md
+            current_section["tokens"] = count_tokens(content_md)
+            sections.append(current_section)
+
+        # If no sections found, create a single section with all content
+        if not sections and current_content:
+            content_md = "\n\n".join(current_content)
+            sections.append({
+                "level": 1,
+                "title": "Document",
+                "content": content_md,
+                "tokens": count_tokens(content_md),
+                "has_tables": False,
+                "has_images": False
+            })
+
+        return sections
+
+    def _table_to_markdown(self, table) -> str:
+        """
+        Convert Word table to markdown.
+
+        Args:
+            table: python-docx Table object
+
+        Returns:
+            Markdown formatted table
+        """
+        lines = []
+
+        # Get all rows
+        rows = list(table.rows)
+        if not rows:
+            return ""
+
+        # Header row (first row)
+        header_cells = [cell.text.strip() for cell in rows[0].cells]
+        header_line = "| " + " | ".join(header_cells) + " |"
+        lines.append(header_line)
+
+        # Separator
+        separator = "| " + " | ".join(["---"] * len(header_cells)) + " |"
+        lines.append(separator)
+
+        # Data rows
+        for row in rows[1:]:
+            cells = [cell.text.strip().replace("|", "\\|") for cell in row.cells]
+            row_line = "| " + " | ".join(cells) + " |"
+            lines.append(row_line)
+
+        return "\n".join(lines)
+
+    def chunk_sections(
+        self,
+        sections: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Chunk sections intelligently.
+
+        Strategy:
+        - Try to keep complete sections in chunks
+        - Split large sections by paragraphs
+        - Preserve section hierarchy in metadata
+
+        Args:
+            sections: List of section dicts
+
+        Returns:
+            List of chunk dicts with metadata
+        """
+        chunks = []
+        chunk_id_counter = 1
+
+        for section in sections:
+            title = section["title"]
+            content = section["content"]
+            tokens = section["tokens"]
+            level = section["level"]
+
+            # If section fits in one chunk, use as-is
+            if tokens <= self.chunk_size:
+                chunks.append({
+                    "chunk_id": f"{chunk_id_counter:03d}",
+                    "section_title": title,
+                    "section_level": level,
+                    "content": content,
+                    "tokens": tokens,
+                    "position": {
+                        "section": title,
+                        "level": level,
+                        "chunk_type": "full_section"
+                    }
+                })
+                chunk_id_counter += 1
+            else:
+                # Section too large - split by paragraphs
+                paragraphs = content.split("\n\n")
+
+                current_chunk_paras = []
+                current_chunk_tokens = 0
+
+                for para in paragraphs:
+                    para_tokens = count_tokens(para)
+
+                    if current_chunk_tokens + para_tokens > self.chunk_size and current_chunk_paras:
+                        # Flush current chunk
+                        chunk_content = "\n\n".join(current_chunk_paras)
+                        chunks.append({
+                            "chunk_id": f"{chunk_id_counter:03d}",
+                            "section_title": title,
+                            "section_level": level,
+                            "content": chunk_content,
+                            "tokens": current_chunk_tokens,
+                            "position": {
+                                "section": title,
+                                "level": level,
+                                "chunk_type": "partial"
+                            }
+                        })
+                        chunk_id_counter += 1
+
+                        # Start new chunk
+                        current_chunk_paras = [para]
+                        current_chunk_tokens = para_tokens
+                    else:
+                        current_chunk_paras.append(para)
+                        current_chunk_tokens += para_tokens
+
+                # Flush final chunk
+                if current_chunk_paras:
+                    chunk_content = "\n\n".join(current_chunk_paras)
+                    chunks.append({
+                        "chunk_id": f"{chunk_id_counter:03d}",
+                        "section_title": title,
+                        "section_level": level,
+                        "content": chunk_content,
+                        "tokens": current_chunk_tokens,
+                        "position": {
+                            "section": title,
+                            "level": level,
+                            "chunk_type": "partial"
+                        }
+                    })
+                    chunk_id_counter += 1
+
+        return chunks
