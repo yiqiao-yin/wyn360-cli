@@ -5,6 +5,7 @@ import sys
 import time
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
+from dataclasses import asdict
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.anthropic import AnthropicModel
 
@@ -42,6 +43,7 @@ from .document_readers import (
     ChunkRetriever,
     ChunkMetadata,
     DocumentMetadata,
+    EmbeddingModel,
     count_tokens,
     HAS_OPENPYXL,
     HAS_PYTHON_DOCX,
@@ -2073,7 +2075,19 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
 
                 # Summarize chunks using Claude Haiku (if chunking enabled)
                 chunks_metadata = []
-                summarizer = ChunkSummarizer(api_key=self.api_key) if use_chunking else None
+                summarizer = ChunkSummarizer(
+                    api_key=self.api_key,
+                    enable_embeddings=True  # Phase 5.2: Enable semantic matching
+                ) if use_chunking else None
+
+                # Initialize embedding model for semantic matching (Phase 5.2)
+                embedding_model = None
+                if use_chunking:
+                    try:
+                        embedding_model = EmbeddingModel()
+                    except Exception as e:
+                        # If embeddings fail, continue without them
+                        pass
 
                 for chunk_data in chunks_data:
                     chunk_content = chunk_data["content"]
@@ -2123,6 +2137,17 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
 
                     chunks_metadata.append(chunk_metadata)
 
+                # Add semantic embeddings to chunks (Phase 5.2.2)
+                if summarizer and summarizer.enable_embeddings:
+                    # Convert ChunkMetadata objects to dicts for embedding
+                    chunks_dicts = [asdict(chunk) if hasattr(chunk, '__dict__') else chunk.__dict__ for chunk in chunks_metadata]
+                    chunks_dicts = summarizer.add_embeddings_to_chunks(chunks_dicts)
+
+                    # Update chunks_metadata with embeddings
+                    for i, chunk_dict in enumerate(chunks_dicts):
+                        if "embedding" in chunk_dict:
+                            chunks_metadata[i].embedding = chunk_dict["embedding"]
+
                 # Save to cache
                 doc_metadata = DocumentMetadata(
                     file_path=str(file_path_obj),
@@ -2150,9 +2175,12 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                 self.performance_metrics.track_tool_call("read_excel", False)
                 return f"❌ Error reading Excel file: {str(e)}"
 
-        # Filter chunks by query if provided
+        # Filter chunks by query if provided (Phase 5.2.3: Semantic matching)
         if query:
-            retriever = ChunkRetriever(top_k=3)
+            retriever = ChunkRetriever(
+                top_k=3,
+                embedding_model=embedding_model  # Use semantic matching if available
+            )
             chunks = retriever.get_relevant_chunks(query, chunks)
             response += f"🔍 **Query:** \"{query}\"\n"
             response += f"**Relevant Chunks:** {len(chunks)}\n\n"

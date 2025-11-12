@@ -10,8 +10,13 @@ Tests cover:
 """
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch, MagicMock
 import numpy as np
+import sys
+
+# Mock sentence_transformers before importing EmbeddingModel
+sys.modules['sentence_transformers'] = MagicMock()
+
 from wyn360_cli.document_readers import EmbeddingModel
 
 
@@ -29,7 +34,8 @@ class TestEmbeddingModel:
 
     def test_model_lazy_loading(self):
         """Test model is loaded lazily on first use."""
-        with patch('sentence_transformers.SentenceTransformer') as mock_st:
+        # Mock at import location inside _lazy_load method
+        with patch('wyn360_cli.document_readers.SentenceTransformer', create=True) as mock_st:
             mock_st_instance = Mock()
             mock_st.return_value = mock_st_instance
 
@@ -51,7 +57,7 @@ class TestEmbeddingModel:
 
     def test_encode_single_text(self):
         """Test encoding a single text."""
-        with patch('wyn360_cli.document_readers.SentenceTransformer') as mock_st:
+        with patch('wyn360_cli.document_readers.SentenceTransformer', create=True) as mock_st:
             # Mock sentence transformer
             mock_st_instance = Mock()
             mock_embedding = np.array([[0.1, 0.2, 0.3, 0.4]])
@@ -73,7 +79,7 @@ class TestEmbeddingModel:
 
     def test_encode_multiple_texts(self):
         """Test encoding multiple texts in batch."""
-        with patch('wyn360_cli.document_readers.SentenceTransformer') as mock_st:
+        with patch('wyn360_cli.document_readers.SentenceTransformer', create=True) as mock_st:
             # Mock sentence transformer
             mock_st_instance = Mock()
             mock_embeddings = np.array([
@@ -142,18 +148,21 @@ class TestEmbeddingModel:
 
     def test_model_not_installed(self):
         """Test error handling when sentence-transformers not installed."""
-        with patch('wyn360_cli.document_readers.SentenceTransformer', side_effect=ImportError("No module")):
-            model = EmbeddingModel()
+        # Mock the import to fail
+        import sys
+        with patch.dict(sys.modules, {'sentence_transformers': None}):
+            with patch('builtins.__import__', side_effect=ImportError("No module named 'sentence_transformers'")):
+                model = EmbeddingModel()
 
-            with pytest.raises(ImportError) as exc_info:
-                model.encode("Test text")
+                with pytest.raises(ImportError) as exc_info:
+                    model.encode("Test text")
 
-            assert "sentence-transformers not installed" in str(exc_info.value)
-            assert "pip install sentence-transformers" in str(exc_info.value)
+                assert "sentence-transformers not installed" in str(exc_info.value)
+                assert "pip install sentence-transformers" in str(exc_info.value)
 
     def test_encode_empty_string(self):
         """Test encoding an empty string."""
-        with patch('wyn360_cli.document_readers.SentenceTransformer') as mock_st:
+        with patch('wyn360_cli.document_readers.SentenceTransformer', create=True) as mock_st:
             # Mock sentence transformer
             mock_st_instance = Mock()
             mock_embedding = np.array([[0.0, 0.0, 0.0, 0.0]])
@@ -169,7 +178,7 @@ class TestEmbeddingModel:
 
     def test_encode_special_characters(self):
         """Test encoding text with special characters."""
-        with patch('wyn360_cli.document_readers.SentenceTransformer') as mock_st:
+        with patch('wyn360_cli.document_readers.SentenceTransformer', create=True) as mock_st:
             # Mock sentence transformer
             mock_st_instance = Mock()
             mock_embedding = np.array([[0.1, 0.2, 0.3, 0.4]])
@@ -186,7 +195,7 @@ class TestEmbeddingModel:
 
     def test_lazy_load_called_once(self):
         """Test lazy load is only called once even with multiple operations."""
-        with patch('wyn360_cli.document_readers.SentenceTransformer') as mock_st:
+        with patch('wyn360_cli.document_readers.SentenceTransformer', create=True) as mock_st:
             mock_st_instance = Mock()
             mock_embedding = np.array([[0.1, 0.2, 0.3, 0.4]])
             mock_st_instance.encode.return_value = mock_embedding
@@ -204,17 +213,18 @@ class TestEmbeddingModel:
 
     def test_custom_model_name(self):
         """Test initialization with custom model name."""
-        with patch('wyn360_cli.document_readers.SentenceTransformer') as mock_st:
+        with patch('wyn360_cli.document_readers.SentenceTransformer', create=True) as mock_st:
             mock_st_instance = Mock()
             mock_st.return_value = mock_st_instance
 
-            model = EmbeddingModel(model_name="custom-model-v1")
+            # Use a whitelisted model
+            model = EmbeddingModel(model_name="all-mpnet-base-v2")
 
             # Trigger lazy load
             model._lazy_load()
 
             # Verify custom model name was used
-            mock_st.assert_called_once_with("custom-model-v1")
+            mock_st.assert_called_once_with("all-mpnet-base-v2")
 
     def test_compute_similarity_normalization(self):
         """Test that embeddings are properly normalized in similarity computation."""

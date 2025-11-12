@@ -111,6 +111,7 @@ class ChunkMetadata:
     sheet_name: Optional[str] = None  # Excel
     section_title: Optional[str] = None  # Word
     page_range: Optional[Tuple[int, int]] = None  # PDF
+    embedding: Optional[List[float]] = None  # Phase 5.2: Semantic embeddings
 
 
 @dataclass
