@@ -780,3 +780,374 @@ class ChunkRetriever:
         else:
             # No query: return all chunks (for full document summary)
             return chunks
+
+
+# ============================================================================
+# ExcelReader Class (Phase 2)
+# ============================================================================
+
+class ExcelReader:
+    """Read and process Excel files with intelligent chunking."""
+
+    def __init__(
+        self,
+        file_path: str,
+        chunk_size: int = 1000,
+        include_sheets: Optional[List[str]] = None
+    ):
+        """
+        Initialize Excel reader.
+
+        Args:
+            file_path: Path to Excel file
+            chunk_size: Target tokens per chunk
+            include_sheets: Optional list of sheet names to include
+        """
+        self.file_path = Path(file_path)
+        self.chunk_size = chunk_size
+        self.include_sheets = include_sheets
+        self.chunker = DocumentChunker(chunk_size)
+
+    def read(self) -> Dict[str, Any]:
+        """
+        Read Excel file and return structured data.
+
+        Returns:
+            {
+                "sheets": [
+                    {
+                        "name": "Sheet1",
+                        "data_region": (min_row, min_col, max_row, max_col),
+                        "markdown": "...",
+                        "row_count": 100,
+                        "col_count": 10,
+                        "has_merged_cells": True
+                    },
+                    ...
+                ],
+                "total_sheets": 3,
+                "total_tokens": 5000
+            }
+        """
+        if not HAS_OPENPYXL:
+            raise ImportError(
+                "openpyxl not installed. Install with: pip install openpyxl"
+            )
+
+        if not self.file_path.exists():
+            raise FileNotFoundError(f"Excel file not found: {self.file_path}")
+
+        try:
+            # Open workbook (data_only=True to get evaluated formula values)
+            workbook = openpyxl.load_workbook(
+                self.file_path,
+                data_only=True,
+                read_only=False
+            )
+
+            sheets_data = []
+            total_tokens = 0
+
+            # Process each sheet
+            for sheet_name in workbook.sheetnames:
+                # Filter sheets if include_sheets specified
+                if self.include_sheets and sheet_name not in self.include_sheets:
+                    continue
+
+                sheet = workbook[sheet_name]
+
+                # Detect data region
+                data_region = self._detect_data_region(sheet)
+
+                # Check if sheet has any data
+                if data_region is None:
+                    continue
+
+                min_row, min_col, max_row, max_col = data_region
+
+                # Get merged cells info
+                merged_cells = self._get_merged_cells_map(sheet)
+
+                # Convert to markdown
+                markdown = self._sheet_to_markdown(
+                    sheet,
+                    data_region,
+                    merged_cells
+                )
+
+                # Count tokens
+                tokens = count_tokens(markdown)
+                total_tokens += tokens
+
+                sheets_data.append({
+                    "name": sheet_name,
+                    "data_region": data_region,
+                    "markdown": markdown,
+                    "row_count": max_row - min_row + 1,
+                    "col_count": max_col - min_col + 1,
+                    "has_merged_cells": len(merged_cells) > 0,
+                    "tokens": tokens
+                })
+
+            workbook.close()
+
+            return {
+                "sheets": sheets_data,
+                "total_sheets": len(sheets_data),
+                "total_tokens": total_tokens
+            }
+
+        except Exception as e:
+            raise Exception(f"Failed to read Excel file: {e}")
+
+    def _detect_data_region(self, sheet) -> Optional[Tuple[int, int, int, int]]:
+        """
+        Detect the actual data region in a sheet.
+
+        Does not assume data starts at A1. Scans the sheet to find
+        the bounding box of all non-empty cells.
+
+        Args:
+            sheet: openpyxl worksheet
+
+        Returns:
+            (min_row, min_col, max_row, max_col) or None if empty
+        """
+        min_row = None
+        min_col = None
+        max_row = None
+        max_col = None
+
+        # Scan all cells to find data region
+        for row in sheet.iter_rows():
+            for cell in row:
+                if cell.value is not None:
+                    # Update bounding box
+                    if min_row is None or cell.row < min_row:
+                        min_row = cell.row
+                    if max_row is None or cell.row > max_row:
+                        max_row = cell.row
+                    if min_col is None or cell.column < min_col:
+                        min_col = cell.column
+                    if max_col is None or cell.column > max_col:
+                        max_col = cell.column
+
+        if min_row is None:
+            return None  # Empty sheet
+
+        return (min_row, min_col, max_row, max_col)
+
+    def _get_merged_cells_map(self, sheet) -> Dict[Tuple[int, int], Tuple[int, int, int, int]]:
+        """
+        Get mapping of merged cells.
+
+        Args:
+            sheet: openpyxl worksheet
+
+        Returns:
+            Dict mapping (row, col) to (min_row, min_col, max_row, max_col)
+        """
+        merged_map = {}
+
+        for merged_range in sheet.merged_cells.ranges:
+            min_row = merged_range.min_row
+            min_col = merged_range.min_col
+            max_row = merged_range.max_row
+            max_col = merged_range.max_col
+
+            # Map all cells in the merged range to the range bounds
+            for row in range(min_row, max_row + 1):
+                for col in range(min_col, max_col + 1):
+                    merged_map[(row, col)] = (min_row, min_col, max_row, max_col)
+
+        return merged_map
+
+    def _sheet_to_markdown(
+        self,
+        sheet,
+        data_region: Tuple[int, int, int, int],
+        merged_cells: Dict
+    ) -> str:
+        """
+        Convert sheet data to markdown table.
+
+        Args:
+            sheet: openpyxl worksheet
+            data_region: (min_row, min_col, max_row, max_col)
+            merged_cells: Merged cells mapping
+
+        Returns:
+            Markdown formatted table
+        """
+        min_row, min_col, max_row, max_col = data_region
+
+        lines = []
+        lines.append(f"## Sheet: {sheet.title}\n")
+        lines.append(f"Data Region: Rows {min_row}-{max_row}, Columns {min_col}-{max_col}\n")
+
+        # Build table
+        table_rows = []
+
+        for row_idx in range(min_row, max_row + 1):
+            row_cells = []
+
+            for col_idx in range(min_col, max_col + 1):
+                cell = sheet.cell(row=row_idx, column=col_idx)
+                value = cell.value
+
+                # Handle merged cells
+                if (row_idx, col_idx) in merged_cells:
+                    merge_info = merged_cells[(row_idx, col_idx)]
+                    merge_min_row, merge_min_col, merge_max_row, merge_max_col = merge_info
+
+                    # Only show value in the top-left cell of merged range
+                    if row_idx == merge_min_row and col_idx == merge_min_col:
+                        # Get the value from the merged cell
+                        value = sheet.cell(row=merge_min_row, column=merge_min_col).value
+                    else:
+                        # Other cells in merged range show empty
+                        value = ""
+
+                # Format value
+                if value is None:
+                    value = ""
+                else:
+                    value = str(value)
+
+                # Escape pipe characters in cell values
+                value = value.replace("|", "\\|")
+
+                row_cells.append(value)
+
+            table_rows.append(row_cells)
+
+        # Format as markdown table
+        if table_rows:
+            # Header row
+            header = "| " + " | ".join(table_rows[0]) + " |"
+            lines.append(header)
+
+            # Separator
+            num_cols = len(table_rows[0])
+            separator = "| " + " | ".join(["---"] * num_cols) + " |"
+            lines.append(separator)
+
+            # Data rows
+            for row_cells in table_rows[1:]:
+                row_line = "| " + " | ".join(row_cells) + " |"
+                lines.append(row_line)
+
+        return "\n".join(lines)
+
+    def chunk_sheets(
+        self,
+        sheets_data: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Chunk sheet data intelligently.
+
+        Strategy:
+        - Each sheet is initially one chunk
+        - If sheet exceeds chunk_size, split by row ranges
+        - Preserve table structure within chunks
+
+        Args:
+            sheets_data: List of sheet data dicts
+
+        Returns:
+            List of chunk dicts with metadata
+        """
+        chunks = []
+        chunk_id_counter = 1
+
+        for sheet_data in sheets_data:
+            sheet_name = sheet_data["name"]
+            markdown = sheet_data["markdown"]
+            tokens = sheet_data["tokens"]
+
+            # If sheet fits in one chunk, use as-is
+            if tokens <= self.chunk_size:
+                chunks.append({
+                    "chunk_id": f"{chunk_id_counter:03d}",
+                    "sheet_name": sheet_name,
+                    "content": markdown,
+                    "tokens": tokens,
+                    "position": {
+                        "sheet": sheet_name,
+                        "chunk_type": "full_sheet"
+                    }
+                })
+                chunk_id_counter += 1
+            else:
+                # Sheet too large - split by row ranges
+                # Simple approach: split markdown by lines
+                lines = markdown.split("\n")
+
+                # Try to preserve table header + rows in each chunk
+                header_lines = []
+                data_lines = []
+                in_table = False
+
+                for line in lines:
+                    if line.startswith("##"):
+                        header_lines.append(line)
+                    elif line.startswith("|") and "---" in line:
+                        # Separator line
+                        header_lines.append(line)
+                        in_table = True
+                    elif line.startswith("|") and not in_table:
+                        # Table header
+                        header_lines.append(line)
+                    elif line.startswith("|") and in_table:
+                        # Table data row
+                        data_lines.append(line)
+                    else:
+                        header_lines.append(line)
+
+                # Chunk data rows
+                target_chars = self.chunk_size * 4
+                current_chunk_lines = header_lines.copy()
+                current_chunk_tokens = count_tokens("\n".join(current_chunk_lines))
+
+                for data_line in data_lines:
+                    line_tokens = count_tokens(data_line)
+
+                    if current_chunk_tokens + line_tokens > self.chunk_size:
+                        # Flush current chunk
+                        chunk_content = "\n".join(current_chunk_lines)
+                        chunks.append({
+                            "chunk_id": f"{chunk_id_counter:03d}",
+                            "sheet_name": sheet_name,
+                            "content": chunk_content,
+                            "tokens": current_chunk_tokens,
+                            "position": {
+                                "sheet": sheet_name,
+                                "chunk_type": "partial"
+                            }
+                        })
+                        chunk_id_counter += 1
+
+                        # Start new chunk with header
+                        current_chunk_lines = header_lines.copy()
+                        current_chunk_lines.append(data_line)
+                        current_chunk_tokens = count_tokens("\n".join(current_chunk_lines))
+                    else:
+                        current_chunk_lines.append(data_line)
+                        current_chunk_tokens += line_tokens
+
+                # Flush final chunk
+                if current_chunk_lines:
+                    chunk_content = "\n".join(current_chunk_lines)
+                    chunks.append({
+                        "chunk_id": f"{chunk_id_counter:03d}",
+                        "sheet_name": sheet_name,
+                        "content": chunk_content,
+                        "tokens": current_chunk_tokens,
+                        "position": {
+                            "sheet": sheet_name,
+                            "chunk_type": "partial"
+                        }
+                    })
+                    chunk_id_counter += 1
+
+        return chunks

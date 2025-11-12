@@ -32,6 +32,16 @@ from .browser_use import (
     WebsiteCache,
     HAS_CRAWL4AI
 )
+from .document_readers import (
+    ExcelReader,
+    ChunkSummarizer,
+    ChunkCache,
+    ChunkRetriever,
+    ChunkMetadata,
+    DocumentMetadata,
+    count_tokens,
+    HAS_OPENPYXL
+)
 
 
 class WYN360Agent:
@@ -154,7 +164,9 @@ class WYN360Agent:
                 # Browser use / website fetching (Phase 12.1, 12.2, 12.3)
                 self.fetch_website,
                 self.clear_website_cache,
-                self.show_cache_stats
+                self.show_cache_stats,
+                # Document readers (Phase 13.2)
+                self.read_excel
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -1934,6 +1946,221 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
 
         except Exception as e:
             return f"❌ Error getting cache stats: {str(e)}"
+
+    async def read_excel(
+        self,
+        ctx: RunContext[None],
+        file_path: str,
+        max_tokens: Optional[int] = None,
+        include_sheets: Optional[List[str]] = None,
+        use_chunking: bool = True,
+        regenerate_cache: bool = False,
+        query: Optional[str] = None
+    ) -> str:
+        """
+        Read and intelligently process Excel files (.xlsx/.xls).
+
+        This tool reads Excel files with intelligent chunking, summarization, and
+        retrieval. It handles unstructured data (tables not at A1), merged cells,
+        evaluated formula values, and converts to markdown format. Results are
+        cached for 1 hour by default.
+
+        Args:
+            file_path: Path to Excel file (absolute or relative)
+            max_tokens: Maximum tokens to process (default: from config, 10000)
+            include_sheets: Optional list of sheet names to include
+            use_chunking: Whether to use intelligent chunking (default: True)
+            regenerate_cache: Force regenerate cache (ignore existing)
+            query: Optional query to filter relevant chunks
+
+        Returns:
+            Formatted Excel content with summaries and tags
+
+        Examples:
+            - "Read expenses.xlsx"
+            - "Read data.xlsx and show only Q1 sheet"
+            - "What were April expenses in budget.xlsx?"
+            - "Summarize sales.xlsx"
+
+        Features:
+            - Detects data regions (doesn't assume A1 start)
+            - Handles merged cells
+            - Shows evaluated formula values
+            - Converts to markdown tables
+            - Intelligent chunking by sheets/row ranges
+            - Claude Haiku summarization (~100 tokens per chunk)
+            - Tag generation for efficient retrieval
+            - 1-hour TTL cache
+
+        Note:
+            Requires openpyxl: pip install openpyxl
+        """
+        # Check if openpyxl is available
+        if not HAS_OPENPYXL:
+            return ("❌ **openpyxl not installed**\n\n"
+                   "The Excel reader requires openpyxl to be installed.\n\n"
+                   "**Install it with:**\n"
+                   "```bash\n"
+                   "pip install openpyxl\n"
+                   "```\n\n"
+                   "Then try again.")
+
+        # Track tool call
+        self.performance_metrics.track_tool_call("read_excel", True)
+
+        # Resolve file path
+        file_path_obj = Path(file_path)
+        if not file_path_obj.is_absolute():
+            file_path_obj = Path.cwd() / file_path
+
+        if not file_path_obj.exists():
+            self.performance_metrics.track_tool_call("read_excel", False)
+            return f"❌ File not found: {file_path}"
+
+        # Get max_tokens from config if not specified
+        if max_tokens is None:
+            max_tokens = self.doc_token_limits.get("excel", 10000)
+
+        # Initialize cache
+        cache = ChunkCache()
+
+        # Check cache (unless regenerate requested)
+        cached_data = None
+        if not regenerate_cache:
+            cached_data = cache.load_chunks(str(file_path_obj))
+
+        if cached_data:
+            # Use cached data
+            metadata = cached_data["metadata"]
+            chunks = cached_data["chunks"]
+
+            response = f"📊 **Excel File (from cache):** `{file_path_obj.name}`\n\n"
+            response += f"**Sheets:** {metadata['chunk_count']} | "
+            response += f"**Total Tokens:** {metadata['total_tokens']:,}\n\n"
+        else:
+            # Read Excel file
+            try:
+                # Determine chunk size
+                chunk_size = min(max_tokens // 2, 1000)  # Use half of max for chunking
+
+                reader = ExcelReader(
+                    file_path=str(file_path_obj),
+                    chunk_size=chunk_size,
+                    include_sheets=include_sheets
+                )
+
+                # Read sheets
+                excel_data = reader.read()
+
+                if excel_data["total_sheets"] == 0:
+                    return f"❌ No sheets found in {file_path_obj.name}"
+
+                # Chunk sheets
+                chunks_data = reader.chunk_sheets(excel_data["sheets"])
+
+                # Summarize chunks using Claude Haiku (if chunking enabled)
+                chunks_metadata = []
+                summarizer = ChunkSummarizer(api_key=self.api_key) if use_chunking else None
+
+                for chunk_data in chunks_data:
+                    chunk_content = chunk_data["content"]
+                    chunk_tokens = chunk_data["tokens"]
+
+                    if use_chunking and chunk_tokens > 200:
+                        # Summarize chunk
+                        context = {
+                            "doc_type": "excel",
+                            "sheet_name": chunk_data["sheet_name"]
+                        }
+
+                        summary_result = await summarizer.summarize_chunk(
+                            chunk_content,
+                            context
+                        )
+
+                        # Track document processing tokens
+                        if "api_tokens" in summary_result:
+                            self.track_document_processing(
+                                summary_result["api_tokens"]["input"],
+                                summary_result["api_tokens"]["output"]
+                            )
+
+                        chunk_metadata = ChunkMetadata(
+                            chunk_id=chunk_data["chunk_id"],
+                            position=chunk_data["position"],
+                            summary=summary_result["summary"],
+                            tags=summary_result["tags"],
+                            token_count=chunk_tokens,
+                            summary_tokens=summary_result.get("summary_tokens", 0),
+                            tag_tokens=summary_result.get("tag_tokens", 0),
+                            sheet_name=chunk_data["sheet_name"]
+                        )
+                    else:
+                        # Small chunk - use as-is
+                        chunk_metadata = ChunkMetadata(
+                            chunk_id=chunk_data["chunk_id"],
+                            position=chunk_data["position"],
+                            summary=chunk_content[:400] + "..." if len(chunk_content) > 400 else chunk_content,
+                            tags=[chunk_data["sheet_name"]],
+                            token_count=chunk_tokens,
+                            summary_tokens=chunk_tokens,
+                            tag_tokens=0,
+                            sheet_name=chunk_data["sheet_name"]
+                        )
+
+                    chunks_metadata.append(chunk_metadata)
+
+                # Save to cache
+                doc_metadata = DocumentMetadata(
+                    file_path=str(file_path_obj),
+                    file_hash=cache.get_file_hash(str(file_path_obj)),
+                    file_size=file_path_obj.stat().st_size,
+                    total_tokens=excel_data["total_tokens"],
+                    chunk_count=len(chunks_metadata),
+                    chunk_size=chunk_size,
+                    created_at=time.time(),
+                    ttl=cache.ttl,
+                    doc_type="excel"
+                )
+
+                cache.save_chunks(str(file_path_obj), doc_metadata, chunks_metadata)
+
+                metadata = doc_metadata
+                chunks = [chunk.__dict__ if hasattr(chunk, '__dict__') else chunk for chunk in chunks_metadata]
+
+                response = f"📊 **Excel File:** `{file_path_obj.name}`\n\n"
+                response += f"**Sheets:** {excel_data['total_sheets']} | "
+                response += f"**Total Tokens:** {excel_data['total_tokens']:,} | "
+                response += f"**Chunks:** {len(chunks)}\n\n"
+
+            except Exception as e:
+                self.performance_metrics.track_tool_call("read_excel", False)
+                return f"❌ Error reading Excel file: {str(e)}"
+
+        # Filter chunks by query if provided
+        if query:
+            retriever = ChunkRetriever(top_k=3)
+            chunks = retriever.get_relevant_chunks(query, chunks)
+            response += f"🔍 **Query:** \"{query}\"\n"
+            response += f"**Relevant Chunks:** {len(chunks)}\n\n"
+
+        # Format output
+        response += "---\n\n"
+
+        for chunk in chunks:
+            sheet_name = chunk.get("sheet_name", "Unknown")
+            summary = chunk.get("summary", "")
+            tags = chunk.get("tags", [])
+
+            response += f"### {sheet_name}\n\n"
+            response += f"{summary}\n\n"
+            response += f"**Tags:** {', '.join(tags)}\n\n"
+            response += "---\n\n"
+
+        # Add cache note
+        response += f"\n*Note: Content cached for 1 hour. Use regenerate_cache=True to refresh.*"
+
+        return response
 
     async def chat(self, user_message: str) -> str:
         """
