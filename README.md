@@ -16,9 +16,21 @@ For a detailed architecture overview including all components, layers, and data 
 
 ## 📦 Installation
 
+### Basic Installation
 ```bash
 pip install wyn360-cli
 ```
+
+### Optional: Enable Browser Use (Direct Website Fetching)
+
+If you want to use the `fetch_website` feature to read specific URLs directly:
+
+```bash
+# Install Playwright browser binaries (one-time setup, ~200MB)
+playwright install chromium
+```
+
+**Note:** Browser use is optional. Web search and all other features work without it. Only install if you need direct URL fetching (e.g., "Read https://github.com/user/repo").
 
 ## 🚀 Quick Start
 
@@ -222,21 +234,22 @@ Source: [Weather service URL]
 
 ### Direct Website Fetching
 ```
-You: Read https://github.com/britbrat0/cs676
+You: Read https://github.com/yiqiao-yin/deepspeed-course
 
 WYN360: [Fetches the specific URL directly]
 
-📄 **Fetched:** https://github.com/britbrat0/cs676
+📄 **Fetched:** https://github.com/yiqiao-yin/deepspeed-course
 
-# CS676 Computer Vision Repository
+# DeepSpeed Course Repository
 
 ## Overview
-This repository contains course materials for CS676 - Computer Vision...
+This repository contains comprehensive course materials for DeepSpeed training...
 
-## Projects
-1. **Image Classification** - CNN-based classifier for...
-2. **Object Detection** - YOLO implementation for...
-3. **Semantic Segmentation** - U-Net architecture for...
+## Course Contents
+1. **Distributed Training** - Multi-GPU training strategies
+2. **Memory Optimization** - ZeRO optimization techniques
+3. **Pipeline Parallelism** - Efficient model parallelism
+4. **Performance Tuning** - Best practices and optimizations
 
 [Full page content extracted and converted to markdown]
 ```
@@ -257,7 +270,7 @@ WYN360: 📊 **Website Cache Statistics**
 **Expired Entries:** 0
 
 **Cached URLs:**
-- ✓ 5m old: https://github.com/britbrat0/cs676
+- ✓ 5m old: https://github.com/yiqiao-yin/deepspeed-course
 - ✓ 12m old: https://python.org/downloads
 - ✓ 25m old: https://docs.anthropic.com
 ```

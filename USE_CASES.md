@@ -2071,7 +2071,7 @@ Fetch full content from specific URLs directly using the `fetch_website` tool. U
 - 💾 **Cache Management** - View stats, clear cache
 
 **User Interaction:**
-```
+```bash
 You: Read https://github.com/britbrat0/cs676
 
 WYN360: [Fetches the URL directly using fetch_website tool]
@@ -2118,7 +2118,7 @@ Technologies: TensorFlow, Keras, Medical Imaging
 ```
 
 **Cache Management:**
-```
+```bash
 You: Show cache stats
 
 WYN360: 📊 **Website Cache Statistics**
@@ -2138,7 +2138,7 @@ WYN360: 📊 **Website Cache Statistics**
 ```
 
 **Clear Cache:**
-```
+```bash
 You: Clear cache for https://github.com/britbrat0/cs676
 
 WYN360: ✓ Cleared cache for: https://github.com/britbrat0/cs676

@@ -11,6 +11,8 @@ import gzip
 import json
 import time
 import re
+import os
+import subprocess
 from pathlib import Path
 from typing import Optional, Tuple
 from urllib.parse import urlparse
@@ -22,6 +24,62 @@ try:
 except ImportError:
     HAS_CRAWL4AI = False
     AsyncWebCrawler = None
+
+
+def check_playwright_installed() -> Tuple[bool, str]:
+    """
+    Check if Playwright browser binaries are installed.
+
+    Returns:
+        Tuple of (is_installed, error_message)
+    """
+    try:
+        # Check if playwright command exists
+        result = subprocess.run(
+            ['playwright', '--version'],
+            capture_output=True,
+            text=True,
+            timeout=5
+        )
+
+        if result.returncode == 0:
+            # Check if chromium is installed
+            # Look for playwright cache directory
+            home = Path.home()
+            playwright_cache = home / ".cache" / "ms-playwright"
+
+            if playwright_cache.exists():
+                # Check for chromium directory
+                chromium_dirs = list(playwright_cache.glob("chromium-*"))
+                if chromium_dirs:
+                    return True, ""
+
+        # Playwright is installed but browsers are not
+        error_msg = (
+            "❌ Playwright browser binaries are not installed.\n\n"
+            "To use website fetching, please install browser binaries:\n\n"
+            "```bash\n"
+            "playwright install chromium\n"
+            "```\n\n"
+            "This is a one-time setup that downloads ~200MB of browser files.\n"
+            "After installation, website fetching will work without prompts."
+        )
+        return False, error_msg
+
+    except FileNotFoundError:
+        error_msg = (
+            "❌ Playwright is not installed.\n\n"
+            "To use website fetching, please install:\n\n"
+            "```bash\n"
+            "pip install playwright\n"
+            "playwright install chromium\n"
+            "```\n\n"
+            "This is a one-time setup. After installation, website fetching will work seamlessly."
+        )
+        return False, error_msg
+    except Exception as e:
+        error_msg = f"❌ Error checking Playwright installation: {str(e)}"
+        return False, error_msg
 
 
 class WebsiteCache:
@@ -347,7 +405,17 @@ async def fetch_website_content(
     if not is_valid_url(url):
         return False, f"❌ Invalid URL: {url}"
 
+    # Check if Playwright is installed BEFORE attempting to use it
+    # This prevents crawl4ai from trying to auto-install during execution
+    playwright_installed, error_msg = check_playwright_installed()
+    if not playwright_installed:
+        return False, error_msg
+
     try:
+        # Prevent auto-installation of Playwright during execution
+        # Set environment variable to skip auto-install
+        os.environ['PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD'] = '1'
+
         # Fetch website using crawl4ai
         async with AsyncWebCrawler() as crawler:
             result = await crawler.arun(url)
