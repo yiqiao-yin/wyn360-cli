@@ -911,7 +911,7 @@ WYN360: I'll create a comprehensive data analysis script...
 Let me build this step by step:
 
 1. First, import the necessary libraries:
-```python
+```
 import pandas as pd
 ...
 ```yaml
@@ -987,7 +987,7 @@ Here's how it works:
 #### Workflow 3: Large Script Generation
 
 **Before (Non-Streaming):**
-```bash
+```
 You: Generate a comprehensive data pipeline script
 
 [Wait 15 seconds with spinner]
@@ -997,7 +997,7 @@ WYN360: [500 lines of code appear instantly]
 ```
 
 **After (Streaming):**
-```bash
+```
 You: Generate a comprehensive data pipeline script
 
 WYN360: I'll create a data pipeline with these components:
@@ -1013,7 +1013,7 @@ WYN360: I'll create a data pipeline with these components:
 [More code streams in]
 
 [You're already reading Step 1 while Step 3 is being generated]
-```yaml
+```
 
 ### Technical Details
 
@@ -1041,7 +1041,7 @@ WYN360: I'll create a data pipeline with these components:
 ### Use Cases Where Streaming Shines
 
 **1. Documentation Generation**
-```bash
+```
 You: Document this module with detailed docstrings
 
 WYN360: [Streams documentation as it writes]
@@ -1049,7 +1049,7 @@ WYN360: [Streams documentation as it writes]
 ```
 
 **2. Code Refactoring**
-```bash
+```
 You: Refactor this 500-line script
 
 WYN360: [Shows refactored code streaming]
@@ -1057,7 +1057,7 @@ WYN360: [Shows refactored code streaming]
 ```
 
 **3. Explanations and Tutorials**
-```bash
+```
 You: Explain design patterns with examples
 
 WYN360: [Explanation streams naturally]
@@ -1065,7 +1065,7 @@ WYN360: [Explanation streams naturally]
 ```
 
 **4. Large File Generation**
-```bash
+```
 You: Create a complete API client with all endpoints
 
 WYN360: [Streams code file by file]
@@ -1152,7 +1152,7 @@ https://huggingface.co/spaces/username/chatbot-demo
 ```
 
 **Authentication:**
-```bash
+```
 # Set token in environment (recommended)
 export HF_TOKEN="hf_your_token_here"
 
@@ -1166,7 +1166,7 @@ WYN360: ✓ Authenticated successfully
 ```
 
 **Space Configuration (README.md):**
-```yaml
+```
 ---
 title: My Chatbot
 emoji: 🤖
@@ -1212,7 +1212,7 @@ Automatically generate pytest test scaffolding for your Python code using AST pa
 - Safe code analysis without execution
 
 **Example Interaction:**
-```bash
+```
 You: Generate tests for calculator.py
 
 WYN360: [Analyzes calculator.py using AST]
@@ -1255,7 +1255,7 @@ Next steps: Complete the TODO sections with actual test logic.
 ```
 
 **Advanced Example:**
-```bash
+```
 You: Generate comprehensive tests for api.py
 
 WYN360: [Analyzes api.py]
@@ -1345,7 +1345,7 @@ WYN360 provides seamless GitHub integration directly from the CLI! This feature 
 Commit your changes to the current repository and push to GitHub with a single command.
 
 **User Interaction:**
-```bash
+```
 You: Commit these changes
 
 WYN360: [Checks GitHub authentication]
@@ -1402,7 +1402,7 @@ Execute this command? (y/N): y
 ```
 
 **If Not Authenticated:**
-```bash
+```
 You: Commit to github
 
 WYN360: [Checks authentication]
@@ -1432,7 +1432,7 @@ Now let me commit your changes...
 Open a pull request from your current branch to the main branch.
 
 **User Interaction:**
-```bash
+```
 You: Create a pull request for my feature
 
 WYN360: [Checks authentication - already authenticated this session]
@@ -1501,7 +1501,7 @@ View or merge at: https://github.com/yiqiao-yin/wyn360-cli/pull/42
 Create new branches and switch between them seamlessly.
 
 **Create New Branch:**
-```bash
+```
 You: Create a new branch called feature/auth
 
 WYN360: I'll create a new branch 'feature/auth' and check it out.
@@ -1532,7 +1532,7 @@ You can now make changes on this branch. When ready:
 ```
 
 **Checkout Existing Branch:**
-```bash
+```
 You: Switch to the develop branch
 
 WYN360: I'll check out the 'develop' branch.
@@ -1566,7 +1566,7 @@ Last commit: x9y8z7 "Update documentation"
 Merge feature branches into target branches with conflict detection.
 
 **Successful Merge:**
-```bash
+```
 You: Merge feature/auth into main
 
 WYN360: I'll merge 'feature/auth' into 'main'.
@@ -1615,7 +1615,7 @@ Next steps:
 ### Configuration
 
 **Environment Variables:**
-```bash
+```
 # Set GitHub token for automatic authentication
 export GH_TOKEN="ghp_your_token_here"
 
@@ -1629,7 +1629,7 @@ export GITHUB_TOKEN="ghp_your_token_here"
 - Generate at: https://github.com/settings/tokens/new
 
 **.env File (Recommended):**
-```bash
+```
 # .env file in your project root
 ANTHROPIC_API_KEY=your_anthropic_key
 GH_TOKEN=ghp_your_github_token
@@ -1892,7 +1892,7 @@ WYN360 now has access to real-time web search capabilities! This feature enables
 Get real-time weather information for any location.
 
 **User Interaction:**
-```bash
+```
 You: What's the weather in San Francisco?
 
 WYN360: [Searches web for current San Francisco weather]
@@ -1956,7 +1956,7 @@ Source: [Python.org](https://python.org/downloads/release/python-3130/)
 Access the latest documentation, package versions, news, and trends.
 
 **Example:**
-```bash
+```
 You: What's new in React 19?
 
 WYN360: [Searches for React 19 release information]
@@ -2029,7 +2029,7 @@ Sources:
 ```
 
 **Finding Libraries by Language:**
-```bash
+```
 You: What are good Python libraries for data visualization?
 
 WYN360: [Searches for Python data viz libraries]
@@ -2101,7 +2101,7 @@ Total: ~$0.091 per session
 ### Configuration
 
 **Default Settings:**
-```python
+```
 # In agent.py
 builtin_tools=[
     WebSearchTool(max_uses=5)  # Limit searches per session
@@ -2137,7 +2137,7 @@ Enhance your existing projects with new functionality while maintaining code qua
 5. Maintains your coding style
 
 **Example Interaction:**
-```bash
+```
 You: Add authentication to my FastAPI app
 
 WYN360:
@@ -2190,7 +2190,7 @@ WYN360:
 ```
 
 **Learning:**
-```bash
+```
 You: How do I implement async in Python?
 
 WYN360:
@@ -2202,7 +2202,7 @@ WYN360:
 ```
 
 **Code Review:**
-```bash
+```
 You: Review my API implementation
 
 WYN360:
@@ -2319,7 +2319,7 @@ When you're in a **blank project** (no Python or text files), WYN360 automatical
 5. Confirms with message: `✓ Code saved to: filename.py`
 
 **Filename Detection Logic:**
-```python
+```
 if 'streamlit' in code:
     filename = 'app.py'
 elif 'fastapi' in code or 'FastAPI' in code:
@@ -2389,7 +2389,7 @@ The agent analyzes your natural language to understand what you want:
 5. ✓ Explains what was updated
 
 **Example:**
-```bash
+```
 You: Add a feature to run hello_world.py when user asks
 
 WYN360:
@@ -2438,7 +2438,7 @@ If the agent makes a wrong choice, it can self-correct:
 ### Appendix D: Example Workflows
 
 #### Workflow 1: Brand New Project
-```bash
+```
 Step 1: Navigate to empty directory
 $ cd my-new-project
 
@@ -2467,7 +2467,7 @@ WYN360:
 ---
 
 #### Workflow 2: Enhance Existing Project
-```bash
+```
 Step 1: Navigate to your project
 $ cd my-existing-project
 
@@ -2497,7 +2497,7 @@ WYN360:
 ---
 
 #### Workflow 3: Debug & Fix
-```bash
+```
 Step 1: Encounter an error
 $ python script.py
 Error: Connection timeout
@@ -2533,7 +2533,7 @@ WYN360:
 ---
 
 #### Workflow 4: Learning & Guidance
-```bash
+```
 You: How do I implement async in Python?
 
 WYN360:
@@ -2725,7 +2725,7 @@ WYN360:
 - Use `/history` to review what you've discussed
 
 **Example Workflow:**
-```bash
+```
 You: Build a data analysis pipeline
 WYN360: [Creates initial pipeline]
 
@@ -2783,7 +2783,7 @@ WYN360: [Continues from where you left off with full context]
 ### Quick Start Examples
 
 #### Example 1: Build a Web Scraper
-```bash
+```
 You: Create a web scraper that extracts article titles from a news site
 
 WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
@@ -2791,7 +2791,7 @@ WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
 ```
 
 #### Example 2: Data Processing Pipeline
-```bash
+```
 You: Build a script that reads CSV, cleans data, and outputs to JSON
 
 WYN360: [Creates comprehensive data pipeline with pandas]
@@ -2799,7 +2799,7 @@ WYN360: [Creates comprehensive data pipeline with pandas]
 ```
 
 #### Example 3: API Client
-```bash
+```
 You: Create an async HTTP client for a REST API
 
 WYN360: [Generates async client with aiohttp, retry logic, error handling]
