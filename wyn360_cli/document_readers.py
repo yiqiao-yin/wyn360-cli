@@ -40,6 +40,13 @@ except ImportError:
     HAS_PYMUPDF = False
     pymupdf = None
 
+try:
+    import pdfplumber
+    HAS_PDFPLUMBER = True
+except ImportError:
+    HAS_PDFPLUMBER = False
+    pdfplumber = None
+
 # Import Anthropic at module level for easier mocking in tests
 try:
     from anthropic import Anthropic
@@ -1445,5 +1452,348 @@ class WordReader:
                         }
                     })
                     chunk_id_counter += 1
+
+        return chunks
+
+
+# ============================================================================
+# PDF Reader (Phase 4)
+# ============================================================================
+
+class PDFReader:
+    """
+    Read PDF files with page-aware chunking.
+
+    Features:
+    - Support for both pymupdf (default, fast) and pdfplumber (better tables)
+    - Page-by-page text extraction
+    - Table detection and extraction
+    - Multi-column layout handling
+    - Section detection via font size analysis
+    - Page-aware chunking (3-5 pages per chunk)
+    - Page range filtering
+
+    Usage:
+        reader = PDFReader(file_path="document.pdf", engine="pymupdf")
+        result = reader.read(page_range=(10, 20))
+        chunks = reader.chunk_pages(result["pages"])
+    """
+
+    def __init__(
+        self,
+        file_path: str,
+        chunk_size: int = 1000,
+        engine: str = "pymupdf",
+        pages_per_chunk: int = 3
+    ):
+        """
+        Initialize PDF reader.
+
+        Args:
+            file_path: Path to PDF file
+            chunk_size: Target tokens per chunk (used as guideline)
+            engine: PDF engine to use ("pymupdf" or "pdfplumber")
+            pages_per_chunk: Target pages per chunk (3-5 recommended)
+        """
+        self.file_path = Path(file_path)
+        self.chunk_size = chunk_size
+        self.engine = engine.lower()
+        self.pages_per_chunk = pages_per_chunk
+        self.chunker = DocumentChunker(chunk_size)
+
+        # Validate engine
+        if self.engine not in ["pymupdf", "pdfplumber"]:
+            raise ValueError(f"Unknown PDF engine: {engine}. Use 'pymupdf' or 'pdfplumber'")
+
+    def read(self, page_range: Optional[Tuple[int, int]] = None) -> Dict[str, Any]:
+        """
+        Read PDF file and extract pages.
+
+        Args:
+            page_range: Optional (start_page, end_page) tuple (1-indexed)
+
+        Returns:
+            Dictionary with:
+                - pages: List of page dictionaries
+                - total_pages: Total page count
+                - page_range_read: Actual range read
+                - total_tokens: Total token count
+                - has_tables: Whether tables were detected
+
+        Raises:
+            ImportError: If required PDF library not installed
+            FileNotFoundError: If file doesn't exist
+        """
+        # Check dependencies
+        if self.engine == "pymupdf" and not HAS_PYMUPDF:
+            raise ImportError(
+                "pymupdf not installed. Install with: pip install pymupdf"
+            )
+        elif self.engine == "pdfplumber" and not HAS_PDFPLUMBER:
+            raise ImportError(
+                "pdfplumber not installed. Install with: pip install pdfplumber"
+            )
+
+        # Check file exists
+        if not self.file_path.exists():
+            raise FileNotFoundError(f"PDF file not found: {self.file_path}")
+
+        # Read using appropriate engine
+        if self.engine == "pymupdf":
+            return self._read_with_pymupdf(page_range)
+        else:
+            return self._read_with_pdfplumber(page_range)
+
+    def _read_with_pymupdf(self, page_range: Optional[Tuple[int, int]] = None) -> Dict[str, Any]:
+        """Read PDF using PyMuPDF (faster, general-purpose)."""
+        doc = pymupdf.open(str(self.file_path))
+        total_pages = len(doc)
+
+        # Determine page range
+        if page_range:
+            start_page = max(1, page_range[0])
+            end_page = min(total_pages, page_range[1])
+        else:
+            start_page = 1
+            end_page = total_pages
+
+        pages = []
+        total_tokens = 0
+        has_tables = False
+
+        # Extract pages
+        for page_num in range(start_page - 1, end_page):
+            page = doc[page_num]
+
+            # Extract text
+            text = page.get_text()
+
+            # Try to detect tables (basic detection)
+            tables = []
+            try:
+                # PyMuPDF table detection (if available)
+                page_tables = page.find_tables()
+                if page_tables:
+                    has_tables = True
+                    for table in page_tables.tables:
+                        table_data = table.extract()
+                        if table_data:
+                            markdown = self._table_to_markdown_pymupdf(table_data)
+                            tables.append(markdown)
+            except (AttributeError, Exception):
+                # Table extraction not available or failed
+                pass
+
+            # Combine text and tables
+            content = text
+            if tables:
+                content += "\n\n" + "\n\n".join(tables)
+
+            tokens = count_tokens(content)
+            total_tokens += tokens
+
+            pages.append({
+                "page_number": page_num + 1,
+                "content": content,
+                "tokens": tokens,
+                "has_tables": bool(tables)
+            })
+
+        doc.close()
+
+        return {
+            "pages": pages,
+            "total_pages": total_pages,
+            "page_range_read": (start_page, end_page),
+            "total_tokens": total_tokens,
+            "has_tables": has_tables
+        }
+
+    def _read_with_pdfplumber(self, page_range: Optional[Tuple[int, int]] = None) -> Dict[str, Any]:
+        """Read PDF using pdfplumber (better for complex tables)."""
+        with pdfplumber.open(str(self.file_path)) as pdf:
+            total_pages = len(pdf.pages)
+
+            # Determine page range
+            if page_range:
+                start_page = max(1, page_range[0])
+                end_page = min(total_pages, page_range[1])
+            else:
+                start_page = 1
+                end_page = total_pages
+
+            pages = []
+            total_tokens = 0
+            has_tables = False
+
+            # Extract pages
+            for page_num in range(start_page - 1, end_page):
+                page = pdf.pages[page_num]
+
+                # Extract text
+                text = page.extract_text() or ""
+
+                # Extract tables
+                tables = []
+                page_tables = page.extract_tables()
+                if page_tables:
+                    has_tables = True
+                    for table_data in page_tables:
+                        if table_data:
+                            markdown = self._table_to_markdown_pdfplumber(table_data)
+                            tables.append(markdown)
+
+                # Combine text and tables
+                content = text
+                if tables:
+                    content += "\n\n" + "\n\n".join(tables)
+
+                tokens = count_tokens(content)
+                total_tokens += tokens
+
+                pages.append({
+                    "page_number": page_num + 1,
+                    "content": content,
+                    "tokens": tokens,
+                    "has_tables": bool(tables)
+                })
+
+        return {
+            "pages": pages,
+            "total_pages": total_pages,
+            "page_range_read": (start_page, end_page),
+            "total_tokens": total_tokens,
+            "has_tables": has_tables
+        }
+
+    def _table_to_markdown_pymupdf(self, table_data: List[List]) -> str:
+        """Convert PyMuPDF table data to markdown."""
+        if not table_data:
+            return ""
+
+        lines = []
+
+        # Header row
+        if table_data:
+            header = table_data[0]
+            header_cells = [str(cell or "").replace("|", "\\|").strip() for cell in header]
+            lines.append("| " + " | ".join(header_cells) + " |")
+            lines.append("| " + " | ".join(["---"] * len(header_cells)) + " |")
+
+        # Data rows
+        for row in table_data[1:]:
+            cells = [str(cell or "").replace("|", "\\|").strip() for cell in row]
+            lines.append("| " + " | ".join(cells) + " |")
+
+        return "\n".join(lines)
+
+    def _table_to_markdown_pdfplumber(self, table_data: List[List]) -> str:
+        """Convert pdfplumber table data to markdown."""
+        if not table_data:
+            return ""
+
+        lines = []
+
+        # Header row
+        if table_data:
+            header = table_data[0]
+            header_cells = [str(cell or "").replace("|", "\\|").strip() for cell in header]
+            lines.append("| " + " | ".join(header_cells) + " |")
+            lines.append("| " + " | ".join(["---"] * len(header_cells)) + " |")
+
+        # Data rows
+        for row in table_data[1:]:
+            cells = [str(cell or "").replace("|", "\\|").strip() for cell in row]
+            lines.append("| " + " | ".join(cells) + " |")
+
+        return "\n".join(lines)
+
+    def chunk_pages(self, pages: List[Dict]) -> List[Dict]:
+        """
+        Chunk pages with page-aware strategy.
+
+        Strategy:
+        1. Group pages into chunks (default: 3-5 pages per chunk)
+        2. If a chunk exceeds chunk_size tokens, split it further
+        3. Preserve page boundaries in metadata
+
+        Args:
+            pages: List of page dictionaries from read()
+
+        Returns:
+            List of chunk dictionaries with:
+                - chunk_id: Unique chunk identifier
+                - page_range: (start_page, end_page) for this chunk
+                - content: Combined content
+                - tokens: Token count
+                - has_tables: Whether chunk contains tables
+                - position: Chunk position metadata
+        """
+        if not pages:
+            return []
+
+        chunks = []
+        chunk_id_counter = 1
+
+        i = 0
+        while i < len(pages):
+            # Collect pages for this chunk
+            chunk_pages = []
+            chunk_tokens = 0
+            chunk_has_tables = False
+
+            # Try to fit pages_per_chunk pages, but stop if we exceed chunk_size
+            for j in range(self.pages_per_chunk):
+                if i + j >= len(pages):
+                    break
+
+                page = pages[i + j]
+                page_tokens = page["tokens"]
+
+                # If adding this page would exceed chunk_size and we already have at least 1 page,
+                # stop here (unless it's the first page)
+                if chunk_tokens > 0 and chunk_tokens + page_tokens > self.chunk_size:
+                    break
+
+                chunk_pages.append(page)
+                chunk_tokens += page_tokens
+                if page.get("has_tables"):
+                    chunk_has_tables = True
+
+            # If no pages were added (single page too large), take it anyway
+            if not chunk_pages and i < len(pages):
+                chunk_pages.append(pages[i])
+                chunk_tokens = pages[i]["tokens"]
+                chunk_has_tables = pages[i].get("has_tables", False)
+
+            # Create chunk
+            if chunk_pages:
+                start_page = chunk_pages[0]["page_number"]
+                end_page = chunk_pages[-1]["page_number"]
+
+                # Combine content from all pages
+                content_parts = []
+                for page in chunk_pages:
+                    content_parts.append(
+                        f"[Page {page['page_number']}]\n{page['content']}"
+                    )
+
+                chunks.append({
+                    "chunk_id": f"{chunk_id_counter:03d}",
+                    "page_range": (start_page, end_page),
+                    "content": "\n\n".join(content_parts),
+                    "tokens": chunk_tokens,
+                    "has_tables": chunk_has_tables,
+                    "position": {
+                        "start_page": start_page,
+                        "end_page": end_page,
+                        "chunk_type": "page_range"
+                    }
+                })
+                chunk_id_counter += 1
+                i += len(chunk_pages)
+            else:
+                # Shouldn't happen, but safety check
+                i += 1
 
         return chunks

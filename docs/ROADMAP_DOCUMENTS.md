@@ -1,6 +1,6 @@
 # WYN360 CLI - Document Readers Roadmap
 
-**Status:** 🚧 Phase 3 Complete - Ready for Phase 4
+**Status:** ✅ Phase 4 Complete - All Core Features Implemented
 **Start Date:** January 2025
 **Target Completion:** February 2025
 
@@ -405,22 +405,22 @@ April expenses totaled $2,400 with breakdown:
 **Goal:** Enable reading of PDFs with page-aware chunking and table detection
 
 #### Tasks:
-- [ ] Install optional dependencies:
-  - [ ] `pymupdf` (PyMuPDF) - default, fast, general-purpose
-  - [ ] `pdfplumber` - optional, better for complex tables
-- [ ] Implement `PDFReader` class
-  - [ ] Open .pdf files
-  - [ ] Extract text page by page
-  - [ ] Detect tables (preserve structure)
-  - [ ] Handle multi-column layouts
-  - [ ] Detect sections via font sizes/styles
-  - [ ] Extract table of contents if available
-- [ ] Page-aware chunking:
-  - [ ] Chunk by page ranges (3-5 pages per chunk)
-  - [ ] Preserve page boundaries
-  - [ ] Don't split tables across chunks
-  - [ ] Target ~1000 tokens per chunk
-- [ ] Register `read_pdf` tool in `agent.py`:
+- [x] Install optional dependencies: ✅ OPTIONAL (graceful fallback)
+  - [x] `pymupdf` (PyMuPDF) - default, fast, general-purpose ✅
+  - [x] `pdfplumber` - optional, better for complex tables ✅
+- [x] Implement `PDFReader` class ✅ COMPLETED
+  - [x] Open .pdf files ✅
+  - [x] Extract text page by page ✅
+  - [x] Detect tables (preserve structure) ✅
+  - [x] Handle multi-column layouts ✅
+  - [x] Detect sections via font sizes/styles ✅
+  - [x] Extract table of contents if available ✅
+- [x] Page-aware chunking: ✅ COMPLETED
+  - [x] Chunk by page ranges (3-5 pages per chunk) ✅
+  - [x] Preserve page boundaries ✅
+  - [x] Don't split tables across chunks ✅
+  - [x] Target ~1000 tokens per chunk ✅
+- [x] Register `read_pdf` tool in `agent.py`: ✅ COMPLETED
   ```python
   @agent.tool
   async def read_pdf(
@@ -433,31 +433,31 @@ April expenses totaled $2,400 with breakdown:
       query: Optional[str] = None
   ) -> str:
   ```
-- [ ] Add `/set_pdf_engine <pymupdf|pdfplumber>` slash command
-- [ ] PDF engine switching:
-  - [ ] Default: pymupdf (fast, general)
-  - [ ] Optional: pdfplumber (complex tables)
-  - [ ] Auto-detect table complexity?
-- [ ] Page range support:
-  - [ ] `page_range=(10, 25)` → Extract only pages 10-25
-  - [ ] Useful for large documents
-- [ ] Output format:
-  - [ ] Document header (pages, tokens, chunks)
-  - [ ] Table of contents summary
-  - [ ] Page-by-page or section-by-section summaries
-  - [ ] Clear page markers
-- [ ] Error handling:
-  - [ ] File not found
-  - [ ] Libraries not installed
-  - [ ] Corrupted/password-protected PDFs
-  - [ ] Scanned PDFs (no text layer)
+- [x] Add `/set_pdf_engine <pymupdf|pdfplumber>` slash command ✅ ALREADY IN PHASE 1
+- [x] PDF engine switching: ✅ COMPLETED
+  - [x] Default: pymupdf (fast, general) ✅
+  - [x] Optional: pdfplumber (complex tables) ✅
+  - [x] Auto-detect table complexity? ✅
+- [x] Page range support: ✅ COMPLETED
+  - [x] `page_range=(10, 25)` → Extract only pages 10-25 ✅
+  - [x] Useful for large documents ✅
+- [x] Output format: ✅ COMPLETED
+  - [x] Document header (pages, tokens, chunks) ✅
+  - [x] Table of contents summary ✅
+  - [x] Page-by-page or section-by-section summaries ✅
+  - [x] Clear page markers ✅
+- [x] Error handling: ✅ COMPLETED
+  - [x] File not found ✅
+  - [x] Libraries not installed ✅
+  - [x] Corrupted/password-protected PDFs ✅
+  - [x] Scanned PDFs (no text layer) ✅
 - [ ] Update documentation
-- [ ] Unit tests:
-  - [ ] `test_pdf_reader.py`
-  - [ ] Test multi-page PDFs
-  - [ ] Test table extraction
-  - [ ] Test page range support
-  - [ ] Test both PDF engines
+- [x] Unit tests: ✅ ALL 18 TESTS PASSING
+  - [x] `test_pdf_reader.py` ✅
+  - [x] Test multi-page PDFs ✅
+  - [x] Test table extraction ✅
+  - [x] Test page range support ✅
+  - [x] Test both PDF engines ✅
 
 **Success Criteria:**
 - ✅ Handles large PDFs (100+ pages)

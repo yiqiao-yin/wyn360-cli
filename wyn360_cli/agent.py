@@ -4,7 +4,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from pydantic_ai import Agent, RunContext
 from pydantic_ai.models.anthropic import AnthropicModel
 
@@ -35,6 +35,7 @@ from .browser_use import (
 from .document_readers import (
     ExcelReader,
     WordReader,
+    PDFReader,
     ChunkSummarizer,
     ChunkCache,
     ChunkRetriever,
@@ -42,7 +43,9 @@ from .document_readers import (
     DocumentMetadata,
     count_tokens,
     HAS_OPENPYXL,
-    HAS_PYTHON_DOCX
+    HAS_PYTHON_DOCX,
+    HAS_PYMUPDF,
+    HAS_PDFPLUMBER
 )
 
 
@@ -167,9 +170,10 @@ class WYN360Agent:
                 self.fetch_website,
                 self.clear_website_cache,
                 self.show_cache_stats,
-                # Document readers (Phase 13.2, 13.3)
+                # Document readers (Phase 13.2, 13.3, 13.4)
                 self.read_excel,
-                self.read_word
+                self.read_word,
+                self.read_pdf
             ],
             retries=0  # No retries - show errors immediately to model for correction
         )
@@ -2383,6 +2387,282 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         response += f"\n*Note: Content cached for 1 hour. Use regenerate_cache=True to refresh.*"
 
         return response
+
+    async def read_pdf(
+        self,
+        ctx: RunContext[None],
+        file_path: str,
+        max_tokens: Optional[int] = None,
+        page_range: Optional[Tuple[int, int]] = None,
+        use_chunking: bool = True,
+        pdf_engine: Optional[str] = None,
+        regenerate_cache: bool = False,
+        query: Optional[str] = None
+    ) -> str:
+        """
+        Read and intelligently process PDF files with chunking, summarization, and retrieval.
+
+        Features:
+        - Page-by-page extraction with table detection
+        - Support for both pymupdf (fast) and pdfplumber (better tables)
+        - Page-aware chunking (3-5 pages per chunk)
+        - Auto-summarization of each chunk
+        - Tag generation for query-based retrieval
+        - 1-hour caching for instant re-access
+        - Page range filtering for large documents
+
+        Args:
+            file_path: Path to PDF file
+            max_tokens: Maximum tokens to process (default from config: 20000)
+            page_range: Optional (start_page, end_page) to read only specific pages (1-indexed)
+            use_chunking: Whether to chunk and summarize (default True)
+            pdf_engine: PDF engine to use ("pymupdf" or "pdfplumber", default from config)
+            regenerate_cache: Force regenerate cache even if exists
+            query: Optional query to retrieve relevant pages
+
+        Returns:
+            Formatted document content with summaries and tags
+
+        Example:
+            # Read entire PDF
+            content = await agent.read_pdf("report.pdf")
+
+            # Read specific pages
+            content = await agent.read_pdf("textbook.pdf", page_range=(50, 75))
+
+            # Query for specific content
+            content = await agent.read_pdf("manual.pdf", query="installation steps")
+
+            # Use pdfplumber for better table extraction
+            content = await agent.read_pdf("data.pdf", pdf_engine="pdfplumber")
+        """
+        # Check dependencies
+        if not HAS_PYMUPDF and not HAS_PDFPLUMBER:
+            return (
+                "❌ No PDF library installed.\n\n"
+                "Install either:\n"
+                "- pymupdf (recommended, fast): pip install pymupdf\n"
+                "- pdfplumber (better for tables): pip install pdfplumber"
+            )
+
+        # Get PDF engine from config if not specified
+        if pdf_engine is None:
+            pdf_engine = self.pdf_engine
+
+        # Validate engine and check if it's available
+        if pdf_engine == "pymupdf" and not HAS_PYMUPDF:
+            return (
+                f"❌ pymupdf not installed.\n\n"
+                f"Install with: pip install pymupdf\n"
+                f"Or switch to pdfplumber: /set_pdf_engine pdfplumber"
+            )
+        elif pdf_engine == "pdfplumber" and not HAS_PDFPLUMBER:
+            return (
+                f"❌ pdfplumber not installed.\n\n"
+                f"Install with: pip install pdfplumber\n"
+                f"Or switch to pymupdf: /set_pdf_engine pymupdf"
+            )
+
+        # Resolve file path (handle relative and absolute paths)
+        file_path_obj = Path(file_path)
+        if not file_path_obj.is_absolute():
+            file_path_obj = Path.cwd() / file_path
+
+        if not file_path_obj.exists():
+            return f"❌ File not found: {file_path_obj}"
+
+        # Get max_tokens from config
+        if max_tokens is None:
+            max_tokens = self.doc_token_limits.get("pdf", 20000)
+
+        # Initialize cache
+        cache = ChunkCache(cache_dir=self.cache_dir / "documents")
+
+        # Check cache (unless regenerate requested)
+        cache_key = str(file_path_obj)
+        if not regenerate_cache:
+            cached = cache.load_chunks(cache_key)
+            if cached:
+                # Cache hit
+                chunks = cached
+
+                # Filter by query if provided
+                if query:
+                    retriever = ChunkRetriever(top_k=5)
+                    chunks = retriever.get_relevant_chunks(chunks, query)
+
+                # Format output
+                response = "📄 **PDF File (from cache)**\n\n"
+                response += f"**File:** {file_path_obj.name}\n"
+                response += f"**Pages:** {chunks[0]['metadata'].get('total_pages', 'N/A')}\n"
+                response += f"**Chunks:** {len(chunks)}\n"
+                if query:
+                    response += f"**Query:** {query} (showing top {len(chunks)} relevant chunks)\n"
+                response += "\n---\n\n"
+
+                # Show chunk summaries
+                for chunk in chunks[:10]:  # Limit to 10 chunks
+                    page_range_str = f"Pages {chunk['metadata'].get('start_page', '?')}-{chunk['metadata'].get('end_page', '?')}"
+                    summary = chunk["metadata"].get("summary", "No summary available")
+                    tags = chunk["metadata"].get("tags", [])
+
+                    response += f"### {page_range_str}\n\n"
+                    response += f"{summary}\n\n"
+                    response += f"**Tags:** {', '.join(tags)}\n\n"
+                    response += "---\n\n"
+
+                response += f"\n*Note: Cached content. Use regenerate_cache=True to refresh.*"
+                return response
+
+        # Cache miss or regenerate - read and process PDF
+        try:
+            reader = PDFReader(
+                file_path=str(file_path_obj),
+                chunk_size=1000,
+                engine=pdf_engine
+            )
+
+            # Read PDF
+            result = reader.read(page_range=page_range)
+
+            total_pages = result["total_pages"]
+            pages = result["pages"]
+            total_tokens = result["total_tokens"]
+            page_range_read = result["page_range_read"]
+            has_tables = result["has_tables"]
+
+            # Check if we exceed token limit
+            if total_tokens > max_tokens:
+                # Truncate or warn
+                response = f"⚠️ PDF has {total_tokens} tokens (limit: {max_tokens})\n\n"
+                if not use_chunking:
+                    return response + "Enable chunking with use_chunking=True for intelligent summarization."
+
+            if not use_chunking:
+                # Return raw pages (up to token limit)
+                response = f"📄 **PDF File**\n\n"
+                response += f"**File:** {file_path_obj.name}\n"
+                response += f"**Total Pages:** {total_pages}\n"
+                response += f"**Pages Read:** {page_range_read[0]}-{page_range_read[1]}\n"
+                response += f"**Tokens:** {total_tokens}\n"
+                response += f"**Has Tables:** {'Yes' if has_tables else 'No'}\n"
+                response += "\n---\n\n"
+
+                # Include page content (up to limit)
+                current_tokens = 0
+                for page in pages:
+                    if current_tokens + page["tokens"] > max_tokens:
+                        break
+                    response += f"## Page {page['page_number']}\n\n"
+                    response += page["content"] + "\n\n"
+                    response += "---\n\n"
+                    current_tokens += page["tokens"]
+
+                if current_tokens < total_tokens:
+                    response += f"\n*Note: Content truncated at {max_tokens} tokens. Use chunking for full access.*"
+
+                return response
+
+            # Chunk pages
+            chunks_data = reader.chunk_pages(pages)
+
+            if not chunks_data:
+                return "❌ No content extracted from PDF."
+
+            # Initialize summarizer
+            summarizer = ChunkSummarizer(
+                api_key=self.api_key,
+                model="claude-3-5-haiku-20241022"
+            )
+
+            # Summarize each chunk
+            chunks_with_metadata = []
+            total_summary_tokens = 0
+
+            for chunk_data in chunks_data:
+                # Document context for better summaries
+                context = {
+                    "file_name": file_path_obj.name,
+                    "doc_type": "pdf",
+                    "page_range": f"Pages {chunk_data['page_range'][0]}-{chunk_data['page_range'][1]}",
+                    "total_pages": total_pages,
+                    "has_tables": chunk_data.get("has_tables", False)
+                }
+
+                # Summarize chunk
+                summary_result = await summarizer.summarize_chunk(
+                    chunk_text=chunk_data["content"],
+                    context=context
+                )
+
+                # Track tokens
+                total_summary_tokens += summary_result.get("tokens_used", 0)
+
+                # Store chunk with metadata
+                chunks_with_metadata.append({
+                    "content": chunk_data["content"],
+                    "metadata": {
+                        "chunk_id": chunk_data["chunk_id"],
+                        "start_page": chunk_data["page_range"][0],
+                        "end_page": chunk_data["page_range"][1],
+                        "tokens": chunk_data["tokens"],
+                        "has_tables": chunk_data.get("has_tables", False),
+                        "summary": summary_result["summary"],
+                        "tags": summary_result["tags"],
+                        "summary_tokens": summary_result.get("summary_tokens", 0),
+                        "total_pages": total_pages,
+                        "pdf_engine": pdf_engine
+                    }
+                })
+
+            # Track document processing tokens
+            self.track_document_processing(total_summary_tokens)
+
+            # Cache chunks
+            cache.save_chunks(cache_key, chunks_with_metadata, file_size=file_path_obj.stat().st_size)
+
+            # Filter by query if provided
+            if query:
+                retriever = ChunkRetriever(top_k=5)
+                chunks_with_metadata = retriever.get_relevant_chunks(chunks_with_metadata, query)
+
+            # Format output
+            response = "📄 **PDF File**\n\n"
+            response += f"**File:** {file_path_obj.name}\n"
+            response += f"**Total Pages:** {total_pages}\n"
+            if page_range:
+                response += f"**Pages Read:** {page_range_read[0]}-{page_range_read[1]}\n"
+            response += f"**Total Tokens:** {total_tokens:,}\n"
+            response += f"**Chunks:** {len(chunks_with_metadata)}\n"
+            response += f"**Engine:** {pdf_engine}\n"
+            response += f"**Has Tables:** {'Yes' if has_tables else 'No'}\n"
+            if query:
+                response += f"**Query:** {query} (showing top {len(chunks_with_metadata)} relevant chunks)\n"
+            response += f"**Summary Tokens Used:** {total_summary_tokens:,}\n"
+            response += "\n---\n\n"
+
+            # Show chunk summaries
+            for chunk in chunks_with_metadata[:10]:  # Limit to 10 chunks
+                page_range_str = f"Pages {chunk['metadata'].get('start_page', '?')}-{chunk['metadata'].get('end_page', '?')}"
+                summary = chunk["metadata"].get("summary", "No summary available")
+                tags = chunk["metadata"].get("tags", [])
+
+                response += f"### {page_range_str}\n\n"
+                response += f"{summary}\n\n"
+                response += f"**Tags:** {', '.join(tags)}\n\n"
+                response += "---\n\n"
+
+            # Add cache note
+            response += f"\n*Note: Content cached for 1 hour. Use regenerate_cache=True to refresh.*"
+
+            return response
+
+        except FileNotFoundError:
+            return f"❌ File not found: {file_path_obj}"
+        except ImportError as e:
+            return f"❌ Import error: {str(e)}"
+        except Exception as e:
+            return f"❌ Error reading PDF: {str(e)}"
 
     async def chat(self, user_message: str) -> str:
         """
