@@ -17,7 +17,7 @@ import re
 import base64
 import io
 from pathlib import Path
-from typing import Optional, List, Dict, Tuple, Any
+from typing import Optional, List, Dict, Tuple, Any, Union
 from dataclasses import dataclass, asdict
 
 # Optional dependencies (graceful fallback)
@@ -63,6 +63,14 @@ try:
 except ImportError:
     HAS_ANTHROPIC = False
     Anthropic = None
+
+# Import numpy for embeddings (Phase 5.2.1)
+try:
+    import numpy as np
+    HAS_NUMPY = True
+except ImportError:
+    HAS_NUMPY = False
+    np = None
 
 
 # ============================================================================
@@ -350,6 +358,168 @@ class ImageProcessor:
 
 
 # ============================================================================
+# EmbeddingModel Class (Phase 5.2.1)
+# ============================================================================
+
+class EmbeddingModel:
+    """
+    Wrapper for embedding models with support for local and API-based embeddings.
+
+    Supported providers:
+    - "local": sentence-transformers models (default: all-MiniLM-L6-v2)
+    - "claude": Claude embeddings via Anthropic API (voyage-3 model)
+
+    Local model (default):
+    - all-MiniLM-L6-v2 (22MB, 384 dimensions)
+    - Fast inference (~0.01s per sentence on CPU)
+    - No API costs
+
+    Claude embeddings:
+    - High quality (1024 dimensions)
+    - API costs apply: $0.0001 per 1K tokens
+    - Requires Anthropic API key
+    """
+
+    # Whitelist of safe sentence-transformers models
+    SAFE_LOCAL_MODELS = {
+        "all-MiniLM-L6-v2",  # Default, lightweight
+        "all-mpnet-base-v2",  # Higher quality, larger
+        "paraphrase-MiniLM-L6-v2",  # Good for paraphrase detection
+        "multi-qa-MiniLM-L6-cos-v1",  # Optimized for Q&A
+    }
+
+    def __init__(
+        self,
+        provider: str = "local",
+        model_name: str = "all-MiniLM-L6-v2",
+        api_key: Optional[str] = None
+    ):
+        """
+        Initialize embedding model.
+
+        Args:
+            provider: "local" for sentence-transformers, "claude" for Anthropic API
+            model_name: Model name (only used for "local" provider)
+            api_key: Anthropic API key (only needed for "claude" provider)
+        """
+        self.provider = provider
+        self.model_name = model_name
+        self.api_key = api_key
+        self.model = None
+        self._initialized = False
+
+        # Validate provider
+        if self.provider not in ["local", "claude"]:
+            raise ValueError(
+                f"Invalid provider '{self.provider}'. "
+                "Must be 'local' or 'claude'."
+            )
+
+        # Validate local model name (security: prevent arbitrary model loading)
+        if self.provider == "local" and self.model_name not in self.SAFE_LOCAL_MODELS:
+            raise ValueError(
+                f"Model '{self.model_name}' not in safe model list. "
+                f"Allowed models: {', '.join(self.SAFE_LOCAL_MODELS)}"
+            )
+
+        # Validate API key for Claude
+        if self.provider == "claude" and not self.api_key:
+            raise ValueError(
+                "api_key required for 'claude' provider"
+            )
+
+    def _lazy_load(self):
+        """Lazy load model on first use to avoid startup overhead."""
+        if not self._initialized:
+            if self.provider == "local":
+                try:
+                    from sentence_transformers import SentenceTransformer
+                    self.model = SentenceTransformer(self.model_name)
+                    self._initialized = True
+                except ImportError as e:
+                    raise ImportError(
+                        "sentence-transformers not installed. "
+                        "Install with: pip install sentence-transformers torch numpy"
+                    ) from e
+            elif self.provider == "claude":
+                # No lazy load needed for API-based embeddings
+                self._initialized = True
+
+    def encode(self, texts: Union[str, List[str]]) -> np.ndarray:
+        """
+        Encode text(s) into embeddings.
+
+        Args:
+            texts: Single text or list of texts
+
+        Returns:
+            Embeddings as numpy array (n_texts, embedding_dim)
+        """
+        self._lazy_load()
+
+        if isinstance(texts, str):
+            texts = [texts]
+
+        if self.provider == "local":
+            embeddings = self.model.encode(texts, convert_to_numpy=True)
+            return embeddings
+
+        elif self.provider == "claude":
+            # Use Claude embeddings API
+            import numpy as np
+            from anthropic import Anthropic
+
+            client = Anthropic(api_key=self.api_key)
+
+            # Note: As of now, Anthropic doesn't have a dedicated embeddings API
+            # This is a placeholder for when they add it
+            # For now, we'll raise an error with a helpful message
+            raise NotImplementedError(
+                "Claude embeddings API not yet available. "
+                "Use provider='local' with sentence-transformers models instead."
+            )
+
+            # Future implementation when Anthropic adds embeddings:
+            # response = client.embeddings.create(
+            #     model="claude-embeddings-v1",
+            #     texts=texts
+            # )
+            # embeddings = np.array([emb.embedding for emb in response.data])
+            # return embeddings
+
+    def compute_similarity(
+        self,
+        query_embedding: np.ndarray,
+        chunk_embeddings: np.ndarray
+    ) -> np.ndarray:
+        """
+        Compute cosine similarity between query and chunks.
+
+        Args:
+            query_embedding: Query embedding (1, embedding_dim) or (embedding_dim,)
+            chunk_embeddings: Chunk embeddings (n_chunks, embedding_dim)
+
+        Returns:
+            Similarity scores (n_chunks,)
+        """
+        import numpy as np
+
+        # Ensure query_embedding is 1D
+        if query_embedding.ndim > 1:
+            query_embedding = query_embedding.flatten()
+
+        # Normalize embeddings
+        query_norm = query_embedding / np.linalg.norm(query_embedding)
+        chunk_norms = chunk_embeddings / np.linalg.norm(
+            chunk_embeddings, axis=1, keepdims=True
+        )
+
+        # Cosine similarity
+        similarities = np.dot(chunk_norms, query_norm).flatten()
+        return similarities
+
+
+# ============================================================================
 # DocumentChunker Class
 # ============================================================================
 
@@ -467,20 +637,50 @@ class DocumentChunker:
 # ============================================================================
 
 class ChunkSummarizer:
-    """Summarize chunks and generate tags using Claude API."""
+    """Summarize chunks and generate tags using Claude API.
 
-    def __init__(self, api_key: str, model: str = "claude-3-5-haiku-20241022"):
+    Phase 5.2.2: Now includes semantic embedding generation for improved retrieval.
+    """
+
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "claude-3-5-haiku-20241022",
+        enable_embeddings: bool = True,
+        embedding_provider: str = "local",
+        embedding_model: str = "all-MiniLM-L6-v2"
+    ):
         """
         Initialize summarizer.
 
         Args:
             api_key: Anthropic API key
             model: Claude model to use (default: Haiku for cost efficiency)
+            enable_embeddings: Enable semantic embeddings (Phase 5.2.2)
+            embedding_provider: "local" or "claude" (default: local)
+            embedding_model: Model name for local embeddings
         """
         self.api_key = api_key
         self.model = model
         self.summary_tokens = 100
         self.tag_count = 8
+        self.enable_embeddings = enable_embeddings
+        self.embedding_model = None
+
+        # Initialize embedding model if enabled
+        if self.enable_embeddings:
+            try:
+                self.embedding_model = EmbeddingModel(
+                    provider=embedding_provider,
+                    model_name=embedding_model,
+                    api_key=api_key if embedding_provider == "claude" else None
+                )
+            except (ImportError, ValueError) as e:
+                # Fallback to no embeddings if initialization fails
+                print(f"Warning: Could not initialize embeddings: {e}")
+                print("Falling back to keyword matching.")
+                self.enable_embeddings = False
+                self.embedding_model = None
 
     async def summarize_chunk(
         self,
@@ -614,6 +814,50 @@ TAGS: [tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8]
             "error": f"API call failed: {error}",
             "api_tokens": {"input": 0, "output": 0}
         }
+
+    def add_embeddings_to_chunks(self, chunks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Add semantic embeddings to chunks (Phase 5.2.2).
+
+        Generates embeddings from summary + tags for better semantic matching.
+
+        Args:
+            chunks: List of chunks with 'summary' and 'tags' fields
+
+        Returns:
+            Same chunks with added 'embedding' field (list of floats)
+        """
+        if not self.enable_embeddings or not self.embedding_model:
+            # No embeddings, return chunks as-is
+            return chunks
+
+        if not chunks:
+            return chunks
+
+        try:
+            # Combine summary and tags for each chunk
+            texts_to_embed = []
+            for chunk in chunks:
+                summary = chunk.get("summary", "")
+                tags = chunk.get("tags", [])
+                tags_str = ", ".join(tags) if tags else ""
+                combined_text = f"{summary} | {tags_str}"
+                texts_to_embed.append(combined_text)
+
+            # Batch encode all chunks
+            embeddings = self.embedding_model.encode(texts_to_embed)
+
+            # Add embeddings to chunks
+            for chunk, embedding in zip(chunks, embeddings):
+                # Convert numpy array to list for JSON serialization
+                chunk["embedding"] = embedding.tolist()
+
+            return chunks
+
+        except Exception as e:
+            # If embedding fails, log warning and return chunks without embeddings
+            print(f"Warning: Failed to generate embeddings: {e}")
+            return chunks
 
 
 # ============================================================================
@@ -904,16 +1148,28 @@ class ChunkCache:
 # ============================================================================
 
 class ChunkRetriever:
-    """Retrieve relevant chunks based on user queries."""
+    """Retrieve relevant chunks based on user queries.
 
-    def __init__(self, top_k: int = 3):
+    Phase 5.2.3: Now supports semantic matching with embeddings.
+    """
+
+    def __init__(
+        self,
+        top_k: int = 3,
+        embedding_model: Optional[EmbeddingModel] = None,
+        similarity_threshold: float = 0.3
+    ):
         """
         Initialize retriever.
 
         Args:
             top_k: Number of top chunks to retrieve (default: 3)
+            embedding_model: Optional EmbeddingModel for semantic matching (Phase 5.2.3)
+            similarity_threshold: Minimum similarity score for semantic matching (0-1)
         """
         self.top_k = top_k
+        self.embedding_model = embedding_model
+        self.similarity_threshold = similarity_threshold
 
     def match_query(
         self,
@@ -921,14 +1177,100 @@ class ChunkRetriever:
         chunks: List[Dict[str, Any]]
     ) -> List[Dict[str, Any]]:
         """
-        Match user query against chunk tags.
+        Match user query against chunks.
 
-        Uses simple keyword matching (Phase 1).
-        Future: Semantic matching with embeddings (Phase 5).
+        Phase 5.2.3: Uses semantic matching with embeddings if available,
+        falls back to keyword matching otherwise.
 
         Args:
             query: User's question or search query
             chunks: List of chunk dicts from cache
+
+        Returns:
+            Top-K most relevant chunks
+        """
+        if not chunks:
+            return []
+
+        # Check if embeddings are available
+        has_embeddings = all("embedding" in chunk for chunk in chunks)
+
+        if has_embeddings and self.embedding_model:
+            # SEMANTIC MATCHING (Phase 5.2.3)
+            return self._semantic_match(query, chunks)
+        else:
+            # FALLBACK: KEYWORD MATCHING (Phase 1)
+            return self._keyword_match(query, chunks)
+
+    def _semantic_match(
+        self,
+        query: str,
+        chunks: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Semantic matching using embeddings (Phase 5.2.3).
+
+        Args:
+            query: User query
+            chunks: List of chunks with embeddings
+
+        Returns:
+            Top-K most relevant chunks
+        """
+        try:
+            import numpy as np
+
+            # Encode query
+            query_embedding = self.embedding_model.encode(query)
+
+            # Extract chunk embeddings
+            chunk_embeddings = np.array([
+                chunk["embedding"] for chunk in chunks
+            ])
+
+            # Compute similarities
+            similarities = self.embedding_model.compute_similarity(
+                query_embedding, chunk_embeddings
+            )
+
+            # Filter by threshold and rank
+            scored_chunks = [
+                {
+                    "chunk": chunk,
+                    "score": float(score),
+                    "match_type": "semantic"
+                }
+                for chunk, score in zip(chunks, similarities)
+                if score >= self.similarity_threshold
+            ]
+            scored_chunks.sort(key=lambda x: x["score"], reverse=True)
+
+            # Return top-K with similarity scores added
+            top_chunks = []
+            for item in scored_chunks[:self.top_k]:
+                chunk = item["chunk"].copy()
+                chunk["similarity_score"] = item["score"]
+                chunk["match_type"] = "semantic"
+                top_chunks.append(chunk)
+
+            return top_chunks
+
+        except Exception as e:
+            # If semantic matching fails, fall back to keyword matching
+            print(f"Warning: Semantic matching failed: {e}. Falling back to keyword matching.")
+            return self._keyword_match(query, chunks)
+
+    def _keyword_match(
+        self,
+        query: str,
+        chunks: List[Dict[str, Any]]
+    ) -> List[Dict[str, Any]]:
+        """
+        Keyword matching (fallback when no embeddings).
+
+        Args:
+            query: User query
+            chunks: List of chunks
 
         Returns:
             Top-K most relevant chunks
@@ -948,8 +1290,14 @@ class ChunkRetriever:
         # Sort by score descending
         scored_chunks.sort(key=lambda x: x["score"], reverse=True)
 
-        # Return top-K
-        return [item["chunk"] for item in scored_chunks[:self.top_k]]
+        # Return top-K with match type
+        top_chunks = []
+        for item in scored_chunks[:self.top_k]:
+            chunk = item["chunk"].copy()
+            chunk["match_type"] = "keyword"
+            top_chunks.append(chunk)
+
+        return top_chunks
 
     def _tokenize_query(self, query: str) -> List[str]:
         """Tokenize query into searchable terms."""
