@@ -14,7 +14,7 @@ Tests cover:
 import pytest
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, MagicMock, patch, call
+from unittest.mock import Mock, MagicMock, patch, call, AsyncMock
 from wyn360_cli.document_readers import PDFReader, count_tokens
 
 
@@ -50,39 +50,43 @@ class TestPDFReader:
 
         assert "Unknown PDF engine" in str(exc_info.value)
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYMUPDF', False)
-    def test_read_without_pymupdf(self):
+    async def test_read_without_pymupdf(self):
         """Test error when pymupdf not installed."""
         with tempfile.NamedTemporaryFile(suffix=".pdf") as tmpfile:
             reader = PDFReader(file_path=tmpfile.name, engine="pymupdf")
 
             with pytest.raises(ImportError) as exc_info:
-                reader.read()
+                await reader.read()
 
             assert "pymupdf not installed" in str(exc_info.value)
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PDFPLUMBER', False)
-    def test_read_without_pdfplumber(self):
+    async def test_read_without_pdfplumber(self):
         """Test error when pdfplumber not installed."""
         with tempfile.NamedTemporaryFile(suffix=".pdf") as tmpfile:
             reader = PDFReader(file_path=tmpfile.name, engine="pdfplumber")
 
             with pytest.raises(ImportError) as exc_info:
-                reader.read()
+                await reader.read()
 
             assert "pdfplumber not installed" in str(exc_info.value)
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYMUPDF', True)
     @patch('wyn360_cli.document_readers.pymupdf')
-    def test_read_nonexistent_file(self, mock_pymupdf):
+    async def test_read_nonexistent_file(self, mock_pymupdf):
         """Test error when file doesn't exist."""
         reader = PDFReader(file_path="/nonexistent/file.pdf", engine="pymupdf")
 
         with pytest.raises(FileNotFoundError):
-            reader.read()
+            await reader.read()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYMUPDF', True)
-    def test_read_simple_pdf_pymupdf(self):
+    async def test_read_simple_pdf_pymupdf(self):
         """Test reading a simple PDF with PyMuPDF."""
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -98,21 +102,24 @@ class TestPDFReader:
                 page1 = Mock()
                 page1.get_text.return_value = "Page 1 content with some text."
                 page1.find_tables.return_value = Mock(tables=[])
+                page1.get_images.return_value = []  # No images
 
                 page2 = Mock()
                 page2.get_text.return_value = "Page 2 content with more text."
                 page2.find_tables.return_value = Mock(tables=[])
+                page2.get_images.return_value = []  # No images
 
                 page3 = Mock()
                 page3.get_text.return_value = "Page 3 final content."
                 page3.find_tables.return_value = Mock(tables=[])
+                page3.get_images.return_value = []  # No images
 
                 mock_doc.__getitem__.side_effect = [page1, page2, page3]
                 mock_pymupdf.open.return_value = mock_doc
 
                 # Read PDF
                 reader = PDFReader(file_path=tmpfile_path, engine="pymupdf")
-                result = reader.read()
+                result = await reader.read()
 
                 # Verify results
                 assert result["total_pages"] == 3
@@ -126,8 +133,9 @@ class TestPDFReader:
         finally:
             Path(tmpfile_path).unlink()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PDFPLUMBER', True)
-    def test_read_simple_pdf_pdfplumber(self):
+    async def test_read_simple_pdf_pdfplumber(self):
         """Test reading a simple PDF with pdfplumber."""
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -139,10 +147,12 @@ class TestPDFReader:
                 page1 = Mock()
                 page1.extract_text.return_value = "Page 1 content."
                 page1.extract_tables.return_value = []
+                page1.images = []  # No images
 
                 page2 = Mock()
                 page2.extract_text.return_value = "Page 2 content."
                 page2.extract_tables.return_value = []
+                page2.images = []  # No images
 
                 # Mock PDF
                 mock_pdf = MagicMock()
@@ -152,7 +162,7 @@ class TestPDFReader:
 
                 # Read PDF
                 reader = PDFReader(file_path=tmpfile_path, engine="pdfplumber")
-                result = reader.read()
+                result = await reader.read()
 
                 # Verify results
                 assert result["total_pages"] == 2
@@ -163,8 +173,9 @@ class TestPDFReader:
         finally:
             Path(tmpfile_path).unlink()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYMUPDF', True)
-    def test_read_with_page_range(self):
+    async def test_read_with_page_range(self):
         """Test reading specific page range."""
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -181,6 +192,7 @@ class TestPDFReader:
                     page = Mock()
                     page.get_text.return_value = f"Page {i} content."
                     page.find_tables.return_value = Mock(tables=[])
+                    page.get_images.return_value = []  # No images
                     mock_pages.append(page)
 
                 mock_doc.__getitem__.side_effect = mock_pages
@@ -188,7 +200,7 @@ class TestPDFReader:
 
                 # Read pages 3-5
                 reader = PDFReader(file_path=tmpfile_path, engine="pymupdf")
-                result = reader.read(page_range=(3, 5))
+                result = await reader.read(page_range=(3, 5))
 
                 # Verify only requested pages read
                 assert result["total_pages"] == 10
@@ -200,8 +212,9 @@ class TestPDFReader:
         finally:
             Path(tmpfile_path).unlink()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYMUPDF', True)
-    def test_read_with_tables_pymupdf(self):
+    async def test_read_with_tables_pymupdf(self):
         """Test table extraction with PyMuPDF."""
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -215,6 +228,7 @@ class TestPDFReader:
                 # Mock page with table
                 page = Mock()
                 page.get_text.return_value = "Page with table."
+                page.get_images.return_value = []  # No images
 
                 # Mock table
                 mock_table = Mock()
@@ -233,7 +247,7 @@ class TestPDFReader:
 
                 # Read PDF
                 reader = PDFReader(file_path=tmpfile_path, engine="pymupdf")
-                result = reader.read()
+                result = await reader.read()
 
                 # Verify table detected
                 assert result["has_tables"] is True
@@ -244,8 +258,9 @@ class TestPDFReader:
         finally:
             Path(tmpfile_path).unlink()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PDFPLUMBER', True)
-    def test_read_with_tables_pdfplumber(self):
+    async def test_read_with_tables_pdfplumber(self):
         """Test table extraction with pdfplumber."""
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -262,6 +277,7 @@ class TestPDFReader:
                         ["Data3", "Data4"]
                     ]
                 ]
+                page.images = []  # No images
 
                 # Mock PDF
                 mock_pdf = MagicMock()
@@ -271,7 +287,7 @@ class TestPDFReader:
 
                 # Read PDF
                 reader = PDFReader(file_path=tmpfile_path, engine="pdfplumber")
-                result = reader.read()
+                result = await reader.read()
 
                 # Verify table detected
                 assert result["has_tables"] is True

@@ -13,7 +13,7 @@ Tests cover:
 import pytest
 import tempfile
 from pathlib import Path
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch, AsyncMock
 from wyn360_cli.document_readers import WordReader, count_tokens
 
 
@@ -39,29 +39,32 @@ class TestWordReader:
         assert reader.image_handling == "skip"
         assert reader.chunk_size == 500
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', False)
-    def test_read_without_python_docx(self):
+    async def test_read_without_python_docx(self):
         """Test error when python-docx not installed."""
         with tempfile.NamedTemporaryFile(suffix=".docx") as tmpfile:
             reader = WordReader(file_path=tmpfile.name)
 
             with pytest.raises(ImportError) as exc_info:
-                reader.read()
+                await reader.read()
 
             assert "python-docx not installed" in str(exc_info.value)
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
     @patch('wyn360_cli.document_readers.Document')
-    def test_read_nonexistent_file(self, mock_document):
+    async def test_read_nonexistent_file(self, mock_document):
         """Test error when file doesn't exist."""
         reader = WordReader(file_path="/nonexistent/file.docx")
 
         with pytest.raises(FileNotFoundError):
-            reader.read()
+            await reader.read()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
     @patch('wyn360_cli.document_readers.Document')
-    def test_read_simple_document(self, mock_document):
+    async def test_read_simple_document(self, mock_document):
         """Test reading a simple Word document with sections."""
         with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -100,7 +103,7 @@ class TestWordReader:
 
             # Read document
             reader = WordReader(file_path=tmpfile_path)
-            result = reader.read()
+            result = await reader.read()
 
             # Verify results
             assert result["total_sections"] == 1
@@ -112,9 +115,10 @@ class TestWordReader:
         finally:
             Path(tmpfile_path).unlink()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
     @patch('wyn360_cli.document_readers.Document')
-    def test_extract_multiple_sections(self, mock_document):
+    async def test_extract_multiple_sections(self, mock_document):
         """Test extracting multiple sections with different heading levels."""
         with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -161,7 +165,7 @@ class TestWordReader:
             mock_document.return_value = mock_doc
 
             reader = WordReader(file_path=tmpfile_path)
-            result = reader.read()
+            result = await reader.read()
 
             # Verify multiple sections
             assert result["total_sections"] == 2
@@ -173,9 +177,10 @@ class TestWordReader:
         finally:
             Path(tmpfile_path).unlink()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
     @patch('wyn360_cli.document_readers.Document')
-    def test_extract_table(self, mock_document):
+    async def test_extract_table(self, mock_document):
         """Test table extraction and markdown conversion."""
         with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -219,7 +224,7 @@ class TestWordReader:
             mock_document.return_value = mock_doc
 
             reader = WordReader(file_path=tmpfile_path)
-            result = reader.read()
+            result = await reader.read()
 
             # Verify table was extracted
             assert result["total_sections"] == 1
@@ -334,9 +339,10 @@ class TestWordReader:
         # At least one chunk should be marked as partial
         assert any(c["position"]["chunk_type"] == "partial" for c in chunks)
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
     @patch('wyn360_cli.document_readers.Document')
-    def test_document_without_headings(self, mock_document):
+    async def test_document_without_headings(self, mock_document):
         """Test document with no headings (all paragraphs)."""
         with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -370,7 +376,7 @@ class TestWordReader:
             mock_document.return_value = mock_doc
 
             reader = WordReader(file_path=tmpfile_path)
-            result = reader.read()
+            result = await reader.read()
 
             # Should create a single "Document" section
             assert result["total_sections"] == 1
@@ -381,9 +387,10 @@ class TestWordReader:
         finally:
             Path(tmpfile_path).unlink()
 
+    @pytest.mark.asyncio
     @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
     @patch('wyn360_cli.document_readers.Document')
-    def test_empty_document(self, mock_document):
+    async def test_empty_document(self, mock_document):
         """Test empty document with no content."""
         with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
@@ -397,7 +404,7 @@ class TestWordReader:
             mock_document.return_value = mock_doc
 
             reader = WordReader(file_path=tmpfile_path)
-            result = reader.read()
+            result = await reader.read()
 
             # Empty document should return no sections
             assert result["total_sections"] == 0
@@ -406,6 +413,157 @@ class TestWordReader:
 
         finally:
             Path(tmpfile_path).unlink()
+
+    def test_extract_images_from_docx(self):
+        """Test image extraction from Word document."""
+        reader = WordReader(file_path="test.docx")
+
+        # Mock document with images
+        mock_doc = MagicMock()
+
+        # Mock inline shape (image)
+        mock_shape = Mock()
+        mock_graphic = Mock()
+        mock_pic = Mock()
+        mock_blip = Mock()
+        mock_blip.embed = "rId1"
+
+        mock_pic.blipFill.blip = mock_blip
+        mock_graphic.graphicData.pic = mock_pic
+        mock_shape._inline.graphic = mock_graphic
+
+        mock_doc.inline_shapes = [mock_shape]
+
+        # Mock image part
+        mock_image_part = Mock()
+        mock_image_part.blob = b'\x89PNG\r\n\x1a\n' + b'\x00' * 100  # PNG header + data
+        mock_image_part.content_type = "image/png"
+
+        mock_doc.part.related_parts = {"rId1": mock_image_part}
+
+        # Extract images
+        images = reader._extract_images(mock_doc)
+
+        # Verify
+        assert len(images) == 1
+        assert images[0]["format"] == "png"
+        assert images[0]["data"] == mock_image_part.blob
+        assert images[0]["context"]["doc_type"] == "word"
+        assert images[0]["context"]["index"] == 0
+
+    @pytest.mark.asyncio
+    @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
+    @patch('wyn360_cli.document_readers.Document')
+    async def test_image_extraction_with_vision_mode(self, mock_document):
+        """Test reading document with vision mode enabled."""
+        with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmpfile:
+            tmpfile_path = tmpfile.name
+
+        try:
+            # Mock document
+            mock_doc = MagicMock()
+            mock_doc.paragraphs = []
+            mock_doc.element.body = []
+            mock_doc.tables = []
+            mock_doc.inline_shapes = []  # No images for simplicity
+
+            mock_document.return_value = mock_doc
+
+            # Mock ImageProcessor
+            mock_processor = AsyncMock()
+            mock_processor.describe_images_batch = AsyncMock(return_value=[])
+
+            # Read with vision mode
+            reader = WordReader(file_path=tmpfile_path, image_handling="vision")
+            result = await reader.read(image_processor=mock_processor)
+
+            # Verify vision_tokens_used is tracked
+            assert "vision_tokens_used" in result
+            assert result["vision_tokens_used"] == 0
+
+        finally:
+            Path(tmpfile_path).unlink()
+
+    @pytest.mark.asyncio
+    @patch('wyn360_cli.document_readers.HAS_PYTHON_DOCX', True)
+    @patch('wyn360_cli.document_readers.Document')
+    async def test_image_extraction_skip_mode(self, mock_document):
+        """Test that skip mode doesn't process images."""
+        with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tmpfile:
+            tmpfile_path = tmpfile.name
+
+        try:
+            mock_doc = MagicMock()
+            mock_doc.paragraphs = []
+            mock_doc.element.body = []
+            mock_doc.tables = []
+            mock_doc.inline_shapes = []
+
+            mock_document.return_value = mock_doc
+
+            # Read with skip mode (default)
+            reader = WordReader(file_path=tmpfile_path, image_handling="skip")
+            result = await reader.read(image_processor=None)
+
+            # Verify no vision processing occurred
+            assert "images" not in result or len(result.get("images", [])) == 0
+            assert result["vision_tokens_used"] == 0
+
+        finally:
+            Path(tmpfile_path).unlink()
+
+    @pytest.mark.asyncio
+    async def test_process_images_with_vision(self):
+        """Test processing images with vision API."""
+        reader = WordReader(file_path="test.docx", image_handling="vision")
+
+        # Mock images
+        images = [
+            {
+                "data": b'\x89PNG\r\n\x1a\n' + b'\x00' * 100,
+                "format": "png",
+                "context": {"index": 0, "doc_type": "word"}
+            }
+        ]
+
+        # Mock ImageProcessor
+        mock_processor = AsyncMock()
+        mock_processor.describe_images_batch = AsyncMock(return_value=[
+            {
+                "description": "A chart showing data",
+                "image_type": "chart",
+                "tokens_used": 150,
+                "confidence": "high"
+            }
+        ])
+
+        # Process images
+        descriptions = await reader._process_images_with_vision(
+            images=images,
+            image_processor=mock_processor,
+            doc_context={"file_name": "test.docx"}
+        )
+
+        # Verify
+        assert len(descriptions) == 1
+        assert descriptions[0]["description"] == "A chart showing data"
+        assert descriptions[0]["image_type"] == "chart"
+        assert descriptions[0]["tokens_used"] == 150
+        assert descriptions[0]["index"] == 0
+
+    def test_extract_images_handles_errors(self):
+        """Test that image extraction handles errors gracefully."""
+        reader = WordReader(file_path="test.docx")
+
+        # Mock document where inline_shapes raises an exception
+        mock_doc = Mock()
+        mock_doc.inline_shapes = Mock(side_effect=AttributeError("No inline shapes"))
+
+        # Extract images - should not raise exception, return empty list
+        images = reader._extract_images(mock_doc)
+
+        # Should return empty list when there's an error
+        assert images == []
 
 
 # Run tests

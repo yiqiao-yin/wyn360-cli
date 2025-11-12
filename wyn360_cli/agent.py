@@ -36,6 +36,7 @@ from .document_readers import (
     ExcelReader,
     WordReader,
     PDFReader,
+    ImageProcessor,
     ChunkSummarizer,
     ChunkCache,
     ChunkRetriever,
@@ -95,6 +96,11 @@ class WYN360Agent:
         self.doc_processing_input_tokens = 0
         self.doc_processing_output_tokens = 0
         self.doc_processing_count = 0
+
+        # Vision API token tracking (Phase 5.1.3)
+        self.vision_input_tokens = 0
+        self.vision_output_tokens = 0
+        self.vision_image_count = 0
 
         # Document reader settings (Phase 13.1)
         self.doc_token_limits = {
@@ -2275,8 +2281,24 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                     image_handling=image_handling
                 )
 
-                # Read sections
-                word_data = reader.read()
+                # Create ImageProcessor if vision mode enabled
+                image_processor = None
+                if image_handling == "vision":
+                    image_processor = ImageProcessor(api_key=self.api_key, model=self.model_name)
+
+                # Read sections (async with optional vision processing)
+                word_data = await reader.read(image_processor=image_processor)
+
+                # Track vision tokens if images were processed
+                if "vision_tokens_used" in word_data and word_data["vision_tokens_used"] > 0:
+                    # Estimate input tokens (images are ~1000 tokens each, plus prompt ~100)
+                    image_count = len(word_data.get("images", []))
+                    estimated_input = image_count * 1100
+                    self.track_vision_processing(
+                        input_tokens=estimated_input,
+                        output_tokens=word_data["vision_tokens_used"],
+                        image_count=image_count
+                    )
 
                 if word_data["total_sections"] == 0:
                     return f"❌ No content found in {file_path_obj.name}"
@@ -2396,6 +2418,7 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         page_range: Optional[Tuple[int, int]] = None,
         use_chunking: bool = True,
         pdf_engine: Optional[str] = None,
+        image_handling: Optional[str] = None,
         regenerate_cache: bool = False,
         query: Optional[str] = None
     ) -> str:
@@ -2448,6 +2471,10 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         # Get PDF engine from config if not specified
         if pdf_engine is None:
             pdf_engine = self.pdf_engine
+
+        # Get image_handling from config if not specified
+        if image_handling is None:
+            image_handling = self.image_handling_mode
 
         # Validate engine and check if it's available
         if pdf_engine == "pymupdf" and not HAS_PYMUPDF:
@@ -2519,11 +2546,28 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             reader = PDFReader(
                 file_path=str(file_path_obj),
                 chunk_size=1000,
-                engine=pdf_engine
+                engine=pdf_engine,
+                image_handling=image_handling
             )
 
-            # Read PDF
-            result = reader.read(page_range=page_range)
+            # Create ImageProcessor if vision mode enabled
+            image_processor = None
+            if image_handling == "vision":
+                image_processor = ImageProcessor(api_key=self.api_key, model=self.model_name)
+
+            # Read PDF (async with optional vision processing)
+            result = await reader.read(page_range=page_range, image_processor=image_processor)
+
+            # Track vision tokens if images were processed
+            if "vision_tokens_used" in result and result["vision_tokens_used"] > 0:
+                # Estimate input tokens (images are ~1000 tokens each, plus prompt ~100)
+                image_count = len(result.get("images", []))
+                estimated_input = image_count * 1100
+                self.track_vision_processing(
+                    input_tokens=estimated_input,
+                    output_tokens=result["vision_tokens_used"],
+                    image_count=image_count
+                )
 
             total_pages = result["total_pages"]
             pages = result["pages"]
@@ -2922,6 +2966,19 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         self.doc_processing_output_tokens += output_tokens
         self.doc_processing_count += 1
 
+    def track_vision_processing(self, input_tokens: int, output_tokens: int, image_count: int = 1) -> None:
+        """
+        Track tokens used for vision API calls (image processing).
+
+        Args:
+            input_tokens: Input tokens (image + prompt)
+            output_tokens: Output tokens (image description)
+            image_count: Number of images processed
+        """
+        self.vision_input_tokens += input_tokens
+        self.vision_output_tokens += output_tokens
+        self.vision_image_count += image_count
+
     def get_token_stats(self) -> Dict[str, Any]:
         """
         Get token usage statistics.
@@ -2941,7 +2998,13 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             (self.doc_processing_output_tokens / 1_000_000 * 1.25)
         )
 
-        total_cost = conversation_cost + doc_processing_cost
+        # Vision API costs (Sonnet pricing - same as conversation)
+        vision_cost = (
+            (self.vision_input_tokens / 1_000_000 * 3.0) +
+            (self.vision_output_tokens / 1_000_000 * 15.0)
+        )
+
+        total_cost = conversation_cost + doc_processing_cost + vision_cost
 
         avg_cost_per_request = total_cost / self.request_count if self.request_count > 0 else 0
 
@@ -2962,6 +3025,14 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             "doc_processing_cost": doc_processing_cost,
             "doc_processing_input_cost": self.doc_processing_input_tokens / 1_000_000 * 0.25,
             "doc_processing_output_cost": self.doc_processing_output_tokens / 1_000_000 * 1.25,
+            # Vision API stats
+            "vision_image_count": self.vision_image_count,
+            "vision_input_tokens": self.vision_input_tokens,
+            "vision_output_tokens": self.vision_output_tokens,
+            "vision_total_tokens": self.vision_input_tokens + self.vision_output_tokens,
+            "vision_cost": vision_cost,
+            "vision_input_cost": self.vision_input_tokens / 1_000_000 * 3.0,
+            "vision_output_cost": self.vision_output_tokens / 1_000_000 * 15.0,
         }
 
     def get_performance_stats(self) -> Dict[str, Any]:

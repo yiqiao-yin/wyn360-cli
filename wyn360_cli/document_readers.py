@@ -14,6 +14,8 @@ import hashlib
 import json
 import time
 import re
+import base64
+import io
 from pathlib import Path
 from typing import Optional, List, Dict, Tuple, Any
 from dataclasses import dataclass, asdict
@@ -46,6 +48,13 @@ try:
 except ImportError:
     HAS_PDFPLUMBER = False
     pdfplumber = None
+
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
+    Image = None
 
 # Import Anthropic at module level for easier mocking in tests
 try:
@@ -108,6 +117,236 @@ class DocumentMetadata:
     created_at: float
     ttl: int
     doc_type: str  # "excel" | "word" | "pdf"
+
+
+# ============================================================================
+# ImageProcessor Class (Phase 5.1)
+# ============================================================================
+
+class ImageProcessor:
+    """
+    Process images from documents using Claude Vision API.
+
+    Features:
+    - Extract images from Word and PDF documents
+    - Send images to Claude Vision API for description
+    - Support batch processing for efficiency
+    - Track vision API costs separately
+    - Detect image types (chart, diagram, photo, etc.)
+
+    Usage:
+        processor = ImageProcessor(api_key="your_key")
+        description = await processor.describe_image(image_data, context={...})
+    """
+
+    def __init__(self, api_key: str, model: str = "claude-3-5-sonnet-20241022"):
+        """
+        Initialize image processor.
+
+        Args:
+            api_key: Anthropic API key
+            model: Claude model to use (must support vision)
+        """
+        if not HAS_ANTHROPIC:
+            raise ImportError("anthropic library required for vision mode")
+
+        self.api_key = api_key
+        self.model = model
+        self.client = Anthropic(api_key=api_key)
+
+    async def describe_image(
+        self,
+        image_data: bytes,
+        context: Optional[Dict[str, Any]] = None,
+        max_tokens: int = 300
+    ) -> Dict[str, Any]:
+        """
+        Describe an image using Claude Vision API.
+
+        Args:
+            image_data: Image bytes (PNG, JPEG, GIF, WebP)
+            context: Optional context about the image (page number, document type, etc.)
+            max_tokens: Maximum tokens for description
+
+        Returns:
+            {
+                "description": "Image description...",
+                "image_type": "chart" | "diagram" | "photo" | "screenshot" | "other",
+                "tokens_used": 150,
+                "confidence": "high" | "medium" | "low"
+            }
+        """
+        try:
+            # Detect image format
+            image_format = self._detect_image_format(image_data)
+            if not image_format:
+                return {
+                    "description": "[Image: format not supported]",
+                    "image_type": "other",
+                    "tokens_used": 0,
+                    "confidence": "low"
+                }
+
+            # Encode image to base64
+            image_base64 = base64.b64encode(image_data).decode('utf-8')
+
+            # Build prompt based on context
+            prompt = self._build_image_prompt(context)
+
+            # Call Claude Vision API
+            message = self.client.messages.create(
+                model=self.model,
+                max_tokens=max_tokens,
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "image",
+                                "source": {
+                                    "type": "base64",
+                                    "media_type": f"image/{image_format}",
+                                    "data": image_base64
+                                }
+                            },
+                            {
+                                "type": "text",
+                                "text": prompt
+                            }
+                        ]
+                    }
+                ]
+            )
+
+            # Extract description
+            description = message.content[0].text if message.content else "[No description available]"
+
+            # Detect image type from description
+            image_type = self._detect_image_type(description)
+
+            # Calculate tokens used
+            tokens_used = message.usage.input_tokens + message.usage.output_tokens
+
+            return {
+                "description": description,
+                "image_type": image_type,
+                "tokens_used": tokens_used,
+                "confidence": "high"
+            }
+
+        except Exception as e:
+            return {
+                "description": f"[Image: error processing - {str(e)}]",
+                "image_type": "other",
+                "tokens_used": 0,
+                "confidence": "low"
+            }
+
+    async def describe_images_batch(
+        self,
+        images: List[Dict[str, Any]],
+        context: Optional[Dict[str, Any]] = None
+    ) -> List[Dict[str, Any]]:
+        """
+        Describe multiple images efficiently.
+
+        Args:
+            images: List of {"data": bytes, "context": dict} dicts
+            context: Global context for all images
+
+        Returns:
+            List of description results
+        """
+        results = []
+
+        for img in images:
+            img_context = {**(context or {}), **(img.get("context", {}))}
+            result = await self.describe_image(
+                image_data=img["data"],
+                context=img_context
+            )
+            results.append(result)
+
+        return results
+
+    def _detect_image_format(self, image_data: bytes) -> Optional[str]:
+        """Detect image format from bytes."""
+        # Check magic bytes
+        if image_data.startswith(b'\x89PNG'):
+            return "png"
+        elif image_data.startswith(b'\xff\xd8\xff'):
+            return "jpeg"
+        elif image_data.startswith(b'GIF'):
+            return "gif"
+        elif image_data.startswith(b'RIFF') and b'WEBP' in image_data[:20]:
+            return "webp"
+        else:
+            # Try using PIL if available
+            if HAS_PIL:
+                try:
+                    img = Image.open(io.BytesIO(image_data))
+                    fmt = img.format.lower()
+                    if fmt in ['png', 'jpeg', 'jpg', 'gif', 'webp']:
+                        return 'jpeg' if fmt == 'jpg' else fmt
+                except:
+                    pass
+            return None
+
+    def _build_image_prompt(self, context: Optional[Dict[str, Any]] = None) -> str:
+        """Build prompt for image description based on context."""
+        base_prompt = "Describe this image concisely. "
+
+        if not context:
+            return base_prompt + "Focus on the main content and purpose of the image."
+
+        doc_type = context.get("doc_type", "")
+        page_info = context.get("page_number", "")
+        section_info = context.get("section_title", "")
+
+        # Customize prompt based on document type
+        if doc_type == "pdf" or doc_type == "word":
+            base_prompt += "This image is from a document. "
+
+        if page_info:
+            base_prompt += f"(Page {page_info}) "
+
+        if section_info:
+            base_prompt += f"(Section: {section_info}) "
+
+        base_prompt += "Identify if this is a chart, diagram, photo, screenshot, or other type of image. "
+        base_prompt += "Describe its content and purpose clearly and concisely."
+
+        return base_prompt
+
+    def _detect_image_type(self, description: str) -> str:
+        """Detect image type from description."""
+        description_lower = description.lower()
+
+        if any(word in description_lower for word in ['chart', 'graph', 'plot', 'bar', 'line', 'pie']):
+            return "chart"
+        elif any(word in description_lower for word in ['diagram', 'flowchart', 'schematic', 'blueprint']):
+            return "diagram"
+        elif any(word in description_lower for word in ['screenshot', 'screen capture', 'interface']):
+            return "screenshot"
+        elif any(word in description_lower for word in ['photo', 'photograph', 'picture', 'image of']):
+            return "photo"
+        else:
+            return "other"
+
+    def format_image_markdown(self, description: str, image_type: str, image_index: int = None) -> str:
+        """Format image description as markdown."""
+        type_emoji = {
+            "chart": "📊",
+            "diagram": "📐",
+            "screenshot": "🖥️",
+            "photo": "📷",
+            "other": "🖼️"
+        }
+
+        emoji = type_emoji.get(image_type, "🖼️")
+        prefix = f"Image {image_index}" if image_index else "Image"
+
+        return f"{emoji} **[{prefix}]:** {description}"
 
 
 # ============================================================================
@@ -1186,9 +1425,12 @@ class WordReader:
         self.image_handling = image_handling
         self.chunker = DocumentChunker(chunk_size)
 
-    def read(self) -> Dict[str, Any]:
+    async def read(self, image_processor: Optional['ImageProcessor'] = None) -> Dict[str, Any]:
         """
         Read Word file and return structured data.
+
+        Args:
+            image_processor: Optional ImageProcessor for vision mode
 
         Returns:
             {
@@ -1204,7 +1446,9 @@ class WordReader:
                 "total_sections": 5,
                 "total_tokens": 5000,
                 "has_tables": True,
-                "has_images": True
+                "has_images": True,
+                "images": [...],  # NEW: list of image descriptions if vision mode
+                "vision_tokens_used": 0  # NEW: tokens used for vision API
             }
         """
         if not HAS_PYTHON_DOCX:
@@ -1219,35 +1463,61 @@ class WordReader:
             # Open document
             doc = Document(str(self.file_path))
 
+            # Extract images if vision mode enabled
+            image_descriptions = []
+            vision_tokens_used = 0
+
+            if image_processor and self.image_handling == "vision":
+                images = self._extract_images(doc)
+                if images:
+                    # Process images with vision API
+                    image_descriptions = await self._process_images_with_vision(
+                        images=images,
+                        image_processor=image_processor,
+                        doc_context={"doc_type": "word", "file_name": self.file_path.name}
+                    )
+                    # Track vision tokens
+                    vision_tokens_used = sum(img.get("tokens_used", 0) for img in image_descriptions)
+
             # Extract sections with structure
-            sections = self._extract_sections(doc)
+            sections = self._extract_sections(doc, image_descriptions)
 
             # Calculate totals
             total_tokens = sum(s["tokens"] for s in sections)
             has_tables = any(s.get("has_tables", False) for s in sections)
             has_images = any(s.get("has_images", False) for s in sections)
 
-            return {
+            result = {
                 "sections": sections,
                 "total_sections": len(sections),
                 "total_tokens": total_tokens,
                 "has_tables": has_tables,
-                "has_images": has_images
+                "has_images": has_images,
+                "vision_tokens_used": vision_tokens_used
             }
+
+            # Add image descriptions if vision mode was used
+            if image_descriptions:
+                result["images"] = image_descriptions
+
+            return result
 
         except Exception as e:
             raise Exception(f"Failed to read Word file: {e}")
 
-    def _extract_sections(self, doc) -> List[Dict[str, Any]]:
+    def _extract_sections(self, doc, image_descriptions: List[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
         Extract document structure with headings as section boundaries.
 
         Args:
             doc: python-docx Document object
+            image_descriptions: Optional list of image descriptions from vision API
 
         Returns:
             List of section dicts with title, content, level
         """
+        if image_descriptions is None:
+            image_descriptions = []
         sections = []
         current_section = None
         current_content = []
@@ -1359,6 +1629,95 @@ class WordReader:
             lines.append(row_line)
 
         return "\n".join(lines)
+
+    def _extract_images(self, doc) -> List[Dict[str, Any]]:
+        """
+        Extract all images from Word document.
+
+        Args:
+            doc: python-docx Document object
+
+        Returns:
+            List of image dicts with {
+                "data": bytes,
+                "format": "png"|"jpeg"|"gif",
+                "context": {"index": N, "doc_type": "word"}
+            }
+        """
+        images = []
+
+        try:
+            # Method 1: Inline shapes (document.inline_shapes)
+            for idx, shape in enumerate(doc.inline_shapes):
+                try:
+                    # Get image bytes through the relationship
+                    image_rId = shape._inline.graphic.graphicData.pic.blipFill.blip.embed
+                    image_part = doc.part.related_parts[image_rId]
+                    image_data = image_part.blob
+
+                    # Detect format from content type
+                    content_type = image_part.content_type  # 'image/png', 'image/jpeg', etc.
+                    image_format = content_type.split('/')[-1] if '/' in content_type else 'png'
+
+                    images.append({
+                        "data": image_data,
+                        "format": image_format,
+                        "context": {
+                            "doc_type": "word",
+                            "index": idx,
+                            "shape_type": "inline"
+                        }
+                    })
+                except Exception:
+                    # Skip images that can't be extracted
+                    continue
+
+        except Exception:
+            # If inline_shapes fails, continue
+            pass
+
+        return images
+
+    async def _process_images_with_vision(
+        self,
+        images: List[Dict[str, Any]],
+        image_processor: 'ImageProcessor',
+        doc_context: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """
+        Process images with vision API.
+
+        Args:
+            images: List of image data dicts
+            image_processor: ImageProcessor instance
+            doc_context: Context about the document
+
+        Returns:
+            List of image description dicts with {
+                "description": "...",
+                "image_type": "chart"|"diagram"|...,
+                "tokens_used": N,
+                "index": N
+            }
+        """
+        if not images:
+            return []
+
+        # Add document context to each image
+        for img in images:
+            img["context"].update(doc_context)
+
+        # Batch process images
+        descriptions = await image_processor.describe_images_batch(
+            images=images,
+            context=doc_context
+        )
+
+        # Add index to each description for reference
+        for idx, desc in enumerate(descriptions):
+            desc["index"] = images[idx]["context"]["index"]
+
+        return descriptions
 
     def chunk_sections(
         self,
@@ -1484,7 +1843,8 @@ class PDFReader:
         file_path: str,
         chunk_size: int = 1000,
         engine: str = "pymupdf",
-        pages_per_chunk: int = 3
+        pages_per_chunk: int = 3,
+        image_handling: str = "describe"
     ):
         """
         Initialize PDF reader.
@@ -1494,23 +1854,30 @@ class PDFReader:
             chunk_size: Target tokens per chunk (used as guideline)
             engine: PDF engine to use ("pymupdf" or "pdfplumber")
             pages_per_chunk: Target pages per chunk (3-5 recommended)
+            image_handling: How to handle images ("skip", "describe", "vision")
         """
         self.file_path = Path(file_path)
         self.chunk_size = chunk_size
         self.engine = engine.lower()
         self.pages_per_chunk = pages_per_chunk
+        self.image_handling = image_handling
         self.chunker = DocumentChunker(chunk_size)
 
         # Validate engine
         if self.engine not in ["pymupdf", "pdfplumber"]:
             raise ValueError(f"Unknown PDF engine: {engine}. Use 'pymupdf' or 'pdfplumber'")
 
-    def read(self, page_range: Optional[Tuple[int, int]] = None) -> Dict[str, Any]:
+    async def read(
+        self,
+        page_range: Optional[Tuple[int, int]] = None,
+        image_processor: Optional['ImageProcessor'] = None
+    ) -> Dict[str, Any]:
         """
         Read PDF file and extract pages.
 
         Args:
             page_range: Optional (start_page, end_page) tuple (1-indexed)
+            image_processor: Optional ImageProcessor for vision mode
 
         Returns:
             Dictionary with:
@@ -1519,6 +1886,8 @@ class PDFReader:
                 - page_range_read: Actual range read
                 - total_tokens: Total token count
                 - has_tables: Whether tables were detected
+                - images: List of image descriptions if vision mode enabled
+                - vision_tokens_used: Tokens used for vision API calls
 
         Raises:
             ImportError: If required PDF library not installed
@@ -1540,11 +1909,15 @@ class PDFReader:
 
         # Read using appropriate engine
         if self.engine == "pymupdf":
-            return self._read_with_pymupdf(page_range)
+            return await self._read_with_pymupdf(page_range, image_processor)
         else:
-            return self._read_with_pdfplumber(page_range)
+            return await self._read_with_pdfplumber(page_range, image_processor)
 
-    def _read_with_pymupdf(self, page_range: Optional[Tuple[int, int]] = None) -> Dict[str, Any]:
+    async def _read_with_pymupdf(
+        self,
+        page_range: Optional[Tuple[int, int]] = None,
+        image_processor: Optional['ImageProcessor'] = None
+    ) -> Dict[str, Any]:
         """Read PDF using PyMuPDF (faster, general-purpose)."""
         doc = pymupdf.open(str(self.file_path))
         total_pages = len(doc)
@@ -1560,6 +1933,7 @@ class PDFReader:
         pages = []
         total_tokens = 0
         has_tables = False
+        all_images = []
 
         # Extract pages
         for page_num in range(start_page - 1, end_page):
@@ -1584,6 +1958,11 @@ class PDFReader:
                 # Table extraction not available or failed
                 pass
 
+            # Extract images if vision mode enabled
+            if image_processor and self.image_handling == "vision":
+                page_images = self._extract_images_pymupdf(page, page_num + 1)
+                all_images.extend(page_images)
+
             # Combine text and tables
             content = text
             if tables:
@@ -1601,16 +1980,40 @@ class PDFReader:
 
         doc.close()
 
-        return {
+        # Process images with vision API if enabled
+        image_descriptions = []
+        vision_tokens_used = 0
+
+        if all_images and image_processor and self.image_handling == "vision":
+            image_descriptions = await self._process_images_with_vision(
+                images=all_images,
+                image_processor=image_processor,
+                doc_context={"doc_type": "pdf", "file_name": self.file_path.name}
+            )
+            vision_tokens_used = sum(img.get("tokens_used", 0) for img in image_descriptions)
+
+        result = {
             "pages": pages,
             "total_pages": total_pages,
             "page_range_read": (start_page, end_page),
             "total_tokens": total_tokens,
-            "has_tables": has_tables
+            "has_tables": has_tables,
+            "vision_tokens_used": vision_tokens_used
         }
 
-    def _read_with_pdfplumber(self, page_range: Optional[Tuple[int, int]] = None) -> Dict[str, Any]:
+        if image_descriptions:
+            result["images"] = image_descriptions
+
+        return result
+
+    async def _read_with_pdfplumber(
+        self,
+        page_range: Optional[Tuple[int, int]] = None,
+        image_processor: Optional['ImageProcessor'] = None
+    ) -> Dict[str, Any]:
         """Read PDF using pdfplumber (better for complex tables)."""
+        all_images = []
+
         with pdfplumber.open(str(self.file_path)) as pdf:
             total_pages = len(pdf.pages)
 
@@ -1643,6 +2046,11 @@ class PDFReader:
                             markdown = self._table_to_markdown_pdfplumber(table_data)
                             tables.append(markdown)
 
+                # Extract images if vision mode enabled
+                if image_processor and self.image_handling == "vision":
+                    page_images = self._extract_images_pdfplumber(page, page_num + 1)
+                    all_images.extend(page_images)
+
                 # Combine text and tables
                 content = text
                 if tables:
@@ -1658,13 +2066,31 @@ class PDFReader:
                     "has_tables": bool(tables)
                 })
 
-        return {
+        # Process images with vision API if enabled
+        image_descriptions = []
+        vision_tokens_used = 0
+
+        if all_images and image_processor and self.image_handling == "vision":
+            image_descriptions = await self._process_images_with_vision(
+                images=all_images,
+                image_processor=image_processor,
+                doc_context={"doc_type": "pdf", "file_name": self.file_path.name}
+            )
+            vision_tokens_used = sum(img.get("tokens_used", 0) for img in image_descriptions)
+
+        result = {
             "pages": pages,
             "total_pages": total_pages,
             "page_range_read": (start_page, end_page),
             "total_tokens": total_tokens,
-            "has_tables": has_tables
+            "has_tables": has_tables,
+            "vision_tokens_used": vision_tokens_used
         }
+
+        if image_descriptions:
+            result["images"] = image_descriptions
+
+        return result
 
     def _table_to_markdown_pymupdf(self, table_data: List[List]) -> str:
         """Convert PyMuPDF table data to markdown."""
@@ -1707,6 +2133,131 @@ class PDFReader:
             lines.append("| " + " | ".join(cells) + " |")
 
         return "\n".join(lines)
+
+    def _extract_images_pymupdf(self, page, page_num: int) -> List[Dict[str, Any]]:
+        """
+        Extract images from PDF page using PyMuPDF.
+
+        Args:
+            page: PyMuPDF page object
+            page_num: Page number (1-indexed)
+
+        Returns:
+            List of image dicts with data, format, and context
+        """
+        images = []
+
+        try:
+            image_list = page.get_images(full=True)
+
+            for img_index, img in enumerate(image_list):
+                try:
+                    xref = img[0]  # image xref
+                    base_image = page.parent.extract_image(xref)
+
+                    image_data = base_image["image"]
+                    image_ext = base_image["ext"]  # png, jpeg, etc.
+
+                    images.append({
+                        "data": image_data,
+                        "format": image_ext,
+                        "context": {
+                            "doc_type": "pdf",
+                            "page_number": page_num,
+                            "index": img_index
+                        }
+                    })
+                except Exception:
+                    # Skip if individual image extraction fails
+                    continue
+        except Exception:
+            # Skip if page image extraction fails
+            pass
+
+        return images
+
+    def _extract_images_pdfplumber(self, page, page_num: int) -> List[Dict[str, Any]]:
+        """
+        Extract images from PDF page using pdfplumber.
+
+        Note: pdfplumber has limited image extraction capabilities.
+        Images are detected but raw data extraction requires additional processing.
+
+        Args:
+            page: pdfplumber page object
+            page_num: Page number (1-indexed)
+
+        Returns:
+            List of image dicts (note: may have limited data)
+        """
+        images = []
+
+        try:
+            # pdfplumber provides image objects but not raw data directly
+            page_images = page.images
+
+            for idx, img_info in enumerate(page_images):
+                # pdfplumber doesn't provide easy access to raw image bytes
+                # We'll create placeholder entries for now
+                images.append({
+                    "data": None,  # pdfplumber limitation
+                    "format": "unknown",
+                    "context": {
+                        "doc_type": "pdf",
+                        "page_number": page_num,
+                        "index": idx,
+                        "note": "pdfplumber image extraction limited",
+                        "bbox": img_info.get("bbox") if hasattr(img_info, "get") else None
+                    }
+                })
+        except Exception:
+            pass
+
+        return images
+
+    async def _process_images_with_vision(
+        self,
+        images: List[Dict[str, Any]],
+        image_processor: 'ImageProcessor',
+        doc_context: Dict[str, Any]
+    ) -> List[Dict[str, Any]]:
+        """
+        Process images with vision API.
+
+        Args:
+            images: List of image dicts from extraction
+            image_processor: ImageProcessor instance
+            doc_context: Document context (file_name, doc_type)
+
+        Returns:
+            List of image description dicts
+        """
+        if not images:
+            return []
+
+        # Filter out images without data (e.g., from pdfplumber)
+        valid_images = [img for img in images if img.get("data") is not None]
+
+        if not valid_images:
+            return []
+
+        # Add document context to each image
+        for img in valid_images:
+            img["context"].update(doc_context)
+
+        # Batch process images
+        descriptions = await image_processor.describe_images_batch(
+            images=valid_images,
+            context=doc_context
+        )
+
+        # Add index and page number to each description for reference
+        for idx, desc in enumerate(descriptions):
+            if idx < len(valid_images):
+                desc["page_number"] = valid_images[idx]["context"]["page_number"]
+                desc["index"] = valid_images[idx]["context"]["index"]
+
+        return descriptions
 
     def chunk_pages(self, pages: List[Dict]) -> List[Dict]:
         """

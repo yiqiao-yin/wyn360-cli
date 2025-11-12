@@ -271,6 +271,18 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
             table.add_row("  Output Cost (Haiku)", f"${stats['doc_processing_output_cost']:.4f}")
             table.add_row("  Subtotal (Documents)", f"${stats['doc_processing_cost']:.4f}")
 
+        # Add vision API stats if any
+        if stats["vision_image_count"] > 0:
+            table.add_row("─" * 30, "─" * 20)
+            table.add_row("[bold]Vision API[/bold]", "")
+            table.add_row("  Images Processed", str(stats["vision_image_count"]))
+            table.add_row("  Input Tokens", f"{stats['vision_input_tokens']:,}")
+            table.add_row("  Output Tokens", f"{stats['vision_output_tokens']:,}")
+            table.add_row("  Total Tokens", f"{stats['vision_total_tokens']:,}")
+            table.add_row("  Input Cost (Sonnet)", f"${stats['vision_input_cost']:.4f}")
+            table.add_row("  Output Cost (Sonnet)", f"${stats['vision_output_cost']:.4f}")
+            table.add_row("  Subtotal (Vision)", f"${stats['vision_cost']:.4f}")
+
         table.add_row("─" * 30, "─" * 20)
         table.add_row("[bold]Total Cost[/bold]", f"[bold]${stats['total_cost']:.4f}[/bold]")
         table.add_row("─" * 30, "─" * 20)

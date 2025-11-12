@@ -34,6 +34,51 @@ Total Cost = (Input Tokens / 1,000,000 × $3)
            + (Search Result Token Processing)
 ```
 
+### Vision API Costs (Phase 5.1 - v0.3.30)
+
+| Feature | Cost |
+|---------|------|
+| **Vision API (Image Processing)** | Uses Sonnet pricing |
+| **Input (per image + prompt)** | ~$0.0033 per image (~1,100 tokens) |
+| **Output (description)** | ~$0.0015-0.0030 per image (~100-200 tokens) |
+| **Total per image** | **~$0.01-0.05** |
+
+**Important:** Vision API costs are **in addition to** document processing costs. Each image processed incurs:
+- Input tokens: ~1,000 tokens (image encoding) + ~100 tokens (prompt) = ~1,100 tokens
+- Output tokens: ~100-200 tokens (description)
+- Total cost per image: ~$0.01-0.05
+
+**Image Handling Modes:**
+- `skip` (default) - No vision API calls, zero cost
+- `describe` - Extract alt text only, zero API cost
+- `vision` - Full Claude Vision API processing (costs apply)
+
+**Example Costs:**
+- **5-image document:** ~$0.05-0.25
+- **20-image presentation:** ~$0.20-1.00
+- **50-image technical manual:** ~$0.50-2.50
+
+**Formula:**
+```
+Vision Cost = (Vision Input Tokens / 1,000,000 × $3)
+            + (Vision Output Tokens / 1,000,000 × $15)
+
+where:
+  Vision Input Tokens = (Number of Images × 1,100)
+  Vision Output Tokens = (Number of Images × 100-200)
+```
+
+**Combined Formula (with Vision):**
+```
+Total Cost = (Conversation Input / 1M × $3)
+           + (Conversation Output / 1M × $15)
+           + (Document Processing Input / 1M × $3)
+           + (Document Processing Output / 1M × $15)
+           + (Vision Input / 1M × $3)
+           + (Vision Output / 1M × $15)
+           + (Web Searches × $0.01)
+```
+
 ## 📊 Token Breakdown Per Request
 
 Every interaction with WYN360 CLI consists of several components that contribute to token usage:

@@ -146,6 +146,15 @@ WYN360: I'll create a Streamlit app for you...
 - 🎯 **Configurable** - Adjust max tokens, cache settings, truncation strategy
 - 💾 **Cache Management** - View stats, clear cache, manage storage
 
+### Vision Mode for Document Images (v0.3.30)
+- 🖼️ **Image Processing** - Intelligently describe images in Word and PDF documents
+- 📊 **Chart Recognition** - Extract insights from charts, graphs, and data visualizations
+- 📐 **Diagram Understanding** - Analyze flowcharts, architecture diagrams, and technical illustrations
+- 🖥️ **Screenshot Analysis** - Understand UI mockups and interface screenshots
+- 💰 **Cost Transparency** - Separate tracking of vision API costs vs. text processing
+- 🎯 **Three Processing Modes** - skip (default), describe (alt text only), vision (full AI processing)
+- ⚡ **Batch Processing** - Efficient handling of documents with multiple images
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
@@ -276,6 +285,40 @@ WYN360: 📊 **Website Cache Statistics**
 - ✓ 12m old: https://python.org/downloads
 - ✓ 25m old: https://docs.anthropic.com
 ```
+
+### Document Reading with Vision Mode
+```
+You: Read quarterly_report.docx with vision mode
+
+WYN360: [Extracts and processes document with image descriptions]
+
+# Quarterly Report Summary
+
+## Executive Overview
+Revenue increased by 23% year-over-year, driven by strong performance in...
+
+📊 **[Image 1]:** Bar chart showing quarterly revenue growth from Q1 to Q4.
+Q4 shows the highest revenue at approximately $2.5M, representing a 23%
+increase from Q3. All quarters show positive growth compared to the previous year.
+
+## Market Analysis
+Our market share expanded across all regions...
+
+📐 **[Image 2]:** System architecture diagram depicting three layers:
+frontend (React), API layer (FastAPI), and database (PostgreSQL).
+Shows data flow from user requests through authentication middleware
+to the backend services.
+
+💰 **Vision API Cost:** $0.06 (2 images processed)
+📊 **Token Usage:** 1,175 input tokens, 125 output tokens
+
+[Use /tokens to see detailed cost breakdown]
+```
+
+**Image Handling Modes:**
+- `skip` (default) - Ignore images entirely, no API calls
+- `describe` - Extract alt text and captions only (no API calls)
+- `vision` - Full Claude Vision API processing (costs ~$0.01-0.05 per image)
 
 ## 🎯 Commands
 
