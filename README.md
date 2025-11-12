@@ -6,13 +6,15 @@ An intelligent AI coding assistant CLI tool powered by Anthropic Claude.
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+**GitHub Repository:** https://github.com/yiqiao-yin/wyn360-cli
+
 ## 🎯 Overview
 
 WYN360 CLI is an AI-powered coding assistant that helps you build projects, generate code, and improve your codebase through natural language conversations. Built with pydantic-ai and Anthropic Claude, it provides intelligent file operations, command execution, and context-aware assistance.
 
 ## 🏗️ System Architecture
 
-For a detailed architecture overview including all components, layers, and data flows, see **[SYSTEM.md](SYSTEM.md)**.
+For a detailed architecture overview including all components, layers, and data flows, see **[SYSTEM.md](docs/SYSTEM.md)**.
 
 ## 📦 Installation
 
@@ -329,10 +331,10 @@ You: /load my_analysis_session.json
 
 For comprehensive documentation:
 
-- **[USE_CASES.md](USE_CASES.md)** - Detailed use cases, examples, and workflows
-- **[COST.md](COST.md)** - Token usage, pricing, cost optimization, and `max_tokens` configuration
-- **[SYSTEM.md](SYSTEM.md)** - System architecture, design principles, and technical details
-- **[ROADMAP.md](ROADMAP.md)** - Feature roadmap and planned enhancements
+- **[USE_CASES.md](docs/USE_CASES.md)** - Detailed use cases, examples, and workflows
+- **[COST.md](docs/COST.md)** - Token usage, pricing, cost optimization, and `max_tokens` configuration
+- **[SYSTEM.md](docs/SYSTEM.md)** - System architecture, design principles, and technical details
+- **[ROADMAP.md](docs/ROADMAP.md)** - Feature roadmap and planned enhancements
 
 ## 🛠️ Development & Testing
 
@@ -560,9 +562,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - **PyPI:** https://pypi.org/project/wyn360-cli/
 - **GitHub:** https://github.com/yiqiao-yin/wyn360-cli
 - **Documentation:**
-  - [USE_CASES.md](USE_CASES.md) - Usage examples and workflows
-  - [COST.md](COST.md) - Pricing and token configuration
-  - [SYSTEM.md](SYSTEM.md) - Architecture overview
+  - [USE_CASES.md](docs/USE_CASES.md) - Usage examples and workflows
+  - [COST.md](docs/COST.md) - Pricing and token configuration
+  - [SYSTEM.md](docs/SYSTEM.md) - Architecture overview
 - **Get API Key:** https://console.anthropic.com/
 
 ---

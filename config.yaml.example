@@ -1,0 +1,93 @@
+# WYN360 CLI Configuration Example
+# Copy this file to ~/.wyn360/config.yaml for user-wide settings
+# or to .wyn360.yaml in your project root for project-specific settings
+
+# Default AI model to use
+# Options: "haiku" (fast & cheap), "sonnet" (balanced), "opus" (most capable)
+model: "sonnet"
+
+# Maximum tokens for model output
+max_tokens: 4096
+
+# Temperature for model responses (0.0 - 1.0)
+# Lower = more focused, Higher = more creative
+temperature: 0.7
+
+# Custom system instructions (optional)
+# These instructions are added to the system prompt
+custom_instructions: |
+  You are a helpful AI coding assistant.
+  Follow best practices and write clean, maintainable code.
+
+# Project-specific context (optional)
+# Describe your project to help the AI understand your codebase
+project_context: |
+  This is a Python CLI application using pydantic-ai and Anthropic Claude.
+  The codebase follows modular architecture with separate layers.
+
+# Project dependencies (optional)
+# List key dependencies to help the AI understand your stack
+project_dependencies:
+  - pydantic-ai>=1.13.0
+  - anthropic>=0.39.0
+  - click>=8.1.0
+  - rich>=13.0.0
+
+# Custom command aliases (optional)
+# Define shortcuts for common operations
+aliases:
+  test: "pytest tests/ -v"
+  lint: "flake8 ."
+  format: "black ."
+
+# Browser use / website fetching configuration (Phase 12)
+browser_use:
+  # Enable caching for fetched websites
+  cache_enabled: true
+  # Cache time-to-live in seconds (1800 = 30 minutes)
+  cache_ttl: 1800
+  # Maximum cache size in MB
+  cache_max_size_mb: 100
+  # Maximum tokens to fetch from a website
+  max_tokens: 50000
+  # Truncation strategy: "smart" | "head" | "tail"
+  truncate_strategy: "smart"
+
+# Document reader configuration (Phase 13.1)
+document_reader:
+  # Token limits per document type
+  token_limits:
+    excel: 10000   # Excel spreadsheets
+    word: 15000    # Word documents
+    pdf: 20000     # PDF files
+
+  # Chunking settings
+  chunking:
+    enabled: true
+    chunk_size: 1000         # Tokens per chunk
+    summary_size: 100        # Target tokens for chunk summary
+    tag_count: 8             # Number of tags per chunk
+
+  # Cache settings
+  cache:
+    enabled: true
+    ttl: 3600                # 1 hour (seconds)
+    max_size_mb: 500         # Maximum cache size
+
+  # Image handling mode: "skip" | "describe" | "vision"
+  # - skip: Ignore images entirely
+  # - describe: Extract alt text and captions (default)
+  # - vision: Use Claude vision API (increases costs)
+  image_handling: "describe"
+
+  # PDF engine: "pymupdf" | "pdfplumber"
+  # - pymupdf: Fast, general-purpose (default)
+  # - pdfplumber: Better for complex tables
+  pdf_engine: "pymupdf"
+
+  # Excel-specific settings
+  excel:
+    # Show evaluated formula values (not formulas themselves)
+    evaluate_formulas: true
+    # Automatically detect data regions (tables not at A1)
+    detect_regions: true

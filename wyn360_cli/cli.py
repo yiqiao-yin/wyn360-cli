@@ -246,19 +246,34 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
         from rich.panel import Panel
 
         table = Table(title="Token Usage Statistics", show_header=False)
-        table.add_column("Metric", style="cyan", width=25)
+        table.add_column("Metric", style="cyan", width=30)
         table.add_column("Value", style="yellow")
 
         table.add_row("Total Requests", str(stats["total_requests"]))
-        table.add_row("─" * 25, "─" * 20)
+        table.add_row("─" * 30, "─" * 20)
         table.add_row("Input Tokens", f"{stats['total_input_tokens']:,}")
         table.add_row("Output Tokens", f"{stats['total_output_tokens']:,}")
         table.add_row("Total Tokens", f"{stats['total_tokens']:,}")
-        table.add_row("─" * 25, "─" * 20)
+        table.add_row("─" * 30, "─" * 20)
         table.add_row("Input Cost", f"${stats['input_cost']:.4f}")
         table.add_row("Output Cost", f"${stats['output_cost']:.4f}")
-        table.add_row("Total Cost", f"${stats['total_cost']:.4f}")
-        table.add_row("─" * 25, "─" * 20)
+        table.add_row("Subtotal (Conversation)", f"${stats['input_cost'] + stats['output_cost']:.4f}")
+
+        # Add document processing stats if any
+        if stats["doc_processing_count"] > 0:
+            table.add_row("─" * 30, "─" * 20)
+            table.add_row("[bold]Document Processing[/bold]", "")
+            table.add_row("  Chunks Processed", str(stats["doc_processing_count"]))
+            table.add_row("  Input Tokens", f"{stats['doc_processing_input_tokens']:,}")
+            table.add_row("  Output Tokens", f"{stats['doc_processing_output_tokens']:,}")
+            table.add_row("  Total Tokens", f"{stats['doc_processing_total_tokens']:,}")
+            table.add_row("  Input Cost (Haiku)", f"${stats['doc_processing_input_cost']:.4f}")
+            table.add_row("  Output Cost (Haiku)", f"${stats['doc_processing_output_cost']:.4f}")
+            table.add_row("  Subtotal (Documents)", f"${stats['doc_processing_cost']:.4f}")
+
+        table.add_row("─" * 30, "─" * 20)
+        table.add_row("[bold]Total Cost[/bold]", f"[bold]${stats['total_cost']:.4f}[/bold]")
+        table.add_row("─" * 30, "─" * 20)
         table.add_row("Avg Cost/Request", f"${stats['avg_cost_per_request']:.4f}")
 
         console.print(table)
@@ -469,6 +484,13 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
   [bold green]/config[/bold green]           Show current configuration
   [bold green]/help[/bold green]             Show this help message
 
+[bold yellow]Document Commands:[/bold yellow]
+  [bold green]/set_doc_tokens <type> <n>[/bold green]  Set token limits (excel/word/pdf)
+  [bold green]/clear_doc_cache [file][/bold green]     Clear document cache (all or specific)
+  [bold green]/doc_cache_stats[/bold green]            Show document cache statistics
+  [bold green]/set_image_mode <mode>[/bold green]      Image handling (skip/describe/vision)
+  [bold green]/set_pdf_engine <engine>[/bold green]    PDF engine (pymupdf/pdfplumber)
+
 [bold yellow]Examples:[/bold yellow]
   /save my_session.json       Save current conversation
   /load my_session.json       Continue previous conversation
@@ -477,6 +499,9 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
   /model                      Show current model info
   /model haiku                Switch to Haiku (fast & cheap)
   /model opus                 Switch to Opus (most capable)
+  /set_doc_tokens excel 15000 Set Excel token limit
+  /doc_cache_stats            View cached documents
+  /clear_doc_cache            Clear all document caches
 
 [bold yellow]Tips:[/bold yellow]
   • Conversation history helps maintain context across turns
@@ -487,6 +512,136 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
 """
         console.print(help_text)
         return True, ""
+
+    elif cmd == "set_doc_tokens":
+        # /set_doc_tokens <excel|word|pdf> <tokens>
+        if not arg:
+            return True, "❌ Usage: /set_doc_tokens <excel|word|pdf> <tokens>\nExample: /set_doc_tokens excel 15000"
+
+        parts = arg.split()
+        if len(parts) != 2:
+            return True, "❌ Usage: /set_doc_tokens <excel|word|pdf> <tokens>\nExample: /set_doc_tokens excel 15000"
+
+        doc_type = parts[0].lower()
+        try:
+            tokens = int(parts[1])
+        except ValueError:
+            return True, f"❌ Invalid token count: {parts[1]}. Must be a number."
+
+        if doc_type not in ["excel", "word", "pdf"]:
+            return True, f"❌ Invalid document type: {doc_type}. Use: excel, word, or pdf"
+
+        if tokens < 1000 or tokens > 100000:
+            return True, f"❌ Token count must be between 1,000 and 100,000"
+
+        # Store in agent's config (we'll add this to agent later)
+        if not hasattr(agent, 'doc_token_limits'):
+            agent.doc_token_limits = {}
+        agent.doc_token_limits[doc_type] = tokens
+
+        return True, f"✓ {doc_type.title()} document token limit set to {tokens:,}"
+
+    elif cmd == "clear_doc_cache":
+        # /clear_doc_cache [file_path]
+        from .document_readers import ChunkCache
+
+        cache = ChunkCache()
+
+        if arg:
+            # Clear specific file
+            file_path = arg.strip()
+            count = cache.clear_cache(file_path)
+            if count > 0:
+                return True, f"✓ Cleared cache for: {file_path}"
+            else:
+                return True, f"❌ No cache found for: {file_path}"
+        else:
+            # Clear all
+            count = cache.clear_cache()
+            return True, f"✓ Cleared all document caches ({count} files deleted)"
+
+    elif cmd == "doc_cache_stats":
+        # /doc_cache_stats
+        from .document_readers import ChunkCache
+        from rich.table import Table
+
+        cache = ChunkCache()
+        stats = cache.get_stats()
+
+        # Main stats table
+        table = Table(title="📊 Document Cache Statistics", show_header=False)
+        table.add_column("Metric", style="cyan", width=25)
+        table.add_column("Value", style="yellow")
+
+        table.add_row("Total Files Cached", str(stats["total_files"]))
+        table.add_row("Total Chunks", str(stats["total_chunks"]))
+        table.add_row("Total Cache Size", f"{stats['total_size_mb']} MB")
+        table.add_row("Oldest Cache", stats["oldest_cache"])
+        table.add_row("Newest Cache", stats["newest_cache"])
+
+        console.print(table)
+
+        # Cached files list
+        if stats["cache_entries"]:
+            console.print("\n[bold cyan]Cached Files:[/bold cyan]")
+            files_table = Table(show_header=True)
+            files_table.add_column("#", style="dim", width=4)
+            files_table.add_column("File", style="white")
+            files_table.add_column("Chunks", style="yellow", width=8)
+            files_table.add_column("Age", style="green", width=15)
+
+            for idx, entry in enumerate(stats["cache_entries"][:10], 1):  # Show top 10
+                file_path = entry["file_path"]
+                # Shorten path if too long
+                if len(file_path) > 50:
+                    file_path = "..." + file_path[-47:]
+
+                files_table.add_row(
+                    str(idx),
+                    file_path,
+                    str(entry["chunks"]),
+                    entry["age_display"]
+                )
+
+            console.print(files_table)
+
+            if len(stats["cache_entries"]) > 10:
+                console.print(f"\n[dim]...and {len(stats['cache_entries']) - 10} more files[/dim]")
+
+        return True, ""
+
+    elif cmd == "set_image_mode":
+        # /set_image_mode <skip|describe|vision>
+        if not arg:
+            # Show current mode
+            current_mode = getattr(agent, 'image_handling_mode', 'describe')
+            return True, f"Current image mode: {current_mode}\n\nAvailable modes:\n  skip     - Ignore images\n  describe - Extract alt text/captions (default)\n  vision   - Use Claude vision API (⚠️  increases costs)\n\nUsage: /set_image_mode <skip|describe|vision>"
+
+        mode = arg.strip().lower()
+        if mode not in ["skip", "describe", "vision"]:
+            return True, f"❌ Invalid mode: {mode}. Use: skip, describe, or vision"
+
+        agent.image_handling_mode = mode
+
+        message = f"✓ Image handling mode set to: {mode}"
+        if mode == "vision":
+            message += "\n⚠️  Note: Vision mode will significantly increase API costs"
+
+        return True, message
+
+    elif cmd == "set_pdf_engine":
+        # /set_pdf_engine <pymupdf|pdfplumber>
+        if not arg:
+            # Show current engine
+            current_engine = getattr(agent, 'pdf_engine', 'pymupdf')
+            return True, f"Current PDF engine: {current_engine}\n\nAvailable engines:\n  pymupdf     - Fast, general-purpose (default)\n  pdfplumber  - Better for complex tables\n\nUsage: /set_pdf_engine <pymupdf|pdfplumber>"
+
+        engine = arg.strip().lower()
+        if engine not in ["pymupdf", "pdfplumber"]:
+            return True, f"❌ Invalid engine: {engine}. Use: pymupdf or pdfplumber"
+
+        agent.pdf_engine = engine
+        return True, f"✓ PDF engine set to: {engine}"
 
     else:
         return False, f"Unknown command: /{cmd}. Type /help for available commands."

@@ -76,6 +76,20 @@ class WYN360Agent:
         self.request_count = 0
         self.token_history: List[Dict[str, Any]] = []
 
+        # Document processing token tracking (Phase 13.1)
+        self.doc_processing_input_tokens = 0
+        self.doc_processing_output_tokens = 0
+        self.doc_processing_count = 0
+
+        # Document reader settings (Phase 13.1)
+        self.doc_token_limits = {
+            "excel": 10000,
+            "word": 15000,
+            "pdf": 20000
+        }
+        self.image_handling_mode = "describe"  # skip | describe | vision
+        self.pdf_engine = "pymupdf"  # pymupdf | pdfplumber
+
         # Performance metrics tracking (Phase 10.2)
         self.performance_metrics = PerformanceMetrics()
 
@@ -2079,6 +2093,9 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         self.total_output_tokens = 0
         self.request_count = 0
         self.token_history = []
+        self.doc_processing_input_tokens = 0
+        self.doc_processing_output_tokens = 0
+        self.doc_processing_count = 0
         self.performance_metrics = PerformanceMetrics()  # Reset performance metrics
 
     def get_history(self) -> List[Dict[str, str]]:
@@ -2106,6 +2123,9 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                 "total_output_tokens": self.total_output_tokens,
                 "request_count": self.request_count,
                 "token_history": self.token_history,
+                "doc_processing_input_tokens": self.doc_processing_input_tokens,
+                "doc_processing_output_tokens": self.doc_processing_output_tokens,
+                "doc_processing_count": self.doc_processing_count,
                 "performance_metrics": self.performance_metrics.to_dict(),
                 "timestamp": str(os.popen('date').read().strip())
             }
@@ -2148,6 +2168,9 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             self.total_output_tokens = session_data.get("total_output_tokens", 0)
             self.request_count = session_data.get("request_count", 0)
             self.token_history = session_data.get("token_history", [])
+            self.doc_processing_input_tokens = session_data.get("doc_processing_input_tokens", 0)
+            self.doc_processing_output_tokens = session_data.get("doc_processing_output_tokens", 0)
+            self.doc_processing_count = session_data.get("doc_processing_count", 0)
 
             # Load performance metrics if available
             if "performance_metrics" in session_data:
@@ -2158,6 +2181,18 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             print(f"Error loading session: {e}")
             return False
 
+    def track_document_processing(self, input_tokens: int, output_tokens: int) -> None:
+        """
+        Track tokens used for document processing (chunk summarization).
+
+        Args:
+            input_tokens: Input tokens (chunk content)
+            output_tokens: Output tokens (summary + tags)
+        """
+        self.doc_processing_input_tokens += input_tokens
+        self.doc_processing_output_tokens += output_tokens
+        self.doc_processing_count += 1
+
     def get_token_stats(self) -> Dict[str, Any]:
         """
         Get token usage statistics.
@@ -2165,10 +2200,19 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         Returns:
             Dictionary with token usage stats
         """
-        total_cost = (
+        # Regular conversation costs (Sonnet pricing)
+        conversation_cost = (
             (self.total_input_tokens / 1_000_000 * 3.0) +
             (self.total_output_tokens / 1_000_000 * 15.0)
         )
+
+        # Document processing costs (Haiku pricing - used for chunk summarization)
+        doc_processing_cost = (
+            (self.doc_processing_input_tokens / 1_000_000 * 0.25) +
+            (self.doc_processing_output_tokens / 1_000_000 * 1.25)
+        )
+
+        total_cost = conversation_cost + doc_processing_cost
 
         avg_cost_per_request = total_cost / self.request_count if self.request_count > 0 else 0
 
@@ -2181,6 +2225,14 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             "avg_cost_per_request": avg_cost_per_request,
             "input_cost": self.total_input_tokens / 1_000_000 * 3.0,
             "output_cost": self.total_output_tokens / 1_000_000 * 15.0,
+            # Document processing stats
+            "doc_processing_count": self.doc_processing_count,
+            "doc_processing_input_tokens": self.doc_processing_input_tokens,
+            "doc_processing_output_tokens": self.doc_processing_output_tokens,
+            "doc_processing_total_tokens": self.doc_processing_input_tokens + self.doc_processing_output_tokens,
+            "doc_processing_cost": doc_processing_cost,
+            "doc_processing_input_cost": self.doc_processing_input_tokens / 1_000_000 * 0.25,
+            "doc_processing_output_cost": self.doc_processing_output_tokens / 1_000_000 * 1.25,
         }
 
     def get_performance_stats(self) -> Dict[str, Any]:
