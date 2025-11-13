@@ -701,47 +701,191 @@ class EmbeddingModel:
 # ============================================================================
 
 class DocumentChunker:
-    """Intelligently chunk documents into manageable pieces."""
+    """
+    Intelligently chunk documents into manageable pieces.
 
-    def __init__(self, chunk_size: int = 1000):
+    Phase 5.7: Enhanced with adaptive sizing, overlap, content-awareness, and quality scoring.
+    """
+
+    def __init__(
+        self,
+        chunk_size: int = 1000,
+        adaptive_sizing: bool = False,
+        overlap_tokens: int = 0,
+        content_aware: bool = False,
+        quality_threshold: float = 0.0
+    ):
         """
         Initialize chunker.
 
         Args:
             chunk_size: Target tokens per chunk (default: 1000)
+            adaptive_sizing: Enable adaptive chunk sizes based on content density (Phase 5.7.1)
+            overlap_tokens: Number of tokens to overlap between chunks (Phase 5.7.2)
+            content_aware: Don't split tables, code blocks, lists (Phase 5.7.3)
+            quality_threshold: Minimum quality score for chunks, 0-1 (Phase 5.7.4)
         """
         self.chunk_size = chunk_size
+        self.adaptive_sizing = adaptive_sizing
+        self.overlap_tokens = overlap_tokens
+        self.content_aware = content_aware
+        self.quality_threshold = quality_threshold
+
+    def _calculate_adaptive_size(self, text: str) -> int:
+        """
+        Calculate adaptive chunk size based on content density.
+
+        Phase 5.7.1: Adaptive Sizing
+
+        Dense content (tables, lists, code) gets smaller chunks (~500 tokens).
+        Sparse content (prose) gets larger chunks (~1500 tokens).
+
+        Args:
+            text: Text to analyze
+
+        Returns:
+            Recommended chunk size in tokens
+        """
+        if not text:
+            return self.chunk_size
+
+        # Detect tables (markdown or simple text tables)
+        table_pattern = r'\|.*\|.*\|'
+        has_tables = bool(re.search(table_pattern, text))
+
+        # Detect lists (markdown style)
+        list_pattern = r'^\s*[-*•]\s|\d+\.\s'
+        has_lists = bool(re.search(list_pattern, text, re.MULTILINE))
+
+        # Detect code blocks
+        code_pattern = r'```|^\s{4,}'
+        has_code = bool(re.search(code_pattern, text, re.MULTILINE))
+
+        # Dense content: smaller chunks for better granularity
+        if has_tables or has_lists or has_code:
+            return max(500, self.chunk_size // 2)
+
+        # Sparse content: larger chunks for better context
+        return min(1500, int(self.chunk_size * 1.5))
 
     def chunk_by_tokens(self, text: str, preserve_boundaries: bool = True) -> List[str]:
         """
         Chunk text by token count.
+
+        Phase 5.7.1: Now supports adaptive sizing based on content density.
+        Phase 5.7.3: Now supports content-aware boundaries (don't split tables, code, lists).
+        Phase 5.7.4: Now supports quality scoring and filtering.
 
         Args:
             text: Text to chunk
             preserve_boundaries: Try to break at paragraph boundaries
 
         Returns:
-            List of text chunks
+            List of text chunks (filtered by quality if quality_threshold > 0)
         """
-        target_chars = self.chunk_size * 4  # ~4 chars per token
-
-        if preserve_boundaries:
-            return self._chunk_with_boundaries(text, target_chars)
+        # Use adaptive size if enabled, otherwise use default chunk_size
+        if self.adaptive_sizing:
+            chunk_size = self._calculate_adaptive_size(text)
         else:
-            return self._chunk_simple(text, target_chars)
+            chunk_size = self.chunk_size
+
+        target_chars = chunk_size * 4  # ~4 chars per token
+
+        # Create chunks based on selected strategy
+        if self.content_aware:
+            chunks = self._chunk_respecting_blocks(text, target_chars)
+        elif preserve_boundaries:
+            chunks = self._chunk_with_boundaries(text, target_chars)
+        else:
+            chunks = self._chunk_simple(text, target_chars)
+
+        # Apply quality filtering if threshold is set
+        if self.quality_threshold > 0.0:
+            chunks = self._apply_quality_filtering(chunks)
+
+        return chunks
 
     def _chunk_simple(self, text: str, target_chars: int) -> List[str]:
-        """Simple chunking by character count."""
+        """
+        Simple chunking by character count.
+
+        Phase 5.7.2: Now supports overlapping chunks when overlap_tokens > 0.
+        """
         if not text:
             return [""]
 
+        # If overlap is enabled, use overlapping chunking
+        if self.overlap_tokens > 0:
+            return self._chunk_with_overlap(text, target_chars)
+
+        # Original non-overlapping chunking
         chunks = []
         for i in range(0, len(text), target_chars):
             chunks.append(text[i:i + target_chars])
         return chunks
 
+    def _chunk_with_overlap(self, text: str, target_chars: int) -> List[str]:
+        """
+        Chunk text with overlapping regions.
+
+        Phase 5.7.2: Overlapping Chunks
+
+        Creates chunks with specified overlap to preserve context across boundaries.
+        For example, with overlap_tokens=200:
+        - chunk1: 0-1000
+        - chunk2: 800-1800 (200 token overlap)
+        - chunk3: 1600-2600
+
+        Args:
+            text: Text to chunk
+            target_chars: Target characters per chunk (~4 chars per token)
+
+        Returns:
+            List of overlapping text chunks
+        """
+        if not text:
+            return [""]
+
+        chunks = []
+        overlap_chars = self.overlap_tokens * 4  # ~4 chars per token
+
+        # Ensure overlap doesn't exceed chunk size
+        overlap_chars = min(overlap_chars, target_chars // 2)
+
+        position = 0
+        while position < len(text):
+            # Extract chunk
+            end_position = min(position + target_chars, len(text))
+            chunk = text[position:end_position]
+            chunks.append(chunk)
+
+            # Move position forward, accounting for overlap
+            # Next chunk starts at (current_end - overlap)
+            position = end_position - overlap_chars
+
+            # Prevent infinite loop if we're at the end
+            if end_position == len(text):
+                break
+
+            # Ensure we're making progress
+            if position >= end_position:
+                position = end_position
+
+        return chunks
+
     def _chunk_with_boundaries(self, text: str, target_chars: int) -> List[str]:
-        """Chunk with respect to paragraph boundaries."""
+        """
+        Chunk with respect to paragraph boundaries.
+
+        Phase 5.7.2: Now supports overlapping chunks when overlap_tokens > 0.
+        """
+        # If overlap is enabled, first create overlapping chunks, then try to adjust boundaries
+        if self.overlap_tokens > 0:
+            # For boundary-aware overlapping, we use a hybrid approach:
+            # Create overlapping chunks, but try to break at paragraph boundaries
+            return self._chunk_with_overlap(text, target_chars)
+
+        # Original non-overlapping boundary-aware chunking
         chunks = []
         paragraphs = text.split('\n\n')
 
@@ -758,6 +902,282 @@ class DocumentChunker:
             chunks.append(current_chunk.strip())
 
         return chunks
+
+    def _detect_content_blocks(self, text: str) -> List[Dict[str, Any]]:
+        """
+        Detect content blocks (tables, code blocks, lists) that shouldn't be split.
+
+        Phase 5.7.3: Content-Aware Boundaries
+
+        Returns:
+            List of block dicts with {type, start, end, content}
+        """
+        blocks = []
+
+        # Detect code blocks (triple backticks)
+        code_pattern = r'```[\s\S]*?```'
+        for match in re.finditer(code_pattern, text):
+            blocks.append({
+                'type': 'code',
+                'start': match.start(),
+                'end': match.end(),
+                'content': match.group()
+            })
+
+        # Detect tables (markdown style)
+        # Look for lines with multiple | characters
+        lines = text.split('\n')
+        in_table = False
+        table_start = 0
+        table_lines = []
+
+        for i, line in enumerate(lines):
+            is_table_line = line.count('|') >= 2
+            if is_table_line:
+                if not in_table:
+                    in_table = True
+                    table_start = sum(len(l) + 1 for l in lines[:i])  # +1 for \n
+                    table_lines = [line]
+                else:
+                    table_lines.append(line)
+            else:
+                if in_table:
+                    # Table ended
+                    table_content = '\n'.join(table_lines)
+                    table_end = table_start + len(table_content)
+                    blocks.append({
+                        'type': 'table',
+                        'start': table_start,
+                        'end': table_end,
+                        'content': table_content
+                    })
+                    in_table = False
+                    table_lines = []
+
+        # Handle table at end of text
+        if in_table:
+            table_content = '\n'.join(table_lines)
+            table_end = table_start + len(table_content)
+            blocks.append({
+                'type': 'table',
+                'start': table_start,
+                'end': table_end,
+                'content': table_content
+            })
+
+        # Detect lists (consecutive list items)
+        list_pattern = r'(?:^\s*[-*•]\s.+$|^\s*\d+\.\s.+$)+'
+        for match in re.finditer(list_pattern, text, re.MULTILINE):
+            # Only add if it's at least 2 lines (actual list)
+            if match.group().count('\n') >= 1:
+                blocks.append({
+                    'type': 'list',
+                    'start': match.start(),
+                    'end': match.end(),
+                    'content': match.group()
+                })
+
+        # Sort blocks by start position
+        blocks.sort(key=lambda b: b['start'])
+
+        return blocks
+
+    def _chunk_respecting_blocks(self, text: str, target_chars: int) -> List[str]:
+        """
+        Chunk text while respecting content blocks (don't split tables, code, lists).
+
+        Phase 5.7.3: Content-Aware Boundaries
+
+        Args:
+            text: Text to chunk
+            target_chars: Target characters per chunk
+
+        Returns:
+            List of chunks that don't split content blocks
+        """
+        if not text:
+            return [""]
+
+        # Detect content blocks
+        blocks = self._detect_content_blocks(text)
+
+        if not blocks:
+            # No blocks detected, use regular chunking
+            if self.overlap_tokens > 0:
+                return self._chunk_with_overlap(text, target_chars)
+            else:
+                return self._chunk_simple(text, target_chars)
+
+        chunks = []
+        current_chunk = ""
+        position = 0
+
+        for block in blocks:
+            # Add text before this block to current chunk
+            text_before = text[position:block['start']]
+
+            # Check if adding this text would exceed target
+            if text_before:
+                if len(current_chunk) + len(text_before) <= target_chars:
+                    current_chunk += text_before
+                else:
+                    # Split the text_before if needed
+                    if current_chunk:
+                        chunks.append(current_chunk)
+                    # Chunk the text_before part
+                    temp_chunks = self._chunk_simple(text_before, target_chars)
+                    chunks.extend(temp_chunks[:-1])  # Add all but last
+                    current_chunk = temp_chunks[-1] if temp_chunks else ""
+
+            # Now handle the block itself
+            block_content = block['content']
+
+            # If block is too large, put it in its own chunk(s)
+            if len(block_content) > target_chars:
+                if current_chunk:
+                    chunks.append(current_chunk)
+                    current_chunk = ""
+                # Split large block into multiple chunks
+                # (We tried not to split it, but it's too big)
+                block_chunks = self._chunk_simple(block_content, target_chars)
+                chunks.extend(block_chunks)
+            # If adding block would exceed target, start new chunk
+            elif len(current_chunk) + len(block_content) > target_chars:
+                if current_chunk:
+                    chunks.append(current_chunk)
+                current_chunk = block_content
+            else:
+                # Add block to current chunk
+                current_chunk += block_content
+
+            position = block['end']
+
+        # Add remaining text after last block
+        if position < len(text):
+            remaining_text = text[position:]
+            if len(current_chunk) + len(remaining_text) <= target_chars:
+                current_chunk += remaining_text
+            else:
+                if current_chunk:
+                    chunks.append(current_chunk)
+                # Chunk the remaining text
+                remaining_chunks = self._chunk_simple(remaining_text, target_chars)
+                chunks.extend(remaining_chunks)
+                current_chunk = ""
+
+        # Add final chunk if any
+        if current_chunk:
+            chunks.append(current_chunk)
+
+        return chunks if chunks else [""]
+
+    def score_chunk_quality(self, chunk: str) -> float:
+        """
+        Score chunk quality based on coherence, completeness, and independence.
+
+        Phase 5.7.4: Quality Scoring
+
+        Scores range from 0.0 (low quality) to 1.0 (high quality).
+
+        Quality criteria:
+        - Coherence: Does the chunk form a complete thought?
+        - Completeness: Are relevant details present?
+        - Independence: Can the chunk be understood alone?
+
+        Args:
+            chunk: Text chunk to score
+
+        Returns:
+            Quality score (0.0 to 1.0)
+        """
+        if not chunk or len(chunk.strip()) == 0:
+            return 0.0
+
+        score = 1.0
+        penalties = []
+
+        # Coherence checks
+        # 1. Check for incomplete sentences (starts/ends mid-sentence)
+        chunk_stripped = chunk.strip()
+
+        # Does it start with lowercase (likely mid-sentence)?
+        if chunk_stripped and chunk_stripped[0].islower():
+            penalties.append(('starts_lowercase', 0.1))
+
+        # Does it end without proper punctuation?
+        if chunk_stripped and chunk_stripped[-1] not in '.!?"\'"':
+            penalties.append(('no_end_punctuation', 0.1))
+
+        # Completeness checks
+        # 2. Check for orphaned list items (list with only 1 item)
+        list_item_pattern = r'^\s*[-*•]\s|\d+\.\s'
+        list_matches = re.findall(list_item_pattern, chunk, re.MULTILINE)
+        if len(list_matches) == 1:
+            penalties.append(('orphaned_list_item', 0.15))
+
+        # 3. Check for incomplete tables (header without data, or vice versa)
+        lines = chunk.split('\n')
+        table_lines = [line for line in lines if line.count('|') >= 2]
+        if len(table_lines) == 1:
+            # Only one table row (likely incomplete)
+            penalties.append(('incomplete_table', 0.15))
+
+        # 4. Check for incomplete code blocks
+        code_block_starts = chunk.count('```')
+        if code_block_starts % 2 != 0:
+            # Odd number of backticks = incomplete code block
+            penalties.append(('incomplete_code_block', 0.2))
+
+        # Independence checks
+        # 5. Check for unresolved references (e.g., "this", "that", "it" at start)
+        first_words = chunk_stripped.split()[:3] if chunk_stripped else []
+        pronoun_references = ['this', 'that', 'it', 'these', 'those', 'they']
+        if any(word.lower() in pronoun_references for word in first_words):
+            penalties.append(('starts_with_reference', 0.1))
+
+        # 6. Check for very short chunks (< 50 chars, likely incomplete)
+        if len(chunk_stripped) < 50:
+            penalties.append(('too_short', 0.15))
+
+        # 7. Check for extremely long chunks (> 20,000 chars, likely not properly chunked)
+        if len(chunk_stripped) > 20000:
+            penalties.append(('too_long', 0.1))
+
+        # Apply penalties (cap at 0.0)
+        total_penalty = sum(penalty for _, penalty in penalties)
+        score = max(0.0, score - total_penalty)
+
+        return score
+
+    def _apply_quality_filtering(self, chunks: List[str]) -> List[str]:
+        """
+        Filter chunks based on quality threshold.
+
+        Phase 5.7.4: Quality Scoring
+
+        Args:
+            chunks: List of text chunks
+
+        Returns:
+            Filtered list of chunks with quality >= threshold
+        """
+        if self.quality_threshold <= 0.0:
+            # No filtering if threshold is 0
+            return chunks
+
+        filtered_chunks = []
+        for chunk in chunks:
+            quality = self.score_chunk_quality(chunk)
+            if quality >= self.quality_threshold:
+                filtered_chunks.append(chunk)
+
+        # If all chunks filtered out, return at least one (the best quality chunk)
+        if not filtered_chunks and chunks:
+            # Find chunk with highest quality
+            best_chunk = max(chunks, key=lambda c: self.score_chunk_quality(c))
+            filtered_chunks = [best_chunk]
+
+        return filtered_chunks if filtered_chunks else chunks
 
     def chunk_by_structure(
         self,

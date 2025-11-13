@@ -928,6 +928,15 @@ Scenario 2: "Read https://docs.python.org/3/library/asyncio.html"
 - ✅ Immediate command execution confirmation (v0.3.14)
 - ✅ No text duplication (fixed in v0.3.13)
 
+### Phase 8.1: GitHub Integration (v0.3.22)
+- ✅ GitHub authentication with token management (GH_TOKEN/GITHUB_TOKEN)
+- ✅ Commit and push changes directly from CLI
+- ✅ Create pull requests with title, body, and base branch
+- ✅ Branch management: create, checkout, merge branches
+- ✅ Auto-authentication from environment variables
+- ✅ Integration with GitHub CLI (gh) for seamless operations
+- ✅ 7 new tools for complete GitHub workflow management
+
 ### Phase 11.1: Web Search (v0.3.21, Enhanced v0.3.23)
 - ✅ Real-time web search using Claude's native web_search_20250305 tool
 - ✅ Weather queries with location handling
@@ -1000,16 +1009,6 @@ browser_use:
 - **fetch_website**: Fetches specific URL → Returns full page content
 - **Use Case Split**: Search (find things) vs Fetch (get specific pages)
 
-### Phase 8.1: GitHub Integration (v0.3.22)
-- ✅ GitHub authentication with token management (GH_TOKEN/GITHUB_TOKEN)
-- ✅ Commit and push changes directly from CLI
-- ✅ Create pull requests with title, body, and base branch
-- ✅ Branch management: create, checkout, merge branches
-- ✅ Auto-authentication from environment variables
-- ✅ Integration with GitHub CLI (gh) for seamless operations
-- ✅ 7 new tools for complete GitHub workflow management
-
----
 
 ## 🎯 Design Principles
 
