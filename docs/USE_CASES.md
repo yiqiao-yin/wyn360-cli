@@ -2252,7 +2252,7 @@ Enhance your existing projects with new functionality while maintaining code qua
 5. Maintains your coding style
 
 **Example Interaction:**
-```
+```bash
 You: Add authentication to my FastAPI app
 
 WYN360:
@@ -2261,7 +2261,7 @@ WYN360:
 3. Generates authentication middleware
 4. Updates routes with auth decorators
 5. Provides implementation guide
-```yaml
+```
 
 **Common Feature Additions:**
 - Authentication and authorization
@@ -2293,7 +2293,7 @@ Get help, guidance, and answers to your Python questions through ongoing convers
 **Example Interactions:**
 
 **Debugging:**
-```
+```bash
 You: My script has a connection timeout error
 
 WYN360:
@@ -2305,7 +2305,7 @@ WYN360:
 ```
 
 **Learning:**
-```
+```bash
 You: How do I implement async in Python?
 
 WYN360:
@@ -2317,7 +2317,7 @@ WYN360:
 ```
 
 **Code Review:**
-```
+```bash
 You: Review my API implementation
 
 WYN360:
@@ -2326,7 +2326,7 @@ WYN360:
 - Reviews security considerations
 - Suggests improvements
 - Provides specific fixes
-```yaml
+```
 
 ---
 
@@ -2358,7 +2358,7 @@ WYN360 can read and analyze structured documents (Excel, Word, PDF) of any size 
 
 Analyze multi-sheet expense tracking spreadsheets.
 
-```
+```bash
 You: Read my expenses.xlsx file
 
 WYN360: [Processes Excel file]
@@ -2386,7 +2386,7 @@ Breakdown:
 
 Analyze structured documents with sections, tables, and figures.
 
-```
+```bash
 You: Summarize methodology section from research_paper.docx
 
 WYN360: [Reads Word document, extracts methodology section]
@@ -2407,7 +2407,7 @@ Full section: Pages 8-15 (2,100 tokens)
 
 Navigate and query large PDF documents efficiently.
 
-```
+```bash
 You: What does Chapter 5 say about neural networks in textbook.pdf?
 
 WYN360: [Searches 120-page PDF, retrieves Chapter 5]
@@ -2467,7 +2467,7 @@ When documents contain important visual information (charts, diagrams, screensho
 
 Analyze Excel/PDF reports containing charts and graphs.
 
-```
+```bash
 You: Analyze the Q4 sales charts in report.pdf
 
 WYN360: [Using vision mode]
@@ -2496,7 +2496,7 @@ Vision API tokens used: 4,200 input, 350 output
 
 Understand architecture diagrams and flowcharts in documentation.
 
-```
+```bash
 You: Explain the system architecture diagram on page 12
 
 WYN360: [Analyzes architectural diagram with vision]
@@ -2565,7 +2565,7 @@ Many PDFs are scanned images with no text layer. WYN360 automatically detects sc
 
 Extract text from old scanned documents.
 
-```
+```bash
 You: Read the scanned contract from 1995_agreement.pdf
 
 WYN360: [Detecting scanned PDF, running OCR]
@@ -2589,7 +2589,7 @@ Would you like me to describe those sections using Vision API?
 
 Extract data from photographed receipts.
 
-```
+```bash
 You: Extract information from receipt_scan.pdf
 
 WYN360: [OCR + structured extraction]
@@ -2649,14 +2649,14 @@ Instead of keyword matching, WYN360 uses AI embeddings to understand the *meanin
 Find content by meaning, not exact words.
 
 **Traditional Keyword Search:**
-```
+```bash
 You: Find information about "machine learning overfitting"
 [Searches for documents containing "machine learning" AND "overfitting"]
 Results: 3 matches
 ```
 
 **Semantic Search:**
-```
+```bash
 You: Find information about "machine learning overfitting"
 [Computes query embedding, matches against document embeddings]
 
@@ -2680,7 +2680,7 @@ Results (ranked by semantic similarity):
 
 Search across languages conceptually.
 
-```
+```bash
 You: Find content about "client authentication mechanisms"
 
 Results:
@@ -2726,7 +2726,7 @@ Work with multiple documents at once - compare spreadsheets, find information ac
 
 Compare budget projections with actual expenses.
 
-```
+```bash
 You: Compare budget_2024.xlsx and actual_expenses_2024.xlsx
 
 WYN360: [Analyzing both documents]
@@ -2757,7 +2757,7 @@ Overall: 3% over budget ($153,200 vs $150,000 planned)
 
 Find patterns across quarterly reports.
 
-```
+```bash
 You: Find all mentions of "supply chain issues" across my Q1-Q4 reports
 
 WYN360: [Searching 4 documents]
@@ -2786,7 +2786,7 @@ Trend: Issue peaked in Q2, resolved by Q3
 
 Track what changed between document versions.
 
-```
+```bash
 You: What changed between draft_v1.docx and draft_v2.docx?
 
 WYN360: [Comparing documents]
@@ -2835,7 +2835,7 @@ Phase 5.6 performance optimizations make document processing 3-5x faster with 50
 Process multiple large documents efficiently.
 
 **Before (v0.3.35):**
-```
+```bash
 You: Process all 10 quarterly reports
 
 WYN360: [Sequential processing]
@@ -2847,7 +2847,7 @@ Total time: 8 minutes 15 seconds
 ```
 
 **After (v0.3.36):**
-```
+```bash
 You: Process all 10 quarterly reports
 
 WYN360: [Parallel processing with batch_size=10]
@@ -2863,7 +2863,7 @@ Cache size: 45 MB (compressed from 156 MB)
 
 Optimized caching keeps hot documents instantly available.
 
-```
+```bash
 You: What were my April expenses?
 [First access - processes document]
 Response time: 8 seconds
@@ -3077,7 +3077,7 @@ The agent analyzes your natural language to understand what you want:
 5. ✓ Explains what was updated
 
 **Example:**
-```
+```bash
 You: Add a feature to run hello_world.py when user asks
 
 WYN360:
@@ -3126,7 +3126,7 @@ If the agent makes a wrong choice, it can self-correct:
 ### Appendix D: Example Workflows
 
 #### Workflow 1: Brand New Project
-```
+```bash
 Step 1: Navigate to empty directory
 $ cd my-new-project
 
@@ -3155,7 +3155,7 @@ WYN360:
 ---
 
 #### Workflow 2: Enhance Existing Project
-```
+```bash
 Step 1: Navigate to your project
 $ cd my-existing-project
 
@@ -3185,7 +3185,7 @@ WYN360:
 ---
 
 #### Workflow 3: Debug & Fix
-```
+```bash
 Step 1: Encounter an error
 $ python script.py
 Error: Connection timeout
@@ -3221,7 +3221,7 @@ WYN360:
 ---
 
 #### Workflow 4: Learning & Guidance
-```
+```bash
 You: How do I implement async in Python?
 
 WYN360:
@@ -3413,7 +3413,7 @@ WYN360:
 - Use `/history` to review what you've discussed
 
 **Example Workflow:**
-```
+```bash
 You: Build a data analysis pipeline
 WYN360: [Creates initial pipeline]
 
@@ -3471,7 +3471,7 @@ WYN360: [Continues from where you left off with full context]
 ### Quick Start Examples
 
 #### Example 1: Build a Web Scraper
-```
+```bash
 You: Create a web scraper that extracts article titles from a news site
 
 WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
@@ -3479,7 +3479,7 @@ WYN360: [Generates complete script with requests, BeautifulSoup, error handling]
 ```
 
 #### Example 2: Data Processing Pipeline
-```
+```bash
 You: Build a script that reads CSV, cleans data, and outputs to JSON
 
 WYN360: [Creates comprehensive data pipeline with pandas]
@@ -3487,7 +3487,7 @@ WYN360: [Creates comprehensive data pipeline with pandas]
 ```
 
 #### Example 3: API Client
-```
+```bash
 You: Create an async HTTP client for a REST API
 
 WYN360: [Generates async client with aiohttp, retry logic, error handling]
