@@ -2089,28 +2089,47 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                         # If embeddings fail, continue without them
                         pass
 
-                for chunk_data in chunks_data:
-                    chunk_content = chunk_data["content"]
-                    chunk_tokens = chunk_data["tokens"]
+                # Phase 5.6.1: Parallel Chunk Summarization
+                # Separate chunks into those needing summarization and small chunks
+                chunks_to_summarize = []
+                chunks_to_summarize_indices = []
 
-                    if use_chunking and chunk_tokens > 200:
-                        # Summarize chunk
-                        context = {
-                            "doc_type": "excel",
-                            "sheet_name": chunk_data["sheet_name"]
-                        }
+                for i, chunk_data in enumerate(chunks_data):
+                    if use_chunking and chunk_data["tokens"] > 200:
+                        chunks_to_summarize.append({
+                            "content": chunk_data["content"],
+                            "context": {
+                                "doc_type": "excel",
+                                "sheet_name": chunk_data["sheet_name"]
+                            }
+                        })
+                        chunks_to_summarize_indices.append(i)
 
-                        summary_result = await summarizer.summarize_chunk(
-                            chunk_content,
-                            context
-                        )
+                # Summarize chunks in parallel (batch_size=10)
+                if chunks_to_summarize:
+                    summary_results = await summarizer.summarize_chunks_parallel(
+                        chunks_to_summarize,
+                        batch_size=10
+                    )
 
-                        # Track document processing tokens
+                    # Track tokens for all summarized chunks
+                    for summary_result in summary_results:
                         if "api_tokens" in summary_result:
                             self.track_document_processing(
                                 summary_result["api_tokens"]["input"],
                                 summary_result["api_tokens"]["output"]
                             )
+
+                # Build chunk metadata (preserve original order)
+                summary_idx = 0
+                for i, chunk_data in enumerate(chunks_data):
+                    chunk_content = chunk_data["content"]
+                    chunk_tokens = chunk_data["tokens"]
+
+                    if i in chunks_to_summarize_indices:
+                        # Use parallel summarization result
+                        summary_result = summary_results[summary_idx]
+                        summary_idx += 1
 
                         chunk_metadata = ChunkMetadata(
                             chunk_id=chunk_data["chunk_id"],
@@ -2350,28 +2369,45 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                         # If embeddings fail, continue without them
                         pass
 
-                for chunk_data in chunks_data:
-                    chunk_content = chunk_data["content"]
-                    chunk_tokens = chunk_data["tokens"]
+                # Phase 5.6.1: Parallel Chunk Summarization
+                chunks_to_summarize = []
+                chunks_to_summarize_indices = []
 
-                    if use_chunking and chunk_tokens > 200:
-                        # Summarize chunk
-                        context = {
-                            "doc_type": "word",
-                            "section_title": chunk_data["section_title"]
-                        }
+                for i, chunk_data in enumerate(chunks_data):
+                    if use_chunking and chunk_data["tokens"] > 200:
+                        chunks_to_summarize.append({
+                            "content": chunk_data["content"],
+                            "context": {
+                                "doc_type": "word",
+                                "section_title": chunk_data["section_title"]
+                            }
+                        })
+                        chunks_to_summarize_indices.append(i)
 
-                        summary_result = await summarizer.summarize_chunk(
-                            chunk_content,
-                            context
-                        )
+                # Summarize chunks in parallel
+                if chunks_to_summarize:
+                    summary_results = await summarizer.summarize_chunks_parallel(
+                        chunks_to_summarize,
+                        batch_size=10
+                    )
 
-                        # Track document processing tokens
+                    # Track tokens
+                    for summary_result in summary_results:
                         if "api_tokens" in summary_result:
                             self.track_document_processing(
                                 summary_result["api_tokens"]["input"],
                                 summary_result["api_tokens"]["output"]
                             )
+
+                # Build chunk metadata
+                summary_idx = 0
+                for i, chunk_data in enumerate(chunks_data):
+                    chunk_content = chunk_data["content"]
+                    chunk_tokens = chunk_data["tokens"]
+
+                    if i in chunks_to_summarize_indices:
+                        summary_result = summary_results[summary_idx]
+                        summary_idx += 1
 
                         chunk_metadata = ChunkMetadata(
                             chunk_id=chunk_data["chunk_id"],
@@ -2682,28 +2718,37 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
                 # If embeddings fail, continue without them
                 pass
 
-            # Summarize each chunk
+            # Phase 5.6.1: Parallel Chunk Summarization
+            chunks_to_summarize = []
+            for chunk_data in chunks_data:
+                chunks_to_summarize.append({
+                    "content": chunk_data["content"],
+                    "context": {
+                        "file_name": file_path_obj.name,
+                        "doc_type": "pdf",
+                        "page_range": f"Pages {chunk_data['page_range'][0]}-{chunk_data['page_range'][1]}",
+                        "total_pages": total_pages,
+                        "has_tables": chunk_data.get("has_tables", False)
+                    }
+                })
+
+            # Summarize chunks in parallel
+            summary_results = await summarizer.summarize_chunks_parallel(
+                chunks_to_summarize,
+                batch_size=10
+            )
+
+            # Build chunks with metadata
             chunks_with_metadata = []
             total_summary_tokens = 0
 
-            for chunk_data in chunks_data:
-                # Document context for better summaries
-                context = {
-                    "file_name": file_path_obj.name,
-                    "doc_type": "pdf",
-                    "page_range": f"Pages {chunk_data['page_range'][0]}-{chunk_data['page_range'][1]}",
-                    "total_pages": total_pages,
-                    "has_tables": chunk_data.get("has_tables", False)
-                }
-
-                # Summarize chunk
-                summary_result = await summarizer.summarize_chunk(
-                    chunk_text=chunk_data["content"],
-                    context=context
-                )
+            for i, chunk_data in enumerate(chunks_data):
+                summary_result = summary_results[i]
 
                 # Track tokens
-                total_summary_tokens += summary_result.get("tokens_used", 0)
+                if "api_tokens" in summary_result:
+                    total_summary_tokens += summary_result["api_tokens"]["input"]
+                    total_summary_tokens += summary_result["api_tokens"]["output"]
 
                 # Store chunk with metadata
                 chunks_with_metadata.append({
