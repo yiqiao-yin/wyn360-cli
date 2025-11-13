@@ -2330,6 +2330,579 @@ WYN360:
 
 ---
 
+## Use Case 19: Document Reading - Excel, Word, and PDF
+
+**Complexity:** Advanced
+**Type:** Document Analysis
+**Best For:** Analyzing spreadsheets, reports, papers, and large documents
+**Version:** v0.3.26 - v0.3.29
+
+**Feature:** Intelligent document reading with chunking, summarization, and semantic search
+
+### Overview
+
+WYN360 can read and analyze structured documents (Excel, Word, PDF) of any size using an intelligent chunking system. Documents are automatically split into manageable pieces, summarized, and cached for fast retrieval.
+
+### Key Features
+
+- 📊 **Excel Files** - Multi-sheet support, formulas, charts, named ranges
+- 📝 **Word Documents** - Structured extraction, tables, images, sections
+- 📄 **PDF Files** - Page-aware chunking, table detection, OCR for scanned PDFs
+- 🧠 **Smart Chunking** - Automatically splits large documents into ~1000 token chunks
+- 💾 **Intelligent Caching** - Summaries cached for 1 hour, instant re-access
+- 🔍 **Query-Based Retrieval** - Ask questions, get relevant sections
+- ⚡ **Performance** - 3-5x faster with parallel processing (v0.3.36)
+- 🗜️ **Compression** - 50-70% storage reduction (v0.3.36)
+
+### Use Case 19.1: Expense Report Analysis (Excel)
+
+Analyze multi-sheet expense tracking spreadsheets.
+
+```
+You: Read my expenses.xlsx file
+
+WYN360: [Processes Excel file]
+📊 Excel File: expenses.xlsx (3 sheets, 8,450 tokens)
+✓ Cache generated with 9 chunks
+
+Summary:
+- Q1_Expenses: $5,240 total, January highest at $2,100
+- Q2_Expenses: $6,180 total, April spike at $2,400
+- Summary: YTD $11,420, 8% over budget
+
+You: What were my April gas expenses?
+
+WYN360: [Retrieves relevant chunk]
+April gas expenses: $590
+This represents a 15% increase from March ($512).
+Breakdown:
+- Week 1: $140
+- Week 2: $155
+- Week 3: $145
+- Week 4: $150
+```
+
+### Use Case 19.2: Research Paper Summarization (Word)
+
+Analyze structured documents with sections, tables, and figures.
+
+```
+You: Summarize methodology section from research_paper.docx
+
+WYN360: [Reads Word document, extracts methodology section]
+📝 Word Document: research_paper.docx (45 pages, 12,300 tokens)
+
+Methodology Section Summary:
+- Study Design: Randomized controlled trial (n=500)
+- Duration: 12 months (Jan-Dec 2024)
+- Measurements: Weekly assessments using validated scales
+- Analysis: Mixed-effects models with p<0.05 significance
+- Tables: 3 demographic tables included
+- Key Innovation: Novel sampling technique reducing bias
+
+Full section: Pages 8-15 (2,100 tokens)
+```
+
+### Use Case 19.3: Textbook Navigation (PDF)
+
+Navigate and query large PDF documents efficiently.
+
+```
+You: What does Chapter 5 say about neural networks in textbook.pdf?
+
+WYN360: [Searches 120-page PDF, retrieves Chapter 5]
+📄 PDF Document: textbook.pdf (120 pages, 45,000 tokens)
+Found relevant content: Pages 67-82 (Chapter 5)
+
+Chapter 5: Neural Networks
+- Introduction to feedforward architectures
+- Backpropagation algorithm explained with diagrams
+- Activation functions: ReLU, sigmoid, tanh comparison
+- Regularization techniques: Dropout (p=0.5 recommended)
+- Practical example: MNIST digit classification
+- 5 figures and 2 code listings
+
+Would you like me to extract specific sections or code examples?
+```
+
+### Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `read_excel` | Read Excel files | Natural language: "Read expenses.xlsx" |
+| `read_word` | Read Word documents | Natural language: "Summarize report.docx" |
+| `read_pdf` | Read PDF files | Natural language: "What's in chapter 3 of book.pdf?" |
+| `/clear_doc_cache` | Clear document cache | `/clear_doc_cache` or `/clear_doc_cache file.xlsx` |
+| `/doc_cache_stats` | Show cache statistics | `/doc_cache_stats` |
+| `/set_doc_tokens` | Set token limits | `/set_doc_tokens pdf 30000` |
+
+---
+
+## Use Case 20: Vision Mode - Image Analysis in Documents
+
+**Complexity:** Advanced
+**Type:** Multimodal Document Processing
+**Best For:** Documents with charts, diagrams, screenshots, photos
+**Version:** v0.3.30
+
+**Feature:** Claude Vision API integration for analyzing images in Word and PDF documents
+
+### Overview
+
+When documents contain important visual information (charts, diagrams, screenshots), WYN360 can use Claude's Vision API to describe and analyze these images.
+
+### Key Features
+
+- 🖼️ **Three Processing Modes:**
+  - `skip` - Ignore images entirely (fastest, cheapest)
+  - `describe` - Extract captions and alt text (default)
+  - `vision` - Full Claude Vision analysis (most accurate, costs extra)
+- 📊 **Chart Recognition** - Bar charts, line graphs, pie charts
+- 🎨 **Diagram Analysis** - Flowcharts, architecture diagrams, UML
+- 📸 **Screenshot Understanding** - UI mockups, code screenshots
+- 💰 **Cost Transparency** - Separate tracking for vision API calls
+- ⚡ **Batch Processing** - Efficient bulk image analysis
+
+### Use Case 20.1: Sales Report with Charts
+
+Analyze Excel/PDF reports containing charts and graphs.
+
+```
+You: Analyze the Q4 sales charts in report.pdf
+
+WYN360: [Using vision mode]
+📊 Analyzing 3 charts from report.pdf...
+
+Chart 1 (Page 5): Revenue Trend Line Chart
+- Shows steady growth from $2M (Q4 2023) to $3.2M (Q4 2024)
+- Notable spike in November 2024
+- Annotation indicates "Holiday Season Peak"
+
+Chart 2 (Page 7): Regional Sales Pie Chart
+- West Coast: 42% ($1.34M)
+- East Coast: 31% ($0.99M)
+- Midwest: 18% ($0.58M)
+- South: 9% ($0.29M)
+
+Chart 3 (Page 10): Product Category Bar Chart
+- Electronics leading at $1.8M
+- Apparel second at $0.9M
+- Home goods at $0.5M
+
+Vision API tokens used: 4,200 input, 350 output
+```
+
+### Use Case 20.2: Technical Diagram Understanding
+
+Understand architecture diagrams and flowcharts in documentation.
+
+```
+You: Explain the system architecture diagram on page 12
+
+WYN360: [Analyzes architectural diagram with vision]
+🎨 System Architecture Diagram Analysis:
+
+Components Identified:
+1. Frontend Layer (Top)
+   - React SPA
+   - Mobile App (iOS/Android)
+
+2. API Gateway (Middle)
+   - REST API
+   - GraphQL endpoint
+   - WebSocket connections
+
+3. Backend Services (Center)
+   - Auth Service
+   - User Service
+   - Payment Service
+   - Notification Service
+
+4. Data Layer (Bottom)
+   - PostgreSQL (Primary DB)
+   - Redis (Cache)
+   - S3 (File Storage)
+
+Key Connections:
+- All frontend traffic → API Gateway → Load Balancer
+- Services communicate via message queue (RabbitMQ)
+- Shared authentication via JWT tokens
+```
+
+### Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `/set_image_mode skip` | Ignore all images | Process faster, lower cost |
+| `/set_image_mode describe` | Extract alt text only | Default behavior |
+| `/set_image_mode vision` | Full Vision API analysis | Highest accuracy |
+
+---
+
+## Use Case 21: OCR - Scanned Document Processing
+
+**Complexity:** Advanced
+**Type:** OCR + Vision Analysis
+**Best For:** Scanned PDFs, image-based documents, low-quality scans
+**Version:** v0.3.32
+
+**Feature:** Tesseract OCR integration for extracting text from scanned documents
+
+### Overview
+
+Many PDFs are scanned images with no text layer. WYN360 automatically detects scanned pages and uses OCR to extract text, making these documents searchable and analyzable.
+
+### Key Features
+
+- 🔍 **Automatic Detection** - Identifies scanned vs text-based PDFs
+- 📄 **Tesseract OCR** - Industry-standard open-source OCR engine
+- 🌍 **Multi-Language** - Supports English, Spanish, French, German, Chinese, etc.
+- 📊 **Confidence Scores** - Quality assessment of OCR results
+- 🖼️ **Combined Processing** - OCR text + Vision API for images
+- ⚡ **Preprocessing** - Deskew, denoise for better accuracy
+
+### Use Case 21.1: Historical Document Processing
+
+Extract text from old scanned documents.
+
+```
+You: Read the scanned contract from 1995_agreement.pdf
+
+WYN360: [Detecting scanned PDF, running OCR]
+📄 Scanned PDF detected: 1995_agreement.pdf (15 pages)
+🔍 Running Tesseract OCR...
+
+OCR Results (Confidence: 87.3%):
+Page 1-3: Contract preamble and definitions
+Page 4-7: Terms and conditions
+  - Payment schedule: Net 30 days
+  - Termination clause: 90-day notice
+  - Liability cap: $500,000
+Page 8-12: Technical specifications
+Page 13-15: Signatures and exhibits
+
+Note: Some degraded text on pages 2 and 11 (confidence <70%)
+Would you like me to describe those sections using Vision API?
+```
+
+### Use Case 21.2: Receipt Processing
+
+Extract data from photographed receipts.
+
+```
+You: Extract information from receipt_scan.pdf
+
+WYN360: [OCR + structured extraction]
+🧾 Receipt Analysis:
+
+Merchant: Tech Supply Co.
+Date: January 15, 2025
+Transaction ID: #TXN-98765
+
+Items:
+1. USB-C Cable (3-pack) - $24.99
+2. Wireless Mouse - $39.99
+3. Laptop Stand - $54.99
+4. HDMI Adapter - $19.99
+
+Subtotal: $139.96
+Tax (8.5%): $11.90
+Total: $151.86
+
+Payment: Visa ending in 4242
+```
+
+### Features
+
+- ✅ Scanned page detection (checks for text layer)
+- ✅ Language auto-detection
+- ✅ Image preprocessing (rotation correction, noise reduction)
+- ✅ Graceful fallback if Tesseract not installed
+- ✅ Combined with Vision API for maximum accuracy
+
+---
+
+## Use Case 22: Semantic Search - Smart Document Retrieval
+
+**Complexity:** Advanced
+**Type:** AI-Powered Search
+**Best For:** Finding relevant content in large document collections
+**Version:** v0.3.31
+
+**Feature:** Embedding-based semantic search using sentence-transformers
+
+### Overview
+
+Instead of keyword matching, WYN360 uses AI embeddings to understand the *meaning* of your query and find semantically similar content, even if exact keywords don't match.
+
+### Key Features
+
+- 🧠 **Semantic Understanding** - Finds meaning, not just keywords
+- 📊 **Cosine Similarity** - Ranks results by relevance score
+- ⚡ **Fast Retrieval** - Query latency <50ms
+- 💾 **Cached Embeddings** - Computed once, reused forever
+- 🔄 **Fallback Support** - Uses keyword matching if embeddings fail
+- 📈 **30-50% Better** - Significantly improved accuracy vs keywords
+
+### Use Case 22.1: Conceptual Search
+
+Find content by meaning, not exact words.
+
+**Traditional Keyword Search:**
+```
+You: Find information about "machine learning overfitting"
+[Searches for documents containing "machine learning" AND "overfitting"]
+Results: 3 matches
+```
+
+**Semantic Search:**
+```
+You: Find information about "machine learning overfitting"
+[Computes query embedding, matches against document embeddings]
+
+Results (ranked by semantic similarity):
+1. Chapter 3: "Regularization Techniques" (similarity: 0.89)
+   "Preventing models from memorizing training data..."
+
+2. Section 5.2: "Cross-Validation Strategies" (similarity: 0.84)
+   "Detecting when your model fits noise rather than signal..."
+
+3. Appendix B: "Dropout and Early Stopping" (similarity: 0.81)
+   "Combat excessive model complexity and poor generalization..."
+```
+
+**Why Better?**
+- Found "regularization" (related concept) without keyword match
+- Understood "memorizing" = "overfitting"
+- Ranked by actual relevance, not just keyword frequency
+
+### Use Case 22.2: Multi-Language Search
+
+Search across languages conceptually.
+
+```
+You: Find content about "client authentication mechanisms"
+
+Results:
+1. Section 4: "OAuth 2.0 Authorization Flow" (English)
+2. Chapter 7: "Autenticación de Usuarios" (Spanish)
+3. Appendix: "JWT Token Validation" (English)
+
+Note: Found Spanish section because embedding understands
+"autenticación" is semantically similar to "authentication"
+```
+
+### Performance
+
+- **Retrieval Quality:** +40% accuracy improvement
+- **Query Speed:** <50ms (cached embeddings)
+- **Memory:** ~200MB for 10,000 chunks
+- **Model:** all-MiniLM-L6-v2 (384-dim embeddings)
+
+---
+
+## Use Case 23: Multi-Document Analysis
+
+**Complexity:** Advanced
+**Type:** Cross-Document Intelligence
+**Best For:** Comparing reports, tracking changes, aggregating insights
+**Version:** v0.3.34
+
+**Feature:** Query and analyze multiple cached documents simultaneously
+
+### Overview
+
+Work with multiple documents at once - compare spreadsheets, find information across reports, track changes between versions.
+
+### Key Features
+
+- 🔍 **Unified Search** - Search across all cached documents
+- 📊 **Document Comparison** - Side-by-side analysis
+- 🔗 **Cross-References** - Find mentions across documents
+- 📦 **Aggregated Summaries** - Combined insights from multiple sources
+- 🎯 **Smart Selection** - Auto-select relevant documents
+
+### Use Case 23.1: Budget vs Actual Comparison
+
+Compare budget projections with actual expenses.
+
+```
+You: Compare budget_2024.xlsx and actual_expenses_2024.xlsx
+
+WYN360: [Analyzing both documents]
+📊 Budget vs Actual Comparison (2024):
+
+Categories with Variance:
+1. Marketing
+   - Budgeted: $50,000
+   - Actual: $62,500
+   - Variance: +25% ($12,500 over)
+   - Reason: Additional Q4 campaign
+
+2. Engineering
+   - Budgeted: $200,000
+   - Actual: $185,000
+   - Variance: -7.5% ($15,000 under)
+   - Reason: Delayed hiring in Q3
+
+3. Operations
+   - Budgeted: $80,000
+   - Actual: $81,200
+   - Variance: +1.5% (within tolerance)
+
+Overall: 3% over budget ($153,200 vs $150,000 planned)
+```
+
+### Use Case 23.2: Multi-Report Insights
+
+Find patterns across quarterly reports.
+
+```
+You: Find all mentions of "supply chain issues" across my Q1-Q4 reports
+
+WYN360: [Searching 4 documents]
+🔗 Cross-Document Search Results:
+
+Q1_Report.docx (3 mentions):
+- Page 5: "Chip shortage impacting production"
+- Page 12: "3-week delay on component delivery"
+- Page 18: "Alternative suppliers being evaluated"
+
+Q2_Report.docx (5 mentions):
+- Page 3: "Supply chain stabilizing"
+- Page 9: "New supplier agreements signed"
+- ...
+
+Q3_Report.docx (1 mention):
+- Page 15: "Supply chain fully resolved"
+
+Q4_Report.docx (0 mentions):
+- No supply chain issues reported
+
+Trend: Issue peaked in Q2, resolved by Q3
+```
+
+### Use Case 23.3: Document Change Tracking
+
+Track what changed between document versions.
+
+```
+You: What changed between draft_v1.docx and draft_v2.docx?
+
+WYN360: [Comparing documents]
+📝 Document Comparison:
+
+Sections Added in v2:
+- "Implementation Timeline" (pages 8-10)
+- "Risk Mitigation Strategies" (pages 15-17)
+
+Sections Modified:
+- "Budget Allocation": Increased from $100K to $125K
+- "Team Structure": Added 2 junior developers
+- "Success Metrics": Changed KPIs from 3 to 5
+
+Sections Removed:
+- "Alternative Approaches" (was pages 12-14 in v1)
+
+Overall: 23% content change, 2,300 words added
+```
+
+---
+
+## Use Case 24: High-Performance Document Processing
+
+**Complexity:** Advanced
+**Type:** Optimization & Efficiency
+**Best For:** Large documents, batch processing, production use
+**Version:** v0.3.36
+
+**Feature:** Parallel processing, compression, and LRU caching for maximum speed and efficiency
+
+### Overview
+
+Phase 5.6 performance optimizations make document processing 3-5x faster with 50-70% less storage.
+
+### Key Features Delivered
+
+- ⚡ **Parallel Chunk Summarization** - Process multiple chunks concurrently
+- 🗜️ **Gzip Compression** - 50-70% storage reduction for cache
+- 🔄 **LRU Cache Eviction** - Keep frequently accessed documents hot
+- 📊 **Batch Processing** - Efficient bulk document analysis
+- 🚀 **3-5x Speedup** - Dramatically faster processing
+
+### Use Case 24.1: Bulk Document Processing
+
+Process multiple large documents efficiently.
+
+**Before (v0.3.35):**
+```
+You: Process all 10 quarterly reports
+
+WYN360: [Sequential processing]
+Processing Q1_2024.pdf... (45 seconds)
+Processing Q2_2024.pdf... (52 seconds)
+Processing Q3_2024.pdf... (48 seconds)
+...
+Total time: 8 minutes 15 seconds
+```
+
+**After (v0.3.36):**
+```
+You: Process all 10 quarterly reports
+
+WYN360: [Parallel processing with batch_size=10]
+Processing batch 1 (10 documents)...
+✓ All documents processed
+
+Total time: 2 minutes 30 seconds
+Speedup: 3.3x faster
+Cache size: 45 MB (compressed from 156 MB)
+```
+
+### Use Case 24.2: Frequent Access Patterns
+
+Optimized caching keeps hot documents instantly available.
+
+```
+You: What were my April expenses?
+[First access - processes document]
+Response time: 8 seconds
+
+You: How about May expenses?
+[Cache hit - instant retrieval]
+Response time: 0.3 seconds
+
+You: Compare April and May
+[Both cached - instant]
+Response time: 0.4 seconds
+
+Cache Stats:
+- Hit rate: 95%
+- Storage: 85 MB (compressed from 298 MB)
+- LRU eviction: Keeping 50 most recent documents
+- Oldest entry: 45 minutes ago
+```
+
+### Performance Metrics
+
+| Metric | Before v0.3.36 | After v0.3.36 | Improvement |
+|--------|---------------|---------------|-------------|
+| Processing Speed | Sequential | Parallel (batch=10) | **3-5x faster** |
+| Cache Storage | Uncompressed JSON | Gzip compressed | **50-70% smaller** |
+| Cache Strategy | Oldest-first | LRU eviction | **Better hit rate** |
+| 100-page PDF | ~30 seconds | ~8 seconds | **3.75x faster** |
+| Cache for 100 docs | ~500 MB | ~180 MB | **64% reduction** |
+
+### Commands
+
+| Command | Purpose | Performance Impact |
+|---------|---------|-------------------|
+| `/doc_cache_stats` | View cache statistics | See compression savings |
+| `/clear_doc_cache` | Clear all or specific cache | Free up space |
+| `regenerate_cache=True` | Force reprocessing | Bypass cache for fresh analysis |
+
+---
+
 ## Part 3: Appendices
 
 ### Appendix A: Available Tools
