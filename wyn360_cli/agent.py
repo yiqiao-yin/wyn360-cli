@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import asdict
-from pydantic_ai import Agent, RunContext
+from pydantic_ai import Agent, RunContext, ModelMessagesTypeAdapter
 from pydantic_ai.models.anthropic import AnthropicModel
 
 # WebSearchTool is optional - only available in newer pydantic-ai versions
@@ -86,7 +86,8 @@ class WYN360Agent:
             self.model_name = model
 
         self.use_history = use_history
-        self.conversation_history: List[Dict[str, str]] = []
+        # Phase 5.9: Store pydantic-ai messages for proper context retention
+        self.conversation_history: List = []  # Will store pydantic-ai ModelMessage objects
 
         # Token usage tracking
         self.total_input_tokens = 0
@@ -2905,23 +2906,20 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             Agent's response
         """
         try:
-            # Add user message to history
-            self.conversation_history.append({
-                "role": "user",
-                "content": user_message
-            })
-
-            # Run the agent
-            result = await self.agent.run(user_message)
+            # Run the agent with message history (Phase 5.9: Fix context retention)
+            # Pass conversation history to maintain context across turns
+            result = await self.agent.run(
+                user_message,
+                message_history=self.conversation_history if self.use_history else []
+            )
 
             # Extract the response (handle both .data and .output for compatibility)
             response_text = getattr(result, 'data', None) or getattr(result, 'output', str(result))
 
-            # Add assistant response to history
-            self.conversation_history.append({
-                "role": "assistant",
-                "content": response_text
-            })
+            # Update conversation history with all messages from this run
+            # This includes user message, tool calls, tool responses, and assistant response
+            if self.use_history:
+                self.conversation_history = result.all_messages()
 
             # Track token usage
             self._track_tokens(user_message, response_text)
@@ -2963,18 +2961,15 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         import time
 
         try:
-            # Add user message to history
-            self.conversation_history.append({
-                "role": "user",
-                "content": user_message
-            })
-
             # Track response time
             start_time = time.time()
 
-            # Use run() to get complete response (not run_stream)
-            # This ensures tools execute properly
-            result = await self.agent.run(user_message)
+            # Run the agent with message history (Phase 5.9: Fix context retention)
+            # Pass conversation history to maintain context across turns
+            result = await self.agent.run(
+                user_message,
+                message_history=self.conversation_history if self.use_history else []
+            )
 
             # Record response time
             duration = time.time() - start_time
@@ -2985,11 +2980,10 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             if not isinstance(response_text, str):
                 response_text = str(response_text)
 
-            # Add assistant response to history
-            self.conversation_history.append({
-                "role": "assistant",
-                "content": response_text
-            })
+            # Update conversation history with all messages from this run
+            # This includes user message, tool calls, tool responses, and assistant response
+            if self.use_history:
+                self.conversation_history = result.all_messages()
 
             # Track token usage
             self._track_tokens(user_message, response_text)
@@ -3057,8 +3051,13 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         self.doc_processing_count = 0
         self.performance_metrics = PerformanceMetrics()  # Reset performance metrics
 
-    def get_history(self) -> List[Dict[str, str]]:
-        """Get current conversation history."""
+    def get_history(self) -> List:
+        """
+        Get current conversation history.
+
+        Returns:
+            List of pydantic-ai ModelMessage objects (Phase 5.9: changed from dict format)
+        """
         return self.conversation_history.copy()
 
     def save_session(self, filepath: str) -> bool:
@@ -3073,11 +3072,15 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         """
         import json
         from pathlib import Path
+        from pydantic_core import to_jsonable_python
 
         try:
+            # Phase 5.9: Serialize pydantic-ai messages properly
+            conversation_history_json = to_jsonable_python(self.conversation_history)
+
             session_data = {
                 "model": self.model_name,
-                "conversation_history": self.conversation_history,
+                "conversation_history": conversation_history_json,
                 "total_input_tokens": self.total_input_tokens,
                 "total_output_tokens": self.total_output_tokens,
                 "request_count": self.request_count,
@@ -3122,7 +3125,13 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             with open(path, 'r', encoding='utf-8') as f:
                 session_data = json.load(f)
 
-            self.conversation_history = session_data.get("conversation_history", [])
+            # Phase 5.9: Deserialize pydantic-ai messages properly
+            history_json = session_data.get("conversation_history", [])
+            if history_json:
+                self.conversation_history = ModelMessagesTypeAdapter.validate_python(history_json)
+            else:
+                self.conversation_history = []
+
             self.total_input_tokens = session_data.get("total_input_tokens", 0)
             self.total_output_tokens = session_data.get("total_output_tokens", 0)
             self.request_count = session_data.get("request_count", 0)
@@ -3359,10 +3368,10 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         response_tokens = self._estimate_tokens(response_text)
 
         # History tokens (if enabled)
+        # Phase 5.9: Skip history token estimation - pydantic-ai tracks actual usage
         history_tokens = 0
-        if self.use_history and len(self.conversation_history) > 0:
-            for msg in self.conversation_history:
-                history_tokens += self._estimate_tokens(msg.get("content", ""))
+        # Note: conversation_history now contains pydantic-ai ModelMessage objects
+        # Token estimation for these is complex and the API provides actual counts
 
         # Tool definitions add ~600 tokens
         tool_tokens = 600

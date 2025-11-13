@@ -641,6 +641,102 @@ Agent: *Returns cached summary with relevant section*
 
 **Version:** v0.3.38 | **Date:** January 2025
 
+#### Phase 5.9: Context Retention Fix 🔥 CRITICAL BUG FIX ✅ COMPLETED (v0.3.39)
+
+**Problem:** Agent was unable to answer follow-up questions about document content even though it had just read the document.
+
+**User Report:**
+```
+User: "Can you read this excel file: /content/Premium weekly chore schedule1.xlsm"
+WYN360: [Successfully reads and summarizes the Excel file]
+
+User: "Has John taken out his trash?"
+WYN360: "I don't have access to information about John..."
+```
+
+**Root Cause Analysis:**
+- ✅ Conversation history was being maintained in `self.conversation_history`
+- ❌ History was NEVER passed to `agent.run()` - each message was treated as fresh conversation
+- ❌ Tool responses (Excel content, PDF summaries, etc.) were lost after first turn
+- ❌ Agent had no memory of previous interactions
+
+**Code Investigation:**
+```python
+# BEFORE (agent.py:2915, 2977):
+result = await self.agent.run(user_message)  # ❌ No message_history!
+
+# After each run:
+self.conversation_history.append({...})  # ❌ Never used!
+```
+
+**Solution Implemented:**
+
+- ✅ **Phase 5.9.1: Pass Message History to Agent**
+  - Updated `chat()` method (agent.py:2910-2913)
+  - Updated `chat_stream()` method (agent.py:2968-2971)
+  - Now passes `message_history` parameter to `agent.run()`
+  - Uses pydantic-ai's built-in message history system
+
+- ✅ **Phase 5.9.2: Store Pydantic-AI Messages**
+  - Changed `conversation_history` to store pydantic-ai ModelMessage objects
+  - Updated after each run with `result.all_messages()`
+  - Includes user messages, tool calls, tool responses, and assistant responses
+  - Full conversation context preserved
+
+- ✅ **Phase 5.9.3: Fix Session Serialization**
+  - Added import of `ModelMessagesTypeAdapter` from pydantic-ai
+  - Updated `save_session()` to serialize messages with `to_jsonable_python()`
+  - Updated `load_session()` to deserialize with `ModelMessagesTypeAdapter.validate_python()`
+  - Session persistence now works correctly
+
+**Files Modified:**
+- `wyn360_cli/agent.py`:
+  - Import: Added `ModelMessagesTypeAdapter` (line 9)
+  - `__init__`: Updated conversation_history type hint (line 90)
+  - `chat()`: Pass message_history, update with all_messages() (lines 2910-2922)
+  - `chat_stream()`: Pass message_history, update with all_messages() (lines 2968-2986)
+  - `get_history()`: Updated return type and docstring (lines 3054-3061)
+  - `save_session()`: Serialize messages properly (lines 3073-3074)
+  - `load_session()`: Deserialize messages properly (lines 3123-3128)
+  - `_track_tokens()`: Skip history token estimation (lines 3365-3369)
+
+**Expected Impact:**
+- ✅ **CRITICAL**: Agent now remembers document content across turns
+- ✅ **CRITICAL**: Follow-up questions about Excel/Word/PDF content now work
+- ✅ Tool responses (file reads, web searches, etc.) are retained
+- ✅ Multi-turn conversations maintain full context
+- ✅ Session save/load preserves conversation history correctly
+
+**Example - Before vs After:**
+
+Before (BROKEN):
+```
+User: "Read report.pdf"
+Agent: [Reads PDF, summarizes 10 pages]
+
+User: "What did it say about the budget?"
+Agent: "I don't have access to that information"  ❌
+```
+
+After (FIXED):
+```
+User: "Read report.pdf"
+Agent: [Reads PDF, summarizes 10 pages]
+
+User: "What did it say about the budget?"
+Agent: "Based on the report I just read, the budget section on page 5 mentions..." ✅
+```
+
+**Impact on All Features:**
+This fix affects ALL agent capabilities, not just documents:
+- ✅ Document reading (Excel, Word, PDF) - can now answer follow-ups
+- ✅ Web searches - can reference previous search results
+- ✅ File operations - remembers what files were created/modified
+- ✅ Code generation - can iterate on previously written code
+- ✅ GitHub operations - maintains context across multiple git commands
+
+**Version:** v0.3.39 | **Date:** January 2025
+
 ---
 
 ## 🔧 Technical Specifications
@@ -823,7 +919,8 @@ Add architecture section:
 | v0.3.36 | Phase 5.6 | ✅ Complete | Performance optimizations | Jan 2025 |
 | v0.3.37 | Docs | ✅ Complete | Documentation updates | Jan 2025 |
 | v0.3.38 | Phase 5.8 | ✅ Complete | Tool discoverability improvements | Jan 2025 |
-| v0.3.39+ | Future | 💡 Planned | Additional features | TBD |
+| v0.3.39 | Phase 5.9 | ✅ Complete | Context retention fix (CRITICAL) | Jan 2025 |
+| v0.3.40+ | Future | 💡 Planned | Additional features | TBD |
 
 ---
 
