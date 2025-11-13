@@ -23,6 +23,8 @@ dependencies = [
     "pytesseract>=0.3.10",
     "pdf2image>=1.16.0",
     "Pillow>=10.0.0",
+    "cryptography>=42.0.0",
+    "playwright>=1.40.0",
 ]
 
 [project.scripts]

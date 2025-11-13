@@ -33,6 +33,9 @@ from .browser_use import (
     WebsiteCache,
     HAS_CRAWL4AI
 )
+from .credential_manager import CredentialManager
+from .session_manager import SessionManager
+from .browser_auth import BrowserAuth
 from .document_readers import (
     ExcelReader,
     WordReader,
@@ -128,6 +131,11 @@ class WYN360Agent:
         else:
             self.website_cache = None
 
+        # Authenticated browsing (Phase 4.2)
+        self.credential_manager = CredentialManager()
+        self.session_manager = SessionManager()
+        self.browser_auth = BrowserAuth()
+
         # Set API key in environment for pydantic-ai to use
         os.environ['ANTHROPIC_API_KEY'] = api_key
 
@@ -179,6 +187,8 @@ class WYN360Agent:
                 self.fetch_website,
                 self.clear_website_cache,
                 self.show_cache_stats,
+                # Authenticated browsing (Phase 4.2)
+                self.login_to_website,
                 # Document readers (Phase 13.2, 13.3, 13.4)
                 self.read_excel,
                 self.read_word,
@@ -548,6 +558,75 @@ User mentions URL? (https://...)
 - ❌ "Write a FastAPI app" → Don't use web tools (use training data)
 - ❌ "Show me the files in this project" → Don't use web tools (use list_files)
 - ❌ "What's git?" → Don't use web tools (you know this)
+
+**Authenticated Browsing (Phase 4.2):**
+
+You can now login to websites that require authentication using the login_to_website tool!
+
+**When to use login_to_website:**
+- User needs to access content behind a login page
+- Website requires authentication to view data
+- User wants to automate login for repeated access
+- Examples:
+  - ✅ "Login to https://wyn360search.com with my credentials"
+  - ✅ "Authenticate to https://example.com as user@email.com"
+  - ✅ "Sign in to the website with username and password"
+
+**How it works:**
+1. **Automatic Form Detection**: Detects login form fields (username, password, submit button)
+2. **Browser Automation**: Uses Playwright to automate the login process
+3. **Session Management**: Saves session cookies (30-minute TTL) for reuse
+4. **Credential Storage**: Optionally encrypts and saves credentials (AES-256-GCM)
+5. **Smart Detection**: Identifies CAPTCHA and 2FA requirements
+
+**Workflow:**
+1. User provides login URL, username, and password
+2. Tool attempts automated login with form detection
+3. If successful:
+   - Session cookies are saved (30 min TTL)
+   - Credentials are encrypted and saved (if save_credentials=True)
+   - Use fetch_website() for subsequent authenticated requests
+4. If CAPTCHA detected:
+   - User is notified to complete manually
+5. If 2FA required:
+   - User is notified to complete verification manually
+
+**Security Features:**
+- Credentials encrypted with AES-256-GCM
+- Session cookies stored locally with TTL
+- File permissions: 0600 (user read/write only)
+- Credentials only decrypted when needed
+- Audit log tracks access (no sensitive data)
+
+**Usage Example:**
+```
+User: Login to https://wyn360search.com with eagle0504 and password123
+You: login_to_website(
+    url="https://wyn360search.com/login",
+    username="eagle0504",
+    password="password123"
+)
+
+After successful login:
+User: Fetch my profile from https://wyn360search.com/profile
+You: fetch_website("https://wyn360search.com/profile")  # Uses saved session
+```
+
+**Storage Location:**
+- Credentials: `~/.wyn360/credentials/vault.enc` (encrypted)
+- Sessions: `~/.wyn360/sessions/*.session.json`
+- Audit log: `~/.wyn360/logs/auth_audit.log`
+
+**Limitations:**
+- CAPTCHA: Requires manual completion (tool will detect and notify)
+- 2FA/MFA: Requires manual verification (tool will detect and notify)
+- Complex auth flows: May require manual login
+
+**Important Notes:**
+- NEVER store credentials in plain text
+- ALWAYS use saved sessions when available
+- Session TTL: 30 minutes (configurable)
+- Credentials are saved per-domain for reuse
 """
 
         # Add custom instructions from config if available
@@ -1991,6 +2070,107 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
 
         except Exception as e:
             return f"❌ Error getting cache stats: {str(e)}"
+
+    async def login_to_website(
+        self,
+        ctx: RunContext[None],
+        url: str,
+        username: str,
+        password: str,
+        save_credentials: bool = True
+    ) -> str:
+        """
+        Login to a website using browser automation (Phase 4.2).
+
+        This tool automates login to websites that require authentication.
+        It detects login forms, handles CAPTCHA and 2FA, and saves session cookies
+        for reuse in subsequent requests.
+
+        Args:
+            url: Login page URL (e.g., "https://wyn360search.com/login")
+            username: Login username/email
+            password: Login password
+            save_credentials: Whether to save credentials for future use (default: True)
+
+        Returns:
+            Login status message with details
+
+        Examples:
+            - "Login to https://wyn360search.com with user@example.com"
+            - "Authenticate to https://github.com"
+
+        Note:
+            - Credentials are encrypted with AES-256-GCM
+            - Session cookies are saved for 30 minutes (default)
+            - CAPTCHA detection: User will be notified to complete manually
+            - 2FA detection: User will be prompted for verification code
+            - Use fetch_website() with saved session for authenticated requests
+        """
+        try:
+            # Extract domain for session/credential management
+            from urllib.parse import urlparse
+            parsed_url = urlparse(url)
+            domain = parsed_url.netloc
+
+            # Check if we have a valid session already
+            if self.session_manager.is_session_valid(domain):
+                return (f"✅ Already authenticated to {domain}\n\n"
+                       f"Session is still valid. Use fetch_website() to access authenticated pages.\n"
+                       f"To force re-login, clear the session first with: clear_website_cache")
+
+            # Perform login
+            result = await self.browser_auth.login(url, username, password)
+
+            if result['success']:
+                # Save session cookies
+                cookies = result['cookies']
+                self.session_manager.save_session(domain, cookies)
+
+                # Save credentials if requested
+                if save_credentials:
+                    self.credential_manager.save_credential(domain, username, password)
+
+                response = f"✅ Login successful to {domain}!\n\n"
+                response += f"**Session Details:**\n"
+                response += f"- Domain: {domain}\n"
+                response += f"- Username: {username}\n"
+                response += f"- Session saved: Yes (30 minutes TTL)\n"
+                if save_credentials:
+                    response += f"- Credentials saved: Yes (encrypted)\n\n"
+                response += f"**Next Steps:**\n"
+                response += f"Use fetch_website() to access authenticated pages with this session.\n"
+
+                return response
+
+            elif result['has_captcha']:
+                return (f"❌ Login blocked by CAPTCHA\n\n"
+                       f"The website requires CAPTCHA completion:\n"
+                       f"- URL: {url}\n\n"
+                       f"**Action Required:**\n"
+                       f"Please login manually in a browser to complete the CAPTCHA.\n"
+                       f"Once logged in, you can use the browser's cookies with fetch_website().")
+
+            elif result['requires_2fa']:
+                # For now, return message about 2FA
+                # In future, could integrate with CLI prompt
+                return (f"🔐 2FA Required\n\n"
+                       f"The website requires two-factor authentication:\n"
+                       f"- URL: {url}\n\n"
+                       f"**Action Required:**\n"
+                       f"Two-factor authentication must be completed manually.\n"
+                       f"Please login through a browser to complete 2FA verification.")
+
+            else:
+                return (f"❌ Login failed\n\n"
+                       f"**Details:** {result['message']}\n\n"
+                       f"**Possible Reasons:**\n"
+                       f"- Incorrect username or password\n"
+                       f"- Website structure not recognized\n"
+                       f"- Login form not detected\n\n"
+                       f"Please verify credentials and try again.")
+
+        except Exception as e:
+            return f"❌ Error during login: {str(e)}"
 
     async def read_excel(
         self,

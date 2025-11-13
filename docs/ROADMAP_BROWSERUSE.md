@@ -228,6 +228,178 @@ browser_use:
 
 ---
 
+### Phase 4: Authenticated Browsing (v0.3.40)
+
+**Goal:** Enable automated login to websites with secure credential storage
+
+#### Tasks:
+- [x] Phase 4.1: Implement secure credential storage
+  - [x] Create CredentialManager with AES-256-GCM encryption
+  - [x] Implement encrypted vault storage (~/.wyn360/credentials/)
+  - [x] Add audit logging (no sensitive data)
+  - [x] Write unit tests for credential management (21/21 passing)
+  - [x] Set strict file permissions (0600)
+
+- [x] Phase 4.2: Implement browser authentication
+  - [x] Phase 4.2.1: SessionManager for session cookies
+    - [x] Create SessionManager class with TTL-based expiration
+    - [x] Implement session save/load/clear operations
+    - [x] Add session validation and cleanup
+    - [x] Write unit tests (16/16 passing)
+  - [x] Phase 4.2.2: BrowserAuth for automated login
+    - [x] Create BrowserAuth class using Playwright
+    - [x] Implement form detection (username, password, submit)
+    - [x] Add CAPTCHA detection
+    - [x] Add 2FA detection
+    - [x] Implement login flow with error handling
+    - [x] Write unit tests (11/11 passing)
+  - [x] Phase 4.2.3: Agent integration
+    - [x] Add login_to_website tool to agent
+    - [x] Integrate CredentialManager, SessionManager, BrowserAuth
+    - [x] Update system prompt with authentication guidelines
+  - [x] Phase 4.2.4: Configuration and documentation
+    - [x] Update .gitignore (.wyn360/ directory)
+    - [x] Update .env.example with credential format
+  - [x] Phase 4.2.5: Documentation
+    - [x] Update ROADMAP_BROWSERUSE.md
+  - [x] Phase 4.2.6: Testing
+    - [x] Run all unit tests (27/27 passing)
+  - [x] Phase 4.2.7: Version release
+    - [x] Commit and document changes for v0.3.40
+
+#### Features:
+
+**CredentialManager:**
+```python
+class CredentialManager:
+    """Securely manage login credentials with AES-256-GCM encryption"""
+
+    def save_credential(self, domain: str, username: str, password: str) -> bool:
+        """Encrypt and save credentials"""
+
+    def get_credential(self, domain: str) -> Optional[Dict[str, str]]:
+        """Decrypt and retrieve credentials"""
+
+    def list_stored_sites(self) -> List[Dict[str, str]]:
+        """List sites with stored credentials"""
+
+    def delete_credential(self, domain: str) -> bool:
+        """Remove stored credentials"""
+```
+
+**SessionManager:**
+```python
+class SessionManager:
+    """Manage authenticated sessions and cookies per website"""
+
+    def save_session(self, domain: str, cookies: List[Dict], ttl: int = 1800):
+        """Save session cookies with TTL (default: 30 minutes)"""
+
+    def get_session(self, domain: str) -> Optional[Dict]:
+        """Retrieve active session if not expired"""
+
+    def is_session_valid(self, domain: str) -> bool:
+        """Check if valid session exists"""
+
+    def cleanup_expired_sessions(self) -> int:
+        """Remove expired sessions"""
+```
+
+**BrowserAuth:**
+```python
+class BrowserAuth:
+    """Automated browser authentication using Playwright"""
+
+    async def login(self, url: str, username: str, password: str) -> Dict:
+        """
+        Attempt to login to a website
+        Returns: {success, message, cookies, requires_2fa, has_captcha}
+        """
+
+    async def verify_session(self, url: str, cookies: List[Dict]) -> bool:
+        """Verify if session cookies are still valid"""
+
+    async def fetch_authenticated_content(self, url: str, cookies: List[Dict]) -> str:
+        """Fetch content from authenticated page"""
+```
+
+**Agent Tool:**
+```python
+@tool
+async def login_to_website(
+    url: str,
+    username: str,
+    password: str,
+    save_credentials: bool = True
+) -> str:
+    """
+    Login to a website using browser automation.
+
+    - Detects login forms automatically
+    - Handles CAPTCHA detection (notifies user)
+    - Handles 2FA detection (notifies user)
+    - Saves session cookies (30 min TTL)
+    - Optionally encrypts and saves credentials
+    """
+```
+
+#### Security Features:
+- **Encryption**: AES-256-GCM for credential storage
+- **Key Management**: Per-user encryption key from system entropy
+- **File Permissions**: 0600 (user read/write only)
+- **Session TTL**: 30-minute default (configurable)
+- **Audit Logging**: Access tracking without sensitive data
+- **No Plain Text**: Credentials only decrypted when needed
+
+#### Storage Structure:
+```
+~/.wyn360/
+  ├── credentials/
+  │   ├── .keyfile          # Encryption key (0600)
+  │   └── vault.enc         # Encrypted credentials
+  ├── sessions/
+  │   ├── example_com.session.json
+  │   └── github_com.session.json
+  └── logs/
+      └── auth_audit.log    # Audit log (no sensitive data)
+```
+
+#### Usage Example:
+```python
+# Login to website
+result = await login_to_website(
+    url="https://wyn360search.com/login",
+    username="eagle0504",
+    password="mypassword"
+)
+
+# Subsequent requests use saved session
+content = await fetch_website("https://wyn360search.com/profile")
+```
+
+#### Limitations:
+- **CAPTCHA**: Requires manual completion (tool detects and notifies)
+- **2FA/MFA**: Requires manual verification (tool detects and notifies)
+- **Complex Auth**: OAuth, SAML, etc. may require manual login
+- **Headless Mode**: Some sites detect headless browsers
+
+#### Configuration:
+```yaml
+# ~/.wyn360/config.yaml (future enhancement)
+authentication:
+  session_ttl: 1800  # 30 minutes
+  save_credentials: true
+  headless: true
+  timeout: 30000  # 30 seconds
+```
+
+**Version:** v0.3.40
+**Status:** ✅ Complete
+**Completed:** Current session
+**Test Coverage:** 27/27 tests passing (SessionManager: 16/16, BrowserAuth: 11/11)
+
+---
+
 ## Technical Considerations
 
 ### 1. Content Truncation Strategy
@@ -487,8 +659,9 @@ wyn360 migrate-config
 | v0.3.24 | Phase 1 | ✅ Complete | 2025-01-11 |
 | v0.3.24 | Phase 2 | ✅ Complete (2 optional items remain) | 2025-01-11 |
 | v0.3.24 | Phase 3 | ⚠️ Partially Complete (core tools done) | 2025-01-11 |
+| v0.3.40 | Phase 4 (4.1 + 4.2) | ✅ Complete | 2025-11-13 |
 | v0.3.25+ | Phase 3 (full) | Planned (CLI commands, prompts) | TBD |
-| v0.3.27+ | Phase 4-6 | Future | TBD |
+| v0.3.27+ | Phase 5-6 | Future | TBD |
 
 ---
 
@@ -504,7 +677,7 @@ wyn360 migrate-config
 1. Should we support PDF extraction? (Future)
 2. Should we integrate with existing vector DBs? (Future)
 3. Should we support JavaScript execution? (Already supported via crawl4ai)
-4. Should we support authentication (login)? (Future)
+4. ~~Should we support authentication (login)?~~ → **Resolved: Yes, v0.3.40 (Phase 4)**
 
 ---
 

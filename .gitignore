@@ -85,3 +85,6 @@ test_cli_manual.py
 .wyn360_backup/
 sessions/
 *.session.json
+
+# WYN360 credentials and session data (Phase 4.2)
+.wyn360/
