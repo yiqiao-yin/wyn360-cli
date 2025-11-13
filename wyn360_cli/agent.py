@@ -244,6 +244,35 @@ ACTION:
 2. Don't give up after first write_file failure - try with overwrite=True
 3. For "write/generate script" requests → ALWAYS create new file (use overwrite=False, then True if needed)
 
+**Document Reading (Phase 13):**
+
+When user wants to READ, SEARCH, ANALYZE, or QUERY document files:
+
+**IMPORTANT - Use Built-in Document Tools:**
+- For PDF files (.pdf) → Use read_pdf()
+- For Excel files (.xlsx, .xls) → Use read_excel()
+- For Word documents (.docx) → Use read_word()
+
+**DO NOT write Python scripts to read these documents** - the built-in tools provide:
+- Intelligent chunking and summarization (handles large documents)
+- Query-based retrieval (semantic search)
+- 1-hour caching (instant re-access)
+- Structure-aware processing (tables, headings, page ranges)
+- Token-efficient summaries with tags
+
+**When to Use Document Tools:**
+- "Read report.pdf" → read_pdf("report.pdf")
+- "What's in data.xlsx?" → read_excel("data.xlsx")
+- "Search for 'budget' in spreadsheet.xlsx" → read_excel("spreadsheet.xlsx", query="budget")
+- "Show conclusions in thesis.docx" → read_word("thesis.docx", query="conclusions")
+- "Read pages 10-20 of manual.pdf" → read_pdf("manual.pdf", page_range=(10, 20))
+- "Find installation steps in guide.pdf" → read_pdf("guide.pdf", query="installation")
+
+**Only write analysis scripts when:**
+- User explicitly asks for a .py script (e.g., "write a script to analyze PDF")
+- User wants to process MULTIPLE documents programmatically
+- User wants custom visualization or data transformation beyond reading
+
 **Command Execution:**
 
 You can execute shell commands using the execute_command tool.
@@ -1973,6 +2002,15 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         query: Optional[str] = None
     ) -> str:
         """
+        **Use this tool when the user wants to read, search, analyze, or query Excel files (.xlsx/.xls).**
+
+        Examples of when to use:
+        - "Read data.xlsx"
+        - "What's in the spreadsheet?"
+        - "Search for 'revenue' in financial_report.xlsx"
+        - "Show me the sales data from Q1_data.xlsx"
+        - "Analyze the budget spreadsheet"
+
         Read and intelligently process Excel files (.xlsx/.xls).
 
         This tool reads Excel files with intelligent chunking, summarization, and
@@ -2233,6 +2271,15 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         query: Optional[str] = None
     ) -> str:
         """
+        **Use this tool when the user wants to read, search, analyze, or query Word documents (.docx).**
+
+        Examples of when to use:
+        - "Read report.docx"
+        - "What's in the thesis document?"
+        - "Find the methodology section in research.docx"
+        - "Show me the conclusions from project_report.docx"
+        - "Search for 'requirements' in specification.docx"
+
         Read and intelligently process Word documents (.docx).
 
         This tool reads Word documents with structure-aware chunking, summarization,
@@ -2513,6 +2560,16 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         query: Optional[str] = None
     ) -> str:
         """
+        **Use this tool when the user wants to read, search, analyze, or query PDF files.**
+
+        Examples of when to use:
+        - "Read research_paper.pdf"
+        - "What's in the annual report?"
+        - "Search for 'machine learning' in textbook.pdf"
+        - "Show me pages 10-20 of the manual"
+        - "Find installation instructions in user_guide.pdf"
+        - "Summarize the executive summary in proposal.pdf"
+
         Read and intelligently process PDF files with chunking, summarization, and retrieval.
 
         Features:

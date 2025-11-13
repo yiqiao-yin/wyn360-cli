@@ -584,6 +584,63 @@ April expenses totaled $2,400 with breakdown:
 
 **Estimated Effort:** 2 weeks | **Version:** v0.3.38
 
+#### Phase 5.8: Tool Discoverability Improvements ✅ COMPLETED (v0.3.38)
+
+**Problem:** Agent was writing Python scripts to analyze documents instead of using built-in document reading tools (`read_excel`, `read_word`, `read_pdf`).
+
+**Root Cause Analysis:**
+- ✅ Tools were properly registered in agent.py
+- ✅ Tools had detailed docstrings with features and examples
+- ❌ System prompt had NO instructions about when to use document tools
+- ❌ System prompt encouraged "write code to analyze" for analysis tasks
+- ❌ Tool docstrings lacked explicit "Use this when:" sections at the top
+
+**Solution Implemented:**
+
+- ✅ **Phase 5.8.1: System Prompt Enhancement**
+  - ✅ Added "Document Reading (Phase 13)" section to system prompt
+  - ✅ Explicit instructions to use read_pdf/read_excel/read_word for document queries
+  - ✅ Clear examples: "Read report.pdf" → read_pdf("report.pdf")
+  - ✅ Guidance on when to write scripts vs. when to use tools
+  - ✅ Prevents agent from defaulting to Python scripts for simple document reading
+
+- ✅ **Phase 5.8.2: Tool Docstring Improvements**
+  - ✅ Added "Use this tool when:" section to read_excel() docstring (agent.py:2004)
+  - ✅ Added "Use this tool when:" section to read_word() docstring (agent.py:2273)
+  - ✅ Added "Use this tool when:" section to read_pdf() docstring (agent.py:2562)
+  - ✅ Each docstring now starts with bold usage guidance and 5-6 concrete examples
+  - ✅ Helps LLM quickly understand tool purpose without reading entire docstring
+
+**Files Modified:**
+- `wyn360_cli/agent.py`: System prompt +28 lines (lines 247-274)
+- `wyn360_cli/agent.py`: read_excel docstring +8 lines (lines 2005-2012)
+- `wyn360_cli/agent.py`: read_word docstring +8 lines (lines 2274-2281)
+- `wyn360_cli/agent.py`: read_pdf docstring +9 lines (lines 2563-2571)
+
+**Expected Impact:**
+- ✅ Agent now correctly uses document tools for "read PDF" or "search Excel" requests
+- ✅ Reduced token usage (tools are more efficient than generating/running scripts)
+- ✅ Better user experience (instant results from cached documents)
+- ✅ Fewer unnecessary file writes (no more temp analysis scripts)
+
+**Example - Before vs After:**
+
+Before:
+```
+User: "Read report.pdf and find the budget section"
+Agent: *Writes analyze_pdf.py script with PyMuPDF code*
+Agent: *Executes script to extract text*
+```
+
+After:
+```
+User: "Read report.pdf and find the budget section"
+Agent: read_pdf("report.pdf", query="budget")
+Agent: *Returns cached summary with relevant section*
+```
+
+**Version:** v0.3.38 | **Date:** January 2025
+
 ---
 
 ## 🔧 Technical Specifications
@@ -764,7 +821,9 @@ Add architecture section:
 | v0.3.34 | Phase 5.5 | ✅ Complete | Multi-document queries | Jan 2025 |
 | v0.3.35 | Phase 5.7 | ✅ Complete | Advanced chunking | Jan 2025 |
 | v0.3.36 | Phase 5.6 | ✅ Complete | Performance optimizations | Jan 2025 |
-| v0.3.37+ | Future | 💡 Planned | Additional features | TBD |
+| v0.3.37 | Docs | ✅ Complete | Documentation updates | Jan 2025 |
+| v0.3.38 | Phase 5.8 | ✅ Complete | Tool discoverability improvements | Jan 2025 |
+| v0.3.39+ | Future | 💡 Planned | Additional features | TBD |
 
 ---
 
