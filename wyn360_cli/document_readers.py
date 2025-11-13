@@ -1554,6 +1554,234 @@ class ChunkRetriever:
 
 
 # ============================================================================
+# MultiDocumentRetriever Class (Phase 5.5)
+# ============================================================================
+
+class MultiDocumentRetriever:
+    """
+    Retrieve and search across multiple cached documents.
+
+    Phase 5.5: Multi-Document Queries
+    - Unified search across all cached documents
+    - Document comparison
+    - Cross-document ranking
+    """
+
+    def __init__(
+        self,
+        cache: ChunkCache,
+        retriever: Optional[ChunkRetriever] = None,
+        embedding_model: Optional[EmbeddingModel] = None
+    ):
+        """
+        Initialize multi-document retriever.
+
+        Args:
+            cache: ChunkCache instance for accessing cached documents
+            retriever: Optional ChunkRetriever for per-document queries
+            embedding_model: Optional EmbeddingModel for semantic matching
+        """
+        self.cache = cache
+        self.retriever = retriever or ChunkRetriever(
+            top_k=3,
+            embedding_model=embedding_model
+        )
+        self.embedding_model = embedding_model
+
+    def search_all_documents(
+        self,
+        query: str,
+        top_k: int = 5
+    ) -> List[Dict[str, Any]]:
+        """
+        Search across all cached documents.
+
+        Args:
+            query: Search query
+            top_k: Number of top results to return across all documents
+
+        Returns:
+            List of top-K chunks from all documents, each with:
+            - All chunk fields (summary, tags, etc.)
+            - file_path: Source document path
+            - similarity_score or keyword_score
+            - match_type: "semantic" or "keyword"
+        """
+        all_results = []
+
+        # Get all cached documents
+        stats = self.cache.get_stats()
+
+        for entry in stats["cache_entries"]:
+            file_path = entry["file_path"]
+
+            # Load chunks for this document
+            cached_data = self.cache.load_chunks(file_path)
+            if not cached_data:
+                continue
+
+            chunks = cached_data["chunks"]
+
+            # Query this document
+            matched_chunks = self.retriever.match_query(query, chunks)
+
+            # Add source file path to results
+            for chunk in matched_chunks:
+                chunk["file_path"] = file_path
+                all_results.append(chunk)
+
+        # Sort all results by score
+        if all_results and "similarity_score" in all_results[0]:
+            # Semantic matching - sort by similarity_score
+            all_results.sort(key=lambda x: x.get("similarity_score", 0), reverse=True)
+        else:
+            # Keyword matching - already sorted by retriever
+            pass
+
+        # Return top-K across all documents
+        return all_results[:top_k]
+
+    def list_cached_documents(self) -> List[Dict[str, Any]]:
+        """
+        List all cached documents.
+
+        Returns:
+            List of document info dicts with:
+            - file_path: Path to document
+            - chunks: Number of chunks
+            - age_display: Human-readable age
+            - doc_type: Document type (excel, pdf, word)
+        """
+        stats = self.cache.get_stats()
+
+        documents = []
+        for entry in stats["cache_entries"]:
+            file_path = entry["file_path"]
+
+            # Load metadata
+            cached_data = self.cache.load_chunks(file_path)
+            if not cached_data:
+                continue
+
+            metadata = cached_data["metadata"]
+
+            documents.append({
+                "file_path": file_path,
+                "chunks": entry["chunks"],
+                "age_display": entry["age_display"],
+                "doc_type": metadata.get("doc_type", "unknown"),
+                "total_tokens": metadata.get("total_tokens", 0)
+            })
+
+        return documents
+
+    def compare_documents(
+        self,
+        file_path1: str,
+        file_path2: str,
+        aspect: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Compare two cached documents.
+
+        Args:
+            file_path1: Path to first document
+            file_path2: Path to second document
+            aspect: Optional aspect to compare (e.g., "revenue", "expenses")
+
+        Returns:
+            Comparison dict with:
+            - doc1: Document 1 info and relevant chunks
+            - doc2: Document 2 info and relevant chunks
+            - comparison: Summary of differences
+        """
+        # Load both documents
+        cached1 = self.cache.load_chunks(file_path1)
+        cached2 = self.cache.load_chunks(file_path2)
+
+        if not cached1 or not cached2:
+            return {
+                "error": "One or both documents not found in cache",
+                "doc1_found": cached1 is not None,
+                "doc2_found": cached2 is not None
+            }
+
+        metadata1 = cached1["metadata"]
+        metadata2 = cached2["metadata"]
+        chunks1 = cached1["chunks"]
+        chunks2 = cached2["chunks"]
+
+        # If aspect specified, filter relevant chunks
+        if aspect:
+            chunks1 = self.retriever.match_query(aspect, chunks1)
+            chunks2 = self.retriever.match_query(aspect, chunks2)
+
+        # Basic comparison metrics
+        comparison = {
+            "doc1": {
+                "file_path": file_path1,
+                "doc_type": metadata1.get("doc_type"),
+                "total_chunks": metadata1.get("chunk_count"),
+                "total_tokens": metadata1.get("total_tokens"),
+                "relevant_chunks": chunks1[:3] if aspect else []
+            },
+            "doc2": {
+                "file_path": file_path2,
+                "doc_type": metadata2.get("doc_type"),
+                "total_chunks": metadata2.get("chunk_count"),
+                "total_tokens": metadata2.get("total_tokens"),
+                "relevant_chunks": chunks2[:3] if aspect else []
+            },
+            "comparison": {
+                "chunk_count_diff": metadata2.get("chunk_count", 0) - metadata1.get("chunk_count", 0),
+                "token_count_diff": metadata2.get("total_tokens", 0) - metadata1.get("total_tokens", 0),
+                "same_type": metadata1.get("doc_type") == metadata2.get("doc_type"),
+                "aspect_compared": aspect
+            }
+        }
+
+        return comparison
+
+    def find_cross_references(
+        self,
+        entity: str,
+        min_mentions: int = 1
+    ) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Find documents that mention a specific entity.
+
+        Args:
+            entity: Entity to search for (e.g., "machine learning", "Q1 revenue")
+            min_mentions: Minimum number of mentions to include document
+
+        Returns:
+            Dict mapping file_path to list of chunks mentioning the entity
+        """
+        cross_refs = {}
+
+        # Get all cached documents
+        stats = self.cache.get_stats()
+
+        for entry in stats["cache_entries"]:
+            file_path = entry["file_path"]
+
+            # Load chunks
+            cached_data = self.cache.load_chunks(file_path)
+            if not cached_data:
+                continue
+
+            chunks = cached_data["chunks"]
+
+            # Find chunks mentioning entity
+            matching_chunks = self.retriever.match_query(entity, chunks)
+
+            if len(matching_chunks) >= min_mentions:
+                cross_refs[file_path] = matching_chunks
+
+        return cross_refs
+
+
+# ============================================================================
 # ExcelReader Class (Phase 2)
 # ============================================================================
 
