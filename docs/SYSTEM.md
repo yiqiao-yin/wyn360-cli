@@ -2,8 +2,8 @@
 
 This document provides a detailed overview of the WYN360 CLI system architecture, including all components, layers, and data flows.
 
-**Version:** 0.3.25
-**Last Updated:** January 2025
+**Version:** 0.3.41
+**Last Updated:** November 2025
 
 ---
 
@@ -73,6 +73,13 @@ graph TB
         GHMergeBranch[gh_merge_branch<br/>Merge branches]
     end
 
+    subgraph "Authentication Tools (Phase 4)"
+        LoginWebsite[login_to_website<br/>Automated browser login<br/>Form detection<br/>CAPTCHA/2FA detection]
+        CredManager[CredentialManager<br/>AES-256-GCM encryption<br/>Secure credential storage]
+        SessionManager[SessionManager<br/>Session cookies<br/>30-min TTL]
+        BrowserAuth[BrowserAuth<br/>Playwright automation<br/>Form detection]
+    end
+
     subgraph "Utility Layer"
         FileOps[File Operations<br/>Safe read/write<br/>Backup handling]
         Scanner[Directory Scanner<br/>Categorize files<br/>Ignore patterns]
@@ -123,6 +130,11 @@ graph TB
     Agent --> GHCreateBranch
     Agent --> GHCheckoutBranch
     Agent --> GHMergeBranch
+    Agent --> LoginWebsite
+    LoginWebsite --> BrowserAuth
+    LoginWebsite --> CredManager
+    LoginWebsite --> SessionManager
+    FetchWebsite --> SessionManager
 
     ReadFile --> FileOps
     WriteFile --> FileOps
@@ -1009,6 +1021,256 @@ browser_use:
 - **fetch_website**: Fetches specific URL → Returns full page content
 - **Use Case Split**: Search (find things) vs Fetch (get specific pages)
 
+---
+
+### Phase 4: Authenticated Browsing (v0.3.40-v0.3.41)
+
+**Phase 4.1: Secure Credential Storage (v0.3.40)**
+- ✅ CredentialManager with AES-256-GCM encryption
+- ✅ Per-user encryption key from system entropy
+- ✅ Encrypted credential vault (~/.wyn360/credentials/vault.enc)
+- ✅ File permissions: 0600 (user read/write only)
+- ✅ Audit logging without sensitive data
+- ✅ 21/21 unit tests passing
+
+**Phase 4.2: Browser Authentication & Session Management (v0.3.40)**
+- ✅ SessionManager with TTL-based session cookies (30 min default)
+- ✅ BrowserAuth using Playwright for automated login
+- ✅ Automatic form detection (username, password, submit)
+- ✅ CAPTCHA detection (notifies user)
+- ✅ 2FA/MFA detection (notifies user)
+- ✅ Session persistence and automatic expiration
+- ✅ 27/27 unit tests passing (SessionManager: 16, BrowserAuth: 11)
+
+**Phase 4.3: Authenticated Fetch Integration (v0.3.41)**
+- ✅ Seamless integration of sessions with fetch_website
+- ✅ Automatic session detection and cookie injection
+- ✅ Domain-based session matching
+- ✅ Visual authentication indicator (🔐)
+- ✅ Zero-friction authenticated browsing
+
+**What Happens When User Says "Login to this website":**
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Agent
+    participant BrowserAuth
+    participant CredentialManager
+    participant SessionManager
+    participant Playwright
+
+    User->>Agent: "Login to https://site.com with user/pass"
+    Agent->>BrowserAuth: login(url, username, password)
+    BrowserAuth->>Playwright: Launch browser (headless)
+    Playwright->>BrowserAuth: Browser ready
+    BrowserAuth->>Playwright: Navigate to URL
+    BrowserAuth->>Playwright: Detect login form elements
+    BrowserAuth->>Playwright: Fill username field
+    BrowserAuth->>Playwright: Fill password field
+    BrowserAuth->>Playwright: Click submit button
+    BrowserAuth->>Playwright: Wait for navigation
+
+    alt CAPTCHA Detected
+        BrowserAuth-->>User: ⚠️ CAPTCHA detected, manual completion required
+    else 2FA Detected
+        BrowserAuth-->>User: 🔐 2FA detected, manual verification required
+    else Login Failed
+        BrowserAuth-->>User: ❌ Login failed (incorrect credentials)
+    else Login Success
+        BrowserAuth->>Playwright: Extract session cookies
+        BrowserAuth->>SessionManager: save_session(domain, cookies)
+        SessionManager-->>Agent: Session saved (30 min TTL)
+        BrowserAuth->>CredentialManager: save_credential(domain, username, password)
+        CredentialManager-->>Agent: Credentials encrypted and saved
+        Agent-->>User: ✅ Login successful! Session active for 30 minutes
+    end
+
+    BrowserAuth->>Playwright: Close browser
+```
+
+**Authenticated Fetch Workflow:**
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Agent
+    participant SessionManager
+    participant browser_use
+    participant Playwright
+
+    User->>Agent: "Fetch https://site.com/profile"
+    Agent->>Agent: Extract domain from URL
+    Agent->>SessionManager: get_session(domain)
+
+    alt Session Exists
+        SessionManager-->>Agent: Return cookies
+        Agent->>browser_use: fetch_website_content(url, cookies=cookies)
+        browser_use->>Playwright: Launch with cookies injected
+        Playwright->>browser_use: Return authenticated content
+        browser_use-->>Agent: Content retrieved
+        Agent-->>User: 📄 Fetched 🔐 (authenticated): [content]
+    else No Session
+        SessionManager-->>Agent: None (no session)
+        Agent->>browser_use: fetch_website_content(url, cookies=None)
+        browser_use->>Playwright: Launch without cookies
+        Playwright->>browser_use: Return public content
+        browser_use-->>Agent: Content retrieved
+        Agent-->>User: 📄 Fetched: [content]
+    end
+```
+
+**Technical Architecture:**
+
+```
+~/.wyn360/
+├── credentials/
+│   ├── .keyfile               # AES-256 encryption key (0600)
+│   └── vault.enc              # Encrypted credentials
+├── sessions/
+│   ├── example_com.session.json  # Session cookies with TTL
+│   └── github_com.session.json   # Domain-based sessions
+└── logs/
+    └── auth_audit.log         # Audit log (no sensitive data)
+```
+
+**Module Architecture:**
+
+```
+wyn360_cli/
+├── credential_manager.py      # AES-256-GCM encryption, vault management
+├── session_manager.py         # TTL-based session cookie storage
+├── browser_auth.py            # Playwright automation, form detection
+├── browser_use.py             # Website fetching with cookie support
+└── agent.py                   # Tool integration and orchestration
+```
+
+**Security Features:**
+- **Encryption**: AES-256-GCM for all stored credentials
+- **Key Management**: Per-user encryption key from system entropy
+- **File Permissions**: 0600 (user read/write only)
+- **Session TTL**: 30-minute default with automatic expiration
+- **Audit Trail**: All access logged without sensitive data
+- **No Plain Text**: Credentials only decrypted when needed
+
+**User Experience Examples:**
+
+**Example 1: Login and Fetch Authenticated Page**
+```
+User: Login to https://example-site.com with demo_user and SecurePass123!
+
+Agent: [Launches Playwright browser]
+       [Detects login form]
+       [Fills username: demo_user]
+       [Fills password: ********]
+       [Clicks submit]
+       [Extracts session cookies]
+       [Saves session with 30min TTL]
+       [Encrypts and saves credentials]
+
+       ✅ Login successful to example-site.com!
+
+       Session Details:
+       - Domain: example-site.com
+       - Username: demo_user
+       - Session saved: Yes (30 minutes TTL)
+       - Credentials saved: Yes (encrypted)
+
+       Next Steps:
+       Use fetch_website() to access authenticated pages with this session.
+
+User: Fetch my profile from https://example-site.com/profile
+
+Agent: [Checks SessionManager for example-site.com]
+       [Found valid session with cookies]
+       [Injects cookies into browser]
+       [Fetches authenticated content]
+
+       📄 Fetched 🔐 (authenticated): https://example-site.com/profile
+
+       [Profile content with user-specific data...]
+```
+
+**Example 2: CAPTCHA Detection**
+```
+User: Login to https://example.com with user@email.com and pass123
+
+Agent: [Launches browser]
+       [Navigates to URL]
+       [Detects CAPTCHA on page]
+
+       ❌ Login blocked by CAPTCHA
+
+       The website requires CAPTCHA completion:
+       - URL: https://example.com/login
+
+       Action Required:
+       Please login manually in a browser to complete the CAPTCHA.
+       Once logged in, you can use the browser's cookies with fetch_website().
+```
+
+**Example 3: 2FA Required**
+```
+User: Login to https://github.com with myuser and mypassword
+
+Agent: [Launches browser]
+       [Fills credentials]
+       [Submits form]
+       [Detects 2FA prompt]
+
+       🔐 2FA Required
+
+       The website requires two-factor authentication:
+       - URL: https://github.com/login
+
+       Action Required:
+       Two-factor authentication must be completed manually.
+       Please login through a browser to complete 2FA verification.
+```
+
+**Example 4: Session Auto-Detection**
+```
+User: Fetch https://example-site.com/dashboard
+
+Agent: [Checks for saved session]
+       [Found: example-site.com session (expires in 15 minutes)]
+       [Automatically injects cookies]
+
+       📄 Fetched 🔐 (authenticated): https://example-site.com/dashboard
+
+       [Authenticated dashboard content...]
+```
+
+**Configuration (config.yaml):**
+```yaml
+# Future enhancement - not yet implemented
+authentication:
+  session_ttl: 1800  # 30 minutes
+  save_credentials: true
+  headless: true
+  timeout: 30000  # 30 seconds
+```
+
+**Capabilities Matrix:**
+
+| Feature | Status | Tool | Notes |
+|---------|--------|------|-------|
+| Automated Login | ✅ | `login_to_website` | Form detection, CAPTCHA/2FA detection |
+| Credential Storage | ✅ | `CredentialManager` | AES-256-GCM encrypted |
+| Session Management | ✅ | `SessionManager` | 30-min TTL, auto-expiration |
+| Authenticated Fetch | ✅ | `fetch_website` | Auto cookie injection |
+| Form Detection | ✅ | `BrowserAuth` | Username, password, submit |
+| CAPTCHA Detection | ✅ | `BrowserAuth` | Notifies user |
+| 2FA Detection | ✅ | `BrowserAuth` | Notifies user |
+| Session Reuse | ✅ | Automatic | Domain-based matching |
+| Audit Logging | ✅ | `CredentialManager` | No sensitive data |
+
+**Test Coverage:**
+- CredentialManager: 21/21 tests passing
+- SessionManager: 16/16 tests passing
+- BrowserAuth: 11/11 tests passing
+- **Total: 48/48 tests passing** ✅
+
 
 ## 🎯 Design Principles
 
@@ -1042,6 +1304,6 @@ See [ROADMAP.md](ROADMAP.md) for planned features including:
 
 ---
 
-**Version:** 0.3.25
-**Last Updated:** January 2025
+**Version:** 0.3.41
+**Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)

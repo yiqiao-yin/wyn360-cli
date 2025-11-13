@@ -368,13 +368,13 @@ async def login_to_website(
 ```python
 # Login to website
 result = await login_to_website(
-    url="https://wyn360search.com/login",
-    username="eagle0504",
-    password="mypassword"
+    url="https://example-site.com/login",
+    username="demo_user",
+    password="SecurePass123!"
 )
 
 # Subsequent requests use saved session
-content = await fetch_website("https://wyn360search.com/profile")
+content = await fetch_website("https://example-site.com/profile")
 ```
 
 #### Limitations:
@@ -443,15 +443,15 @@ success, content = await fetch_website_content(
 ```python
 # Step 1: Login once
 login_to_website(
-    url="https://wyn360search.com/login",
-    username="user",
-    password="pass"
+    url="https://example-site.com/login",
+    username="demo_user",
+    password="SecurePass123!"
 )
 
 # Step 2: All subsequent fetches are automatically authenticated!
-fetch_website("https://wyn360search.com/profile")  # 🔐 authenticated
-fetch_website("https://wyn360search.com/dashboard")  # 🔐 authenticated
-fetch_website("https://wyn360search.com/settings")  # 🔐 authenticated
+fetch_website("https://example-site.com/profile")  # 🔐 authenticated
+fetch_website("https://example-site.com/dashboard")  # 🔐 authenticated
+fetch_website("https://example-site.com/settings")  # 🔐 authenticated
 ```
 
 **Benefits:**

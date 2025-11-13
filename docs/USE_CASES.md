@@ -2901,6 +2901,498 @@ Cache Stats:
 | `/clear_doc_cache` | Clear all or specific cache | Free up space |
 | `regenerate_cache=True` | Force reprocessing | Bypass cache for fresh analysis |
 
+## Use Case 25: Authenticated Browsing - Automated Login and Session Management
+
+**Phase:** 4 (v0.3.40-v0.3.41)
+**Tools:** `login_to_website`, `fetch_website`, CredentialManager, SessionManager, BrowserAuth
+**Status:** ✅ Ready to use
+
+### Overview
+
+WYN360 now supports automated login to websites with secure credential storage and session management. After logging in once, all subsequent requests to that domain are automatically authenticated for 30 minutes.
+
+**Key Features:**
+- 🤖 Automated browser login with form detection
+- 🔐 AES-256-GCM encrypted credential storage
+- ⏰ Session cookies with 30-minute TTL
+- 🎯 Automatic session detection and cookie injection
+- 🛡️ CAPTCHA and 2FA detection
+- 📊 48/48 tests passing
+
+---
+
+### Use Case 25.1: Basic Login and Authenticated Access
+
+**Scenario:** You want to login to a website and access authenticated content.
+
+**Steps:**
+
+```
+You: Login to https://example-site.com with demo_user and SecurePass123!
+
+WYN360: [Launches headless Playwright browser]
+        [Navigates to https://example-site.com]
+        [Detects login form fields]
+        [Fills username: demo_user]
+        [Fills password: ********]
+        [Clicks submit button]
+        [Waits for navigation]
+        [Extracts session cookies]
+        [Saves session with 30-minute TTL]
+        [Encrypts and saves credentials]
+
+        ✅ Login successful to example-site.com!
+
+        **Session Details:**
+        - Domain: example-site.com
+        - Username: demo_user
+        - Session saved: Yes (30 minutes TTL)
+        - Credentials saved: Yes (encrypted)
+
+        **Next Steps:**
+        Use fetch_website() to access authenticated pages with this session.
+
+You: Fetch my profile from https://example-site.com/profile
+
+WYN360: [Checks SessionManager for example-site.com]
+        [Found valid session with cookies]
+        [Injects cookies into browser automatically]
+        [Fetches authenticated content]
+
+        📄 **Fetched 🔐 (authenticated):** https://example-site.com/profile
+
+        [Your profile content with user-specific data...]
+
+You: Fetch https://example-site.com/dashboard
+
+WYN360: [Session still valid - auto-injecting cookies]
+
+        📄 **Fetched 🔐 (authenticated):** https://example-site.com/dashboard
+
+        [Your dashboard with personalized content...]
+```
+
+**What Happened:**
+1. ✅ Automated login with Playwright browser automation
+2. ✅ Form fields detected automatically (username, password, submit)
+3. ✅ Session cookies extracted and saved (30-min TTL)
+4. ✅ Credentials encrypted with AES-256-GCM and stored
+5. ✅ All subsequent fetches to same domain automatically authenticated
+6. ✅ Visual indicator (🔐) shows authenticated requests
+
+---
+
+### Use Case 25.2: Session Auto-Detection (Zero Friction)
+
+**Scenario:** After logging in once, you want to access multiple authenticated pages without re-authenticating.
+
+**Steps:**
+
+```
+You: Login to https://example.com with myuser and mypass123
+
+WYN360: ✅ Login successful to example.com!
+        Session saved: Yes (30 minutes TTL)
+
+[30 seconds later...]
+
+You: Fetch https://example.com/api/user/settings
+
+WYN360: [Automatically detects saved session for example.com]
+        [Injects cookies without asking]
+
+        📄 **Fetched 🔐 (authenticated):** https://example.com/api/user/settings
+
+        [Settings data...]
+
+[5 minutes later...]
+
+You: Get my notifications from https://example.com/notifications
+
+WYN360: [Session still valid - 25 minutes remaining]
+
+        📄 **Fetched 🔐 (authenticated):** https://example.com/notifications
+
+        [Notification data...]
+
+[35 minutes later...]
+
+You: Fetch https://example.com/profile
+
+WYN360: [Session expired - no saved cookies found]
+
+        📄 **Fetched:** https://example.com/profile
+
+        [Public profile or login page - not authenticated]
+
+        💡 Session has expired. Login again to access authenticated content.
+```
+
+**What Happened:**
+1. ✅ Login once, credentials saved for 30 minutes
+2. ✅ All fetches within 30 minutes automatically authenticated
+3. ✅ No need to manually pass cookies or tokens
+4. ✅ Session expires after 30 minutes for security
+5. ✅ Clear visual feedback (🔐 indicator when authenticated)
+
+---
+
+### Use Case 25.3: CAPTCHA Detection
+
+**Scenario:** Website has CAPTCHA protection that requires manual completion.
+
+**Steps:**
+
+```
+You: Login to https://example.com with user@email.com and password123
+
+WYN360: [Launches browser]
+        [Navigates to URL]
+        [Detects CAPTCHA iframe on page]
+
+        ❌ Login blocked by CAPTCHA
+
+        The website requires CAPTCHA completion:
+        - URL: https://example.com/login
+
+        **Action Required:**
+        Please login manually in a browser to complete the CAPTCHA.
+        Once logged in, you can use the browser's cookies with fetch_website().
+
+        **Alternative:**
+        Some websites allow API keys or tokens instead of browser login.
+        Check the website's developer documentation.
+```
+
+**What Happened:**
+1. ✅ Browser detected CAPTCHA on login page
+2. ✅ User notified with clear instructions
+3. ✅ No failed login attempts (CAPTCHA detected before submission)
+4. ❌ Manual intervention required for CAPTCHA
+5. 💡 Suggestion provided for alternative authentication methods
+
+---
+
+### Use Case 25.4: Two-Factor Authentication (2FA)
+
+**Scenario:** Website requires 2FA verification code.
+
+**Steps:**
+
+```
+You: Login to https://github.com with myusername and mypassword
+
+WYN360: [Launches browser]
+        [Fills credentials]
+        [Submits login form]
+        [Detects 2FA verification code input]
+
+        🔐 2FA Required
+
+        The website requires two-factor authentication:
+        - URL: https://github.com/login
+
+        **Action Required:**
+        Two-factor authentication must be completed manually.
+        Please login through a browser to complete 2FA verification.
+
+        **After Manual Login:**
+        You can export cookies from your browser and use them with fetch_website().
+```
+
+**What Happened:**
+1. ✅ Initial login succeeded (username/password accepted)
+2. ✅ 2FA prompt detected automatically
+3. ✅ User notified with clear instructions
+4. ❌ Automated 2FA not supported (requires manual verification)
+5. 💡 Alternative approach suggested (export browser cookies)
+
+---
+
+### Use Case 25.5: Multi-Site Session Management
+
+**Scenario:** You're working with multiple websites and want to manage sessions for each.
+
+**Steps:**
+
+```
+You: Login to https://siteA.com with userA and passA
+
+WYN360: ✅ Login successful to siteA.com!
+        Session saved: Yes (30 minutes TTL)
+
+You: Login to https://siteB.com with userB and passB
+
+WYN360: ✅ Login successful to siteB.com!
+        Session saved: Yes (30 minutes TTL)
+
+You: Login to https://siteC.com with userC and passC
+
+WYN360: ✅ Login successful to siteC.com!
+        Session saved: Yes (30 minutes TTL)
+
+You: Fetch https://siteA.com/dashboard
+
+WYN360: 📄 **Fetched 🔐 (authenticated):** https://siteA.com/dashboard
+        [SiteA dashboard content...]
+
+You: Fetch https://siteB.com/api/data
+
+WYN360: 📄 **Fetched 🔐 (authenticated):** https://siteB.com/api/data
+        [SiteB API data...]
+
+You: Fetch https://siteC.com/profile
+
+WYN360: 📄 **Fetched 🔐 (authenticated):** https://siteC.com/profile
+        [SiteC profile content...]
+```
+
+**What Happened:**
+1. ✅ Three separate logins to three different domains
+2. ✅ Each session stored independently with 30-min TTL
+3. ✅ Domain-based session matching (siteA.com ≠ siteB.com)
+4. ✅ All fetches automatically use correct session
+5. ✅ Sessions expire independently (30 min per domain)
+
+---
+
+### Use Case 25.6: Testing and Debugging Authentication
+
+**Scenario:** You want to test login functionality and see detailed feedback.
+
+**Steps:**
+
+```
+You: Login to https://example.com with testuser and wrongpassword
+
+WYN360: [Launches browser]
+        [Fills credentials]
+        [Submits form]
+        [Checks for error messages on page]
+
+        ❌ Login failed
+
+        **Details:** Incorrect username or password.
+
+        **Possible Reasons:**
+        - Incorrect username or password
+        - Website structure not recognized
+        - Login form not detected
+
+        Please verify credentials and try again.
+
+You: Login to https://example.com with testuser and correctpassword
+
+WYN360: ✅ Login successful to example.com!
+
+You: Fetch https://example.com/api/test
+
+WYN360: 📄 **Fetched 🔐 (authenticated):** https://example.com/api/test
+
+        {"authenticated": true, "user": "testuser", "token": "..."}
+
+You: Fetch https://differentsite.com/public
+
+WYN360: [No session for differentsite.com - fetching without auth]
+
+        📄 **Fetched:** https://differentsite.com/public
+
+        [Public content - not authenticated]
+```
+
+**What Happened:**
+1. ✅ First login attempt failed - clear error message
+2. ✅ Second login attempt succeeded
+3. ✅ Authenticated fetch shows 🔐 indicator
+4. ✅ Fetch to different domain correctly shows no authentication
+5. 💡 Clear feedback for debugging authentication issues
+
+---
+
+### Storage and Security
+
+**Where are credentials stored?**
+```
+~/.wyn360/
+├── credentials/
+│   ├── .keyfile          # AES-256 encryption key (0600)
+│   └── vault.enc         # Encrypted credentials
+├── sessions/
+│   ├── example_com.session.json     # 30-min TTL
+│   ├── testsite_com.session.json
+│   └── github_com.session.json
+└── logs/
+    └── auth_audit.log    # Audit log (no sensitive data)
+```
+
+**Security Features:**
+- 🔐 AES-256-GCM encryption for credentials
+- 🔑 Per-user encryption key from system entropy
+- 🔒 File permissions: 0600 (user read/write only)
+- ⏰ Session TTL: 30 minutes (automatic expiration)
+- 📝 Audit logging (no sensitive data logged)
+- 🚫 No plain text passwords ever stored
+
+**Check what's saved:**
+```bash
+# Credentials are encrypted in vault.enc (cannot be read directly)
+ls ~/.wyn360/credentials/
+
+# Sessions are JSON but contain cookies (should not be shared)
+ls ~/.wyn360/sessions/
+
+# Audit log shows access without sensitive data
+cat ~/.wyn360/logs/auth_audit.log
+```
+
+---
+
+### Troubleshooting
+
+**Issue: "Could not detect login form"**
+```
+Cause: Website has non-standard login form
+Solution:
+  - Check if login URL is correct
+  - Try accessing login page directly (not homepage)
+  - Some sites use JavaScript-heavy login (may not work)
+```
+
+**Issue: "Login failed (incorrect credentials)"**
+```
+Cause: Wrong username/password or form not detected correctly
+Solution:
+  - Verify credentials are correct
+  - Try logging in manually in browser first
+  - Check if website uses email vs username
+```
+
+**Issue: "CAPTCHA detected"**
+```
+Cause: Website uses CAPTCHA for bot protection
+Solution:
+  - Login manually in browser
+  - Export browser cookies and use them
+  - Check if website offers API keys
+```
+
+**Issue: "Session expired"**
+```
+Cause: 30-minute TTL has passed
+Solution:
+  - Simply login again
+  - Sessions auto-expire for security
+  - Credentials are saved, so re-login is quick
+```
+
+**Issue: "Already authenticated to domain"**
+```
+Cause: Valid session already exists
+Solution:
+  - This is actually success! Just use fetch_website
+  - To force re-login, clear the session first:
+    "Clear cache for https://example.com"
+```
+
+---
+
+### Technical Details
+
+**Form Detection Selectors:**
+- Username: `input[type="email"]`, `input[name*="user"]`, `input[id*="user"]`
+- Password: `input[type="password"]`, `input[name="password"]`
+- Submit: `button[type="submit"]`, `button:has-text("login")`
+
+**CAPTCHA Detection:**
+- Checks for: `div[class*="captcha"]`, `iframe[src*="recaptcha"]`
+- Notifies user if found before attempting login
+
+**2FA Detection:**
+- Checks for: `input[name*="code"]`, `input[name*="otp"]`, `text="verification code"`
+- Notifies user if found after initial login
+
+**Session Format:**
+```json
+{
+  "domain": "example.com",
+  "cookies": [
+    {"name": "session_id", "value": "...", "domain": "example.com"},
+    {"name": "auth_token", "value": "...", "domain": "example.com"}
+  ],
+  "created_at": 1700000000.0,
+  "expires_at": 1700001800.0,
+  "ttl": 1800
+}
+```
+
+---
+
+### Best Practices
+
+**1. Use Specific Login URLs:**
+```
+✅ Good: "Login to https://site.com/login with user and pass"
+❌ Bad:  "Login to https://site.com with user and pass" (homepage, not login page)
+```
+
+**2. Test Authentication:**
+```
+✅ After login, try fetching authenticated content to verify
+✅ Check for 🔐 indicator in fetch response
+```
+
+**3. Handle Errors Gracefully:**
+```
+✅ If CAPTCHA detected, acknowledge and use alternative methods
+✅ If 2FA required, complete manually then continue
+```
+
+**4. Session Management:**
+```
+✅ Sessions auto-expire after 30 minutes (security)
+✅ Credentials are saved, so re-login is quick
+✅ Each domain has independent session
+```
+
+**5. Security:**
+```
+✅ Never share ~/.wyn360/credentials/ or ~/.wyn360/sessions/ directories
+✅ Credentials are encrypted with AES-256-GCM
+✅ File permissions are 0600 (user read/write only)
+```
+
+---
+
+### Limitations
+
+**What Works:**
+- ✅ Standard username/password forms
+- ✅ Email + password forms
+- ✅ Session cookie extraction
+- ✅ Multiple domain sessions
+- ✅ Automatic session reuse
+
+**What Doesn't Work (Yet):**
+- ❌ CAPTCHA completion (requires manual)
+- ❌ 2FA/MFA completion (requires manual)
+- ❌ OAuth flows (Google/Facebook login)
+- ❌ SAML/SSO authentication
+- ❌ JavaScript-heavy custom login widgets
+
+**Workarounds:**
+- For CAPTCHA/2FA: Login manually, export browser cookies
+- For OAuth: Use API keys/tokens instead
+- For complex flows: Use direct API authentication
+
+---
+
+If you run into issues or have questions:
+
+1. **Ask the agent:** WYN360 can explain its own capabilities
+2. **Check GitHub:** https://github.com/yiqiao-yin/wyn360-cli
+3. **Read the README:** Basic setup and usage
+4. **Report issues:** GitHub Issues page
+
 ---
 
 ## Part 3: Appendices
@@ -3497,13 +3989,6 @@ WYN360: [Generates async client with aiohttp, retry logic, error handling]
 ---
 
 ### Need Help?
-
-If you run into issues or have questions:
-
-1. **Ask the agent:** WYN360 can explain its own capabilities
-2. **Check GitHub:** https://github.com/yiqiao-yin/wyn360-cli
-3. **Read the README:** Basic setup and usage
-4. **Report issues:** GitHub Issues page
 
 ---
 
