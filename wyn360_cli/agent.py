@@ -609,8 +609,14 @@ You: login_to_website(
 
 After successful login:
 User: Fetch my profile from https://wyn360search.com/profile
-You: fetch_website("https://wyn360search.com/profile")  # Uses saved session
+You: fetch_website("https://wyn360search.com/profile")  # Automatically uses saved session!
 ```
+
+**Seamless Integration (Phase 4.3):**
+- fetch_website AUTOMATICALLY uses saved sessions when available
+- No need to manually pass cookies or session tokens
+- After login_to_website, all fetch_website calls to that domain are authenticated
+- Sessions persist for 30 minutes (TTL), then auto-expire for security
 
 **Storage Location:**
 - Credentials: `~/.wyn360/credentials/vault.enc` (encrypted)
@@ -1905,6 +1911,11 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         LLM-friendly markdown format, and applies smart truncation to stay under
         token limits. Content is cached for 30 minutes by default (configurable).
 
+        **Authenticated Browsing (Phase 4.3):**
+        Automatically uses saved session cookies if available for the domain.
+        After logging in with login_to_website, subsequent fetch_website calls
+        will be authenticated automatically.
+
         Args:
             url: Full URL to fetch (e.g., https://github.com/user/repo)
 
@@ -1915,12 +1926,14 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             - "Read https://github.com/britbrat0/cs676"
             - "What's on https://python.org/downloads"
             - "Fetch https://docs.anthropic.com/api"
+            - "Fetch my profile from https://wyn360search.com/profile" (after login)
 
         Note:
             - Use this for SPECIFIC URLs
             - Use WebSearchTool for FINDING/SEARCHING content
             - Content is truncated smartly to preserve structure
             - Cached for improved performance
+            - Automatically authenticated if session exists for domain
         """
         # Check if crawl4ai is available
         if not HAS_CRAWL4AI:
@@ -1952,11 +1965,24 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
             max_tokens = self.config.browser_use_max_tokens
             truncate_strategy = self.config.browser_use_truncate_strategy
 
+        # Check for saved session cookies (Phase 4.3)
+        cookies = None
+        authenticated = False
+        from urllib.parse import urlparse
+        parsed_url = urlparse(url)
+        domain = parsed_url.netloc
+
+        session = self.session_manager.get_session(domain)
+        if session:
+            cookies = session['cookies']
+            authenticated = True
+
         # Fetch website content
         success, content = await fetch_website_content(
             url=url,
             max_tokens=max_tokens,
-            truncate_strategy=truncate_strategy
+            truncate_strategy=truncate_strategy,
+            cookies=cookies
         )
 
         if not success:
@@ -1968,8 +1994,9 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         if self.website_cache:
             await self.website_cache.set(url, content)
 
-        # Format response
-        response = f"📄 **Fetched:** {url}\n\n{content}"
+        # Format response (Phase 4.3: Include authentication indicator)
+        auth_indicator = " 🔐 (authenticated)" if authenticated else ""
+        response = f"📄 **Fetched{auth_indicator}:** {url}\n\n{content}"
 
         return response
 

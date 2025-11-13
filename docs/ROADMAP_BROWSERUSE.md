@@ -400,6 +400,79 @@ authentication:
 
 ---
 
+### Phase 4.3: Authenticated Fetch Integration (v0.3.41)
+
+**Goal:** Seamlessly integrate authenticated sessions with fetch_website for automatic authenticated browsing
+
+#### Tasks:
+- [x] Modify fetch_website_content to accept cookies parameter
+- [x] Update AsyncWebCrawler to inject cookies into browser context
+- [x] Add automatic session detection in agent's fetch_website tool
+- [x] Extract domain from URL and check for saved sessions
+- [x] Pass session cookies to fetch_website_content automatically
+- [x] Add authentication indicator in fetch response
+- [x] Update fetch_website docstring with authentication info
+- [x] Update system prompt with seamless integration details
+- [x] Update ROADMAP_BROWSERUSE.md
+
+#### Features:
+
+**Seamless Authenticated Browsing:**
+- fetch_website automatically detects and uses saved session cookies
+- No manual cookie management required
+- Domain-based session matching
+- Visual indicator (🔐) when fetching authenticated content
+
+**Implementation:**
+```python
+# In agent.py fetch_website method
+domain = urlparse(url).netloc
+session = self.session_manager.get_session(domain)
+if session:
+    cookies = session['cookies']
+    authenticated = True
+
+# Pass cookies to browser
+success, content = await fetch_website_content(
+    url=url,
+    cookies=cookies  # Automatically injected
+)
+```
+
+**User Experience:**
+```python
+# Step 1: Login once
+login_to_website(
+    url="https://wyn360search.com/login",
+    username="user",
+    password="pass"
+)
+
+# Step 2: All subsequent fetches are automatically authenticated!
+fetch_website("https://wyn360search.com/profile")  # 🔐 authenticated
+fetch_website("https://wyn360search.com/dashboard")  # 🔐 authenticated
+fetch_website("https://wyn360search.com/settings")  # 🔐 authenticated
+```
+
+**Benefits:**
+- Zero friction authenticated browsing
+- Session cookies automatically used when available
+- Clear visual feedback (🔐 indicator)
+- 30-minute session TTL for security
+- No manual token/cookie management
+
+**Technical Changes:**
+- `browser_use.py`: Added `cookies` parameter to `fetch_website_content`
+- `browser_use.py`: Modified `AsyncWebCrawler` initialization with `browser_config`
+- `agent.py`: Added session detection in `fetch_website` tool
+- `agent.py`: Updated system prompt with Phase 4.3 integration details
+
+**Version:** v0.3.41
+**Status:** ✅ Complete
+**Completed:** Current session
+
+---
+
 ## Technical Considerations
 
 ### 1. Content Truncation Strategy
@@ -659,7 +732,8 @@ wyn360 migrate-config
 | v0.3.24 | Phase 1 | ✅ Complete | 2025-01-11 |
 | v0.3.24 | Phase 2 | ✅ Complete (2 optional items remain) | 2025-01-11 |
 | v0.3.24 | Phase 3 | ⚠️ Partially Complete (core tools done) | 2025-01-11 |
-| v0.3.40 | Phase 4 (4.1 + 4.2) | ✅ Complete | 2025-11-13 |
+| v0.3.40 | Phase 4.1 + 4.2 | ✅ Complete (Auth + Sessions) | 2025-11-13 |
+| v0.3.41 | Phase 4.3 | ✅ Complete (Authenticated Fetch) | 2025-11-13 |
 | v0.3.25+ | Phase 3 (full) | Planned (CLI commands, prompts) | TBD |
 | v0.3.27+ | Phase 5-6 | Future | TBD |
 

@@ -386,7 +386,8 @@ def smart_truncate(markdown: str, max_tokens: int) -> Tuple[str, bool]:
 async def fetch_website_content(
     url: str,
     max_tokens: int = 50000,
-    truncate_strategy: str = "smart"
+    truncate_strategy: str = "smart",
+    cookies: Optional[list] = None
 ) -> Tuple[bool, str]:
     """
     Fetch website content and convert to markdown.
@@ -395,6 +396,7 @@ async def fetch_website_content(
         url: URL to fetch
         max_tokens: Maximum tokens to return
         truncate_strategy: How to truncate (smart, head, tail)
+        cookies: Optional list of cookie dicts for authenticated requests (Phase 4.3)
 
     Returns:
         Tuple of (success, content_or_error_message)
@@ -416,8 +418,14 @@ async def fetch_website_content(
         # Set environment variable to skip auto-install
         os.environ['PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD'] = '1'
 
+        # Prepare browser config with cookies if provided (Phase 4.3)
+        browser_config = {}
+        if cookies:
+            # Convert cookies to Playwright format
+            browser_config['cookies'] = cookies
+
         # Fetch website using crawl4ai
-        async with AsyncWebCrawler() as crawler:
+        async with AsyncWebCrawler(browser_config=browser_config if cookies else None) as crawler:
             result = await crawler.arun(url)
 
             if not result.success:
