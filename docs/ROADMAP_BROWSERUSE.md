@@ -473,6 +473,184 @@ fetch_website("https://example-site.com/settings")  # 🔐 authenticated
 
 ---
 
+### Phase 4.4: Enhanced Form Detection (v0.3.42-0.3.43)
+
+**Status:** ✅ Complete
+**Priority:** HIGH
+**Completed:** 2025-11-13
+**Documentation:** v0.3.43
+
+**Context:**
+Real-world testing revealed form detection limitations. The system failed to login to `wyn360search.com` due to inability to detect non-standard login forms.
+
+**Improvements Implemented:**
+
+- [x] **4.4.1: Intelligent URL Discovery**
+  - Tries 12 common login URLs (`/login`, `/signin`, `/auth`, `/account/login`, etc.)
+  - Follows "Login" links on homepage automatically
+  - Validates each URL for login form presence before selecting
+
+- [x] **4.4.2: Dynamic Content Waiting**
+  - Waits up to 10 seconds for form elements to appear
+  - Handles JavaScript frameworks (React/Vue/Angular)
+  - Additional 1-second settle time for dynamic content
+  - Continues gracefully if timeout occurs
+
+- [x] **4.4.3: Enhanced Form Detection with Fuzzy Matching**
+  - Analyzes ALL input elements on page (not just predefined selectors)
+  - Fuzzy matches on 7 attributes: type, name, id, placeholder, class, autocomplete, aria-label
+  - Confidence scoring for username field candidates
+  - Falls back to traditional detection if enhanced detection succeeds
+
+- [x] **4.4.4: Debug Mode with Screenshots**
+  - Environment variable: `export WYN360_BROWSER_DEBUG=true`
+  - Saves timestamped screenshots at each step (8 screenshots per login attempt)
+  - Dumps full HTML content for analysis
+  - Exports detected elements to JSON with confidence scores
+  - Stores in `~/.wyn360/debug/browser_auth/{timestamp}_*.png|html|json`
+  - Provides clear error messages with debug file locations
+
+- [x] **4.4.5: Manual Selector Override**
+  - New agent tool: `login_with_manual_selectors()`
+  - Accepts custom CSS selectors for username, password, submit fields
+  - Bypasses automatic form detection entirely
+  - Example: "Login with selectors #user, #pass, #submit-btn"
+  - Saves debug screenshots when enabled
+
+**Files Modified:**
+- `wyn360_cli/browser_auth.py`: +300 lines (Phase 4.4 methods)
+- `wyn360_cli/agent.py`: +100 lines (new tool + debug support)
+- `pyproject.toml`: Version updated to 0.3.42
+
+**New Methods:**
+- `BrowserAuth._find_login_page()`: Intelligent URL discovery
+- `BrowserAuth._has_login_form()`: Quick form presence check
+- `BrowserAuth._wait_for_form_load()`: Dynamic content waiting
+- `BrowserAuth._detect_login_form_enhanced()`: Fuzzy matching detection
+- `BrowserAuth._save_debug_screenshot()`: Debug screenshot helper
+- `BrowserAuth._save_debug_html()`: Debug HTML dump helper
+- `BrowserAuth._save_debug_info()`: Debug JSON export helper
+- `BrowserAuth.login_with_selectors()`: Manual selector override
+- `Agent.login_with_manual_selectors()`: Agent tool for manual login
+
+**Success Metrics (Expected):**
+- Login success rate: 60% → 90%+ (testing in progress)
+- Form detection rate: 70% → 95%+ (enhanced detection added)
+- Average login time: ~15s (with discovery and waiting)
+- Debug information: Comprehensive (screenshots + HTML + JSON)
+
+**Usage:**
+
+Enable debug mode:
+```bash
+export WYN360_BROWSER_DEBUG=true
+wyn360 "login to http://wyn360search.com with your_username/your_password"
+```
+
+Use manual selectors:
+```bash
+wyn360 "login to http://example.com with user/pass using selectors #username, #password, #submit"
+```
+
+**Next Steps:**
+- Real-world testing with wyn360search.com
+- Test with diverse website types
+- Gather metrics on success rates
+- Consider Phase 4.5 (LLM-powered form analysis) if needed
+
+---
+
+### Phase 4.5: LLM-Powered Form Analysis (v0.3.43 - PLANNED)
+
+**Status:** 📋 Planned
+**Priority:** MEDIUM
+**Estimated Effort:** 4-6 hours
+
+**Approach:**
+When automatic form detection fails, use Claude API to analyze page HTML and suggest selectors.
+
+**Implementation:**
+
+- [ ] **4.5.1: HTML Analysis Tool**
+  - Extract relevant HTML (forms, inputs, buttons)
+  - Truncate to fit in prompt (~50k chars)
+  - Call Claude API with analysis task
+
+- [ ] **4.5.2: Selector Suggestion**
+  - LLM returns JSON with suggested selectors
+  - Include confidence score (0-100)
+  - Provide reasoning for suggestions
+  - Fall back to manual mode if confidence <70
+
+- [ ] **4.5.3: Adaptive Learning**
+  - Cache successful selector patterns per domain
+  - Build domain-specific form detection rules
+  - Share patterns across users (privacy-safe)
+
+**Example:**
+```python
+async def _analyze_page_with_llm(self, page: Page) -> Dict:
+    html_content = await page.content()
+    prompt = f"Analyze this HTML and identify login form elements: {html_content[:50000]}"
+    # Call Claude API
+    analysis = await claude_analyze(prompt)
+    return analysis['selectors']
+```
+
+**Benefits:**
+- Handle truly unique/custom forms
+- Improve over time with learning
+- Reduce manual intervention
+
+---
+
+### Phase 4.6: Interactive Browser Mode (v0.3.44 - PLANNED)
+
+**Status:** 📋 Planned
+**Priority:** LOW
+**Estimated Effort:** 3-4 hours
+
+**Feature:**
+Launch non-headless browser, let user login manually, capture session cookies when complete.
+
+**Implementation:**
+
+- [ ] **4.6.1: Interactive Login Method**
+  - New method: `interactive_login(url)`
+  - Launch browser with `headless=False`
+  - Display instructions to user
+  - Wait for user confirmation (press ENTER)
+  - Capture cookies and close browser
+
+- [ ] **4.6.2: Session Import/Export**
+  - Export cookies to JSON file
+  - Import cookies from browser extensions
+  - Support Chrome/Firefox cookie formats
+  - Manual cookie entry via UI
+
+**Use Cases:**
+- Complex authentication (OAuth, SAML, SSO)
+- CAPTCHA/2FA that can't be automated
+- Sites with strong bot detection
+- User wants full control
+
+**Example:**
+```bash
+You: Help me login to wyn360search.com interactively
+
+WYN360: 🌐 Opening browser for manual login...
+        📝 Please login manually in the browser window
+        ✅ Press ENTER when you're logged in
+
+[Browser window opens]
+[User logs in manually]
+[User presses ENTER]
+
+WYN360: ✅ Session captured! You can now fetch authenticated pages.
+```
+
+---
+
 ## Technical Considerations
 
 ### 1. Content Truncation Strategy
@@ -734,6 +912,10 @@ wyn360 migrate-config
 | v0.3.24 | Phase 3 | ⚠️ Partially Complete (core tools done) | 2025-01-11 |
 | v0.3.40 | Phase 4.1 + 4.2 | ✅ Complete (Auth + Sessions) | 2025-11-13 |
 | v0.3.41 | Phase 4.3 | ✅ Complete (Authenticated Fetch) | 2025-11-13 |
+| v0.3.42 | Phase 4.4 | ✅ Complete (Enhanced Form Detection) | 2025-11-13 |
+| v0.3.43 | Phase 4.4 Docs | ✅ Complete (Use Case 26 + Docs) | 2025-11-13 |
+| v0.3.44 | Phase 4.5 | 📋 Planned (LLM-Powered Analysis) | TBD |
+| v0.3.44 | Phase 4.6 | 📋 Planned (Interactive Browser) | TBD |
 | v0.3.25+ | Phase 3 (full) | Planned (CLI commands, prompts) | TBD |
 | v0.3.27+ | Phase 5-6 | Future | TBD |
 

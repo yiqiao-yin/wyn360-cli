@@ -131,10 +131,13 @@ class WYN360Agent:
         else:
             self.website_cache = None
 
-        # Authenticated browsing (Phase 4.2)
+        # Authenticated browsing (Phase 4.2 + 4.4)
         self.credential_manager = CredentialManager()
         self.session_manager = SessionManager()
-        self.browser_auth = BrowserAuth()
+
+        # Phase 4.4: Debug mode from environment variable
+        debug_mode = os.getenv('WYN360_BROWSER_DEBUG', 'false').lower() == 'true'
+        self.browser_auth = BrowserAuth(debug=debug_mode)
 
         # Set API key in environment for pydantic-ai to use
         os.environ['ANTHROPIC_API_KEY'] = api_key
@@ -2198,6 +2201,103 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
 
         except Exception as e:
             return f"❌ Error during login: {str(e)}"
+
+    async def login_with_manual_selectors(
+        self,
+        ctx: RunContext[None],
+        url: str,
+        username: str,
+        password: str,
+        username_selector: str,
+        password_selector: str,
+        submit_selector: Optional[str] = None
+    ) -> str:
+        """
+        Login using manually specified CSS selectors (Phase 4.4.5).
+
+        Use this when automatic form detection fails. You need to inspect the
+        website's HTML to find the CSS selectors for the login form fields.
+
+        Args:
+            url: Login page URL
+            username: Login username/email
+            password: Login password
+            username_selector: CSS selector for username field (e.g., '#username', 'input[name="user"]')
+            password_selector: CSS selector for password field (e.g., '#password', 'input[name="pass"]')
+            submit_selector: CSS selector for submit button (optional, will press Enter if not provided)
+
+        Returns:
+            Login status message
+
+        Examples:
+            - "Login to https://example.com with user/pass using selectors #user, #pass, #submit"
+            - "Authenticate with custom selectors: username=#login_user, password=#login_pass"
+
+        Note:
+            - Inspect the page HTML to find correct selectors
+            - Use browser DevTools (F12) → Elements tab
+            - ID selectors: #id_value
+            - Name selectors: input[name="value"]
+            - Class selectors: .class_name
+        """
+        try:
+            from urllib.parse import urlparse
+            parsed_url = urlparse(url)
+            domain = parsed_url.netloc
+
+            # Check if already authenticated
+            if self.session_manager.is_session_valid(domain):
+                return (f"✅ Already authenticated to {domain}\n\n"
+                       f"Session is still valid. To force re-login, clear the session first.")
+
+            # Perform login with manual selectors
+            result = await self.browser_auth.login_with_selectors(
+                url=url,
+                username=username,
+                password=password,
+                username_selector=username_selector,
+                password_selector=password_selector,
+                submit_selector=submit_selector
+            )
+
+            if result['success']:
+                # Save session
+                cookies = result['cookies']
+                self.session_manager.save_session(domain, cookies)
+                self.credential_manager.save_credential(domain, username, password)
+
+                response = f"✅ Login successful to {domain}! (manual selectors)\n\n"
+                response += f"**Session Details:**\n"
+                response += f"- Domain: {domain}\n"
+                response += f"- Username: {username}\n"
+                response += f"- Selectors used:\n"
+                response += f"  - Username: {username_selector}\n"
+                response += f"  - Password: {password_selector}\n"
+                if submit_selector:
+                    response += f"  - Submit: {submit_selector}\n"
+                response += f"- Session saved: Yes (30 minutes TTL)\n\n"
+                response += f"**Next Steps:**\n"
+                response += f"Use fetch_website() to access authenticated pages.\n"
+
+                return response
+
+            elif result['has_captcha']:
+                return f"❌ CAPTCHA detected. Please complete manually."
+
+            elif result['requires_2fa']:
+                return f"🔐 2FA required. Please complete authentication manually."
+
+            else:
+                return (f"❌ Login failed with manual selectors\n\n"
+                       f"**Details:** {result['message']}\n\n"
+                       f"**Troubleshooting:**\n"
+                       f"- Verify selectors are correct (inspect page HTML)\n"
+                       f"- Check if form requires additional interaction\n"
+                       f"- Try waiting for page to fully load\n"
+                       f"- Verify credentials are correct")
+
+        except Exception as e:
+            return f"❌ Error during manual selector login: {str(e)}"
 
     async def read_excel(
         self,
