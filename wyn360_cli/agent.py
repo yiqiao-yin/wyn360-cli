@@ -258,6 +258,24 @@ ACTION:
 2. Don't give up after first write_file failure - try with overwrite=True
 3. For "write/generate script" requests → ALWAYS create new file (use overwrite=False, then True if needed)
 
+**JUPYTER NOTEBOOK CONVERSIONS:**
+
+When converting .ipynb files to .py scripts:
+- **Extract ONLY code cells** - Skip markdown cells, outputs, and explanations
+- **Keep it minimal** - Focus on reusable functions and core logic only
+- **Break into multiple files** if notebook is large (>800 lines):
+  - Example: "makemore_part4_backprop.ipynb" → "makemore_data.py" + "makemore_model.py" + "makemore_train.py"
+  - Split by functionality: data processing, model definition, training loop
+- **Remove notebook-specific code:**
+  - Display commands (display(), Image(), HTML())
+  - Inline plots without saving (plt.show() without context)
+  - Cell magic commands (%matplotlib, %%time, etc.)
+- **Preserve only:**
+  - Import statements
+  - Function/class definitions
+  - Core computational logic
+  - Reusable code blocks
+
 **Document Reading (Phase 13):**
 
 When user wants to READ, SEARCH, ANALYZE, or QUERY document files:
@@ -736,7 +754,23 @@ You: fetch_website("https://wyn360search.com/profile")  # Automatically uses sav
             if content_length > max_size:
                 # Truncate and show preview
                 preview = content[:500] + f"\n\n... ({content_length - 500} more bytes) ..."
-                return f"Error: Content too large ({content_length} bytes, {content_length // 1024}KB). Maximum size is {max_size} bytes ({max_size // 1024}KB).\n\nYour code is too long! Please reduce to under 1000 lines. Break into smaller files if needed.\n\nContent preview:\n{preview}"
+                return f"""Error: Content too large ({content_length} bytes, {content_length // 1024}KB). Maximum size is {max_size} bytes ({max_size // 1024}KB).
+
+Your code is too long! Please reduce to under 1000 lines.
+
+**Solutions:**
+1. **Break into multiple files** (e.g., part1.py, part2.py, part3.py)
+2. **For Jupyter notebook conversions:**
+   - Extract ONLY code cells (skip markdown/outputs)
+   - Focus on reusable functions and core logic
+   - Create separate files for data loading, model, and training
+3. **For large scripts:**
+   - Split by functionality (utils.py, main.py, config.py)
+   - Remove extensive comments/docstrings
+   - Keep only essential code
+
+Content preview:
+{preview}"""
 
             content_preview = content[:100] if content_length > 100 else content
 
