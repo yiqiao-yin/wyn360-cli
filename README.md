@@ -54,6 +54,16 @@ echo "ANTHROPIC_API_KEY=your_key_here" > .env
 wyn360 --api-key your_key_here
 ```
 
+**Option 4: Use AWS Bedrock Credentials**
+```bash
+export CLAUDE_CODE_USE_BEDROCK=1
+export AWS_ACCESS_KEY_ID="your_access_key"
+export AWS_SECRET_ACCESS_KEY="your_secret_key"
+export AWS_SESSION_TOKEN="your_session_token"
+export AWS_REGION=us-west-2
+export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
 ### 2. Run the CLI:
 ```bash
 wyn360
@@ -537,15 +547,35 @@ git push origin main
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `ANTHROPIC_API_KEY` | Anthropic API key (required) | None |
+| `ANTHROPIC_API_KEY` | Anthropic API key (required for Anthropic API mode) | None |
+| `CLAUDE_CODE_USE_BEDROCK` | Enable AWS Bedrock mode (set to `1` to enable) | `0` (disabled) |
+| `AWS_ACCESS_KEY_ID` | AWS access key ID (required for Bedrock mode) | None |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret access key (required for Bedrock mode) | None |
+| `AWS_SESSION_TOKEN` | AWS session token (optional, for temporary credentials) | None |
+| `AWS_REGION` | AWS region for Bedrock (e.g., us-west-2) | `us-east-1` |
+| `ANTHROPIC_MODEL` | Model ARN for Bedrock (e.g., us.anthropic.claude-sonnet-4-20250514-v1:0) | Auto-selected |
 | `HF_TOKEN` or `HUGGINGFACE_TOKEN` | HuggingFace API token (optional, for HF features) | None |
 | `GH_TOKEN` or `GITHUB_TOKEN` | GitHub access token (optional, for GitHub features) | None |
 | `WYN360_SKIP_CONFIRM` | Skip command execution confirmations | `0` (disabled) |
 
-**Setup Example:**
+**Setup Example (Anthropic API):**
 ```bash
 # .env file
 ANTHROPIC_API_KEY=your_anthropic_key
+GH_TOKEN=ghp_your_github_token
+HF_TOKEN=hf_your_huggingface_token
+WYN360_SKIP_CONFIRM=0
+```
+
+**Setup Example (AWS Bedrock):**
+```bash
+# .env file
+CLAUDE_CODE_USE_BEDROCK=1
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_SESSION_TOKEN=your_session_token
+AWS_REGION=us-west-2
+ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
 GH_TOKEN=ghp_your_github_token
 HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
@@ -612,5 +642,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.23
-**Last Updated:** December 10, 2025
+**Current Version:** 0.3.48
+**Last Updated:** November 16, 2025
