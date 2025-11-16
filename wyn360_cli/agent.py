@@ -215,35 +215,25 @@ class WYN360Agent:
             if not is_valid:
                 raise ValueError(error_msg)
 
-            # Import Bedrock client
+            # Import pydantic-ai's Bedrock model
             try:
-                from anthropic import AnthropicBedrock
+                from pydantic_ai.models.bedrock import BedrockConverseModel
             except ImportError:
                 raise ImportError(
-                    "AWS Bedrock support requires anthropic[bedrock] package.\n"
-                    "Install with: pip install 'anthropic[bedrock]>=0.39.0'"
+                    "AWS Bedrock support requires pydantic-ai-slim[bedrock] package.\n"
+                    "This should be included with pydantic-ai>=1.13.0"
                 )
 
             # Get AWS region from environment or use default
             aws_region = os.getenv('AWS_REGION', 'us-east-1')
 
-            # Create Bedrock client with explicit region
-            # AnthropicBedrock automatically reads AWS credentials from environment:
+            # Set AWS region for boto3 (used by BedrockConverseModel)
+            os.environ['AWS_DEFAULT_REGION'] = aws_region
+
+            # Create Bedrock model using pydantic-ai's built-in support
+            # BedrockConverseModel automatically reads AWS credentials from environment:
             # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
-            bedrock_client = AnthropicBedrock(aws_region=aws_region)
-
-            # Create a simple wrapper to make Bedrock client compatible with pydantic-ai Provider protocol
-            class BedrockProvider:
-                """Wrapper to make AnthropicBedrock compatible with pydantic-ai Provider protocol."""
-                def __init__(self, client):
-                    self.client = client
-                    self.model_profile = None  # No specific model profile for Bedrock
-
-            # Create model with Bedrock backend using wrapped provider
-            self.model = AnthropicModel(
-                self.model_name,
-                provider=BedrockProvider(bedrock_client)
-            )
+            self.model = BedrockConverseModel(self.model_name)
 
             self.api_key = None  # Not used in Bedrock mode
 
