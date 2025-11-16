@@ -136,7 +136,13 @@ class WYN360Agent:
         elif os.getenv('ANTHROPIC_MODEL'):
             self.model_name = os.getenv('ANTHROPIC_MODEL')
         else:
-            self.model_name = model
+            # Use appropriate default based on authentication mode
+            if self.use_bedrock:
+                # Bedrock requires ARN format
+                self.model_name = "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            else:
+                # Anthropic API uses model ID format
+                self.model_name = model
 
         self.use_history = use_history
         # Phase 5.9: Store pydantic-ai messages for proper context retention

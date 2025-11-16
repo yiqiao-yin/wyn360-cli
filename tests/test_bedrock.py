@@ -126,6 +126,19 @@ class TestBedrockAgent:
             # Verify bedrock client was created with default region
             mock_bedrock.assert_called_once_with(aws_region='us-east-1')
 
+    @patch('anthropic.AnthropicBedrock')
+    @patch('wyn360_cli.agent.Agent')
+    def test_bedrock_mode_default_model(self, mock_agent, mock_bedrock):
+        """Test Bedrock mode uses correct default model ARN."""
+        with patch.dict(os.environ, {
+            'AWS_ACCESS_KEY_ID': 'AKIA...',
+            'AWS_SECRET_ACCESS_KEY': 'secret',
+        }, clear=True):
+            agent = WYN360Agent(use_bedrock=True)
+
+            # Verify Bedrock default model ARN is used
+            assert agent.model_name == "us.anthropic.claude-sonnet-4-20250514-v1:0"
+
     def test_bedrock_mode_missing_credentials(self):
         """Test that Bedrock mode raises error with missing credentials."""
         with patch.dict(os.environ, {}, clear=True):
