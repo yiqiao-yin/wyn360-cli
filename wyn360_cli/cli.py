@@ -108,13 +108,21 @@ def main(api_key, model):
     # Load environment variables from .env file if it exists
     load_dotenv()
 
-    # Get API key from parameter or environment
+    # Check if Bedrock mode is enabled
+    use_bedrock = os.getenv('CLAUDE_CODE_USE_BEDROCK', '0') == '1'
+
+    # Get API key from parameter or environment (not needed for Bedrock)
     api_key = api_key or os.getenv('ANTHROPIC_API_KEY')
-    if not api_key:
+
+    # Validate credentials based on mode
+    if not use_bedrock and not api_key:
         raise click.UsageError(
-            "API key is required. Provide via --api-key or set ANTHROPIC_API_KEY "
-            "environment variable.\n\n"
-            "Get your API key from: https://console.anthropic.com/"
+            "API key is required when not using AWS Bedrock.\n\n"
+            "Options:\n"
+            "  1. Set Anthropic API key: export ANTHROPIC_API_KEY=sk-ant-xxx\n"
+            "  2. Use AWS Bedrock: export CLAUDE_CODE_USE_BEDROCK=1\n"
+            "     (requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY)\n\n"
+            "Get Anthropic API key from: https://console.anthropic.com/"
         )
 
     # Print banner
@@ -156,12 +164,18 @@ def main(api_key, model):
     try:
         # Use model from CLI arg if provided, otherwise use config model
         if model != 'claude-sonnet-4-20250514':  # If user specified a different model
-            agent = WYN360Agent(api_key=api_key, model=model, config=config)
+            agent = WYN360Agent(api_key=api_key, model=model, config=config, use_bedrock=use_bedrock)
         else:
-            agent = WYN360Agent(api_key=api_key, config=config)
+            agent = WYN360Agent(api_key=api_key, config=config, use_bedrock=use_bedrock)
 
         actual_model = agent.model_name
-        console.print(f"[green]✓[/green] Connected using model: [cyan]{actual_model}[/cyan]")
+
+        # Show connection status
+        if use_bedrock:
+            # Bedrock mode already prints status in agent.__init__
+            pass
+        else:
+            console.print(f"[green]✓[/green] Connected using model: [cyan]{actual_model}[/cyan]")
 
         # Show custom instructions indicator
         if config.custom_instructions:

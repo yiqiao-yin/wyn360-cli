@@ -55,6 +55,47 @@ from .document_readers import (
 )
 
 
+def _should_use_bedrock() -> bool:
+    """
+    Check if AWS Bedrock mode is enabled via environment variable.
+
+    Returns:
+        True if CLAUDE_CODE_USE_BEDROCK=1, False otherwise
+    """
+    return os.getenv('CLAUDE_CODE_USE_BEDROCK', '0') == '1'
+
+
+def _validate_aws_credentials() -> Tuple[bool, str]:
+    """
+    Validate that required AWS credentials are set.
+
+    Returns:
+        Tuple of (is_valid, error_message)
+        - is_valid: True if all required credentials present
+        - error_message: Error message if invalid, empty string if valid
+    """
+    required_vars = ['AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY']
+    missing = [var for var in required_vars if not os.getenv(var)]
+
+    if missing:
+        error_msg = f"""AWS Bedrock mode enabled but credentials not found.
+
+Please set the following environment variables:
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_SESSION_TOKEN (optional, for temporary credentials)
+  - AWS_REGION (optional, defaults to us-east-1)
+
+Missing variables: {', '.join(missing)}
+
+Or disable Bedrock mode:
+  unset CLAUDE_CODE_USE_BEDROCK
+"""
+        return False, error_msg
+
+    return True, ""
+
+
 class WYN360Agent:
     """
     WYN360 AI coding assistant agent.
@@ -65,26 +106,35 @@ class WYN360Agent:
 
     def __init__(
         self,
-        api_key: str,
+        api_key: Optional[str] = None,
         model: str = "claude-sonnet-4-20250514",
         use_history: bool = True,
-        config: Optional[WYN360Config] = None
+        config: Optional[WYN360Config] = None,
+        use_bedrock: Optional[bool] = None
     ):
         """
-        Initialize the WYN360 Agent.
+        Initialize the WYN360 Agent with Anthropic or AWS Bedrock.
 
         Args:
-            api_key: Anthropic API key
+            api_key: Anthropic API key (required if not using Bedrock)
             model: Claude model to use (default: claude-sonnet-4-20250514)
             use_history: Whether to send conversation history with each request (default: True)
             config: Optional WYN360Config object with user/project configuration
+            use_bedrock: Explicitly set Bedrock mode (overrides env var)
         """
-        self.api_key = api_key
         self.config = config
 
-        # Use config model if available, otherwise use provided model
+        # Determine authentication mode
+        if use_bedrock is None:
+            use_bedrock = _should_use_bedrock()
+
+        self.use_bedrock = use_bedrock
+
+        # Use config model if available, otherwise use provided model or env var
         if config:
             self.model_name = config.model
+        elif os.getenv('ANTHROPIC_MODEL'):
+            self.model_name = os.getenv('ANTHROPIC_MODEL')
         else:
             self.model_name = model
 
@@ -139,11 +189,69 @@ class WYN360Agent:
         debug_mode = os.getenv('WYN360_BROWSER_DEBUG', 'false').lower() == 'true'
         self.browser_auth = BrowserAuth(debug=debug_mode)
 
-        # Set API key in environment for pydantic-ai to use
-        os.environ['ANTHROPIC_API_KEY'] = api_key
+        # Initialize Anthropic model based on authentication mode
+        if self.use_bedrock:
+            # AWS Bedrock mode
+            is_valid, error_msg = _validate_aws_credentials()
+            if not is_valid:
+                raise ValueError(error_msg)
 
-        # Initialize Anthropic model (it will use the environment variable)
-        self.model = AnthropicModel(self.model_name)
+            # Import Bedrock client
+            try:
+                from anthropic import AnthropicBedrock
+            except ImportError:
+                raise ImportError(
+                    "AWS Bedrock support requires anthropic[bedrock] package.\n"
+                    "Install with: pip install 'anthropic[bedrock]>=0.39.0'"
+                )
+
+            # Get AWS region from environment or use default
+            aws_region = os.getenv('AWS_REGION', 'us-east-1')
+
+            # Create Bedrock client with explicit region
+            # AnthropicBedrock automatically reads AWS credentials from environment:
+            # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_SESSION_TOKEN
+            bedrock_client = AnthropicBedrock(aws_region=aws_region)
+
+            # Create a simple wrapper to make Bedrock client compatible with pydantic-ai Provider protocol
+            class BedrockProvider:
+                """Wrapper to make AnthropicBedrock compatible with pydantic-ai Provider protocol."""
+                def __init__(self, client):
+                    self.client = client
+                    self.model_profile = None  # No specific model profile for Bedrock
+
+            # Create model with Bedrock backend using wrapped provider
+            self.model = AnthropicModel(
+                self.model_name,
+                provider=BedrockProvider(bedrock_client)
+            )
+
+            self.api_key = None  # Not used in Bedrock mode
+
+            print(f"🌩️  AWS Bedrock mode enabled")
+            print(f"📡 Region: {aws_region}")
+            print(f"🤖 Model: {self.model_name}")
+
+        else:
+            # Direct Anthropic API mode (existing behavior)
+            # Try to get API key from parameter or environment
+            if not api_key:
+                api_key = os.getenv('ANTHROPIC_API_KEY')
+
+            if not api_key:
+                raise ValueError(
+                    "ANTHROPIC_API_KEY is required when not using AWS Bedrock.\n"
+                    "Set environment variable: export ANTHROPIC_API_KEY=sk-ant-xxx\n"
+                    "Or enable Bedrock mode: export CLAUDE_CODE_USE_BEDROCK=1"
+                )
+
+            self.api_key = api_key
+
+            # Set API key in environment for pydantic-ai to use
+            os.environ['ANTHROPIC_API_KEY'] = api_key
+
+            # Initialize Anthropic model (it will use the environment variable)
+            self.model = AnthropicModel(self.model_name)
 
         # Create the agent with tools and web search
         # WebSearchTool is now enabled with pydantic-ai >= 1.13.0

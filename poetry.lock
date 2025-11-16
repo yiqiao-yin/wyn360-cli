@@ -265,6 +265,8 @@ files = [
 
 [package.dependencies]
 anyio = ">=3.5.0,<5"
+boto3 = {version = ">=1.28.57", optional = true, markers = "extra == \"bedrock\""}
+botocore = {version = ">=1.31.57", optional = true, markers = "extra == \"bedrock\""}
 distro = ">=1.7.0,<2"
 docstring-parser = ">=0.15,<1"
 httpx = ">=0.25.0,<1"
@@ -6611,4 +6613,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "13a51d798cc9be27c33001f6ada1172a7af3e04c65ed674fb309ac402f2db98d"
+content-hash = "660e307c68891f532b33036717281aaad99cec4b255175b390e6b5acda04fb59"

@@ -3414,7 +3414,7 @@ wyn360 "login to http://wyn360search.com with your_username/your_password"
 
 **What Happens:**
 
-```
+```bash
 You: login to http://wyn360search.com with your_username/your_password
 
 WYN360: [DEBUG] Trying login URL discovery...
@@ -3980,6 +3980,390 @@ If you run into issues or have questions:
 2. **Check GitHub:** https://github.com/yiqiao-yin/wyn360-cli
 3. **Read the README:** Basic setup and usage
 4. **Report issues:** GitHub Issues page
+
+---
+
+## Use Case 27: AWS Bedrock Authentication - Using AWS Credentials (v0.3.45)
+
+**What's New:** WYN360 now supports AWS Bedrock as an alternative to direct Anthropic API authentication. This allows you to use AWS credentials and billing instead of Anthropic API keys.
+
+### Authentication Methods
+
+WYN360 supports **two authentication methods** - you can choose whichever fits your needs:
+
+#### Method 1: Anthropic API (Default)
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-xxxxx"
+wyn360 "write a script to analyze data"
+```
+
+**When to use:**
+- You have an Anthropic API account
+- You want direct Anthropic billing
+- Simple setup with just one environment variable
+
+---
+
+#### Method 2: AWS Bedrock
+
+```bash
+# Set AWS credentials
+export AWS_ACCESS_KEY_ID="AKIA..."
+export AWS_SECRET_ACCESS_KEY="xxx..."
+export AWS_SESSION_TOKEN="xxx..."  # Optional - for temporary credentials
+
+# Enable Bedrock mode
+export CLAUDE_CODE_USE_BEDROCK=1
+
+# Optional: Customize region and model
+export AWS_REGION="us-west-2"  # Default: us-east-1
+export ANTHROPIC_MODEL="us.anthropic.claude-sonnet-4-20250514-v1:0"
+
+# Use WYN360
+wyn360 "write a script to analyze data"
+```
+
+**Output:**
+```
+🌩️  AWS Bedrock mode enabled
+📡 Region: us-west-2
+🤖 Model: us.anthropic.claude-sonnet-4-20250514-v1:0
+
+WYN360: I'll create a Python script to analyze data.csv...
+```
+
+**When to use:**
+- You have AWS Bedrock access
+- You want AWS billing instead of Anthropic
+- You're using AWS IAM roles/policies
+- You have temporary AWS credentials (STS)
+- You want to use AWS region-specific deployments
+
+---
+
+### Use Case 27.1: Basic AWS Bedrock Setup
+
+**Scenario:** You have an AWS account with Bedrock access and want to use WYN360 with AWS credentials.
+
+**Step 1: Get AWS Credentials**
+
+```bash
+# Option A: Use permanent credentials
+export AWS_ACCESS_KEY_ID="your_aws_access_key_id"
+export AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
+
+# Option B: Use temporary credentials (STS)
+export AWS_ACCESS_KEY_ID="your_temp_aws_access_key_id"
+export AWS_SECRET_ACCESS_KEY="your_aws_secret_access_key"
+export AWS_SESSION_TOKEN="your_aws_session_token"
+```
+
+**Step 2: Enable Bedrock Mode**
+
+```bash
+export CLAUDE_CODE_USE_BEDROCK=1
+```
+
+**Step 3: Use WYN360**
+
+```bash
+wyn360 "create a data processing pipeline"
+```
+
+**Result:** WYN360 uses AWS Bedrock for all API calls, billed to your AWS account.
+
+---
+
+### Use Case 27.2: Using AWS IAM Roles (EC2/ECS/Lambda)
+
+**Scenario:** You're running WYN360 on AWS infrastructure with IAM roles.
+
+**Required IAM Policy:**
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+      ],
+      "Resource": "arn:aws:bedrock:*::foundation-model/anthropic.claude-*"
+    }
+  ]
+}
+```
+
+**Setup:**
+```bash
+# No need to set AWS_ACCESS_KEY_ID or AWS_SECRET_ACCESS_KEY
+# boto3 automatically uses the instance IAM role
+
+# Just enable Bedrock mode
+export CLAUDE_CODE_USE_BEDROCK=1
+
+wyn360 "analyze system logs"
+```
+
+**Supported AWS Services:**
+- EC2 instances with IAM instance profiles
+- ECS tasks with task roles
+- Lambda functions with execution roles
+- CodeBuild projects
+- SageMaker notebooks
+
+---
+
+### Use Case 27.3: Custom AWS Region
+
+**Scenario:** You want to use a specific AWS region for lower latency or compliance.
+
+**Available Regions:**
+- `us-east-1` (Default - US East, Virginia)
+- `us-west-2` (US West, Oregon)
+- `ap-southeast-1` (Asia Pacific, Singapore)
+- `ap-northeast-1` (Asia Pacific, Tokyo)
+- `eu-central-1` (Europe, Frankfurt)
+
+Check [AWS Bedrock regions](https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html#bedrock-regions) for the latest availability.
+
+**Setup:**
+```bash
+export AWS_ACCESS_KEY_ID="xxx"
+export AWS_SECRET_ACCESS_KEY="xxx"
+export CLAUDE_CODE_USE_BEDROCK=1
+export AWS_REGION="eu-central-1"  # Europe region
+
+wyn360 "process EU customer data"
+```
+
+**Output:**
+```
+🌩️  AWS Bedrock mode enabled
+📡 Region: eu-central-1
+🤖 Model: us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
+---
+
+### Use Case 27.4: Custom Model Selection
+
+**Scenario:** You want to use a specific Claude model available in AWS Bedrock.
+
+**Available Bedrock Models:**
+- `us.anthropic.claude-sonnet-4-20250514-v1:0` - Latest Sonnet
+- `anthropic.claude-3-5-sonnet-20241022-v2:0` - Sonnet 3.5
+- `anthropic.claude-3-opus-20240229-v1:0` - Opus (most capable)
+- `anthropic.claude-3-haiku-20240307-v1:0` - Haiku (fastest, cheapest)
+
+**Setup:**
+```bash
+export AWS_ACCESS_KEY_ID="xxx"
+export AWS_SECRET_ACCESS_KEY="xxx"
+export CLAUDE_CODE_USE_BEDROCK=1
+export ANTHROPIC_MODEL="anthropic.claude-3-opus-20240229-v1:0"
+
+wyn360 "write complex machine learning code"
+```
+
+**Output:**
+```
+🌩️  AWS Bedrock mode enabled
+📡 Region: us-east-1
+🤖 Model: anthropic.claude-3-opus-20240229-v1:0
+```
+
+---
+
+### Use Case 27.5: Switching Between Anthropic and Bedrock
+
+**Scenario:** You want to switch between Anthropic API and AWS Bedrock easily.
+
+**Option 1: Use Bedrock**
+```bash
+export CLAUDE_CODE_USE_BEDROCK=1
+export AWS_ACCESS_KEY_ID="xxx"
+export AWS_SECRET_ACCESS_KEY="xxx"
+wyn360 "task 1"  # Uses AWS Bedrock
+```
+
+**Option 2: Switch to Anthropic API**
+```bash
+unset CLAUDE_CODE_USE_BEDROCK  # Or: export CLAUDE_CODE_USE_BEDROCK=0
+export ANTHROPIC_API_KEY="sk-ant-xxx"
+wyn360 "task 2"  # Uses Anthropic API
+```
+
+**Pro Tip:** Use shell aliases for quick switching:
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+alias wyn-bedrock='export CLAUDE_CODE_USE_BEDROCK=1; unset ANTHROPIC_API_KEY'
+alias wyn-anthropic='unset CLAUDE_CODE_USE_BEDROCK; export ANTHROPIC_API_KEY=sk-ant-xxx'
+```
+
+Usage:
+```bash
+wyn-bedrock && wyn360 "task using AWS"
+wyn-anthropic && wyn360 "task using Anthropic"
+```
+
+---
+
+### Use Case 27.6: Temporary AWS Credentials with STS
+
+**Scenario:** You're using temporary AWS credentials from `aws sts assume-role`.
+
+**Step 1: Get Temporary Credentials**
+```bash
+aws sts assume-role \
+  --role-arn arn:aws:iam::123456789012:role/WYN360Role \
+  --role-session-name wyn360-session \
+  --output json > /tmp/aws-creds.json
+```
+
+**Step 2: Extract Credentials**
+```bash
+export AWS_ACCESS_KEY_ID=$(jq -r '.Credentials.AccessKeyId' /tmp/aws-creds.json)
+export AWS_SECRET_ACCESS_KEY=$(jq -r '.Credentials.SecretAccessKey' /tmp/aws-creds.json)
+export AWS_SESSION_TOKEN=$(jq -r '.Credentials.SessionToken' /tmp/aws-creds.json)
+```
+
+**Step 3: Enable Bedrock**
+```bash
+export CLAUDE_CODE_USE_BEDROCK=1
+wyn360 "analyze data with temporary permissions"
+```
+
+**Security Note:** Temporary credentials expire after a set duration (typically 1-12 hours). You'll need to refresh them when they expire.
+
+---
+
+### Troubleshooting
+
+#### Error: "AWS Bedrock mode enabled but credentials not found"
+
+**Cause:** Missing AWS credentials
+
+**Solution:**
+```bash
+# Check if credentials are set
+echo $AWS_ACCESS_KEY_ID
+echo $AWS_SECRET_ACCESS_KEY
+
+# If empty, set them:
+export AWS_ACCESS_KEY_ID="xxx"
+export AWS_SECRET_ACCESS_KEY="xxx"
+```
+
+---
+
+#### Error: "ANTHROPIC_API_KEY is required"
+
+**Cause:** Bedrock mode not enabled, but no Anthropic API key
+
+**Solution:**
+```bash
+# Option 1: Use Bedrock
+export CLAUDE_CODE_USE_BEDROCK=1
+export AWS_ACCESS_KEY_ID="xxx"
+export AWS_SECRET_ACCESS_KEY="xxx"
+
+# Option 2: Use Anthropic API
+export ANTHROPIC_API_KEY="sk-ant-xxx"
+```
+
+---
+
+#### Both Credentials Set - Which Takes Priority?
+
+When both `ANTHROPIC_API_KEY` and AWS credentials are set:
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-xxx"  # Set
+export AWS_ACCESS_KEY_ID="AKIA..."     # Also set
+export AWS_SECRET_ACCESS_KEY="xxx..."  # Also set
+```
+
+**Behavior:**
+- If `CLAUDE_CODE_USE_BEDROCK=1`: Uses AWS Bedrock (ignores ANTHROPIC_API_KEY)
+- If `CLAUDE_CODE_USE_BEDROCK` not set: Uses Anthropic API (ignores AWS credentials)
+
+**The `CLAUDE_CODE_USE_BEDROCK` flag determines the authentication method.**
+
+---
+
+### Key Differences: Anthropic API vs AWS Bedrock
+
+| Feature | Anthropic API | AWS Bedrock |
+|---------|--------------|-------------|
+| **Billing** | Anthropic account | AWS account |
+| **Setup** | 1 env var | 3+ env vars |
+| **IAM Support** | ❌ No | ✅ Yes |
+| **Temporary Creds** | ❌ No | ✅ Yes (STS) |
+| **Regional** | ❌ No | ✅ Yes |
+| **Model Selection** | Standard names | Bedrock ARNs |
+| **Latest Models** | ✅ Immediate | ⏳ May lag |
+
+---
+
+### Environment Variables Reference
+
+**Required for AWS Bedrock:**
+- `CLAUDE_CODE_USE_BEDROCK=1` - Enable Bedrock mode
+- `AWS_ACCESS_KEY_ID` - AWS access key
+- `AWS_SECRET_ACCESS_KEY` - AWS secret key
+
+**Optional for AWS Bedrock:**
+- `AWS_SESSION_TOKEN` - For temporary credentials (STS)
+- `AWS_REGION` - AWS region (default: us-east-1)
+- `ANTHROPIC_MODEL` - Bedrock model ARN (default: latest Sonnet)
+
+**Required for Anthropic API:**
+- `ANTHROPIC_API_KEY` - Anthropic API key
+
+**Not required when using Bedrock:**
+- `ANTHROPIC_API_KEY` - Ignored when `CLAUDE_CODE_USE_BEDROCK=1`
+
+---
+
+### Best Practices
+
+1. **Security:**
+   - Never commit AWS credentials to version control
+   - Use IAM roles when running on AWS infrastructure
+   - Rotate temporary credentials regularly
+   - Use least-privilege IAM policies
+
+2. **Cost Management:**
+   - Monitor AWS Bedrock costs in AWS Cost Explorer
+   - Set billing alerts in AWS
+   - Use appropriate models (Haiku for simple tasks, Opus for complex)
+
+3. **Performance:**
+   - Choose AWS region closest to your location
+   - Use temporary credentials for time-limited tasks
+   - Cache credentials in environment, not in scripts
+
+4. **Troubleshooting:**
+   - Test with `aws bedrock list-foundation-models` to verify access
+   - Check credentials with `aws sts get-caller-identity`
+   - Verify region supports Bedrock models
+
+---
+
+**Summary:**
+
+AWS Bedrock integration gives you flexibility in how you authenticate and bill WYN360 usage:
+
+- ✅ **Two authentication methods:** Anthropic API or AWS Bedrock
+- ✅ **Full AWS integration:** IAM roles, STS, regions
+- ✅ **Easy switching:** Toggle with `CLAUDE_CODE_USE_BEDROCK` flag
+- ✅ **Backward compatible:** Existing Anthropic API users unaffected
+- ✅ **Enterprise-ready:** Supports AWS governance and compliance
+
+Choose the method that best fits your infrastructure and billing preferences!
 
 ---
 
