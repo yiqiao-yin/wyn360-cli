@@ -264,9 +264,10 @@ class WYN360Agent:
 
         # Create the agent with tools and web search
         # WebSearchTool is now enabled with pydantic-ai >= 1.13.0
+        # Note: Bedrock doesn't support builtin_tools, so only enable for Anthropic API
         builtin_tools = []
-        if HAS_WEB_SEARCH:
-            # Enable web search with max 5 uses per session
+        if HAS_WEB_SEARCH and not self.use_bedrock:
+            # Enable web search with max 5 uses per session (Anthropic API only)
             builtin_tools.append(WebSearchTool(max_uses=5))
 
         self.agent = Agent(
