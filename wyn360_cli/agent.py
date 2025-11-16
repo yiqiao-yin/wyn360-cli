@@ -130,11 +130,24 @@ class WYN360Agent:
 
         self.use_bedrock = use_bedrock
 
-        # Use config model if available, otherwise use provided model or env var
-        if config:
-            self.model_name = config.model
-        elif os.getenv('ANTHROPIC_MODEL'):
-            self.model_name = os.getenv('ANTHROPIC_MODEL')
+        # Model selection priority:
+        # 1. ANTHROPIC_MODEL env var (highest priority for runtime override)
+        # 2. Config model (if not the default value)
+        # 3. Provided model parameter
+        # 4. Default based on authentication mode
+
+        env_model = os.getenv('ANTHROPIC_MODEL')
+        config_model = config.model if config else None
+
+        if env_model:
+            # Environment variable takes highest priority for runtime override
+            self.model_name = env_model
+        elif config_model and config_model != "claude-sonnet-4-20250514":
+            # Use config model if it's explicitly set (not the default)
+            self.model_name = config_model
+        elif model != "claude-sonnet-4-20250514":
+            # Use provided model parameter if it's not the default
+            self.model_name = model
         else:
             # Use appropriate default based on authentication mode
             if self.use_bedrock:
@@ -142,7 +155,7 @@ class WYN360Agent:
                 self.model_name = "us.anthropic.claude-sonnet-4-20250514-v1:0"
             else:
                 # Anthropic API uses model ID format
-                self.model_name = model
+                self.model_name = "claude-sonnet-4-20250514"
 
         self.use_history = use_history
         # Phase 5.9: Store pydantic-ai messages for proper context retention

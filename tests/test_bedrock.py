@@ -199,7 +199,7 @@ class TestBedrockAgent:
     @patch('anthropic.AnthropicBedrock')
     @patch('wyn360_cli.agent.Agent')
     def test_model_priority_order(self, mock_agent, mock_bedrock):
-        """Test model selection priority: config > env var > parameter."""
+        """Test model selection priority: env var > config > parameter."""
         from wyn360_cli.config import WYN360Config
 
         # Mock config with model
@@ -223,8 +223,8 @@ class TestBedrockAgent:
                 use_bedrock=True
             )
 
-            # Config should take precedence
-            assert agent.model_name == "config-model"
+            # Environment variable should take precedence
+            assert agent.model_name == "env-model"
 
 
 class TestBedrockImportError:
