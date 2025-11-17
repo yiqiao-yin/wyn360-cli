@@ -40,6 +40,7 @@ playwright install chromium
 
 **Option 1: Environment variable**
 ```bash
+export CLAUDE_CODE_USE_BEDROCK=0
 export ANTHROPIC_API_KEY=your_key_here
 export ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
 ```
