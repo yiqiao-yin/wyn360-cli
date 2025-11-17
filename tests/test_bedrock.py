@@ -172,20 +172,36 @@ class TestBedrockAgent:
             with pytest.raises(ValueError, match="ANTHROPIC_API_KEY is required"):
                 WYN360Agent(use_bedrock=False)
 
+    @patch('wyn360_cli.agent.Agent')
+    def test_anthropic_api_key_takes_precedence(self, mock_agent):
+        """Test that ANTHROPIC_API_KEY takes precedence over CLAUDE_CODE_USE_BEDROCK."""
+        with patch.dict(os.environ, {
+            'CLAUDE_CODE_USE_BEDROCK': '1',  # Bedrock enabled
+            'AWS_ACCESS_KEY_ID': 'AKIA...',
+            'AWS_SECRET_ACCESS_KEY': 'secret',
+            'ANTHROPIC_API_KEY': 'sk-ant-xxx',  # But API key present - should use Anthropic API
+        }):
+            agent = WYN360Agent()
+
+            # ANTHROPIC_API_KEY should take priority
+            assert agent.use_bedrock is False
+            assert agent.api_key == 'sk-ant-xxx'
+
     @patch('pydantic_ai.models.bedrock.BedrockConverseModel')
     @patch('wyn360_cli.agent.Agent')
-    def test_env_var_takes_precedence(self, mock_agent, mock_bedrock):
-        """Test that CLAUDE_CODE_USE_BEDROCK env var is respected."""
+    def test_bedrock_only_without_api_key(self, mock_agent, mock_bedrock):
+        """Test that Bedrock is used when only CLAUDE_CODE_USE_BEDROCK=1 (no API key)."""
         with patch.dict(os.environ, {
             'CLAUDE_CODE_USE_BEDROCK': '1',
             'AWS_ACCESS_KEY_ID': 'AKIA...',
             'AWS_SECRET_ACCESS_KEY': 'secret',
-            'ANTHROPIC_API_KEY': 'sk-ant-xxx',  # This should be ignored
-        }):
+            # No ANTHROPIC_API_KEY
+        }, clear=True):
             agent = WYN360Agent()
 
+            # Should use Bedrock mode
             assert agent.use_bedrock is True
-            assert agent.api_key is None  # Bedrock doesn't use API key
+            assert agent.api_key is None
 
     @patch('pydantic_ai.models.bedrock.BedrockConverseModel')
     @patch('wyn360_cli.agent.Agent')
@@ -245,10 +261,9 @@ class TestBedrockImportError:
 class TestBedrockEdgeCases:
     """Test edge cases and error scenarios."""
 
-    @patch('pydantic_ai.models.bedrock.BedrockConverseModel')
     @patch('wyn360_cli.agent.Agent')
-    def test_both_credentials_set_bedrock_priority(self, mock_agent, mock_bedrock):
-        """Test that Bedrock flag takes priority when both credentials present."""
+    def test_both_credentials_set_anthropic_priority(self, mock_agent):
+        """Test that ANTHROPIC_API_KEY takes priority when both credentials present."""
         with patch.dict(os.environ, {
             'CLAUDE_CODE_USE_BEDROCK': '1',
             'AWS_ACCESS_KEY_ID': 'AKIA...',
@@ -257,8 +272,9 @@ class TestBedrockEdgeCases:
         }):
             agent = WYN360Agent()
 
-            assert agent.use_bedrock is True
-            mock_bedrock.assert_called_once()
+            # ANTHROPIC_API_KEY takes priority over CLAUDE_CODE_USE_BEDROCK
+            assert agent.use_bedrock is False
+            assert agent.api_key == 'sk-ant-xxx'
 
     @patch('wyn360_cli.agent.Agent')
     def test_explicit_use_bedrock_false(self, mock_agent):

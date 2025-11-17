@@ -125,8 +125,15 @@ class WYN360Agent:
         self.config = config
 
         # Determine authentication mode
+        # Priority: 1. Explicit parameter, 2. ANTHROPIC_API_KEY, 3. CLAUDE_CODE_USE_BEDROCK
         if use_bedrock is None:
-            use_bedrock = _should_use_bedrock()
+            # Check if ANTHROPIC_API_KEY is set (takes priority over Bedrock)
+            if api_key or os.getenv('ANTHROPIC_API_KEY'):
+                # If API key is available, use Anthropic API mode
+                use_bedrock = False
+            else:
+                # No API key, check if Bedrock is enabled
+                use_bedrock = _should_use_bedrock()
 
         self.use_bedrock = use_bedrock
 
