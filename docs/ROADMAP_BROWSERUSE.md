@@ -885,12 +885,14 @@ wyn360 migrate-config
 
 ---
 
-#### Phase 5.1: Core Infrastructure (v0.3.50)
+#### Phase 5.1: Core Infrastructure (v0.3.52)
 
 **Goal:** Build foundational browser control and vision analysis infrastructure
 
+**Status:** ✅ COMPLETE (2025-11-17)
+
 **Tasks:**
-- [ ] **5.1.1: BrowserController Class**
+- [x] **5.1.1: BrowserController Class** ✅
   - Create `wyn360_cli/browser_controller.py`
   - Implement Playwright-based browser automation (visible browser by default)
   - Browser lifecycle management (launch, navigate, close)
@@ -899,8 +901,9 @@ wyn360 migrate-config
   - Element locator strategies (CSS selectors, XPath, text-based, fuzzy matching)
   - Error handling and retry logic
   - Resource cleanup and timeout management
+  - **Tests:** 17/17 passing (tests/test_browser_controller.py)
 
-- [ ] **5.1.2: Vision Decision Engine**
+- [x] **5.1.2: Vision Decision Engine** ✅
   - Create `wyn360_cli/vision_engine.py`
   - Integrate with Anthropic Vision API via pydantic-ai
   - Screenshot analysis prompt engineering
@@ -908,13 +911,15 @@ wyn360 migrate-config
   - Context management (task goal, action history, page state)
   - Confidence scoring for decisions
   - Fallback strategies for low-confidence scenarios
+  - **Tests:** 23/23 passing (tests/test_vision_engine.py)
 
-- [ ] **5.1.3: Action Parser**
+- [x] **5.1.3: Action Parser** ✅
   - Parse Claude's natural language decisions into Playwright actions
   - Support action types: click, type, scroll, navigate, extract, complete
   - Handle coordinates, selectors, text targets
   - Validate actions before execution
   - Error recovery suggestions
+  - **Integrated into:** VisionDecisionEngine (_parse_decision, _validate_action methods)
 
 **Implementation Details:**
 
@@ -1044,8 +1049,9 @@ class VisionDecisionEngine:
 # Already have playwright via crawl4ai, no new deps needed
 ```
 
-**Version:** v0.3.50
-**Estimated Time:** 5-7 days
+**Version:** v0.3.52
+**Status:** ✅ COMPLETE
+**Completed:** 2025-11-17
 
 ---
 
@@ -2071,13 +2077,13 @@ result = browse_and_find(
 ### Option A (Primary Path - Implement First)
 | Phase | Version | Duration | Dependencies |
 |-------|---------|----------|--------------|
-| 5.1 - Core Infrastructure | v0.3.50 | 5-7 days | None |
-| 5.2 - Task Executor | v0.3.51 | 4-6 days | Phase 5.1 |
-| 5.3 - Agent Integration | v0.3.52 | 3-4 days | Phase 5.2 |
-| 5.4 - Testing | v0.3.53 | 5-7 days | Phase 5.3 |
-| 5.5 - Documentation | v0.3.54 | 3-4 days | Phase 5.4 |
-| 5.6 - Advanced Features | v0.3.55 | 5-6 days | Phase 5.5 |
-| **Total** | **v0.3.50-0.3.55** | **25-34 days** | **5-7 weeks** |
+| 5.1 - Core Infrastructure | v0.3.52 | ✅ COMPLETE (2025-11-17) | None |
+| 5.2 - Task Executor | v0.3.53 | 4-6 days | Phase 5.1 |
+| 5.3 - Agent Integration | v0.3.54 | 3-4 days | Phase 5.2 |
+| 5.4 - Testing | v0.3.55 | 5-7 days | Phase 5.3 |
+| 5.5 - Documentation | v0.3.56 | 3-4 days | Phase 5.4 |
+| 5.6 - Advanced Features | v0.3.57 | 5-6 days | Phase 5.5 |
+| **Total** | **v0.3.52-0.3.57** | **25-34 days** | **5-7 weeks** |
 
 ### Option B (Alternative Path - Implement After Option A)
 | Phase | Version | Duration | Dependencies |
