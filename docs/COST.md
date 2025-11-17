@@ -79,6 +79,110 @@ Total Cost = (Conversation Input / 1M × $3)
            + (Web Searches × $0.01)
 ```
 
+### Autonomous Browsing Costs (Phase 5.2-5.6 - v0.3.52-0.3.56) 🆕
+
+| Feature | Cost |
+|---------|------|
+| **Per Screenshot Analysis** | ~$0.01-0.02 |
+| **Simple Task (10-15 steps)** | ~$0.10-0.30 |
+| **Medium Task (15-20 steps)** | ~$0.15-0.40 |
+| **Complex Task (20-30 steps)** | ~$0.20-0.60 |
+
+**Important:** Autonomous browsing uses Claude Vision API to analyze screenshots and make navigation decisions.
+
+**What happens per step:**
+1. **Screenshot capture** - 1024x768 PNG (~100-200KB)
+2. **Vision API call** - Screenshot + analysis prompt
+3. **Decision making** - Parse JSON response with next action
+
+**Token breakdown per screenshot:**
+- **Input:** ~1,792 tokens (screenshot encoding) + ~500-800 tokens (prompt) = ~2,300-2,600 tokens
+- **Output:** ~200-400 tokens (JSON decision + reasoning)
+- **Cost per screenshot:** ~$0.01-0.02
+
+**Calculation:**
+```
+Input cost:  2,500 tokens × $3.00 / 1M = $0.0075
+Output cost: 300 tokens × $15.00 / 1M = $0.0045
+Total:       ~$0.012 per screenshot
+```
+
+**Real-World Examples:**
+
+| Task Type | Steps | Screenshots | Estimated Cost |
+|-----------|-------|-------------|----------------|
+| **Simple product search** | 8 | 8 | $0.10 |
+| **Price comparison** | 12 | 12 | $0.14 |
+| **Multi-filter shopping** | 18 | 18 | $0.22 |
+| **Complex exploration** | 25 | 25 | $0.30 |
+| **Multi-page analysis** | 30 | 30 | $0.36 |
+
+**Cost Optimization Tips:**
+
+1. **Use targeted URLs:** Start closer to your goal
+   ```python
+   # ❌ Expensive: Start from homepage
+   browse_and_find(task, url="https://amazon.com")  # 20+ steps
+
+   # ✅ Cheaper: Start from relevant page
+   browse_and_find(task, url="https://amazon.com/s?k=wireless+mouse")  # 10 steps
+   ```
+
+2. **Set appropriate max_steps:** Don't allow unnecessary actions
+   ```python
+   # ✅ Good: Limit steps for simple tasks
+   browse_and_find(task, url, max_steps=10)  # ~$0.12
+
+   # ❌ Wasteful: Too many steps for simple task
+   browse_and_find(task, url, max_steps=50)  # Could reach $0.60
+   ```
+
+3. **Cache and reuse sessions:** For authenticated browsing
+   ```python
+   # Login once
+   await login_to_website(url, username, password)
+
+   # Reuse session for multiple browsing tasks (no re-login cost)
+   await browse_and_find(task1, authenticated_url)
+   await browse_and_find(task2, authenticated_url)
+   await browse_and_find(task3, authenticated_url)
+   ```
+
+4. **Batch similar tasks:** Group related queries
+   ```python
+   # ❌ Expensive: 3 separate browsing sessions
+   browse_and_find("Find product A", "https://site.com")  # 15 steps
+   browse_and_find("Find product B", "https://site.com")  # 15 steps
+   browse_and_find("Find product C", "https://site.com")  # 15 steps
+   # Total: 45 steps × $0.012 = $0.54
+
+   # ✅ Cheaper: Single task with multiple targets
+   browse_and_find("Find products A, B, and C with prices", "https://site.com")
+   # Total: 20 steps × $0.012 = $0.24
+   ```
+
+**Combined Formula (with Autonomous Browsing):**
+```
+Total Cost = (Conversation Input / 1M × $3)
+           + (Conversation Output / 1M × $15)
+           + (Document Processing Input / 1M × $3)
+           + (Document Processing Output / 1M × $15)
+           + (Autonomous Browsing Screenshots × $0.012)
+           + (Web Searches × $0.01)
+```
+
+**Tracking Costs:**
+```python
+# Check vision API usage
+print(f"Vision images processed: {agent.vision_image_count}")
+print(f"Vision input tokens: {agent.vision_input_tokens}")
+print(f"Vision output tokens: {agent.vision_output_tokens}")
+
+# Estimate autonomous browsing cost
+estimated_cost = agent.vision_image_count × 0.012
+print(f"Estimated autonomous browsing cost: ${estimated_cost:.2f}")
+```
+
 ## 📊 Token Breakdown Per Request
 
 Every interaction with WYN360 CLI consists of several components that contribute to token usage:

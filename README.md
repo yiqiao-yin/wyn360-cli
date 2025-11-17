@@ -170,6 +170,27 @@ WYN360: I'll create a Streamlit app for you...
 - 🎯 **Three Processing Modes** - skip (default), describe (alt text only), vision (full AI processing)
 - ⚡ **Batch Processing** - Efficient handling of documents with multiple images
 
+### Autonomous Vision-Based Browsing (v0.3.52 - v0.3.56) 🆕
+- 🤖 **Fully Autonomous** - Agent navigates websites and completes tasks without manual intervention
+- 👁️ **Vision-Powered** - Uses Claude Vision API to "see" and understand web pages
+- 🎯 **Multi-Step Tasks** - Handles complex workflows (search, filter, compare, extract)
+- 🔗 **Tool Chaining** - Seamlessly integrates with WebSearchTool and login_to_website
+- 🔒 **Authenticated Browsing** - Works with saved login sessions
+- 📊 **Structured Extraction** - Returns clean, formatted data from websites
+- 🛡️ **Error Resilient** - Automatic retry logic and timeout handling
+- 💡 **Smart Decision Making** - Handles popups, loading states, forms, and navigation
+
+**Example:**
+```
+You: "Browse Amazon and find the cheapest wireless mouse under $20 with good reviews"
+
+WYN360: [Launches browser, searches, filters, compares]
+✅ Task Completed Successfully!
+Result: Logitech M185 - $14.99, 4.5 stars, 15,234 reviews
+```
+
+See **[docs/AUTONOMOUS_BROWSING.md](docs/AUTONOMOUS_BROWSING.md)** for complete guide, examples, and API reference.
+
 ## 🎮 Usage Examples
 
 ### Starting a New Project
