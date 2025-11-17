@@ -1226,29 +1226,35 @@ class BrowserTaskExecutor:
 
 ---
 
-#### Phase 5.3: Agent Tool Integration (v0.3.52)
+#### Phase 5.3: Agent Tool Integration (v0.3.54)
 
 **Goal:** Add `browse_and_find` tool to WYN360Agent
 
 **Tasks:**
-- [ ] **5.3.1: New Agent Tool**
+- [x] **5.3.1: New Agent Tool**
   - Add `browse_and_find()` tool to `wyn360_cli/agent.py`
   - Integrate BrowserTaskExecutor
   - Format results for agent consumption
   - Error handling and user-friendly messages
   - Bedrock mode check (vision required)
 
-- [ ] **5.3.2: System Prompt Update**
+- [x] **5.3.2: System Prompt Update**
   - Add Phase 5 autonomous browsing section
   - Usage guidelines for the tool
   - Example scenarios
   - Limitations and best practices
 
-- [ ] **5.3.3: Tool Chaining Support**
+- [x] **5.3.3: Tool Chaining Support**
   - Enable seamless use with WebSearchTool
   - Enable use with authenticated browsing (login_to_website)
   - Context sharing across tools
   - Multi-tool workflow examples
+
+**Tests:**
+- 14/14 tests passing in `tests/test_agent_browse_and_find.py`
+  - TestBrowseAndFindTool: 5 tests (success, partial, failed, bedrock mode, exception)
+  - TestFormatHelpers: 6 tests (data formatting, action history)
+  - TestSystemPromptIntegration: 3 tests (prompt validation)
 
 **Implementation:**
 
@@ -1421,12 +1427,13 @@ You have access to `browse_and_find()` which enables autonomous multi-step brows
 **NOT available in Bedrock mode** (requires vision capabilities)
 ```
 
-**Version:** v0.3.52
-**Estimated Time:** 3-4 days
+**Version:** v0.3.54
+**Status:** ✅ COMPLETE
+**Completed:** 2025-11-17
 
 ---
 
-#### Phase 5.4: Testing & Refinement (v0.3.53)
+#### Phase 5.4: Testing & Refinement (v0.3.55)
 
 **Goal:** Comprehensive testing with real-world use cases
 
@@ -1499,12 +1506,12 @@ result = await browse_and_find(
 - Integration success: 100% compatibility with existing tools
 - Error recovery: >90% graceful error handling
 
-**Version:** v0.3.53
+**Version:** v0.3.55
 **Estimated Time:** 5-7 days
 
 ---
 
-#### Phase 5.5: Documentation & Polish (v0.3.54)
+#### Phase 5.5: Documentation & Polish (v0.3.56)
 
 **Goal:** Comprehensive documentation and user-facing polish
 
@@ -1561,12 +1568,12 @@ Autonomous browsing enables Claude to interact with websites using vision...
 - Optimize by reducing max_steps
 ```
 
-**Version:** v0.3.54
+**Version:** v0.3.56
 **Estimated Time:** 3-4 days
 
 ---
 
-#### Phase 5.6: Advanced Features (v0.3.55)
+#### Phase 5.6: Advanced Features (v0.3.57)
 
 **Goal:** Add advanced capabilities and optimizations
 
@@ -1592,7 +1599,7 @@ Autonomous browsing enables Claude to interact with websites using vision...
   - Alternative path exploration
   - Human-in-the-loop for critical decisions
 
-**Version:** v0.3.55
+**Version:** v0.3.57
 **Estimated Time:** 5-6 days
 
 ---

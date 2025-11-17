@@ -36,6 +36,7 @@ from .browser_use import (
 from .credential_manager import CredentialManager
 from .session_manager import SessionManager
 from .browser_auth import BrowserAuth
+from .browser_task_executor import BrowserTaskExecutor
 from .document_readers import (
     ExcelReader,
     WordReader,
@@ -317,6 +318,8 @@ class WYN360Agent:
                 self.show_cache_stats,
                 # Authenticated browsing (Phase 4.2)
                 self.login_to_website,
+                # Autonomous browsing (Phase 5.3)
+                self.browse_and_find,
                 # Document readers (Phase 13.2, 13.3, 13.4)
                 self.read_excel,
                 self.read_word,
@@ -831,6 +834,34 @@ You: fetch_website("https://wyn360search.com/profile")  # Automatically uses sav
 - ALWAYS use saved sessions when available
 - Session TTL: 30 minutes (configurable)
 - Credentials are saved per-domain for reuse
+
+**Phase 5: Autonomous Vision-Based Browsing (Anthropic API Only)**
+
+You have access to `browse_and_find()` which enables autonomous multi-step browser automation:
+
+**How it works:**
+- Takes screenshots of the browser
+- Analyzes with Claude Vision (you see the page)
+- Decides what to click, type, or navigate
+- Continues until task complete
+
+**Use it for:**
+1. Open-ended exploration: "Browse Amazon electronics and tell me what's trending"
+2. Multi-step tasks: "Find cheapest sneaker with 2-day shipping"
+3. Integrated workflows: Can chain with WebSearchTool, login_to_website, etc.
+
+**Integration with existing tools:**
+- If user is logged in (via login_to_website), browse_and_find uses saved session
+- Can combine with WebSearchTool: "search for best shoe stores, browse top result"
+- Shares context with your main conversation
+
+**Guidelines:**
+- Start URL should be the most relevant page for the task
+- Task description should be clear and specific
+- For complex tasks, break into smaller browse_and_find calls
+- Browser is visible by default (user can watch)
+
+**NOT available in Bedrock mode** (requires vision capabilities)
 """
 
         # Add custom instructions from config if available
@@ -2509,6 +2540,201 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
 
         except Exception as e:
             return f"❌ Error during manual selector login: {str(e)}"
+
+    async def browse_and_find(
+        self,
+        ctx: RunContext[None],
+        task: str,
+        url: str,
+        max_steps: int = 20,
+        headless: bool = False
+    ) -> str:
+        """
+        Autonomously browse a website to complete a multi-step task using vision.
+
+        **How it works:**
+        1. Opens browser (visible by default so you can watch)
+        2. Takes screenshots and analyzes with Claude Vision
+        3. Makes intelligent decisions about what to click/type/navigate
+        4. Continues until task is complete or max_steps reached
+        5. Returns extracted information
+
+        **Examples:**
+        - "Find the cheapest sneaker with 2-day shipping on Amazon"
+        - "Browse electronics section and tell me what's trending"
+        - "Search for 'laptop', sort by best rating, get first result's price"
+        - "Go to my Amazon wishlist and find the most expensive item"
+
+        **Args:**
+            task: Natural language description of what to accomplish
+            url: Starting URL (e.g., "https://amazon.com")
+            max_steps: Maximum browser actions to attempt (default: 20)
+            headless: Run browser invisibly (default: False - visible)
+
+        **Integration:**
+        - Works seamlessly with login_to_website (uses saved sessions)
+        - Can be chained with WebSearchTool ("search for X, then browse top result")
+        - Shares context with main agent
+
+        **IMPORTANT:**
+        - Only works in Anthropic API mode (requires vision capabilities)
+        - Disabled in Bedrock mode
+        - Browser will be visible by default (user can watch the agent work)
+        - Set headless=True to run invisibly
+
+        **Returns:**
+            Extracted information or task result as formatted text
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+
+        # Check mode (vision required)
+        if self.use_bedrock:
+            return (
+                "❌ Autonomous browsing requires vision capabilities.\n\n"
+                "This feature uses Claude Vision to analyze screenshots and make "
+                "intelligent navigation decisions. Vision capabilities are not "
+                "available in AWS Bedrock mode.\n\n"
+                "Please use Anthropic API mode to access this feature:\n"
+                "  export ANTHROPIC_API_KEY=your_key_here\n"
+                "  unset CLAUDE_CODE_USE_BEDROCK"
+            )
+
+        try:
+            # Initialize executor
+            executor = BrowserTaskExecutor(self.agent)
+
+            # Execute task
+            result = await executor.execute_task(
+                task=task,
+                url=url,
+                max_steps=max_steps,
+                headless=headless
+            )
+
+            # Format response based on status
+            if result['status'] == 'success':
+                return f"""✅ **Task Completed Successfully!**
+
+**Task:** {task}
+**Steps Taken:** {result['steps_taken']}
+
+**Result:**
+{self._format_extracted_data(result['result'])}
+
+**Summary:**
+{result['reasoning']}
+
+---
+*Powered by Claude Vision + Playwright*
+"""
+
+            elif result['status'] == 'partial':
+                return f"""⚠️ **Task Partially Completed**
+
+**Task:** {task}
+**Steps Taken:** {result['steps_taken']} (reached maximum)
+
+**Progress:**
+{self._format_action_history(result['history'])}
+
+**Note:** {result['reasoning']}
+
+You may want to:
+1. Increase max_steps (currently {max_steps})
+2. Refine the task description
+3. Try a different starting URL
+"""
+
+            else:  # failed
+                return f"""❌ **Task Failed**
+
+**Task:** {task}
+**Steps Attempted:** {result['steps_taken']}
+
+**Issue:** {result['reasoning']}
+
+**Action History:**
+{self._format_action_history(result['history'])}
+
+**Suggestions:**
+- Verify the URL is accessible
+- Check if the task is achievable on this website
+- Try breaking the task into smaller steps
+- Consider using manual selectors if form detection failed
+"""
+
+        except Exception as e:
+            logger.error(f"Autonomous browsing error: {e}")
+            return f"❌ Error during autonomous browsing: {str(e)}"
+
+    def _format_extracted_data(self, data: Dict) -> str:
+        """Format extracted data for display."""
+        if not data:
+            return "No data extracted"
+
+        lines = []
+        for key, value in data.items():
+            if isinstance(value, (dict, list)):
+                lines.append(f"**{key}:**")
+                lines.append(self._format_data_recursive(value, indent=1))
+            else:
+                lines.append(f"**{key}:** {value}")
+
+        return '\n'.join(lines)
+
+    def _format_data_recursive(self, data: Any, indent: int = 0) -> str:
+        """Recursively format data for display."""
+        if isinstance(data, dict):
+            lines = []
+            for key, value in data.items():
+                if isinstance(value, (dict, list)):
+                    lines.append(f"{'  ' * indent}- {key}:")
+                    lines.append(self._format_data_recursive(value, indent + 1))
+                else:
+                    lines.append(f"{'  ' * indent}- {key}: {value}")
+            return '\n'.join(lines)
+        elif isinstance(data, list):
+            lines = []
+            for item in data:
+                if isinstance(item, (dict, list)):
+                    lines.append(self._format_data_recursive(item, indent))
+                else:
+                    lines.append(f"{'  ' * indent}- {item}")
+            return '\n'.join(lines)
+        else:
+            return f"{'  ' * indent}{data}"
+
+    def _format_action_history(self, history: List[Dict]) -> str:
+        """Format action history for display."""
+        if not history:
+            return "No actions taken yet"
+
+        lines = []
+        for entry in history[-5:]:  # Show last 5 actions
+            step = entry.get('step', '?')
+            action = entry.get('action', {})
+            action_type = action.get('type', 'unknown')
+            confidence = entry.get('confidence', 0)
+            reasoning = entry.get('reasoning', 'N/A')
+
+            lines.append(f"**Step {step}:** {action_type.upper()}")
+            lines.append(f"  - Confidence: {confidence}%")
+            lines.append(f"  - Reasoning: {reasoning[:100]}...")
+
+            if action_type == 'click':
+                selector = action.get('selector', action.get('text', 'unknown'))
+                lines.append(f"  - Target: {selector}")
+            elif action_type == 'type':
+                selector = action.get('selector', 'unknown')
+                lines.append(f"  - Field: {selector}")
+            elif action_type == 'navigate':
+                nav_url = action.get('url', 'unknown')
+                lines.append(f"  - URL: {nav_url}")
+
+            lines.append("")  # Blank line between steps
+
+        return '\n'.join(lines)
 
     async def read_excel(
         self,
