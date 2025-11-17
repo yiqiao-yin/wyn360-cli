@@ -31,6 +31,23 @@ class BrowserControllerError(Exception):
     pass
 
 
+class BrowserConfig:
+    """Configuration for browser automation (Phase 5.4)."""
+
+    # Timeout settings (milliseconds)
+    DEFAULT_TIMEOUT = 30000  # 30 seconds
+    NAVIGATION_TIMEOUT = 60000  # 60 seconds for navigation
+    ACTION_TIMEOUT = 10000  # 10 seconds for actions
+
+    # Retry settings
+    MAX_RETRIES = 2  # Retry failed actions up to 2 times
+    RETRY_DELAY = 1.0  # Wait 1 second between retries
+
+    # Performance settings
+    WAIT_AFTER_NAVIGATION = 1.0  # Wait 1s after navigation for JS
+    WAIT_AFTER_ACTION = 0.5  # Wait 0.5s after action for updates
+
+
 class BrowserController:
     """
     Pure browser automation using Playwright (no AI).
@@ -101,8 +118,8 @@ class BrowserController:
             # Create new page
             self.page = await self.context.new_page()
 
-            # Set default timeout (30 seconds)
-            self.page.set_default_timeout(30000)
+            # Set default timeout from config (Phase 5.4)
+            self.page.set_default_timeout(BrowserConfig.DEFAULT_TIMEOUT)
 
             self._initialized = True
             logger.info("Browser initialized successfully")
@@ -114,7 +131,7 @@ class BrowserController:
 
     async def navigate(self, url: str, wait_until: str = 'networkidle') -> None:
         """
-        Navigate to URL with smart waiting.
+        Navigate to URL with smart waiting (Phase 5.4: improved timeout handling).
 
         Args:
             url: URL to navigate to
@@ -129,15 +146,31 @@ class BrowserController:
 
         try:
             logger.info(f"Navigating to: {url}")
-            await self.page.goto(url, wait_until=wait_until)
 
-            # Additional wait for JavaScript rendering
-            await asyncio.sleep(1)
+            # Use navigation-specific timeout (Phase 5.4)
+            await self.page.goto(
+                url,
+                wait_until=wait_until,
+                timeout=BrowserConfig.NAVIGATION_TIMEOUT
+            )
+
+            # Additional wait for JavaScript rendering (configurable)
+            await asyncio.sleep(BrowserConfig.WAIT_AFTER_NAVIGATION)
 
             logger.info(f"Navigation complete: {url}")
 
-        except PlaywrightTimeoutError:
-            raise BrowserControllerError(f"Navigation timeout: {url}")
+        except PlaywrightTimeoutError as e:
+            logger.warning(f"Navigation timeout ({BrowserConfig.NAVIGATION_TIMEOUT}ms): {url}")
+            # Try fallback: wait for 'load' instead of 'networkidle'
+            if wait_until == 'networkidle':
+                logger.info("Retrying with 'load' wait strategy...")
+                try:
+                    await self.page.goto(url, wait_until='load', timeout=30000)
+                    logger.info("Fallback navigation succeeded")
+                except Exception:
+                    raise BrowserControllerError(f"Navigation timeout: {url}")
+            else:
+                raise BrowserControllerError(f"Navigation timeout: {url}")
         except Exception as e:
             raise BrowserControllerError(f"Navigation failed: {e}")
 
@@ -174,9 +207,9 @@ class BrowserController:
         except Exception as e:
             raise BrowserControllerError(f"Screenshot capture failed: {e}")
 
-    async def execute_action(self, action: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute_action(self, action: Dict[str, Any], retry: bool = True) -> Dict[str, Any]:
         """
-        Execute browser action from parsed decision.
+        Execute browser action from parsed decision (Phase 5.4: with retry logic).
 
         Supported actions:
           - click: {type: 'click', selector: '#btn', text: 'Submit'}
@@ -188,67 +221,82 @@ class BrowserController:
 
         Args:
             action: Action dictionary with type and parameters
+            retry: Enable retry on failure (default: True, Phase 5.4)
 
         Returns:
             Result dictionary with success status and data
 
         Raises:
-            BrowserControllerError: If action execution fails
+            BrowserControllerError: If action execution fails after retries
         """
         if not self._initialized:
             raise BrowserControllerError("Browser not initialized. Call initialize() first.")
 
         action_type = action.get('type')
+        max_attempts = BrowserConfig.MAX_RETRIES + 1 if retry else 1
 
-        try:
-            if action_type == 'click':
-                return await self._action_click(action)
+        last_error = None
 
-            elif action_type == 'type':
-                return await self._action_type(action)
+        for attempt in range(max_attempts):
+            try:
+                if attempt > 0:
+                    logger.info(f"Retrying action {action_type} (attempt {attempt + 1}/{max_attempts})")
+                    await asyncio.sleep(BrowserConfig.RETRY_DELAY)
 
-            elif action_type == 'scroll':
-                return await self._action_scroll(action)
+                # Execute action
+                if action_type == 'click':
+                    result = await self._action_click(action)
+                elif action_type == 'type':
+                    result = await self._action_type(action)
+                elif action_type == 'scroll':
+                    result = await self._action_scroll(action)
+                elif action_type == 'navigate':
+                    result = await self._action_navigate(action)
+                elif action_type == 'extract':
+                    result = await self._action_extract(action)
+                elif action_type == 'wait':
+                    result = await self._action_wait(action)
+                else:
+                    raise BrowserControllerError(f"Unknown action type: {action_type}")
 
-            elif action_type == 'navigate':
-                return await self._action_navigate(action)
+                # Wait for page updates after action (Phase 5.4)
+                await asyncio.sleep(BrowserConfig.WAIT_AFTER_ACTION)
 
-            elif action_type == 'extract':
-                return await self._action_extract(action)
+                return result
 
-            elif action_type == 'wait':
-                return await self._action_wait(action)
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Action {action_type} failed (attempt {attempt + 1}/{max_attempts}): {e}")
 
-            else:
-                raise BrowserControllerError(f"Unknown action type: {action_type}")
+                # Don't retry certain errors
+                if isinstance(e, BrowserControllerError) and "Unknown action type" in str(e):
+                    break  # Don't retry unknown action types
 
-        except Exception as e:
-            logger.error(f"Action execution failed: {action_type} - {e}")
-            return {
-                'success': False,
-                'error': str(e),
-                'action': action
-            }
+        # All attempts failed
+        logger.error(f"Action execution failed after {max_attempts} attempts: {action_type}")
+        return {
+            'success': False,
+            'error': str(last_error),
+            'action': action,
+            'attempts': max_attempts
+        }
 
     async def _action_click(self, action: Dict[str, Any]) -> Dict[str, Any]:
-        """Execute click action."""
+        """Execute click action (Phase 5.4: configurable timeout)."""
         selector = action.get('selector')
         text = action.get('text')
 
         try:
             if selector:
-                # Click by selector
-                await self.page.click(selector, timeout=5000)
+                # Click by selector with configurable timeout
+                await self.page.click(selector, timeout=BrowserConfig.ACTION_TIMEOUT)
                 logger.info(f"Clicked element: {selector}")
             elif text:
                 # Click by text
-                element = await self.page.get_by_text(text).first.click(timeout=5000)
+                element = await self.page.get_by_text(text).first.click(timeout=BrowserConfig.ACTION_TIMEOUT)
                 logger.info(f"Clicked element with text: {text}")
             else:
                 raise ValueError("Click action requires 'selector' or 'text'")
-
-            # Wait for any resulting navigation/changes
-            await asyncio.sleep(1)
 
             return {'success': True, 'action': 'click', 'target': selector or text}
 

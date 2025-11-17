@@ -146,8 +146,13 @@ class TestBrowserNavigation:
         # Navigate
         await controller.navigate("https://example.com")
 
-        # Verify
-        mock_page.goto.assert_called_once_with("https://example.com", wait_until='networkidle')
+        # Verify (Phase 5.4: now includes timeout parameter)
+        from wyn360_cli.browser_controller import BrowserConfig
+        mock_page.goto.assert_called_once_with(
+            "https://example.com",
+            wait_until='networkidle',
+            timeout=BrowserConfig.NAVIGATION_TIMEOUT
+        )
 
     @pytest.mark.asyncio
     async def test_navigate_not_initialized(self):
@@ -188,10 +193,11 @@ class TestBrowserActions:
             'selector': '#submit-btn'
         })
 
-        # Verify
+        # Verify (Phase 5.4: now uses configurable ACTION_TIMEOUT)
         assert result['success'] is True
         assert result['action'] == 'click'
-        mock_page.click.assert_called_once_with('#submit-btn', timeout=5000)
+        from wyn360_cli.browser_controller import BrowserConfig
+        mock_page.click.assert_called_once_with('#submit-btn', timeout=BrowserConfig.ACTION_TIMEOUT)
 
     @pytest.mark.asyncio
     @patch('wyn360_cli.browser_controller.HAS_PLAYWRIGHT', True)

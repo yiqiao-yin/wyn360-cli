@@ -139,23 +139,51 @@ class VisionDecisionEngine:
 4. If you're stuck or can't proceed, indicate that
 
 **Available actions:**
-- **click**: Click an element
+- **click**: Click an element (button, link, checkbox, etc.)
   {{type: 'click', selector: '#element-id', text: 'Button Text'}}
+  {{type: 'click', selector: 'button.submit'}}
 
 - **type**: Type text into an input field
   {{type: 'type', selector: '#input-id', text: 'text to type'}}
 
-- **scroll**: Scroll the page
+- **scroll**: Scroll the page to reveal more content
   {{type: 'scroll', direction: 'down'|'up'|'top'|'bottom', amount: 500}}
 
 - **navigate**: Navigate to a different URL
   {{type: 'navigate', url: 'https://...'}}
 
-- **extract**: Extract text from elements
+- **extract**: Extract text/data from elements (for final result)
   {{type: 'extract', selector: '.product-price'}}
 
 - **wait**: Wait for page to load/update
   {{type: 'wait', seconds: 2}}
+
+**Common scenarios to handle:**
+
+1. **Popups/Modals/Cookie Banners:**
+   - If you see a cookie consent banner, privacy notice, or modal blocking content
+   - Click "Accept", "Agree", "Close", or "X" button to dismiss it
+   - Common selectors: button[aria-label="Close"], .cookie-accept, #accept-cookies
+   - High priority: clear these before proceeding with main task
+
+2. **Missing elements:**
+   - If you can't find the expected element, try scrolling down
+   - The element might be below the fold
+   - If still not found after scrolling, report stuck
+
+3. **Loading states:**
+   - If page shows loading spinner or "Loading..." text
+   - Use wait action (2-3 seconds) to let content load
+   - Don't proceed until content is visible
+
+4. **Forms and filters:**
+   - Fill search boxes before clicking search buttons
+   - Select filters/dropdowns before viewing results
+   - Type first, then click submit/search
+
+5. **Captchas/Authentication:**
+   - If you see CAPTCHA or login required
+   - Report stuck immediately (cannot automate these)
 
 **Response format:**
 Provide your decision as a JSON object with:
@@ -167,11 +195,16 @@ Provide your decision as a JSON object with:
     "extracted_data": {{...data if complete...}}
 }}
 
-**Important:**
-- Use CSS selectors when possible (#id, .class, tag)
+**Important guidelines:**
+- Use CSS selectors when possible (#id, .class, tag[attribute])
+- Prefer specific selectors over generic ones (e.g., #search-btn vs button)
 - If task is complete, set status='complete' and include extracted_data
-- If you can't find elements or proceed, set status='stuck'
+- If you can't find elements or encounter CAPTCHA, set status='stuck'
 - Be specific about what you see and why you're taking the action
+- For extraction, use descriptive keys (e.g., {{"price": "$99", "title": "Product"}} not {{"value": "$99"}})
+- High confidence (80-100): Element clearly visible, action is obvious
+- Medium confidence (50-79): Element found but action might need adjustment
+- Low confidence (0-49): Uncertain, might be stuck soon
 """
 
         return prompt
@@ -184,40 +217,39 @@ Provide your decision as a JSON object with:
         """
         Call agent with vision to analyze screenshot.
 
-        This is a placeholder for the actual vision integration.
-        When integrated with WYN360Agent, this will use BinaryContent
-        to send the screenshot to Claude Vision API.
+        Uses pydantic-ai's BinaryContent to send screenshot to Claude Vision API.
 
         Args:
-            screenshot: Screenshot bytes
+            screenshot: Screenshot bytes (PNG format)
             prompt: Analysis prompt
 
         Returns:
-            Agent's response text
-        """
-        # TODO: Implement actual vision integration with WYN360Agent
-        # For now, return a mock response
-        logger.warning("Vision integration not yet connected to WYN360Agent")
+            Agent's response text (JSON formatted)
 
-        # This will be replaced with actual agent.run() call:
-        # result = await self.agent.run(
-        #     user_prompt=[
-        #         prompt,
-        #         BinaryContent(data=screenshot, media_type='image/png'),
-        #     ]
-        # )
-        # return result.data
-
-        # Mock response for testing
-        return """
-        {
-            "status": "continue",
-            "action": {"type": "wait", "seconds": 1},
-            "reasoning": "Vision integration not yet connected",
-            "confidence": 0,
-            "extracted_data": null
-        }
+        Raises:
+            VisionDecisionError: If vision API call fails
         """
+        try:
+            # Import BinaryContent for vision
+            from pydantic_ai import BinaryContent
+
+            logger.debug(f"Calling Claude Vision API with {len(screenshot)} byte screenshot")
+
+            # Call agent with vision (screenshot + text prompt)
+            result = await self.agent.run(
+                user_prompt=[
+                    prompt,
+                    BinaryContent(data=screenshot, media_type='image/png'),
+                ]
+            )
+
+            logger.debug(f"Vision API returned: {str(result.data)[:200]}...")
+
+            return result.data
+
+        except Exception as e:
+            logger.error(f"Vision API call failed: {e}")
+            raise VisionDecisionError(f"Vision analysis failed: {e}")
 
     def _parse_decision(
         self,
