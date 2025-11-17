@@ -41,7 +41,10 @@ playwright install chromium
 **Option 1: Environment variable**
 ```bash
 export ANTHROPIC_API_KEY=your_key_here
+export ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
 ```
+
+This option assumes you want to use Anthropic API Key and available models can be referenced from [Claude Model Overview](https://docs.claude.com/en/docs/about-claude/models/overview).
 
 **Option 2: .env file (recommended for local development)**
 ```bash
@@ -63,6 +66,8 @@ export AWS_SESSION_TOKEN="your_session_token"
 export AWS_REGION=us-west-2
 export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
 ```
+
+This option assumes you want to use AWS Bedrock credentials which means you need a valid AWS account with access key, secret access key and session token. Additionally, this option assumes you have Bedrock access and the model is available for you. 
 
 ### 2. Run the CLI:
 ```bash

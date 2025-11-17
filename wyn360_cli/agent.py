@@ -616,7 +616,12 @@ User: Merge feature/auth into main
 You: gh_merge_branch("feature/auth", "main")
 ```
 
-**Web Capabilities (Phase 11.1 + 12.1):**
+"""
+
+        # Web capabilities section - different for Bedrock vs Anthropic API
+        if not self.use_bedrock:
+            # Anthropic API mode - has WebSearchTool
+            base_prompt += """**Web Capabilities (Phase 11.1 + 12.1):**
 
 You now have TWO tools for web access:
 1. **WebSearchTool** - For searching the web (limited to 5 uses)
@@ -704,6 +709,53 @@ User mentions URL? (https://...)
 - ❌ "Write a FastAPI app" → Don't use web tools (use training data)
 - ❌ "Show me the files in this project" → Don't use web tools (use list_files)
 - ❌ "What's git?" → Don't use web tools (you know this)
+"""
+        else:
+            # Bedrock mode - no WebSearchTool, only fetch_website
+            base_prompt += """**Web Capabilities (Phase 12.1):**
+
+**IMPORTANT - Search Limitation:**
+Web search is not available in AWS Bedrock mode. For queries requiring web search:
+- Politely inform the user that web search is unavailable in Bedrock mode
+- Suggest they use fetch_website() if they have a specific URL
+- Otherwise, use your training knowledge to help
+
+**fetch_website() - Available Tool:**
+- User provides a SPECIFIC URL: "Read https://github.com/user/repo"
+- User wants content from an exact webpage: "What's on https://example.com"
+- User says "fetch", "read", "get", or "load" with a URL
+- Examples:
+  - ✅ "Read https://github.com/britbrat0/cs676" → fetch_website()
+  - ✅ "What's on https://python.org/downloads" → fetch_website()
+  - ✅ "Fetch https://docs.anthropic.com" → fetch_website()
+  - ✅ "Load the content from https://example.com" → fetch_website()
+
+**fetch_website Details:**
+- Fetches full DOM content from the URL
+- Converts to LLM-friendly markdown
+- Smart truncation to stay under token limits
+- Cached for 30 minutes (configurable)
+- Returns: Full page content, structure preserved
+- Max tokens: 50,000 (configurable via config)
+
+**For requests requiring web search (not available):**
+When user asks "find popular ML repos" or "what's the weather":
+1. Politely explain web search is unavailable in Bedrock mode
+2. If you can answer from training knowledge, provide that
+3. If they have a specific URL, offer to fetch it with fetch_website()
+
+Example response:
+"I'm running in AWS Bedrock mode which doesn't have web search capability. However, I can help you with [alternative based on training knowledge]. If you have a specific URL you'd like me to read, I can fetch that for you!"
+
+**AVOID WEB TOOLS FOR:**
+- Code generation (use your training data)
+- File operations (use read_file, write_file)
+- Local project queries (use list_files, get_project_info)
+- Git operations (use git_status, git_diff, git_log)
+- General programming concepts you already know
+"""
+
+        base_prompt += """
 
 **Authenticated Browsing (Phase 4.2):**
 
