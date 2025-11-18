@@ -581,6 +581,8 @@ git push origin main
 | `AWS_SESSION_TOKEN` | AWS session token (optional, for temporary credentials) | None |
 | `AWS_REGION` | AWS region for Bedrock (e.g., us-west-2) | `us-east-1` |
 | `ANTHROPIC_MODEL` | Model ARN for Bedrock (e.g., us.anthropic.claude-sonnet-4-20250514-v1:0) | Auto-selected |
+| `MAX_TOKEN` | Maximum tokens for model output (can also use `--max-token` CLI arg) | `4096` |
+| `MAX_INTERNET_SEARCH_LIMIT` | Maximum web searches per session (Anthropic API only, can also use `--max-internet-search-limit` CLI arg) | `5` |
 | `HF_TOKEN` or `HUGGINGFACE_TOKEN` | HuggingFace API token (optional, for HF features) | None |
 | `GH_TOKEN` or `GITHUB_TOKEN` | GitHub access token (optional, for GitHub features) | None |
 | `WYN360_SKIP_CONFIRM` | Skip command execution confirmations | `0` (disabled) |
@@ -589,6 +591,8 @@ git push origin main
 ```bash
 # .env file
 ANTHROPIC_API_KEY=your_anthropic_key
+MAX_TOKEN=4096
+MAX_INTERNET_SEARCH_LIMIT=5
 GH_TOKEN=ghp_your_github_token
 HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
@@ -603,6 +607,7 @@ AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_SESSION_TOKEN=your_session_token
 AWS_REGION=us-west-2
 ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+MAX_TOKEN=4096
 GH_TOKEN=ghp_your_github_token
 HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
@@ -669,5 +674,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.48
-**Last Updated:** November 16, 2025
+**Current Version:** 0.3.58
+**Last Updated:** November 18, 2025
