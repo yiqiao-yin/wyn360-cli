@@ -111,7 +111,8 @@ class WYN360Agent:
         model: str = "claude-sonnet-4-20250514",
         use_history: bool = True,
         config: Optional[WYN360Config] = None,
-        use_bedrock: Optional[bool] = None
+        use_bedrock: Optional[bool] = None,
+        max_search_limit: int = 5
     ):
         """
         Initialize the WYN360 Agent with Anthropic or AWS Bedrock.
@@ -122,6 +123,7 @@ class WYN360Agent:
             use_history: Whether to send conversation history with each request (default: True)
             config: Optional WYN360Config object with user/project configuration
             use_bedrock: Explicitly set Bedrock mode (overrides env var)
+            max_search_limit: Maximum number of web searches per session (default: 5)
         """
         self.config = config
 
@@ -168,6 +170,9 @@ class WYN360Agent:
         self.use_history = use_history
         # Phase 5.9: Store pydantic-ai messages for proper context retention
         self.conversation_history: List = []  # Will store pydantic-ai ModelMessage objects
+
+        # Web search limit (configurable, default: 5)
+        self.max_search_limit = max_search_limit
 
         # Token usage tracking
         self.total_input_tokens = 0
@@ -275,8 +280,8 @@ class WYN360Agent:
         # Note: Bedrock doesn't support builtin_tools, so only enable for Anthropic API
         builtin_tools = []
         if HAS_WEB_SEARCH and not self.use_bedrock:
-            # Enable web search with max 5 uses per session (Anthropic API only)
-            builtin_tools.append(WebSearchTool(max_uses=5))
+            # Enable web search with configurable limit (Anthropic API only)
+            builtin_tools.append(WebSearchTool(max_uses=self.max_search_limit))
 
         self.agent = Agent(
             model=self.model,
@@ -624,10 +629,10 @@ You: gh_merge_branch("feature/auth", "main")
         # Web capabilities section - different for Bedrock vs Anthropic API
         if not self.use_bedrock:
             # Anthropic API mode - has WebSearchTool
-            base_prompt += """**Web Capabilities (Phase 11.1 + 12.1):**
+            base_prompt += f"""**Web Capabilities (Phase 11.1 + 12.1):**
 
 You now have TWO tools for web access:
-1. **WebSearchTool** - For searching the web (limited to 5 uses)
+1. **WebSearchTool** - For searching the web (limited to {self.max_search_limit} uses)
 2. **fetch_website** - For fetching specific URLs directly (Phase 12.1)
 
 **CRITICAL - When to use each tool:**
@@ -663,7 +668,7 @@ You now have TWO tools for web access:
 
 **WebSearchTool Details:**
 - Searches the web and returns top results
-- Limited to 5 searches per session
+- Limited to {self.max_search_limit} searches per session
 - Returns: Search results with snippets
 - Use when you need to FIND something, not fetch a specific URL
 

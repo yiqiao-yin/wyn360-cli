@@ -31,7 +31,19 @@ console = Console(width=console_width, force_terminal=True)
     default='claude-sonnet-4-20250514',
     help='Claude model to use (default: claude-sonnet-4-20250514)'
 )
-def main(api_key, model):
+@click.option(
+    '--max-internet-search-limit',
+    default=None,
+    type=int,
+    help='Maximum number of web searches per session (default: 5). Use MAX_INTERNET_SEARCH_LIMIT env var or this flag.'
+)
+@click.option(
+    '--max-token',
+    default=None,
+    type=int,
+    help='Maximum tokens for model output (default: 4096). Use MAX_TOKEN env var or this flag.'
+)
+def main(api_key, model, max_internet_search_limit, max_token):
     """
     WYN360 - An intelligent AI coding assistant CLI tool.
 
@@ -114,6 +126,22 @@ def main(api_key, model):
     # Get API key from parameter or environment (not needed for Bedrock)
     api_key = api_key or os.getenv('ANTHROPIC_API_KEY')
 
+    # Get max internet search limit from parameter or environment (default: 5)
+    # Priority: 1. CLI argument, 2. Environment variable, 3. Default (5)
+    if max_internet_search_limit is None:
+        max_internet_search_limit = int(os.getenv('MAX_INTERNET_SEARCH_LIMIT', '5'))
+    # Ensure it's a positive integer
+    if max_internet_search_limit < 1:
+        max_internet_search_limit = 5
+
+    # Get max token from parameter or environment (default: 4096)
+    # Priority: 1. CLI argument, 2. Environment variable, 3. Default (4096)
+    if max_token is None:
+        max_token = int(os.getenv('MAX_TOKEN', '4096'))
+    # Ensure it's a positive integer
+    if max_token < 1:
+        max_token = 4096
+
     # Validate credentials based on mode
     if not use_bedrock and not api_key:
         raise click.UsageError(
@@ -151,6 +179,10 @@ def main(api_key, model):
     # Load configuration
     config = load_config()
 
+    # Override max_tokens from CLI or environment variable
+    # Priority: CLI arg > env var > config file > default (4096)
+    config.max_tokens = max_token
+
     # Show config status
     user_config_path = get_user_config_path()
     project_config_path = get_project_config_path()
@@ -164,9 +196,9 @@ def main(api_key, model):
     try:
         # Use model from CLI arg if provided, otherwise use config model
         if model != 'claude-sonnet-4-20250514':  # If user specified a different model
-            agent = WYN360Agent(api_key=api_key, model=model, config=config, use_bedrock=use_bedrock)
+            agent = WYN360Agent(api_key=api_key, model=model, config=config, use_bedrock=use_bedrock, max_search_limit=max_internet_search_limit)
         else:
-            agent = WYN360Agent(api_key=api_key, config=config, use_bedrock=use_bedrock)
+            agent = WYN360Agent(api_key=api_key, config=config, use_bedrock=use_bedrock, max_search_limit=max_internet_search_limit)
 
         actual_model = agent.model_name
 
@@ -446,6 +478,11 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
         table.add_row("Model", agent.config.model)
         table.add_row("Max Tokens", str(agent.config.max_tokens))
         table.add_row("Temperature", str(agent.config.temperature))
+
+        # Web search settings (only for Anthropic API mode)
+        if not agent.use_bedrock:
+            table.add_row("Max Internet Search", str(agent.max_search_limit))
+
         table.add_row("─" * 25, "─" * 50)
 
         # Config files
