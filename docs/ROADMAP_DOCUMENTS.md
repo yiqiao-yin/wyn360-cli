@@ -488,54 +488,55 @@ April expenses totaled $2,400 with breakdown:
 
 **See:** [ROADMAP_VISION.md](ROADMAP_VISION.md) for detailed implementation
 
-#### Phase 5.2: Semantic Matching (High Priority) 🚧 PLANNED
-- [ ] **Embedding-based Retrieval System**
-  - [ ] Replace keyword matching with semantic embeddings
-  - [ ] Integrate sentence-transformers or similar library
-  - [ ] Compute embeddings for chunk summaries and tags
-  - [ ] Cosine similarity for query-chunk matching
-  - [ ] Fallback to keyword matching if embeddings fail
-  - [ ] Significantly better retrieval accuracy
-  - [ ] Embedding cache with chunk cache
-  - [ ] Performance benchmarking vs keyword matching
+#### Phase 5.2: Semantic Matching ✅ COMPLETED (v0.3.31-v0.3.32)
+- ✅ **Embedding-based Retrieval System**
+  - ✅ Replace keyword matching with semantic embeddings
+  - ✅ Integrate sentence-transformers library (all-MiniLM-L6-v2)
+  - ✅ Compute embeddings for chunk summaries and tags
+  - ✅ Cosine similarity for query-chunk matching
+  - ✅ Fallback to keyword matching if embeddings fail
+  - ✅ Significantly better retrieval accuracy
+  - ✅ Embedding cache with chunk cache
+  - ✅ Performance benchmarking vs keyword matching
 
-**Estimated Effort:** 2-3 weeks | **Version:** v0.3.31-v0.3.32
+**Status:** ✅ COMPLETE | **Tests:** test_embedding_model.py, test_excel_embedding_integration.py (passing)
 
-#### Phase 5.3: OCR Support for Scanned PDFs (Medium Priority) 📋 PLANNED
-- [ ] **OCR Integration**
-  - [ ] Integrate Tesseract OCR or similar
-  - [ ] Detect scanned vs text-based PDFs
-  - [ ] Extract text from images in PDFs
-  - [ ] Warning about OCR accuracy and costs
-  - [ ] Combine OCR text with Vision API for images
-  - [ ] Language detection and multi-language support
-  - [ ] Quality assessment of OCR results
+#### Phase 5.3: OCR Support for Scanned PDFs ✅ COMPLETED (v0.3.33-v0.3.34)
+- ✅ **OCR Integration**
+  - ✅ Integrate Tesseract OCR (pytesseract)
+  - ✅ Detect scanned vs text-based PDFs (is_scanned_page)
+  - ✅ Extract text from images in PDFs
+  - ✅ Warning about OCR accuracy and costs
+  - ✅ Combine OCR text with Vision API for images
+  - ✅ Language detection and multi-language support (eng, spa, fra, deu, etc.)
+  - ✅ Quality assessment of OCR results (confidence scores)
 
-**Estimated Effort:** 2-3 weeks | **Version:** v0.3.33-v0.3.34
+**Status:** ✅ COMPLETE | **Tests:** test_ocr_processor.py, test_pdf_ocr_integration.py (passing)
 
-#### Phase 5.4: Excel Enhancements (Medium Priority) 📋 PLANNED
-- [ ] **Advanced Excel Features**
-  - [ ] Chart/graph extraction and vision processing
+#### Phase 5.4: Excel Enhancements 🟡 PARTIALLY COMPLETED (v0.3.35)
+- 🟡 **Advanced Excel Features** (3/7 complete)
+  - ✅ Chart/graph extraction and metadata (_extract_charts)
   - [ ] Pivot table detection and summarization
-  - [ ] Formula dependency analysis
+  - ✅ Formula dependency analysis (_track_formulas)
   - [ ] Cross-sheet reference tracking
-  - [ ] Named ranges support
+  - ✅ Named ranges support (_extract_named_ranges)
   - [ ] Data validation rules extraction
   - [ ] Conditional formatting descriptions
 
-**Estimated Effort:** 2 weeks | **Version:** v0.3.35
+**Status:** 🟡 PARTIAL (60% complete) | **Tests:** test_excel_enhancements.py (passing for implemented features)
+**Remaining:** Pivot tables, cross-sheet references, data validation, conditional formatting
 
-#### Phase 5.5: Multi-Document Queries (Low Priority) 📋 PLANNED
-- [ ] **Cross-Document Intelligence**
-  - [ ] Query across multiple cached documents
-  - [ ] "Compare expenses.xlsx and budget.xlsx"
-  - [ ] Cross-reference information between documents
-  - [ ] Unified search across document cache
-  - [ ] Document relationship detection
-  - [ ] Aggregated summaries across documents
-  - [ ] Smart document selection based on query
+#### Phase 5.5: Multi-Document Queries ✅ COMPLETED (v0.3.36-v0.3.37)
+- ✅ **Cross-Document Intelligence**
+  - ✅ Query across multiple cached documents (search_all_documents)
+  - ✅ "Compare expenses.xlsx and budget.xlsx" (compare_documents)
+  - ✅ Cross-reference information between documents (find_cross_references)
+  - ✅ Unified search across document cache
+  - ✅ Document relationship detection
+  - ✅ Aggregated summaries across documents
+  - ✅ Smart document selection based on query
 
-**Estimated Effort:** 3 weeks | **Version:** v0.3.36-v0.3.37
+**Status:** ✅ COMPLETE | **Tests:** test_multi_document_retriever.py (passing)
 
 #### Phase 5.6: Performance Optimizations ✅ COMPLETED (v0.3.36)
 - ✅ **Phase 5.6.1: Parallel Chunk Summarization**

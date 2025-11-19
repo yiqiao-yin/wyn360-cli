@@ -8,6 +8,38 @@ An intelligent AI coding assistant CLI tool powered by Anthropic Claude.
 
 **GitHub Repository:** https://github.com/yiqiao-yin/wyn360-cli
 
+## 📑 Table of Contents
+
+- [Overview](#-overview)
+- [System Architecture](#-system-architecture)
+- [Installation](#-installation)
+- [Quick Start](#-quick-start)
+- [Features](#-features)
+  - [Core Capabilities](#core-capabilities)
+  - [Intelligent Features](#intelligent-features-v02x)
+  - [Context Management](#context-management-v028)
+  - [Model Selection & Optimization](#model-selection--optimization-v030)
+  - [Configuration & Personalization](#configuration--personalization-v031)
+  - [Streaming Responses](#streaming-responses-v032)
+  - [HuggingFace Integration](#huggingface-integration-v033---v0313)
+  - [Automatic Test Generation](#automatic-test-generation-v0318)
+  - [GitHub Integration](#github-integration-v0322)
+  - [Web Search](#web-search-v0321-enhanced-v0323)
+  - [Browser Use / Direct Website Fetching](#browser-use--direct-website-fetching-v0324)
+  - [Vision Mode for Document Images](#vision-mode-for-document-images-v0330)
+  - [Autonomous Vision-Based Browsing](#autonomous-vision-based-browsing-v0352---v0356-)
+- [Usage Examples](#-usage-examples)
+- [Commands](#-commands)
+- [Documentation](#-documentation)
+- [Development & Testing](#-development--testing)
+- [Environment Variables](#-environment-variables)
+- [Requirements](#-requirements)
+- [Contributing](#-contributing)
+- [License](#-license)
+- [Author](#-author)
+- [Acknowledgments](#-acknowledgments)
+- [Links](#-links)
+
 ## 🎯 Overview
 
 WYN360 CLI is an AI-powered coding assistant that helps you build projects, generate code, and improve your codebase through natural language conversations. Built with pydantic-ai and Anthropic Claude, it provides intelligent file operations, command execution, and context-aware assistance.
@@ -674,5 +706,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.58
-**Last Updated:** November 18, 2025
+**Current Version:** 0.3.59
+**Last Updated:** November 19, 2025

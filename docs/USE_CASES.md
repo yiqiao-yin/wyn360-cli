@@ -1735,10 +1735,10 @@ You: /stats
 ┃   Token Usage        ┃  ┃   Performance Metrics   ┃
 ┣━━━━━━━━━━━━━━━━━━━━━━┫  ┣━━━━━━━━━━━━━━━━━━━━━━━━━┫
 ┃ Total Requests: 25   ┃  ┃ Session Duration: 15m   ┃
-┃ Input Tokens: 45,230 ┃  ┃ Avg Response: 2.3s     ┃
-┃ Output Tokens: 12,450┃  ┃ Min Response: 0.8s     ┃
-┃ Total Cost: $0.32    ┃  ┃ Max Response: 5.2s     ┃
-┗━━━━━━━━━━━━━━━━━━━━━━┛  ┃ Error Count: 0         ┃
+┃ Input Tokens: 45,230 ┃  ┃ Avg Response: 2.3s      ┃
+┃ Output Tokens: 12,450┃  ┃ Min Response: 0.8s      ┃
+┃ Total Cost: $0.32    ┃  ┃ Max Response: 5.2s      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━┛  ┃ Error Count: 0          ┃
                           ┗━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -1750,8 +1750,8 @@ You: /stats
 ┃ Success Rate: 95.7%        ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃      Most Used Tools          ┃
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃      Most Used Tools           ┃
 ┣━━━━━━━━━━━┳━━━━━━━┳━━━━━━┳━━━━━┫
 ┃ Tool      ┃Success┃Failed┃Total┃
 ┣━━━━━━━━━━━╋━━━━━━━╋━━━━━━╋━━━━━┫
@@ -1826,7 +1826,7 @@ Most expensive operations:
 1. Multi-file refactoring: $0.15
 2. Test generation: $0.12
 3. Documentation creation: $0.09
-```bash
+```
 
 **Insight:** Monitor costs in real-time, identify expensive operations, optimize usage.
 
@@ -1893,7 +1893,7 @@ WYN360 now has access to real-time web search capabilities! This feature enables
 Get real-time weather information for any location.
 
 **User Interaction:**
-```
+```bash
 You: What's the weather in San Francisco?
 
 WYN360: [Searches web for current San Francisco weather]
@@ -1906,7 +1906,7 @@ Current Weather in San Francisco, CA:
 - Last Updated: 2025-01-10 14:30 PST
 
 Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
-```yaml
+```
 
 **Cost:**
 - 1 search per query ($0.01)
@@ -1920,7 +1920,7 @@ Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
 Fetch and summarize content from any publicly accessible URL using web search.
 
 **User Interaction:**
-```
+```bash
 You: What's on the Python 3.13 release page?
 
 WYN360: [Searches for Python 3.13 release information]
@@ -1947,7 +1947,7 @@ WYN360: [Searches for Python 3.13 release information]
 **Release Date:** October 2024
 
 Source: [Python.org](https://python.org/downloads/release/python-3130/)
-```yaml
+```
 
 **Cost:**
 - 1 search per URL ($0.01)
@@ -1959,7 +1959,7 @@ Source: [Python.org](https://python.org/downloads/release/python-3130/)
 Access the latest documentation, package versions, news, and trends.
 
 **Example:**
-```
+```bash
 You: What's new in React 19?
 
 WYN360: [Searches for React 19 release information]
@@ -1987,7 +1987,7 @@ WYN360: [Searches for React 19 release information]
 Sources:
 - [React Blog - React 19 Beta](https://react.dev/blog/2024/12/05/react-19)
 - [React Docs - What's New](https://react.dev/learn/whats-new)
-```yaml
+```
 
 **Cost:**
 - 1-2 searches per query ($0.01-0.02)
@@ -1999,7 +1999,7 @@ Sources:
 Find popular GitHub repositories, libraries, tools, and learning resources based on specific topics or technologies.
 
 **User Interaction:**
-```
+```bash
 You: Find a popular GitHub repo for machine learning
 
 WYN360: [Searches web for popular ML repositories]
@@ -2032,7 +2032,7 @@ Sources:
 ```
 
 **Finding Libraries by Language:**
-```
+```bash
 You: What are good Python libraries for data visualization?
 
 WYN360: [Searches for Python data viz libraries]
@@ -2052,7 +2052,7 @@ Top Python libraries for data visualization:
    - Best for: Statistical analysis, heatmaps, distributions
 
 Sources: GitHub, Python Package Index, Stack Overflow trends
-```yaml
+```
 
 **Cost:**
 - 1-2 searches per query ($0.01-0.02)
@@ -2927,7 +2927,7 @@ WYN360 now supports automated login to websites with secure credential storage a
 
 **Steps:**
 
-```
+```bash
 You: Login to https://example-site.com with demo_user and SecurePass123!
 
 WYN360: [Launches headless Playwright browser]
@@ -2988,7 +2988,7 @@ WYN360: [Session still valid - auto-injecting cookies]
 
 **Steps:**
 
-```
+```bash
 You: Login to https://example.com with myuser and mypass123
 
 WYN360: ✅ Login successful to example.com!
@@ -3043,7 +3043,7 @@ WYN360: [Session expired - no saved cookies found]
 
 **Steps:**
 
-```
+```bash
 You: Login to https://example.com with user@email.com and password123
 
 WYN360: [Launches browser]
@@ -3079,7 +3079,7 @@ WYN360: [Launches browser]
 
 **Steps:**
 
-```
+```bash
 You: Login to https://github.com with myusername and mypassword
 
 WYN360: [Launches browser]
@@ -3115,7 +3115,7 @@ WYN360: [Launches browser]
 
 **Steps:**
 
-```
+```bash
 You: Login to https://siteA.com with userA and passA
 
 WYN360: ✅ Login successful to siteA.com!
@@ -3162,7 +3162,7 @@ WYN360: 📄 **Fetched 🔐 (authenticated):** https://siteC.com/profile
 
 **Steps:**
 
-```
+```bash
 You: Login to https://example.com with testuser and wrongpassword
 
 WYN360: [Launches browser]
@@ -3212,7 +3212,7 @@ WYN360: [No session for differentsite.com - fetching without auth]
 ### Storage and Security
 
 **Where are credentials stored?**
-```
+```bash
 ~/.wyn360/
 ├── credentials/
 │   ├── .keyfile          # AES-256 encryption key (0600)
@@ -3250,7 +3250,7 @@ cat ~/.wyn360/logs/auth_audit.log
 ### Troubleshooting
 
 **Issue: "Could not detect login form"**
-```
+```bash
 Cause: Website has non-standard login form
 Solution:
   - Check if login URL is correct
@@ -3259,7 +3259,7 @@ Solution:
 ```
 
 **Issue: "Login failed (incorrect credentials)"**
-```
+```bash
 Cause: Wrong username/password or form not detected correctly
 Solution:
   - Verify credentials are correct
@@ -3268,7 +3268,7 @@ Solution:
 ```
 
 **Issue: "CAPTCHA detected"**
-```
+```bash
 Cause: Website uses CAPTCHA for bot protection
 Solution:
   - Login manually in browser
@@ -3277,7 +3277,7 @@ Solution:
 ```
 
 **Issue: "Session expired"**
-```
+```bash
 Cause: 30-minute TTL has passed
 Solution:
   - Simply login again
@@ -3286,7 +3286,7 @@ Solution:
 ```
 
 **Issue: "Already authenticated to domain"**
-```
+```bash
 Cause: Valid session already exists
 Solution:
   - This is actually success! Just use fetch_website
@@ -3566,7 +3566,7 @@ If no common URL works, the system:
 - Looks for `input[id="username"]` → not found
 
 **Enhanced Detection (Phase 4.4):** ✅ SUCCEEDS
-```
+```bash
 Analyzing ALL inputs:
 
 Input 1:
@@ -3685,7 +3685,7 @@ wyn360 "login to http://problematic-site.com with user/pass"
 
 **Failure Output:**
 
-```
+```bash
 WYN360: [DEBUG] Testing login URLs...
         [DEBUG] No common login URL found
         [DEBUG] Searching homepage for login links...
@@ -4140,7 +4140,7 @@ wyn360 "process EU customer data"
 ```
 
 **Output:**
-```
+```bash
 🌩️  AWS Bedrock mode enabled
 📡 Region: eu-central-1
 🤖 Model: us.anthropic.claude-sonnet-4-20250514-v1:0
