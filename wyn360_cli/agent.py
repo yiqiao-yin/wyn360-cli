@@ -8,6 +8,7 @@ from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import asdict
 from pydantic_ai import Agent, RunContext, ModelMessagesTypeAdapter
 from pydantic_ai.models.anthropic import AnthropicModel
+from pydantic_ai.models.google import GoogleModel
 
 # WebSearchTool is optional - only available in newer pydantic-ai versions
 try:
@@ -56,14 +57,20 @@ from .document_readers import (
 )
 
 
-def _should_use_bedrock() -> bool:
+def _get_client_choice() -> int:
     """
-    Check if AWS Bedrock mode is enabled via environment variable.
+    Get the AI client choice from environment variable.
 
     Returns:
-        True if CLAUDE_CODE_USE_BEDROCK=1, False otherwise
+        1 = Anthropic API
+        2 = AWS Bedrock
+        3 = Google Gemini
+        0 = Auto-detect based on available API keys
     """
-    return os.getenv('CLAUDE_CODE_USE_BEDROCK', '0') == '1'
+    try:
+        return int(os.getenv('CHOOSE_CLIENT', '0'))
+    except ValueError:
+        return 0
 
 
 def _validate_aws_credentials() -> Tuple[bool, str]:
@@ -97,6 +104,35 @@ Or disable Bedrock mode:
     return True, ""
 
 
+def _validate_gemini_credentials() -> Tuple[bool, str]:
+    """
+    Validate that required Gemini API credentials are set.
+
+    Returns:
+        Tuple of (is_valid, error_message)
+        - is_valid: True if API key present
+        - error_message: Error message if invalid, empty string if valid
+    """
+    # Check for GEMINI_API_KEY or GOOGLE_API_KEY
+    api_key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
+
+    if not api_key:
+        error_msg = """Google Gemini mode enabled but API key not found.
+
+Please set one of the following environment variables:
+  - GEMINI_API_KEY=your_gemini_key
+  - GOOGLE_API_KEY=your_gemini_key
+
+Get your API key from: https://aistudio.google.com/apikey
+
+Or disable Gemini mode:
+  unset USE_GEMINI
+"""
+        return False, error_msg
+
+    return True, ""
+
+
 class WYN360Agent:
     """
     WYN360 AI coding assistant agent.
@@ -112,60 +148,112 @@ class WYN360Agent:
         use_history: bool = True,
         config: Optional[WYN360Config] = None,
         use_bedrock: Optional[bool] = None,
+        use_gemini: Optional[bool] = None,
         max_search_limit: int = 5
     ):
         """
-        Initialize the WYN360 Agent with Anthropic or AWS Bedrock.
+        Initialize the WYN360 Agent with Anthropic, AWS Bedrock, or Google Gemini.
 
         Args:
-            api_key: Anthropic API key (required if not using Bedrock)
-            model: Claude model to use (default: claude-sonnet-4-20250514)
+            api_key: Anthropic or Gemini API key (required if not using Bedrock)
+            model: Model to use (default: claude-sonnet-4-20250514)
             use_history: Whether to send conversation history with each request (default: True)
             config: Optional WYN360Config object with user/project configuration
             use_bedrock: Explicitly set Bedrock mode (overrides env var)
+            use_gemini: Explicitly set Gemini mode (overrides env var)
             max_search_limit: Maximum number of web searches per session (default: 5)
         """
         self.config = config
 
         # Determine authentication mode
-        # Priority: 1. Explicit parameter, 2. ANTHROPIC_API_KEY, 3. CLAUDE_CODE_USE_BEDROCK
-        if use_bedrock is None:
-            # Check if ANTHROPIC_API_KEY is set (takes priority over Bedrock)
-            if api_key or os.getenv('ANTHROPIC_API_KEY'):
-                # If API key is available, use Anthropic API mode
-                use_bedrock = False
-            else:
-                # No API key, check if Bedrock is enabled
-                use_bedrock = _should_use_bedrock()
+        # Priority: 1. CHOOSE_CLIENT env var, 2. Explicit parameters, 3. Auto-detect from API keys
+        # Note: Only one mode can be active at a time (Anthropic OR Bedrock OR Gemini)
 
-        self.use_bedrock = use_bedrock
+        client_choice = _get_client_choice()
+
+        if client_choice == 1:
+            # CHOOSE_CLIENT=1: Force Anthropic API
+            self.use_gemini = False
+            self.use_bedrock = False
+        elif client_choice == 2:
+            # CHOOSE_CLIENT=2: Force AWS Bedrock
+            self.use_gemini = False
+            self.use_bedrock = True
+        elif client_choice == 3:
+            # CHOOSE_CLIENT=3: Force Google Gemini
+            self.use_gemini = True
+            self.use_bedrock = False
+        else:
+            # CHOOSE_CLIENT=0 or not set: Auto-detect or use explicit parameters
+            if use_gemini is not None:
+                # Explicit parameter takes priority
+                self.use_gemini = use_gemini
+                self.use_bedrock = False if use_gemini else (use_bedrock or False)
+            elif use_bedrock is not None:
+                # Explicit bedrock parameter
+                self.use_gemini = False
+                self.use_bedrock = use_bedrock
+            else:
+                # Auto-detect: Priority is ANTHROPIC_API_KEY > GEMINI_API_KEY > AWS credentials
+                if api_key or os.getenv('ANTHROPIC_API_KEY'):
+                    # Anthropic API key found
+                    self.use_gemini = False
+                    self.use_bedrock = False
+                elif os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY'):
+                    # Gemini API key found
+                    self.use_gemini = True
+                    self.use_bedrock = False
+                elif os.getenv('AWS_ACCESS_KEY_ID') and os.getenv('AWS_SECRET_ACCESS_KEY'):
+                    # AWS credentials found
+                    self.use_gemini = False
+                    self.use_bedrock = True
+                else:
+                    # No credentials found, default to Anthropic (will fail with helpful error)
+                    self.use_gemini = False
+                    self.use_bedrock = False
 
         # Model selection priority:
-        # 1. ANTHROPIC_MODEL env var (highest priority for runtime override)
+        # 1. Model-specific env var (ANTHROPIC_MODEL or GEMINI_MODEL)
         # 2. Config model (if not the default value)
         # 3. Provided model parameter
         # 4. Default based on authentication mode
 
-        env_model = os.getenv('ANTHROPIC_MODEL')
-        config_model = config.model if config else None
+        if self.use_gemini:
+            # Gemini model selection
+            env_model = os.getenv('GEMINI_MODEL')
+            config_model = config.model if config else None
 
-        if env_model:
-            # Environment variable takes highest priority for runtime override
-            self.model_name = env_model
-        elif config_model and config_model != "claude-sonnet-4-20250514":
-            # Use config model if it's explicitly set (not the default)
-            self.model_name = config_model
-        elif model != "claude-sonnet-4-20250514":
-            # Use provided model parameter if it's not the default
-            self.model_name = model
-        else:
-            # Use appropriate default based on authentication mode
-            if self.use_bedrock:
-                # Bedrock requires ARN format
-                self.model_name = "us.anthropic.claude-sonnet-4-20250514-v1:0"
+            if env_model:
+                self.model_name = env_model
+            elif config_model and config_model.startswith('gemini'):
+                self.model_name = config_model
+            elif model.startswith('gemini'):
+                self.model_name = model
             else:
-                # Anthropic API uses model ID format
-                self.model_name = "claude-sonnet-4-20250514"
+                # Default Gemini model
+                self.model_name = "gemini-2.5-flash"
+        else:
+            # Anthropic/Bedrock model selection
+            env_model = os.getenv('ANTHROPIC_MODEL')
+            config_model = config.model if config else None
+
+            if env_model:
+                # Environment variable takes highest priority for runtime override
+                self.model_name = env_model
+            elif config_model and config_model != "claude-sonnet-4-20250514":
+                # Use config model if it's explicitly set (not the default)
+                self.model_name = config_model
+            elif model != "claude-sonnet-4-20250514":
+                # Use provided model parameter if it's not the default
+                self.model_name = model
+            else:
+                # Use appropriate default based on authentication mode
+                if self.use_bedrock:
+                    # Bedrock requires ARN format
+                    self.model_name = "us.anthropic.claude-sonnet-4-20250514-v1:0"
+                else:
+                    # Anthropic API uses model ID format
+                    self.model_name = "claude-sonnet-4-20250514"
 
         self.use_history = use_history
         # Phase 5.9: Store pydantic-ai messages for proper context retention
@@ -221,8 +309,34 @@ class WYN360Agent:
         debug_mode = os.getenv('WYN360_BROWSER_DEBUG', 'false').lower() == 'true'
         self.browser_auth = BrowserAuth(debug=debug_mode)
 
-        # Initialize Anthropic model based on authentication mode
-        if self.use_bedrock:
+        # Initialize model based on authentication mode
+        if self.use_gemini:
+            # Google Gemini mode
+            is_valid, error_msg = _validate_gemini_credentials()
+            if not is_valid:
+                raise ValueError(error_msg)
+
+            # Get Gemini API key from environment
+            gemini_api_key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
+
+            if not gemini_api_key:
+                # This should not happen due to validation above, but adding for safety
+                raise ValueError("Gemini API key not found")
+
+            self.api_key = gemini_api_key
+
+            # Set API key in environment for pydantic-ai to use
+            os.environ['GOOGLE_API_KEY'] = gemini_api_key
+
+            # Initialize Google model using Generative Language API
+            # GoogleModel constructor expects just the model name (e.g., "gemini-2.5-flash")
+            # It will automatically use the GOOGLE_API_KEY environment variable
+            self.model = GoogleModel(self.model_name)
+
+            print(f"🔷 Google Gemini mode enabled")
+            print(f"🤖 Model: {self.model_name}")
+
+        elif self.use_bedrock:
             # AWS Bedrock mode
             is_valid, error_msg = _validate_aws_credentials()
             if not is_valid:
@@ -262,9 +376,10 @@ class WYN360Agent:
 
             if not api_key:
                 raise ValueError(
-                    "ANTHROPIC_API_KEY is required when not using AWS Bedrock.\n"
+                    "ANTHROPIC_API_KEY is required when not using AWS Bedrock or Google Gemini.\n"
                     "Set environment variable: export ANTHROPIC_API_KEY=sk-ant-xxx\n"
-                    "Or enable Bedrock mode: export CLAUDE_CODE_USE_BEDROCK=1"
+                    "Or enable Bedrock mode: export CLAUDE_CODE_USE_BEDROCK=1\n"
+                    "Or enable Gemini mode: export USE_GEMINI=1 and GEMINI_API_KEY=your_key"
                 )
 
             self.api_key = api_key
@@ -277,10 +392,12 @@ class WYN360Agent:
 
         # Create the agent with tools and web search
         # WebSearchTool is now enabled with pydantic-ai >= 1.13.0
-        # Note: Bedrock doesn't support builtin_tools, so only enable for Anthropic API
+        # Note: Bedrock doesn't support builtin_tools
+        # IMPORTANT: Gemini doesn't support builtin_tools + custom tools at the same time
         builtin_tools = []
-        if HAS_WEB_SEARCH and not self.use_bedrock:
+        if HAS_WEB_SEARCH and not self.use_bedrock and not self.use_gemini:
             # Enable web search with configurable limit (Anthropic API only)
+            # For Gemini, we'll need to implement web search as a custom tool
             builtin_tools.append(WebSearchTool(max_uses=self.max_search_limit))
 
         self.agent = Agent(

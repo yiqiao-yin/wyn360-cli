@@ -1,6 +1,6 @@
 [project]
 name = "wyn360-cli"
-version = "0.3.59"
+version = "0.3.60"
 description = "WYN360 - An intelligent AI coding assistant CLI tool powered by Anthropic Claude"
 authors = [
     {name = "Yiqiao Yin", email = "yiqiao.yin@wyn-associates.com"}
@@ -11,6 +11,7 @@ dependencies = [
     "click>=8.1.0",
     "pydantic-ai>=1.13.0",
     "anthropic[bedrock]>=0.39.0",
+    "google-genai>=1.0.0",
     "rich>=13.0.0",
     "python-dotenv (>=1.2.1,<2.0.0)",
     "prompt-toolkit>=3.0.0",

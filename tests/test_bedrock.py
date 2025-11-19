@@ -4,31 +4,36 @@ import pytest
 import os
 import sys
 from unittest.mock import Mock, patch, MagicMock
-from wyn360_cli.agent import WYN360Agent, _should_use_bedrock, _validate_aws_credentials
+from wyn360_cli.agent import WYN360Agent, _get_client_choice, _validate_aws_credentials
 
 
-class TestBedrockDetection:
-    """Test Bedrock mode detection."""
+class TestClientChoiceDetection:
+    """Test client choice detection."""
 
-    def test_bedrock_disabled_by_default(self):
-        """Test that Bedrock is disabled when env var not set."""
+    def test_client_choice_auto_by_default(self):
+        """Test that client choice is 0 (auto-detect) when env var not set."""
         with patch.dict(os.environ, {}, clear=True):
-            assert _should_use_bedrock() is False
+            assert _get_client_choice() == 0
 
-    def test_bedrock_enabled_with_1(self):
-        """Test that Bedrock is enabled with CLAUDE_CODE_USE_BEDROCK=1."""
-        with patch.dict(os.environ, {'CLAUDE_CODE_USE_BEDROCK': '1'}):
-            assert _should_use_bedrock() is True
+    def test_client_choice_anthropic(self):
+        """Test that client choice is 1 for Anthropic API."""
+        with patch.dict(os.environ, {'CHOOSE_CLIENT': '1'}):
+            assert _get_client_choice() == 1
 
-    def test_bedrock_disabled_with_0(self):
-        """Test that Bedrock is disabled with CLAUDE_CODE_USE_BEDROCK=0."""
-        with patch.dict(os.environ, {'CLAUDE_CODE_USE_BEDROCK': '0'}):
-            assert _should_use_bedrock() is False
+    def test_client_choice_bedrock(self):
+        """Test that client choice is 2 for AWS Bedrock."""
+        with patch.dict(os.environ, {'CHOOSE_CLIENT': '2'}):
+            assert _get_client_choice() == 2
 
-    def test_bedrock_disabled_with_invalid_value(self):
-        """Test that Bedrock is disabled with invalid env var values."""
-        with patch.dict(os.environ, {'CLAUDE_CODE_USE_BEDROCK': 'yes'}):
-            assert _should_use_bedrock() is False
+    def test_client_choice_gemini(self):
+        """Test that client choice is 3 for Google Gemini."""
+        with patch.dict(os.environ, {'CHOOSE_CLIENT': '3'}):
+            assert _get_client_choice() == 3
+
+    def test_client_choice_invalid_value(self):
+        """Test that invalid values default to 0 (auto-detect)."""
+        with patch.dict(os.environ, {'CHOOSE_CLIENT': 'invalid'}):
+            assert _get_client_choice() == 0
 
 
 class TestAWSCredentialValidation:

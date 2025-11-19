@@ -122,10 +122,9 @@ class TestBrowseAndFindTool:
     async def test_browse_and_find_bedrock_mode(self):
         """Test that browse_and_find is disabled in Bedrock mode."""
         # Mock Bedrock mode
-        with patch('wyn360_cli.agent._should_use_bedrock', return_value=True):
-            with patch('wyn360_cli.agent._validate_aws_credentials', return_value=(True, "")):
-                # Create agent in Bedrock mode
-                agent = WYN360Agent(use_bedrock=True)
+        with patch('wyn360_cli.agent._validate_aws_credentials', return_value=(True, "")):
+            # Create agent in Bedrock mode
+            agent = WYN360Agent(use_bedrock=True)
 
                 result = await agent.browse_and_find(
                     ctx=None,

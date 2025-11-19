@@ -68,39 +68,104 @@ playwright install chromium
 
 ## 🚀 Quick Start
 
-### 1. Set up your Anthropic API key (choose one method):
+### 1. Choose your AI provider and set up credentials:
 
-**Option 1: Environment variable**
+WYN360 CLI supports three AI providers. Choose one:
+
+---
+
+#### **Option 1: Anthropic Claude (Direct API)**
+
+**Using environment variables:**
 ```bash
-export CLAUDE_CODE_USE_BEDROCK=0
+export CHOOSE_CLIENT=1
 export ANTHROPIC_API_KEY=your_key_here
-export ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
+export ANTHROPIC_MODEL=claude-sonnet-4-20250514
 ```
 
-This option assumes you want to use Anthropic API Key and available models can be referenced from [Claude Model Overview](https://docs.claude.com/en/docs/about-claude/models/overview).
-
-**Option 2: .env file (recommended for local development)**
+**Using .env file (recommended):**
 ```bash
-# Create a .env file in your project directory
-echo "ANTHROPIC_API_KEY=your_key_here" > .env
+# Create .env file in your project directory
+CHOOSE_CLIENT=1
+ANTHROPIC_API_KEY=your_key_here
+ANTHROPIC_MODEL=claude-sonnet-4-20250514
 ```
 
-**Option 3: Command-line argument**
-```bash
-wyn360 --api-key your_key_here
-```
+**Get your API key:** [Anthropic Console](https://console.anthropic.com/)
+**Available models:** See [Claude Model Overview](https://docs.claude.com/en/docs/about-claude/models/overview)
 
-**Option 4: Use AWS Bedrock Credentials**
+---
+
+#### **Option 2: AWS Bedrock (Claude via AWS)**
+
+**Using environment variables:**
 ```bash
-export CLAUDE_CODE_USE_BEDROCK=1
-export AWS_ACCESS_KEY_ID="your_access_key"
-export AWS_SECRET_ACCESS_KEY="your_secret_key"
-export AWS_SESSION_TOKEN="your_session_token"
+export CHOOSE_CLIENT=2
+export AWS_ACCESS_KEY_ID=your_access_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key
+export AWS_SESSION_TOKEN=your_session_token
 export AWS_REGION=us-west-2
 export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
 ```
 
-This option assumes you want to use AWS Bedrock credentials which means you need a valid AWS account with access key, secret access key and session token. Additionally, this option assumes you have Bedrock access and the model is available for you. 
+**Using .env file (recommended):**
+```bash
+# Create .env file in your project directory
+CHOOSE_CLIENT=2
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_SESSION_TOKEN=your_session_token
+AWS_REGION=us-west-2
+ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
+**Requirements:** Valid AWS account with Bedrock access
+
+---
+
+#### **Option 3: Google Gemini** 🆕
+
+**Using environment variables:**
+```bash
+export CHOOSE_CLIENT=3
+export GEMINI_API_KEY=your_key_here
+export GEMINI_MODEL=gemini-2.5-flash
+```
+
+**Using .env file (recommended):**
+```bash
+# Create .env file in your project directory
+CHOOSE_CLIENT=3
+GEMINI_API_KEY=your_key_here
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+**Get your API key:** [Google AI Studio](https://aistudio.google.com/apikey)
+**Available models:** `gemini-2.5-flash` (fast, cheap), `gemini-2.5-pro` (powerful)
+**Cost:** ~40x cheaper than Claude! ($0.075/M vs $3.00/M input tokens)
+
+**Features:**
+- ✅ All tools supported (file ops, git, docs, browser, etc.)
+- ✅ 2M token context window (vs 200K for Claude)
+- ✅ Fast and cost-effective
+- ⚠️ Web search temporarily disabled (will be added as custom tool)
+
+---
+
+#### **Auto-Detection (No CHOOSE_CLIENT)**
+
+If you don't set `CHOOSE_CLIENT`, the system will auto-detect based on available credentials:
+
+**Priority order:**
+1. `ANTHROPIC_API_KEY` → Use Anthropic
+2. `GEMINI_API_KEY` → Use Google Gemini
+3. AWS credentials → Use Bedrock
+
+```bash
+# Just set your preferred API key
+export GEMINI_API_KEY=your_key_here
+# System will automatically use Gemini
+``` 
 
 ### 2. Run the CLI:
 ```bash
@@ -604,24 +669,50 @@ git push origin main
 
 ## 🧪 Environment Variables
 
+### Core Configuration
+
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `ANTHROPIC_API_KEY` | Anthropic API key (required for Anthropic API mode) | None |
-| `CLAUDE_CODE_USE_BEDROCK` | Enable AWS Bedrock mode (set to `1` to enable) | `0` (disabled) |
-| `AWS_ACCESS_KEY_ID` | AWS access key ID (required for Bedrock mode) | None |
-| `AWS_SECRET_ACCESS_KEY` | AWS secret access key (required for Bedrock mode) | None |
+| `CHOOSE_CLIENT` | AI provider selection: `1`=Anthropic, `2`=Bedrock, `3`=Gemini, `0`=Auto-detect | `0` (auto) |
+| `MAX_TOKEN` | Maximum tokens for model output (can also use `--max-token` CLI arg) | `4096` |
+| `MAX_INTERNET_SEARCH_LIMIT` | Maximum web searches per session (can also use `--max-internet-search-limit` CLI arg) | `5` |
+| `WYN360_SKIP_CONFIRM` | Skip command execution confirmations | `0` (disabled) |
+
+### Anthropic Claude (CHOOSE_CLIENT=1)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ANTHROPIC_API_KEY` | Anthropic API key | None (required) |
+| `ANTHROPIC_MODEL` | Model to use (e.g., claude-sonnet-4-20250514) | Auto-selected |
+
+### Google Gemini (CHOOSE_CLIENT=3) 🆕
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `GEMINI_API_KEY` or `GOOGLE_API_KEY` | Google Gemini API key | None (required) |
+| `GEMINI_MODEL` | Model to use (e.g., gemini-2.5-flash, gemini-2.5-pro) | `gemini-2.5-flash` |
+
+### AWS Bedrock (CHOOSE_CLIENT=2)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `AWS_ACCESS_KEY_ID` | AWS access key ID | None (required) |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret access key | None (required) |
 | `AWS_SESSION_TOKEN` | AWS session token (optional, for temporary credentials) | None |
 | `AWS_REGION` | AWS region for Bedrock (e.g., us-west-2) | `us-east-1` |
-| `ANTHROPIC_MODEL` | Model ARN for Bedrock (e.g., us.anthropic.claude-sonnet-4-20250514-v1:0) | Auto-selected |
-| `MAX_TOKEN` | Maximum tokens for model output (can also use `--max-token` CLI arg) | `4096` |
-| `MAX_INTERNET_SEARCH_LIMIT` | Maximum web searches per session (Anthropic API only, can also use `--max-internet-search-limit` CLI arg) | `5` |
-| `HF_TOKEN` or `HUGGINGFACE_TOKEN` | HuggingFace API token (optional, for HF features) | None |
-| `GH_TOKEN` or `GITHUB_TOKEN` | GitHub access token (optional, for GitHub features) | None |
-| `WYN360_SKIP_CONFIRM` | Skip command execution confirmations | `0` (disabled) |
+| `ANTHROPIC_MODEL` | Model ARN (e.g., us.anthropic.claude-sonnet-4-20250514-v1:0) | Auto-selected |
+
+### Integration Tokens (Optional)
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `HF_TOKEN` or `HUGGINGFACE_TOKEN` | HuggingFace API token (for HF features) | None |
+| `GH_TOKEN` or `GITHUB_TOKEN` | GitHub access token (for GitHub features) | None |
 
 **Setup Example (Anthropic API):**
 ```bash
 # .env file
+CHOOSE_CLIENT=1
 ANTHROPIC_API_KEY=your_anthropic_key
 MAX_TOKEN=4096
 MAX_INTERNET_SEARCH_LIMIT=5
@@ -630,10 +721,22 @@ HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
 ```
 
+**Setup Example (Google Gemini):** 🆕
+```bash
+# .env file
+CHOOSE_CLIENT=3
+GEMINI_API_KEY=your_gemini_key
+GEMINI_MODEL=gemini-2.5-flash
+MAX_TOKEN=4096
+GH_TOKEN=ghp_your_github_token
+HF_TOKEN=hf_your_huggingface_token
+WYN360_SKIP_CONFIRM=0
+```
+
 **Setup Example (AWS Bedrock):**
 ```bash
 # .env file
-CLAUDE_CODE_USE_BEDROCK=1
+CHOOSE_CLIENT=2
 AWS_ACCESS_KEY_ID=your_access_key
 AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_SESSION_TOKEN=your_session_token
@@ -645,7 +748,10 @@ HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
 ```
 
-Set `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts (useful for testing or automation).
+**Notes:**
+- Set `CHOOSE_CLIENT=0` (or omit it) for auto-detection based on available API keys
+- Set `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts (useful for testing or automation)
+- Gemini is ~40x cheaper than Claude and has 2M context window!
 
 ## 📋 Requirements
 
@@ -706,5 +812,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.59
+**Current Version:** 0.3.60
 **Last Updated:** November 19, 2025

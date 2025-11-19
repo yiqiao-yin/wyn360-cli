@@ -120,11 +120,16 @@ def main(api_key, model, max_internet_search_limit, max_token):
     # Load environment variables from .env file if it exists
     load_dotenv()
 
-    # Check if Bedrock mode is enabled
-    use_bedrock = os.getenv('CLAUDE_CODE_USE_BEDROCK', '0') == '1'
+    # Determine which client to use based on CHOOSE_CLIENT env var
+    # 0 = auto-detect, 1 = Anthropic API, 2 = AWS Bedrock, 3 = Google Gemini
+    try:
+        client_choice = int(os.getenv('CHOOSE_CLIENT', '0'))
+    except ValueError:
+        client_choice = 0
 
-    # Get API key from parameter or environment (not needed for Bedrock)
+    # Get API keys from parameter or environment
     api_key = api_key or os.getenv('ANTHROPIC_API_KEY')
+    gemini_key = os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY')
 
     # Get max internet search limit from parameter or environment (default: 5)
     # Priority: 1. CLI argument, 2. Environment variable, 3. Default (5)
@@ -142,16 +147,38 @@ def main(api_key, model, max_internet_search_limit, max_token):
     if max_token < 1:
         max_token = 4096
 
-    # Validate credentials based on mode
-    if not use_bedrock and not api_key:
+    # Validate credentials based on client choice
+    # For auto-detect (0), we let the agent figure it out
+    # For explicit choices, validate the required credentials
+    if client_choice == 1 and not api_key:
         raise click.UsageError(
-            "API key is required when not using AWS Bedrock.\n\n"
-            "Options:\n"
-            "  1. Set Anthropic API key: export ANTHROPIC_API_KEY=sk-ant-xxx\n"
-            "  2. Use AWS Bedrock: export CLAUDE_CODE_USE_BEDROCK=1\n"
-            "     (requires AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY)\n\n"
-            "Get Anthropic API key from: https://console.anthropic.com/"
+            "Anthropic API key required (CHOOSE_CLIENT=1).\n\n"
+            "Set: export ANTHROPIC_API_KEY=sk-ant-xxx\n"
+            "Get API key from: https://console.anthropic.com/"
         )
+    elif client_choice == 3 and not gemini_key:
+        raise click.UsageError(
+            "Google Gemini API key required (CHOOSE_CLIENT=3).\n\n"
+            "Set: export GEMINI_API_KEY=your_key\n"
+            "Get API key from: https://aistudio.google.com/apikey"
+        )
+    elif client_choice == 0:
+        # Auto-detect: Check if any credentials are available
+        has_anthropic = bool(api_key)
+        has_gemini = bool(gemini_key)
+        has_aws = bool(os.getenv('AWS_ACCESS_KEY_ID') and os.getenv('AWS_SECRET_ACCESS_KEY'))
+
+        if not (has_anthropic or has_gemini or has_aws):
+            raise click.UsageError(
+                "No AI provider credentials found.\n\n"
+                "Choose one of:\n"
+                "  1. Anthropic: export ANTHROPIC_API_KEY=sk-ant-xxx\n"
+                "     Get from: https://console.anthropic.com/\n\n"
+                "  2. Google Gemini: export GEMINI_API_KEY=your_key\n"
+                "     Get from: https://aistudio.google.com/apikey\n\n"
+                "  3. AWS Bedrock: export AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY\n\n"
+                "Or set CHOOSE_CLIENT=1/2/3 to force a specific provider."
+            )
 
     # Print banner
     print("""
@@ -163,8 +190,24 @@ def main(api_key, model, max_internet_search_limit, max_token):
  ╚══╝╚══╝    ╚═╝   ╚═╝  ╚═══╝╚═════╝  ╚═════╝  ╚═════╝
     """)
 
+    # Determine which provider will be used for the subtitle
+    if client_choice == 1:
+        provider_text = "Powered by Anthropic Claude"
+    elif client_choice == 2:
+        provider_text = "Powered by Anthropic Claude (AWS Bedrock)"
+    elif client_choice == 3:
+        provider_text = "Powered by Google Gemini"
+    else:
+        # Auto-detect - show what's available
+        if api_key:
+            provider_text = "Powered by Anthropic Claude"
+        elif gemini_key:
+            provider_text = "Powered by Google Gemini"
+        else:
+            provider_text = "Powered by AWS Bedrock"
+
     console.print(
-        "[bold cyan]Your AI Coding Assistant[/bold cyan] - Powered by Anthropic Claude",
+        f"[bold cyan]Your AI Coding Assistant[/bold cyan] - {provider_text}",
         justify="center"
     )
     console.print()
@@ -196,17 +239,16 @@ def main(api_key, model, max_internet_search_limit, max_token):
     try:
         # Use model from CLI arg if provided, otherwise use config model
         if model != 'claude-sonnet-4-20250514':  # If user specified a different model
-            agent = WYN360Agent(api_key=api_key, model=model, config=config, use_bedrock=use_bedrock, max_search_limit=max_internet_search_limit)
+            agent = WYN360Agent(api_key=api_key, model=model, config=config, max_search_limit=max_internet_search_limit)
         else:
-            agent = WYN360Agent(api_key=api_key, config=config, use_bedrock=use_bedrock, max_search_limit=max_internet_search_limit)
+            agent = WYN360Agent(api_key=api_key, config=config, max_search_limit=max_internet_search_limit)
 
         actual_model = agent.model_name
 
         # Show connection status
-        if use_bedrock:
-            # Bedrock mode already prints status in agent.__init__
-            pass
-        else:
+        # Gemini and Bedrock modes print status in agent.__init__
+        # Only print for Anthropic API mode
+        if not agent.use_bedrock and not agent.use_gemini:
             console.print(f"[green]✓[/green] Connected using model: [cyan]{actual_model}[/cyan]")
 
         # Show custom instructions indicator
@@ -479,7 +521,7 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
         table.add_row("Max Tokens", str(agent.config.max_tokens))
         table.add_row("Temperature", str(agent.config.temperature))
 
-        # Web search settings (only for Anthropic API mode)
+        # Web search settings (available for Anthropic API and Gemini, not Bedrock)
         if not agent.use_bedrock:
             table.add_row("Max Internet Search", str(agent.max_search_limit))
 
