@@ -1,0 +1,2871 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An intelligent AI coding assistant CLI tool powered by Anthropic Claude">
+      
+      
+        <meta name="author" content="Yiqiao Yin">
+      
+      
+        <link rel="canonical" href="https://yiqiao-yin.github.io/wyn360-cli/ROADMAP_VISION/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>WYN360 CLI - Vision Mode Implementation Roadmap - WYN360 CLI Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wyn360-cli-vision-mode-implementation-roadmap" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="WYN360 CLI Documentation" class="md-header__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WYN360 CLI Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WYN360 CLI - Vision Mode Implementation Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../features/overview/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../usage/use-cases/" class="md-tabs__link">
+          
+  
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/system/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../development/contributing/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="WYN360 CLI Documentation" class="md-nav__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WYN360 CLI Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/web-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/browser-use/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/vision-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HuggingFace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/autonomous-browsing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autonomous Browsing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📋 Executive Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📋 Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-value-proposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Value Proposition
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#business-impact" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Business Impact
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#goals-and-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Goals and Non-Goals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Goals and Non-Goals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Non-Goals
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏗️ Architecture Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🏗️ Architecture Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#component-diagram" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component Diagram
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-implementation-status" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Current Implementation Status
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Current Implementation Status">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#completed-lines-122-349-in-document_readerspy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Completed (Lines 122-349 in document_readers.py)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remaining-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚧 Remaining Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#detailed-implementation-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔧 Detailed Implementation Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔧 Detailed Implementation Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-511-wordreader-image-extraction-v0330" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.1.1: WordReader Image Extraction (v0.3.30)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.1.1: WordReader Image Extraction (v0.3.30)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-modified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Modified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-512-pdfreader-image-extraction-v0331" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.1.2: PDFReader Image Extraction (v0.3.31)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.1.2: PDFReader Image Extraction (v0.3.31)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation-steps_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-modified_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Modified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-required_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-513-agent-integration-v0332" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.1.3: Agent Integration (v0.3.32)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.1.3: Agent Integration (v0.3.32)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation-steps_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Steps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-modified_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Modified
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-514-testing-v0333" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.1.4: Testing (v0.3.33)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.1.4: Testing (v0.3.33)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-files-to-createupdate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Files to Create/Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-test-count" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Total Test Count
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-515-documentation-v0334" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.1.5: Documentation (v0.3.34)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.1.5: Documentation (v0.3.34)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documents-to-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documents to Update
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💰 Cost Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💰 Cost Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vision-api-pricing-claude-sonnet-45" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vision API Pricing (Claude Sonnet 4.5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-scenarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example Scenarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-mitigation-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Mitigation Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ Success Criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✅ Success Criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#functional-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Functional Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quality-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quality Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗓️ Implementation Timeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗓️ Implementation Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sprint-1-core-image-extraction-week-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sprint 1: Core Image Extraction (Week 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sprint-2-vision-api-integration-week-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sprint 2: Vision API Integration (Week 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sprint-3-testing-documentation-week-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sprint 3: Testing &amp; Documentation (Week 3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#total-estimate-3-weeks-15-development-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Total Estimate: 3 weeks (15 development days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Testing Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Testing Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests-30-new-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unit Tests (~30 new tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests-5-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Tests (~5 tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risk-mitigation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔒 Risk Mitigation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔒 Risk Mitigation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#technical-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technical Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#user-experience-risks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Experience Risks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#related-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Next Steps
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Next Steps">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#immediate-actions-to-begin-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immediate Actions (To Begin Implementation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#decision-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feedback-questions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📞 Feedback &amp; Questions
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="wyn360-cli-vision-mode-implementation-roadmap">WYN360 CLI - Vision Mode Implementation Roadmap<a class="headerlink" href="#wyn360-cli-vision-mode-implementation-roadmap" title="Permanent link">&para;</a></h1>
+<p><strong>Status:</strong> ✅ Phase 5.1 - Implementation Complete (Documentation in Progress)
+<strong>Priority:</strong> High (Phase 5.1)
+<strong>Start Date:</strong> December 2025
+<strong>Completion Date:</strong> January 2026</p>
+<hr />
+<h2 id="executive-summary">📋 Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<p>This roadmap outlines the implementation of <strong>Vision Mode</strong> - a feature that enables intelligent image processing in Word and PDF documents using Claude's Vision API. This is the highest priority enhancement in Phase 5 of the Document Readers feature set.</p>
+<h3 id="key-value-proposition">Key Value Proposition<a class="headerlink" href="#key-value-proposition" title="Permanent link">&para;</a></h3>
+<p><strong>Current State:</strong> Documents with images show only placeholders like <code>[Image]</code> or are completely skipped, losing valuable information from charts, diagrams, and visual content.</p>
+<p><strong>With Vision Mode:</strong> Images are automatically sent to Claude Vision API for intelligent description, extracting insights from:
+- 📊 Charts and graphs (data visualizations)
+- 📐 Diagrams and flowcharts (process flows, architectures)
+- 🖥️ Screenshots (UI mockups, interfaces)
+- 📷 Photos and illustrations (visual documentation)</p>
+<h3 id="business-impact">Business Impact<a class="headerlink" href="#business-impact" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Better comprehension</strong> of visual-heavy documents (reports, presentations, technical docs)</li>
+<li><strong>Accessibility</strong> for users who can't see images</li>
+<li><strong>Searchability</strong> - image content becomes text-searchable through summaries</li>
+<li><strong>Cost transparency</strong> - separate tracking of vision API costs vs. text processing</li>
+</ul>
+<hr />
+<h2 id="goals-and-non-goals">🎯 Goals and Non-Goals<a class="headerlink" href="#goals-and-non-goals" title="Permanent link">&para;</a></h2>
+<h3 id="goals">Goals<a class="headerlink" href="#goals" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✅ Extract images from Word (.docx) and PDF documents</li>
+<li>✅ Send images to Claude Vision API for intelligent description</li>
+<li>✅ Support three image handling modes:</li>
+<li><code>skip</code> - Ignore images (current default, no API calls)</li>
+<li><code>describe</code> - Extract alt text/captions only (no API calls)</li>
+<li><code>vision</code> - Full Vision API processing (requires API calls, costs money)</li>
+<li>✅ Track vision API costs separately from text summarization</li>
+<li>✅ Provide clear cost warnings to users before processing</li>
+<li>✅ Support batch processing for efficiency</li>
+<li>✅ Integrate seamlessly with existing chunking/caching system</li>
+<li>✅ Maintain backward compatibility (no breaking changes)</li>
+</ol>
+<h3 id="non-goals">Non-Goals<a class="headerlink" href="#non-goals" title="Permanent link">&para;</a></h3>
+<ol>
+<li>❌ OCR for scanned PDFs (saved for Phase 5.2)</li>
+<li>❌ Image editing or manipulation</li>
+<li>❌ Video or animation processing</li>
+<li>❌ Chart data extraction (just descriptions)</li>
+<li>❌ Local image processing (all processing via Claude Vision API)</li>
+</ol>
+<hr />
+<h2 id="architecture-overview">🏗️ Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<h3 id="component-diagram">Component Diagram<a class="headerlink" href="#component-diagram" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>┌─────────────────────────────────────────────────────────────┐
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>│                    WYN360 Agent                              │
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│  ┌────────────────────────────────────────────────────┐     │
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│  │  read_word() / read_pdf()                          │     │
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│  │  - Check image_handling_mode                       │     │
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│  │  - Warn user about costs if vision mode           │     │
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│  │  - Track vision tokens separately                 │     │
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>│  └────────────────┬───────────────────────────────────┘     │
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>└────────────────────┼──────────────────────────────────────────┘
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                     │
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        ┌────────────┴────────────┐
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        │                         │
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>┌───────▼─────────┐      ┌────────▼────────┐
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│  WordReader     │      │  PDFReader      │
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>│  ┌───────────┐  │      │  ┌───────────┐  │
+<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│  │ Extract   │  │      │  │ Extract   │  │
+<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>│  │ images    │  │      │  │ images    │  │
+<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│  │ from docx │  │      │  │ from PDF  │  │
+<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│  └─────┬─────┘  │      │  └─────┬─────┘  │
+<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>└────────┼────────┘      └────────┼────────┘
+<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>         │                        │
+<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>         └────────┬───────────────┘
+<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>                  │
+<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>         ┌────────▼─────────┐
+<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>         │ ImageProcessor   │
+<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>         │ ┌──────────────┐ │
+<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>         │ │ Vision API   │ │
+<a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>         │ │ Integration  │ │
+<a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>         │ └──────────────┘ │
+<a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>         │ ┌──────────────┐ │
+<a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>         │ │ Image Format │ │
+<a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>         │ │ Detection    │ │
+<a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>         │ └──────────────┘ │
+<a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>         │ ┌──────────────┐ │
+<a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>         │ │ Type         │ │
+<a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>         │ │ Detection    │ │
+<a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>         │ └──────────────┘ │
+<a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>         └──────────────────┘
+<a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>                  │
+<a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>         ┌────────▼─────────┐
+<a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>         │ Claude Vision    │
+<a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>         │ API              │
+<a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>         │ (Sonnet 4.5)     │
+<a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>         └──────────────────┘
+</code></pre></div>
+<h3 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>User: &quot;Read presentation.docx with vision mode&quot;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  ↓
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Agent: check image_handling_mode = &quot;vision&quot;
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  ↓
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Agent: Warn user about vision API costs
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  ↓
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>WordReader: read document
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  ↓
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>WordReader: extract_images() → List[ImageData]
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>  ↓
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>ImageProcessor: describe_images_batch()
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>  ↓
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>Claude Vision API: process each image
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>  ↓
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>ImageProcessor: return descriptions
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>  ↓
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>WordReader: insert descriptions into markdown
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>  ↓
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>ChunkSummarizer: summarize chunks (including image descriptions)
+<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>  ↓
+<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>ChunkCache: cache results
+<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>  ↓
+<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>Agent: format output, track costs
+<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>  ↓
+<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>User: receives document with image descriptions
+</code></pre></div>
+<hr />
+<h2 id="current-implementation-status">📊 Current Implementation Status<a class="headerlink" href="#current-implementation-status" title="Permanent link">&para;</a></h2>
+<h3 id="completed-lines-122-349-in-document_readerspy">✅ Completed (Lines 122-349 in document_readers.py)<a class="headerlink" href="#completed-lines-122-349-in-document_readerspy" title="Permanent link">&para;</a></h3>
+<p><strong>ImageProcessor Class:</strong>
+- ✅ Vision API integration (line 157-243)
+- ✅ Image format detection (line 272-293)
+- ✅ Context-aware prompts (line 295-319)
+- ✅ Image type detection (line 321-334)
+- ✅ Markdown formatting (line 336-349)
+- ✅ Batch processing support (line 245-270)
+- ✅ Error handling with fallbacks
+- ✅ Token tracking</p>
+<p><strong>Dependencies Added:</strong>
+- ✅ <code>base64</code> - Image encoding
+- ✅ <code>io</code> - BytesIO for image handling
+- ✅ <code>PIL/Pillow</code> - Optional, for format detection (HAS_PIL flag)</p>
+<p><strong>Phase 5.1.1 - WordReader Enhancement:</strong>
+- ✅ <code>_extract_images()</code> method (lines 1633-1679)
+- ✅ <code>_process_images_with_vision()</code> method (lines 1681-1720)
+- ✅ Updated <code>read()</code> to async with vision support (line 1428)
+- ✅ 5 new tests added to test_word_reader.py
+- ✅ All 336 tests passing</p>
+<p><strong>Phase 5.1.2 - PDFReader Enhancement:</strong>
+- ✅ Added <code>image_handling</code> parameter to PDFReader.<strong>init</strong>()
+- ✅ Updated <code>read()</code> to async with image_processor parameter
+- ✅ <code>_extract_images_pymupdf()</code> method (lines 2137-2177)
+- ✅ <code>_extract_images_pdfplumber()</code> method (lines 2179-2216)
+- ✅ <code>_process_images_with_vision()</code> method (lines 2218-2260)
+- ✅ Updated <code>_read_with_pymupdf()</code> to async with image extraction
+- ✅ Updated <code>_read_with_pdfplumber()</code> to async with image extraction
+- ✅ All 8 PDFReader tests updated to async
+- ✅ All 336 tests passing</p>
+<p><strong>Phase 5.1.3 - Agent Integration (v0.3.30):</strong>
+- ✅ Added vision token tracking fields to Agent.<strong>init</strong>() (lines 99-102)
+- ✅ Added ImageProcessor import to agent.py
+- ✅ Created track_vision_processing() method (lines 2931-2942)
+- ✅ Updated read_word() to use ImageProcessor when vision mode enabled (lines 2284-2301)
+- ✅ Updated read_pdf() with image_handling parameter (line 2421)
+- ✅ Updated read_pdf() to use ImageProcessor (lines 2553-2570)
+- ✅ Updated get_token_stats() to calculate and return vision costs (lines 3001-3035)
+- ✅ Updated /tokens command in cli.py to display vision API stats (lines 274-284)
+- ✅ All existing tests continue to pass</p>
+<p><strong>Phase 5.1.4 - Testing (v0.3.30):</strong>
+- ✅ Created test_image_processor.py with 23 comprehensive tests
+- ✅ Tests cover format detection (PNG, JPEG, GIF, WebP, unknown)
+- ✅ Tests cover image type detection (chart, diagram, screenshot, photo, other)
+- ✅ Tests cover prompt building with/without context
+- ✅ Tests cover markdown formatting for all image types
+- ✅ Tests cover Vision API integration (success, error handling, batch processing)
+- ✅ All 359 tests passing (336 existing + 23 new)</p>
+<h3 id="remaining-work">🚧 Remaining Work<a class="headerlink" href="#remaining-work" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Phase 5.1.5 - Documentation</strong> (~50 lines) - IN PROGRESS</li>
+<li>Update README.md with vision mode examples</li>
+<li>Update COST.md with vision pricing</li>
+<li>Update ROADMAP_DOCUMENTS.md with Phase 5.1 completion</li>
+<li>Add cost calculator examples</li>
+<li>Update USE_CASES.md</li>
+<li>Update version numbers to 0.3.30</li>
+</ol>
+<hr />
+<h2 id="detailed-implementation-plan">🔧 Detailed Implementation Plan<a class="headerlink" href="#detailed-implementation-plan" title="Permanent link">&para;</a></h2>
+<h3 id="phase-511-wordreader-image-extraction-v0330">Phase 5.1.1: WordReader Image Extraction (v0.3.30)<a class="headerlink" href="#phase-511-wordreader-image-extraction-v0330" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Extract images from Word documents and integrate with vision mode</p>
+<h4 id="implementation-steps">Implementation Steps<a class="headerlink" href="#implementation-steps" title="Permanent link">&para;</a></h4>
+<p><strong>Step 1: Add Image Extraction Method to WordReader</strong></p>
+<p>Location: <code>wyn360_cli/document_readers.py</code> (after line 1327, in WordReader class)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">_extract_images</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="sd">    Extract all images from Word document.</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="sd">        List of image dicts with {</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="sd">            &quot;data&quot;: bytes,</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="sd">            &quot;format&quot;: &quot;png&quot;|&quot;jpeg&quot;|&quot;gif&quot;,</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="sd">            &quot;context&quot;: {&quot;section&quot;: &quot;...&quot;, &quot;index&quot;: N}</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="sd">        }</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="c1"># Method 1: Inline shapes (document.inline_shapes)</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">shape</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">doc</span><span class="o">.</span><span class="n">inline_shapes</span><span class="p">):</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>        <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>            <span class="c1"># Get image bytes</span>
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>            <span class="n">image_bytes</span> <span class="o">=</span> <span class="n">shape</span><span class="o">.</span><span class="n">_inline</span><span class="o">.</span><span class="n">graphic</span><span class="o">.</span><span class="n">graphicData</span><span class="o">.</span><span class="n">pic</span><span class="o">.</span><span class="n">blipFill</span><span class="o">.</span><span class="n">blip</span><span class="o">.</span><span class="n">embed</span>
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>            <span class="n">image_part</span> <span class="o">=</span> <span class="n">doc</span><span class="o">.</span><span class="n">part</span><span class="o">.</span><span class="n">related_parts</span><span class="p">[</span><span class="n">image_bytes</span><span class="p">]</span>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>            <span class="n">image_data</span> <span class="o">=</span> <span class="n">image_part</span><span class="o">.</span><span class="n">blob</span>
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>            <span class="c1"># Detect format from content type</span>
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>            <span class="n">content_type</span> <span class="o">=</span> <span class="n">image_part</span><span class="o">.</span><span class="n">content_type</span>  <span class="c1"># &#39;image/png&#39;, &#39;image/jpeg&#39;, etc.</span>
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>            <span class="n">image_format</span> <span class="o">=</span> <span class="n">content_type</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;/&#39;</span> <span class="ow">in</span> <span class="n">content_type</span> <span class="k">else</span> <span class="s1">&#39;png&#39;</span>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">image_data</span><span class="p">,</span>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="p">,</span>
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>                <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>                    <span class="s2">&quot;doc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;word&quot;</span><span class="p">,</span>
+<a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>                    <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span>
+<a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a>                    <span class="s2">&quot;shape_type&quot;</span><span class="p">:</span> <span class="s2">&quot;inline&quot;</span>
+<a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a>                <span class="p">}</span>
+<a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a>            <span class="p">})</span>
+<a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>            <span class="c1"># Skip images that can&#39;t be extracted</span>
+<a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a>            <span class="k">continue</span>
+<a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a>
+<a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>    <span class="k">return</span> <span class="n">images</span>
+</code></pre></div>
+<p><strong>Step 2: Integrate Vision Processing in _extract_sections()</strong></p>
+<p>Modify <code>_extract_sections()</code> to detect images and process them if vision mode enabled:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># In _extract_sections(), after line 1289 (paragraph processing)</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># Add image detection:</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Check for images in paragraph</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">if</span> <span class="n">para</span><span class="o">.</span><span class="n">runs</span><span class="p">:</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">para</span><span class="o">.</span><span class="n">runs</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="k">if</span> <span class="n">run</span><span class="o">.</span><span class="n">_element</span><span class="o">.</span><span class="n">xpath</span><span class="p">(</span><span class="s1">&#39;.//w:drawing&#39;</span><span class="p">):</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>            <span class="c1"># Image found in paragraph</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>            <span class="k">if</span> <span class="n">current_section</span><span class="p">:</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>                <span class="n">current_section</span><span class="p">[</span><span class="s2">&quot;has_images&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</code></pre></div>
+<p><strong>Step 3: Add Vision Processing Method</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_process_images_with_vision</span><span class="p">(</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">images</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]],</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">image_processor</span><span class="p">:</span> <span class="s1">&#39;ImageProcessor&#39;</span><span class="p">,</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">section_context</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="sd">    Process images with vision API.</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="sd">    Args:</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="sd">        images: List of image data dicts</span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="sd">        image_processor: ImageProcessor instance</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="sd">        section_context: Context about current section</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="sd">        List of image description dicts</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">images</span><span class="p">:</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>        <span class="k">return</span> <span class="p">[]</span>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>    <span class="c1"># Add section context to each image</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">images</span><span class="p">:</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>        <span class="n">img</span><span class="p">[</span><span class="s2">&quot;context&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">section_context</span><span class="p">)</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>    <span class="c1"># Batch process images</span>
+<a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>    <span class="n">descriptions</span> <span class="o">=</span> <span class="k">await</span> <span class="n">image_processor</span><span class="o">.</span><span class="n">describe_images_batch</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+<a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a>
+<a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>    <span class="k">return</span> <span class="n">descriptions</span>
+</code></pre></div>
+<p><strong>Step 4: Update read() Method Signature</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">image_processor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s1">&#39;ImageProcessor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="sd">    Read Word file and return structured data.</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="sd">    Args:</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="sd">        image_processor: Optional ImageProcessor for vision mode</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="sd">        {</span>
+<a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="sd">            &quot;sections&quot;: [...],</span>
+<a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="sd">            &quot;images&quot;: [...],  # NEW: list of image descriptions if vision mode</span>
+<a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="sd">            &quot;vision_tokens_used&quot;: 0  # NEW: tokens used for vision API</span>
+<a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="sd">        }</span>
+<a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="sd">    &quot;&quot;&quot;</span>
+</code></pre></div>
+<h4 id="files-modified">Files Modified<a class="headerlink" href="#files-modified" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>wyn360_cli/document_readers.py</code> - WordReader class (~150 new lines)</li>
+</ul>
+<h4 id="tests-required">Tests Required<a class="headerlink" href="#tests-required" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>test_word_reader.py</code>:</li>
+<li><code>test_extract_images_from_docx()</code> - Mock docx with images</li>
+<li><code>test_image_extraction_with_vision_mode()</code> - Mock ImageProcessor</li>
+<li><code>test_image_extraction_skip_mode()</code> - Verify images skipped</li>
+<li><code>test_image_extraction_describe_mode()</code> - Extract alt text only</li>
+<li><code>test_image_context_preserved()</code> - Verify section context</li>
+</ul>
+<hr />
+<h3 id="phase-512-pdfreader-image-extraction-v0331">Phase 5.1.2: PDFReader Image Extraction (v0.3.31)<a class="headerlink" href="#phase-512-pdfreader-image-extraction-v0331" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Extract images from PDF documents</p>
+<h4 id="implementation-steps_1">Implementation Steps<a class="headerlink" href="#implementation-steps_1" title="Permanent link">&para;</a></h4>
+<p><strong>Step 1: Add Image Extraction for PyMuPDF</strong></p>
+<p>Location: <code>wyn360_cli/document_readers.py</code> (in PDFReader class)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">_extract_images_pymupdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">page_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="sd">    Extract images from PDF page using PyMuPDF.</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="sd">    Args:</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="sd">        page: PyMuPDF page object</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="sd">        page_num: Page number (1-indexed)</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="sd">        List of image dicts</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        <span class="n">image_list</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">get_images</span><span class="p">(</span><span class="n">full</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>        <span class="k">for</span> <span class="n">img_index</span><span class="p">,</span> <span class="n">img</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">image_list</span><span class="p">):</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>            <span class="n">xref</span> <span class="o">=</span> <span class="n">img</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># image xref</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>            <span class="n">base_image</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">extract_image</span><span class="p">(</span><span class="n">xref</span><span class="p">)</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>
+<a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>            <span class="n">image_data</span> <span class="o">=</span> <span class="n">base_image</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span>
+<a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>            <span class="n">image_ext</span> <span class="o">=</span> <span class="n">base_image</span><span class="p">[</span><span class="s2">&quot;ext&quot;</span><span class="p">]</span>  <span class="c1"># png, jpeg, etc.</span>
+<a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>
+<a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+<a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a>                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">image_data</span><span class="p">,</span>
+<a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a>                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_ext</span><span class="p">,</span>
+<a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a>                <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a>                    <span class="s2">&quot;doc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a>                    <span class="s2">&quot;page_number&quot;</span><span class="p">:</span> <span class="n">page_num</span><span class="p">,</span>
+<a id="__codelineno-6-30" name="__codelineno-6-30" href="#__codelineno-6-30"></a>                    <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">img_index</span>
+<a id="__codelineno-6-31" name="__codelineno-6-31" href="#__codelineno-6-31"></a>                <span class="p">}</span>
+<a id="__codelineno-6-32" name="__codelineno-6-32" href="#__codelineno-6-32"></a>            <span class="p">})</span>
+<a id="__codelineno-6-33" name="__codelineno-6-33" href="#__codelineno-6-33"></a>    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<a id="__codelineno-6-34" name="__codelineno-6-34" href="#__codelineno-6-34"></a>        <span class="c1"># Skip if image extraction fails</span>
+<a id="__codelineno-6-35" name="__codelineno-6-35" href="#__codelineno-6-35"></a>        <span class="k">pass</span>
+<a id="__codelineno-6-36" name="__codelineno-6-36" href="#__codelineno-6-36"></a>
+<a id="__codelineno-6-37" name="__codelineno-6-37" href="#__codelineno-6-37"></a>    <span class="k">return</span> <span class="n">images</span>
+</code></pre></div>
+<p><strong>Step 2: Add Image Extraction for pdfplumber</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">_extract_images_pdfplumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page</span><span class="p">,</span> <span class="n">page_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="sd">    Extract images from PDF page using pdfplumber.</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="sd">    Note: pdfplumber doesn&#39;t have direct image extraction,</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="sd">    so we&#39;ll need to work with page.images metadata</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>    <span class="n">images</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>    <span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>        <span class="c1"># pdfplumber provides image objects but not raw data directly</span>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>        <span class="c1"># We&#39;ll need to use page.to_image() and crop</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>        <span class="n">page_images</span> <span class="o">=</span> <span class="n">page</span><span class="o">.</span><span class="n">images</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">img_info</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">page_images</span><span class="p">):</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>            <span class="c1"># This is a simplified approach</span>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>            <span class="c1"># Full implementation would require cropping page image</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>            <span class="n">images</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Would need cropping logic</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;png&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>                <span class="s2">&quot;context&quot;</span><span class="p">:</span> <span class="p">{</span>
+<a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>                    <span class="s2">&quot;doc_type&quot;</span><span class="p">:</span> <span class="s2">&quot;pdf&quot;</span><span class="p">,</span>
+<a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>                    <span class="s2">&quot;page_number&quot;</span><span class="p">:</span> <span class="n">page_num</span><span class="p">,</span>
+<a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>                    <span class="s2">&quot;index&quot;</span><span class="p">:</span> <span class="n">idx</span><span class="p">,</span>
+<a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>                    <span class="s2">&quot;note&quot;</span><span class="p">:</span> <span class="s2">&quot;pdfplumber image extraction limited&quot;</span>
+<a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>                <span class="p">}</span>
+<a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>            <span class="p">})</span>
+<a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+<a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>        <span class="k">pass</span>
+<a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>
+<a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>    <span class="k">return</span> <span class="n">images</span>
+</code></pre></div>
+<p><strong>Step 3: Update read() Methods</strong></p>
+<p>Modify <code>_read_with_pymupdf()</code> and <code>_read_with_pdfplumber()</code> to:
+- Extract images from each page
+- Store images with page data
+- Track image count</p>
+<h4 id="files-modified_1">Files Modified<a class="headerlink" href="#files-modified_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>wyn360_cli/document_readers.py</code> - PDFReader class (~200 new lines)</li>
+</ul>
+<h4 id="tests-required_1">Tests Required<a class="headerlink" href="#tests-required_1" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>test_pdf_reader.py</code>:</li>
+<li><code>test_extract_images_pymupdf()</code> - Mock pymupdf image extraction</li>
+<li><code>test_extract_images_pdfplumber()</code> - Mock pdfplumber</li>
+<li><code>test_image_extraction_with_vision()</code> - End-to-end vision mode</li>
+<li><code>test_image_context_in_pdf()</code> - Verify page context</li>
+<li><code>test_pdf_without_images()</code> - Handle PDFs with no images</li>
+</ul>
+<hr />
+<h3 id="phase-513-agent-integration-v0332">Phase 5.1.3: Agent Integration (v0.3.32)<a class="headerlink" href="#phase-513-agent-integration-v0332" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Integrate vision mode into agent tools</p>
+<h4 id="implementation-steps_2">Implementation Steps<a class="headerlink" href="#implementation-steps_2" title="Permanent link">&para;</a></h4>
+<p><strong>Step 1: Update Agent Initialization</strong></p>
+<p>Location: <code>wyn360_cli/agent.py</code> (around line 100-110)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Add to __init__</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="bp">self</span><span class="o">.</span><span class="n">vision_tokens_used</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Track vision API tokens separately</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="bp">self</span><span class="o">.</span><span class="n">vision_enabled</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Can be toggled</span>
+</code></pre></div>
+<p><strong>Step 2: Update read_word() Method</strong></p>
+<p>Location: <code>wyn360_cli/agent.py</code> (around line 2178)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">read_word</span><span class="p">(</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">max_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>    <span class="n">use_chunking</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>    <span class="n">image_handling</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>    <span class="n">regenerate_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="n">query</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;...&quot;&quot;&quot;</span>
+<a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+<a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>    <span class="c1"># Get image_handling mode</span>
+<a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>    <span class="k">if</span> <span class="n">image_handling</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>        <span class="n">image_handling</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_handling_mode</span>
+<a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>
+<a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>    <span class="c1"># Warn user about vision costs</span>
+<a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>    <span class="k">if</span> <span class="n">image_handling</span> <span class="o">==</span> <span class="s2">&quot;vision&quot;</span><span class="p">:</span>
+<a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>        <span class="c1"># Count estimated cost</span>
+<a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>        <span class="n">response</span> <span class="o">=</span> <span class="s2">&quot;⚠️ **Vision Mode Enabled**</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>        <span class="n">response</span> <span class="o">+=</span> <span class="s2">&quot;This will use Claude Vision API to process images.</span><span class="se">\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>        <span class="n">response</span> <span class="o">+=</span> <span class="s2">&quot;**Estimated cost:** ~$0.01-0.05 per image</span><span class="se">\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>        <span class="n">response</span> <span class="o">+=</span> <span class="s2">&quot;Do you want to proceed?</span><span class="se">\n\n</span><span class="s2">&quot;</span>
+<a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>        <span class="c1"># In actual implementation, might want user confirmation</span>
+<a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>
+<a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>    <span class="c1"># Create ImageProcessor if vision mode</span>
+<a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>    <span class="n">image_processor</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>    <span class="k">if</span> <span class="n">image_handling</span> <span class="o">==</span> <span class="s2">&quot;vision&quot;</span><span class="p">:</span>
+<a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">.document_readers</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageProcessor</span>
+<a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a>        <span class="n">image_processor</span> <span class="o">=</span> <span class="n">ImageProcessor</span><span class="p">(</span>
+<a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a>            <span class="n">api_key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">,</span>
+<a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a>            <span class="n">model</span><span class="o">=</span><span class="s2">&quot;claude-3-5-sonnet-20241022&quot;</span>
+<a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>        <span class="p">)</span>
+<a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a>
+<a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a>    <span class="c1"># Pass image_processor to reader</span>
+<a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a>    <span class="n">reader</span> <span class="o">=</span> <span class="n">WordReader</span><span class="p">(</span>
+<a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a>        <span class="n">file_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">file_path_obj</span><span class="p">),</span>
+<a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a>        <span class="n">chunk_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+<a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a>        <span class="n">image_handling</span><span class="o">=</span><span class="n">image_handling</span>
+<a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a>    <span class="p">)</span>
+<a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a>
+<a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a>    <span class="c1"># Read with vision processing</span>
+<a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">image_processor</span><span class="o">=</span><span class="n">image_processor</span><span class="p">)</span>
+<a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a>
+<a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a>    <span class="c1"># Track vision tokens</span>
+<a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a>    <span class="k">if</span> <span class="s2">&quot;vision_tokens_used&quot;</span> <span class="ow">in</span> <span class="n">result</span><span class="p">:</span>
+<a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">vision_tokens_used</span> <span class="o">+=</span> <span class="n">result</span><span class="p">[</span><span class="s2">&quot;vision_tokens_used&quot;</span><span class="p">]</span>
+<a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a>
+<a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a>    <span class="c1"># ... rest of method</span>
+</code></pre></div>
+<p><strong>Step 3: Update read_pdf() Similarly</strong></p>
+<p><strong>Step 4: Update /tokens Command</strong></p>
+<p>Location: <code>wyn360_cli/cli.py</code> (tokens command)</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Add vision tokens to display</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">if</span> <span class="n">agent</span><span class="o">.</span><span class="n">vision_tokens_used</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>    <span class="n">console</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vision API Tokens: </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">vision_tokens_used</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>    <span class="c1"># Calculate vision cost (different pricing)</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>    <span class="c1"># Sonnet 4.5 vision: ~$3/MTok input, ~$15/MTok output</span>
+</code></pre></div>
+<h4 id="files-modified_2">Files Modified<a class="headerlink" href="#files-modified_2" title="Permanent link">&para;</a></h4>
+<ul>
+<li><code>wyn360_cli/agent.py</code> - read_word(), read_pdf() methods (~100 lines)</li>
+<li><code>wyn360_cli/cli.py</code> - /tokens command (~20 lines)</li>
+</ul>
+<hr />
+<h3 id="phase-514-testing-v0333">Phase 5.1.4: Testing (v0.3.33)<a class="headerlink" href="#phase-514-testing-v0333" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Comprehensive test coverage</p>
+<h4 id="test-files-to-createupdate">Test Files to Create/Update<a class="headerlink" href="#test-files-to-createupdate" title="Permanent link">&para;</a></h4>
+<p><strong>1. test_image_processor.py (NEW)</strong></p>
+<p>20 tests covering:
+- Image format detection
+- Vision API calls (mocked)
+- Error handling
+- Batch processing
+- Context prompt building
+- Image type detection
+- Markdown formatting
+- Cost tracking</p>
+<p><strong>2. test_word_reader.py (UPDATE)</strong></p>
+<p>Add 5 tests:
+- Image extraction from docx
+- Vision mode integration
+- Skip/describe/vision modes
+- Image context preservation
+- Error handling for corrupted images</p>
+<p><strong>3. test_pdf_reader.py (UPDATE)</strong></p>
+<p>Add 5 tests:
+- Image extraction from PDF (pymupdf)
+- Image extraction from PDF (pdfplumber)
+- Vision mode end-to-end
+- Page context in images
+- PDFs without images</p>
+<p><strong>4. Integration Tests (NEW)</strong></p>
+<p>Test complete workflows:
+- Read Word doc with vision mode
+- Read PDF with vision mode
+- Cost tracking accuracy
+- Cache with vision descriptions
+- Query retrieval with image content</p>
+<h4 id="total-test-count">Total Test Count<a class="headerlink" href="#total-test-count" title="Permanent link">&para;</a></h4>
+<ul>
+<li>Current: 120 tests</li>
+<li>New: ~30 tests</li>
+<li><strong>Total: ~150 tests</strong></li>
+</ul>
+<hr />
+<h3 id="phase-515-documentation-v0334">Phase 5.1.5: Documentation (v0.3.34)<a class="headerlink" href="#phase-515-documentation-v0334" title="Permanent link">&para;</a></h3>
+<p><strong>Goal:</strong> Complete user-facing documentation</p>
+<h4 id="documents-to-update">Documents to Update<a class="headerlink" href="#documents-to-update" title="Permanent link">&para;</a></h4>
+<p><strong>1. README.md</strong></p>
+<p>Add section: <strong>Vision Mode for Images</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="gu">### 🖼️ Vision Mode for Images</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>WYN360 can intelligently describe images in Word and PDF documents using Claude Vision API.
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="gu">#### Usage</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>wyn360 read presentation.docx --image-mode vision
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="gu">#### Image Handling Modes</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="k">-</span><span class="w"> </span><span class="gs">**skip**</span> (default): Ignore images entirely
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="k">-</span><span class="w"> </span><span class="gs">**describe**</span>: Extract alt text and captions only (no API calls)
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="k">-</span><span class="w"> </span><span class="gs">**vision**</span>: Use Claude Vision API for intelligent descriptions (costs apply)
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="gu">#### Cost Considerations</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>Vision mode uses Claude&#39;s Vision API with the following pricing:
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="k">-</span><span class="w"> </span>~$0.01-0.05 per image
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="k">-</span><span class="w"> </span>Separate from text processing costs
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="k">-</span><span class="w"> </span>Track costs with <span class="sb">`/tokens`</span> command
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="gu">#### Example Output</span>
+<a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a>
+<a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a>📊 <span class="gs">**[Image 1]:**</span> A bar chart showing quarterly revenue growth from Q1 to Q4,
+<a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a>with Q4 showing the highest revenue at approximately $2.5M.
+<a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a>
+<a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a>📐 <span class="gs">**[Image 2]:**</span> System architecture diagram depicting three layers: frontend
+<a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a>(React), API layer (FastAPI), and database (PostgreSQL).
+</code></pre></div>
+<p><strong>2. ROADMAP_DOCUMENTS.md</strong></p>
+<p>Update Phase 5.1 status:
+- Mark all tasks as completed
+- Add "IMPLEMENTED" badges
+- Update version history table</p>
+<p><strong>3. USE_CASES.md</strong></p>
+<p>Add new use case:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="gu">### Use Case 18: Analyzing Presentation with Charts</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="gs">**Scenario:**</span> User needs to understand a PowerPoint presentation converted to Word with multiple charts.
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="gs">**Commands:**</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>wyn360 read quarterly_report.docx --image-mode vision
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="gs">**Output:**</span> Full document summary with intelligent descriptions of all charts, graphs, and diagrams.
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="gs">**Value:**</span> Extract insights from visual data without manually describing each chart.
+</code></pre></div>
+<p><strong>4. COST.md (NEW or UPDATE)</strong></p>
+<p>Create cost guide:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="gu">### Vision API Costs</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="gu">#### Pricing</span>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="k">-</span><span class="w"> </span>Input tokens (image + text): $3.00 per million tokens
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">-</span><span class="w"> </span>Output tokens (descriptions): $15.00 per million tokens
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="gu">#### Typical Costs</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="k">-</span><span class="w"> </span>Simple chart: ~$0.01 (300 input tokens, 100 output tokens)
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="k">-</span><span class="w"> </span>Complex diagram: ~$0.03 (500 input tokens, 200 output tokens)
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="k">-</span><span class="w"> </span>Photo: ~$0.02 (400 input tokens, 150 output tokens)
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="gu">#### Example: 20-Page Report</span>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="k">-</span><span class="w"> </span>10 images average
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="k">-</span><span class="w"> </span>Total cost: ~$0.10-0.30
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="k">-</span><span class="w"> </span>Plus text summarization: ~$0.05
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="k">-</span><span class="w"> </span><span class="gs">**Total: ~$0.15-0.35**</span>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="gu">#### Cost Control</span>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="k">-</span><span class="w"> </span>Use <span class="sb">`skip`</span> mode for documents without important images
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="k">-</span><span class="w"> </span>Use <span class="sb">`describe`</span> mode for simple images with alt text
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="k">-</span><span class="w"> </span>Reserve <span class="sb">`vision`</span> mode for critical visual content
+</code></pre></div>
+<hr />
+<h2 id="cost-analysis">💰 Cost Analysis<a class="headerlink" href="#cost-analysis" title="Permanent link">&para;</a></h2>
+<h3 id="vision-api-pricing-claude-sonnet-45">Vision API Pricing (Claude Sonnet 4.5)<a class="headerlink" href="#vision-api-pricing-claude-sonnet-45" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Price per MTok</th>
+<th>Typical Usage</th>
+<th>Cost per Image</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Input (image + text)</td>
+<td>$3.00</td>
+<td>300-500 tokens</td>
+<td>$0.0009-0.0015</td>
+</tr>
+<tr>
+<td>Output (description)</td>
+<td>$15.00</td>
+<td>100-200 tokens</td>
+<td>$0.0015-0.0030</td>
+</tr>
+<tr>
+<td><strong>Total per image</strong></td>
+<td>-</td>
+<td>-</td>
+<td><strong>$0.01-0.05</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="example-scenarios">Example Scenarios<a class="headerlink" href="#example-scenarios" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario 1: Research Paper (15 pages, 5 diagrams)</strong>
+- Text summarization: ~$0.02 (Haiku)
+- Vision processing: ~$0.05 (5 diagrams)
+- <strong>Total: ~$0.07</strong></p>
+<p><strong>Scenario 2: Financial Report (50 pages, 20 charts)</strong>
+- Text summarization: ~$0.08 (Haiku)
+- Vision processing: ~$0.20-0.40 (20 charts)
+- <strong>Total: ~$0.28-0.48</strong></p>
+<p><strong>Scenario 3: Presentation (30 slides, 30 images)</strong>
+- Text summarization: ~$0.05 (Haiku)
+- Vision processing: ~$0.30-0.60 (30 images)
+- <strong>Total: ~$0.35-0.65</strong></p>
+<h3 id="cost-mitigation-strategies">Cost Mitigation Strategies<a class="headerlink" href="#cost-mitigation-strategies" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Smart Defaults</strong>: Default to <code>skip</code> mode, require explicit <code>--vision</code> flag</li>
+<li><strong>User Warnings</strong>: Show estimated cost before processing</li>
+<li><strong>Batch Limits</strong>: Limit to 50 images per document by default</li>
+<li><strong>Caching</strong>: Cache vision results for 1 hour (same as text)</li>
+<li><strong>Selective Processing</strong>: Allow users to specify image indices to process</li>
+</ol>
+<hr />
+<h2 id="success-criteria">✅ Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h2>
+<h3 id="functional-requirements">Functional Requirements<a class="headerlink" href="#functional-requirements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Extract images from Word documents with 95%+ success rate</li>
+<li>✅ Extract images from PDFs (PyMuPDF) with 90%+ success rate</li>
+<li>✅ Vision API calls return descriptions within 3 seconds per image</li>
+<li>✅ Support skip/describe/vision modes seamlessly</li>
+<li>✅ Zero breaking changes to existing API</li>
+<li>✅ All existing tests continue to pass</li>
+<li>✅ New features have 90%+ test coverage</li>
+</ul>
+<h3 id="quality-requirements">Quality Requirements<a class="headerlink" href="#quality-requirements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Image descriptions are accurate and concise (100-300 tokens)</li>
+<li>✅ Cost tracking is accurate to within 1%</li>
+<li>✅ Error handling gracefully handles corrupted images</li>
+<li>✅ Performance: process 10-image document in &lt;30 seconds</li>
+<li>✅ Memory: handle documents with 50+ images without OOM</li>
+</ul>
+<h3 id="documentation-requirements">Documentation Requirements<a class="headerlink" href="#documentation-requirements" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ README.md updated with vision mode examples</li>
+<li>✅ Cost guide with clear pricing examples</li>
+<li>✅ USE_CASES.md with vision mode scenarios</li>
+<li>✅ All slash commands documented</li>
+<li>✅ API reference updated</li>
+</ul>
+<hr />
+<h2 id="implementation-timeline">🗓️ Implementation Timeline<a class="headerlink" href="#implementation-timeline" title="Permanent link">&para;</a></h2>
+<h3 id="sprint-1-core-image-extraction-week-1">Sprint 1: Core Image Extraction (Week 1)<a class="headerlink" href="#sprint-1-core-image-extraction-week-1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Days 1-2:</strong> WordReader image extraction</li>
+<li><strong>Days 3-4:</strong> PDFReader image extraction (PyMuPDF)</li>
+<li><strong>Day 5:</strong> Testing image extraction</li>
+</ul>
+<p><strong>Deliverable:</strong> Images can be extracted from both Word and PDF</p>
+<h3 id="sprint-2-vision-api-integration-week-2">Sprint 2: Vision API Integration (Week 2)<a class="headerlink" href="#sprint-2-vision-api-integration-week-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Days 1-2:</strong> Agent integration (read_word, read_pdf)</li>
+<li><strong>Days 3-4:</strong> Cost tracking and warnings</li>
+<li><strong>Day 5:</strong> Integration testing</li>
+</ul>
+<p><strong>Deliverable:</strong> Vision mode working end-to-end</p>
+<h3 id="sprint-3-testing-documentation-week-3">Sprint 3: Testing &amp; Documentation (Week 3)<a class="headerlink" href="#sprint-3-testing-documentation-week-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Days 1-2:</strong> Comprehensive unit tests</li>
+<li><strong>Days 3-4:</strong> Documentation updates</li>
+<li><strong>Day 5:</strong> Code review and polish</li>
+</ul>
+<p><strong>Deliverable:</strong> Production-ready vision mode</p>
+<h3 id="total-estimate-3-weeks-15-development-days">Total Estimate: 3 weeks (15 development days)<a class="headerlink" href="#total-estimate-3-weeks-15-development-days" title="Permanent link">&para;</a></h3>
+<hr />
+<h2 id="testing-strategy">🧪 Testing Strategy<a class="headerlink" href="#testing-strategy" title="Permanent link">&para;</a></h2>
+<h3 id="unit-tests-30-new-tests">Unit Tests (~30 new tests)<a class="headerlink" href="#unit-tests-30-new-tests" title="Permanent link">&para;</a></h3>
+<p><strong>ImageProcessor (20 tests):</strong>
+- Format detection (4 tests)
+- Vision API calls (4 tests)
+- Error handling (4 tests)
+- Batch processing (3 tests)
+- Type detection (3 tests)
+- Markdown formatting (2 tests)</p>
+<p><strong>WordReader (5 tests):</strong>
+- Image extraction
+- Vision mode integration
+- Skip/describe/vision modes
+- Context preservation
+- Error handling</p>
+<p><strong>PDFReader (5 tests):</strong>
+- PyMuPDF image extraction
+- pdfplumber image extraction
+- Vision mode end-to-end
+- Page context
+- No images handling</p>
+<h3 id="integration-tests-5-tests">Integration Tests (~5 tests)<a class="headerlink" href="#integration-tests-5-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>End-to-end Word document with vision</li>
+<li>End-to-end PDF with vision</li>
+<li>Cost tracking validation</li>
+<li>Cache with vision results</li>
+<li>Query retrieval with image content</li>
+</ul>
+<h3 id="performance-tests">Performance Tests<a class="headerlink" href="#performance-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Large document (50+ images) processing time</li>
+<li>Memory usage with many images</li>
+<li>Concurrent vision API calls</li>
+<li>Cache hit rate with vision mode</li>
+</ul>
+<hr />
+<h2 id="risk-mitigation">🔒 Risk Mitigation<a class="headerlink" href="#risk-mitigation" title="Permanent link">&para;</a></h2>
+<h3 id="technical-risks">Technical Risks<a class="headerlink" href="#technical-risks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Probability</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vision API rate limits</td>
+<td>Medium</td>
+<td>High</td>
+<td>Implement retry logic, batch throttling</td>
+</tr>
+<tr>
+<td>Large image handling</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Resize images before sending, set size limits</td>
+</tr>
+<tr>
+<td>Cost overruns</td>
+<td>High</td>
+<td>High</td>
+<td>Clear warnings, user confirmation, batch limits</td>
+</tr>
+<tr>
+<td>python-docx image extraction failures</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Graceful fallbacks, error handling</td>
+</tr>
+<tr>
+<td>PyMuPDF vs pdfplumber incompatibility</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Test both engines, document limitations</td>
+</tr>
+</tbody>
+</table>
+<h3 id="user-experience-risks">User Experience Risks<a class="headerlink" href="#user-experience-risks" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Probability</th>
+<th>Impact</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unexpected high costs</td>
+<td>High</td>
+<td>High</td>
+<td>Prominent cost warnings, require explicit --vision flag</td>
+</tr>
+<tr>
+<td>Slow processing</td>
+<td>Medium</td>
+<td>Medium</td>
+<td>Progress indicators, async processing</td>
+</tr>
+<tr>
+<td>Inaccurate descriptions</td>
+<td>Low</td>
+<td>Medium</td>
+<td>Include confidence scores, allow user feedback</td>
+</tr>
+<tr>
+<td>Breaking changes</td>
+<td>Low</td>
+<td>High</td>
+<td>Comprehensive backward compatibility testing</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="references">📚 References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<h3 id="api-documentation">API Documentation<a class="headerlink" href="#api-documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li><a href="https://docs.anthropic.com/en/docs/vision">Claude Vision API</a></li>
+<li><a href="https://python-docx.readthedocs.io/">python-docx</a></li>
+<li><a href="https://pymupdf.readthedocs.io/">PyMuPDF</a></li>
+<li><a href="https://github.com/jsvine/pdfplumber">pdfplumber</a></li>
+</ul>
+<h3 id="related-files">Related Files<a class="headerlink" href="#related-files" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>wyn360_cli/document_readers.py</code> - Core implementation</li>
+<li><code>wyn360_cli/agent.py</code> - Agent integration</li>
+<li><code>docs/ROADMAP_DOCUMENTS.md</code> - Parent roadmap</li>
+<li><code>docs/USE_CASES.md</code> - Use cases</li>
+</ul>
+<hr />
+<h2 id="next-steps">🎯 Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h3 id="immediate-actions-to-begin-implementation">Immediate Actions (To Begin Implementation)<a class="headerlink" href="#immediate-actions-to-begin-implementation" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✅ Create this roadmap document</li>
+<li>⏳ User review and approval of plan</li>
+<li>⏳ Begin Sprint 1: WordReader image extraction</li>
+<li>⏳ Daily standup updates on progress</li>
+<li>⏳ Continuous testing as features are added</li>
+</ol>
+<h3 id="decision-points">Decision Points<a class="headerlink" href="#decision-points" title="Permanent link">&para;</a></h3>
+<p><strong>Before starting implementation, confirm:</strong>
+- ✅ Cost structure acceptable to users
+- ✅ Vision API access available
+- ✅ Three-week timeline acceptable
+- ✅ Approach aligns with project goals</p>
+<hr />
+<h2 id="feedback-questions">📞 Feedback &amp; Questions<a class="headerlink" href="#feedback-questions" title="Permanent link">&para;</a></h2>
+<p><strong>Questions? Concerns? Suggestions?</strong></p>
+<p>This is a comprehensive plan designed to implement vision mode without breaking existing functionality. The implementation is broken into logical phases, each with clear deliverables and test requirements.</p>
+<p><strong>Key Design Decisions:</strong>
+1. <strong>Default to skip mode</strong> - Avoid surprise costs
+2. <strong>Separate cost tracking</strong> - Transparency on vision vs text costs
+3. <strong>Three image modes</strong> - Flexibility for different use cases
+4. <strong>Batch processing</strong> - Efficiency for multi-image documents
+5. <strong>Cache vision results</strong> - Avoid re-processing same images</p>
+<hr />
+<p><strong>Last Updated:</strong> December 2025
+<strong>Document Version:</strong> 1.0
+<strong>Maintained by:</strong> Yiqiao Yin (yiqiao.yin@wyn-associates.com)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy", "navigation.footer"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>

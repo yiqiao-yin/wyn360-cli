@@ -1,0 +1,3775 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An intelligent AI coding assistant CLI tool powered by Anthropic Claude">
+      
+      
+        <meta name="author" content="Yiqiao Yin">
+      
+      
+        <link rel="canonical" href="https://yiqiao-yin.github.io/wyn360-cli/development/roadmap/">
+      
+      
+        <link rel="prev" href="../testing/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Roadmap - WYN360 CLI Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wyn360-cli-feature-roadmap-expansion-ideas" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="WYN360 CLI Documentation" class="md-header__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WYN360 CLI Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/overview/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../usage/use-cases/" class="md-tabs__link">
+          
+  
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/system/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../contributing/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="WYN360 CLI Documentation" class="md-nav__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WYN360 CLI Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/web-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/browser-use/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/vision-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HuggingFace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autonomous-browsing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autonomous Browsing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#current-capabilities-v0323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Current Capabilities (v0.3.23)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-expansions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Suggested Expansions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Suggested Expansions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-enhanced-context-management-completed-v028" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Enhanced Context Management ✅ COMPLETED (v0.2.8)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Enhanced Context Management ✅ COMPLETED (v0.2.8)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-conversation-history-in-api-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Conversation History in API Calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-context-management-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Context Management Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-additional-tools-completed-v029" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Additional Tools ✅ COMPLETED (v0.2.9)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Additional Tools ✅ COMPLETED (v0.2.9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-git-operations-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Git Operations Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-searchgrep-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Search/Grep Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-file-management-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 File Management Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-model-selection-optimization-completed-v030" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Model Selection &amp; Optimization ✅ COMPLETED (v0.3.0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Model Selection &amp; Optimization ✅ COMPLETED (v0.3.0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-dynamic-model-switching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Dynamic Model Switching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-automatic-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Automatic Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-configuration-personalization-completed-v031" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Configuration &amp; Personalization ✅ COMPLETED (v0.3.1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Configuration &amp; Personalization ✅ COMPLETED (v0.3.1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-project-specific-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Project-Specific Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-streaming-responses-completed-v032-bugfixes-v033-034" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2, bugfixes v0.3.3-0.3.4)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2, bugfixes v0.3.3-0.3.4)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-token-by-token-streaming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Token-by-Token Streaming
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-huggingface-integration-completed-v0316-v0317" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: HuggingFace Integration ✅ COMPLETED (v0.3.16-v0.3.17)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 6: HuggingFace Integration ✅ COMPLETED (v0.3.16-v0.3.17)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-huggingface-authentication-readme-generation-completed-v0316" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 HuggingFace Authentication &amp; README Generation ✅ COMPLETED (v0.3.16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-huggingface-space-creation-file-upload-completed-v0317" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 HuggingFace Space Creation &amp; File Upload ✅ COMPLETED (v0.3.17)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-advanced-workflows-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Advanced Workflows (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 7: Advanced Workflows (MEDIUM PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-multi-file-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Multi-File Refactoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-test-generation-mode-completed-v0318" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Test Generation Mode ✅ COMPLETED (v0.3.18)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-documentation-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-8-integration-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8: Integration Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 8: Integration Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-github-integration-completed-v0323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 GitHub Integration ✅ COMPLETED (v0.3.23)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-database-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Database Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-9-safety-quality-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 9: Safety &amp; Quality (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 9: Safety &amp; Quality (HIGH PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-pre-execution-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Pre-Execution Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-automatic-backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Automatic Backups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-undorollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Undo/Rollback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-10-monitoring-analytics-completed-v0319" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 10: Monitoring &amp; Analytics ✅ COMPLETED (v0.3.19)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 10: Monitoring &amp; Analytics ✅ COMPLETED (v0.3.19)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-token-usage-tracking-completed-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Token Usage Tracking ✅ COMPLETED (Phase 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-performance-metrics-completed-v0319" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Performance Metrics ✅ COMPLETED (v0.3.19)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-11-collaboration-features-low-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 11: Collaboration Features (LOW PRIORITY)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 11: Collaboration Features (LOW PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-session-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Session Sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-prompt-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Prompt Library
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-priority-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Implementation Priority Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Implementation Priority Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-priority-implement-soon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HIGH Priority (Implement Soon)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medium-priority-next-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MEDIUM Priority (Next Phase)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#low-priority-future-consideration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LOW Priority (Future Consideration)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-development-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Recommended Development Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Recommended Development Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v030-context-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.3.0 - Context &amp; History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v040-enhanced-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.4.0 - Enhanced Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v050-streaming-ux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.5.0 - Streaming &amp; UX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v060-advanced-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.6.0 - Advanced Workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v070-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.7.0+ - Integrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-wins-easy-to-implement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 Quick Wins (Easy to Implement)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 Quick Wins (Easy to Implement)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-add-version-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Add Version Command
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-add-help-in-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Add Help in Session
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-keyboard-shortcuts-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Keyboard Shortcuts Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-exit-code-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Exit Code Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-better-error-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Better Error Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-vision-v10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔮 Future Vision (v1.0+)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔮 Future Vision (v1.0+)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-wyn360-as-code-review-assistant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. WYN360 as Code Review Assistant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wyn360-as-cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. WYN360 as CI/CD Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-wyn360-as-teaching-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. WYN360 as Teaching Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-wyn360-as-architecture-advisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. WYN360 as Architecture Advisor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-wyn360-ide-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. WYN360 IDE Plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community-feature-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Community Feature Requests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🤝 Contributing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📞 Feedback
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#current-capabilities-v0323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Current Capabilities (v0.3.23)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#suggested-expansions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Suggested Expansions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Suggested Expansions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-enhanced-context-management-completed-v028" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Enhanced Context Management ✅ COMPLETED (v0.2.8)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Enhanced Context Management ✅ COMPLETED (v0.2.8)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-conversation-history-in-api-calls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Conversation History in API Calls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-context-management-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Context Management Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-additional-tools-completed-v029" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Additional Tools ✅ COMPLETED (v0.2.9)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Additional Tools ✅ COMPLETED (v0.2.9)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-git-operations-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Git Operations Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-searchgrep-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Search/Grep Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-file-management-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 File Management Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-model-selection-optimization-completed-v030" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Model Selection &amp; Optimization ✅ COMPLETED (v0.3.0)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Model Selection &amp; Optimization ✅ COMPLETED (v0.3.0)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-dynamic-model-switching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Dynamic Model Switching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-automatic-model-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Automatic Model Selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-configuration-personalization-completed-v031" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Configuration &amp; Personalization ✅ COMPLETED (v0.3.1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Configuration &amp; Personalization ✅ COMPLETED (v0.3.1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-configuration-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Configuration File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-project-specific-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Project-Specific Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-streaming-responses-completed-v032-bugfixes-v033-034" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2, bugfixes v0.3.3-0.3.4)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2, bugfixes v0.3.3-0.3.4)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-token-by-token-streaming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Token-by-Token Streaming
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-6-huggingface-integration-completed-v0316-v0317" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 6: HuggingFace Integration ✅ COMPLETED (v0.3.16-v0.3.17)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 6: HuggingFace Integration ✅ COMPLETED (v0.3.16-v0.3.17)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-huggingface-authentication-readme-generation-completed-v0316" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 HuggingFace Authentication &amp; README Generation ✅ COMPLETED (v0.3.16)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-huggingface-space-creation-file-upload-completed-v0317" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 HuggingFace Space Creation &amp; File Upload ✅ COMPLETED (v0.3.17)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-7-advanced-workflows-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 7: Advanced Workflows (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 7: Advanced Workflows (MEDIUM PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-multi-file-refactoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Multi-File Refactoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-test-generation-mode-completed-v0318" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Test Generation Mode ✅ COMPLETED (v0.3.18)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-documentation-generation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Documentation Generation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-8-integration-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8: Integration Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 8: Integration Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-github-integration-completed-v0323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 GitHub Integration ✅ COMPLETED (v0.3.23)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-database-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Database Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-9-safety-quality-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 9: Safety &amp; Quality (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 9: Safety &amp; Quality (HIGH PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-pre-execution-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Pre-Execution Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-automatic-backups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Automatic Backups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-undorollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Undo/Rollback
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-10-monitoring-analytics-completed-v0319" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 10: Monitoring &amp; Analytics ✅ COMPLETED (v0.3.19)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 10: Monitoring &amp; Analytics ✅ COMPLETED (v0.3.19)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-token-usage-tracking-completed-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Token Usage Tracking ✅ COMPLETED (Phase 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-performance-metrics-completed-v0319" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Performance Metrics ✅ COMPLETED (v0.3.19)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-11-collaboration-features-low-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 11: Collaboration Features (LOW PRIORITY)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 11: Collaboration Features (LOW PRIORITY)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-session-sharing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Session Sharing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-prompt-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Prompt Library
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-priority-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Implementation Priority Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Implementation Priority Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#high-priority-implement-soon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HIGH Priority (Implement Soon)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medium-priority-next-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MEDIUM Priority (Next Phase)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#low-priority-future-consideration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LOW Priority (Future Consideration)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-development-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Recommended Development Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Recommended Development Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#v030-context-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.3.0 - Context &amp; History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v040-enhanced-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.4.0 - Enhanced Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v050-streaming-ux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.5.0 - Streaming &amp; UX
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v060-advanced-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.6.0 - Advanced Workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#v070-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        v0.7.0+ - Integrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-wins-easy-to-implement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 Quick Wins (Easy to Implement)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 Quick Wins (Easy to Implement)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-add-version-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Add Version Command
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-add-help-in-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Add Help in Session
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-keyboard-shortcuts-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Keyboard Shortcuts Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-exit-code-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Exit Code Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-better-error-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Better Error Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-vision-v10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔮 Future Vision (v1.0+)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔮 Future Vision (v1.0+)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-wyn360-as-code-review-assistant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. WYN360 as Code Review Assistant
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-wyn360-as-cicd-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. WYN360 as CI/CD Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-wyn360-as-teaching-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. WYN360 as Teaching Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-wyn360-as-architecture-advisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. WYN360 as Architecture Advisor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-wyn360-ide-plugin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. WYN360 IDE Plugin
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#community-feature-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Community Feature Requests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🤝 Contributing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#feedback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📞 Feedback
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="wyn360-cli-feature-roadmap-expansion-ideas">WYN360 CLI - Feature Roadmap &amp; Expansion Ideas<a class="headerlink" href="#wyn360-cli-feature-roadmap-expansion-ideas" title="Permanent link">&para;</a></h1>
+<p>This document outlines potential features and enhancements to expand WYN360 CLI's capabilities.</p>
+<h2 id="current-capabilities-v0323">🎯 Current Capabilities (v0.3.23)<a class="headerlink" href="#current-capabilities-v0323" title="Permanent link">&para;</a></h2>
+<p><strong>What We Have:</strong>
+- ✅ File operations (read, write, list, get project info)
+- ✅ Command execution with confirmation
+- ✅ Code generation from natural language
+- ✅ Intent recognition (create vs update)
+- ✅ Multi-line input support
+- ✅ Comprehensive error handling
+- ✅ Tool calling with retry logic
+- ✅ Conversation history and context management (Phase 1)
+- ✅ Token tracking and cost monitoring (Phase 1)
+- ✅ Session save/load functionality (Phase 1)
+- ✅ Slash commands for context management (Phase 1)
+- ✅ Git operations (status, diff, log, branch) (Phase 2)
+- ✅ Code search across files (Phase 2)
+- ✅ File management (delete, move, create dirs) (Phase 2)
+- ✅ Dynamic model switching (haiku/sonnet/opus) (Phase 3)
+- ✅ Model information display with pricing (Phase 3)
+- ✅ /model command for mid-session model changes (Phase 3)
+- ✅ User configuration file (~/.wyn360/config.yaml) (Phase 4)
+- ✅ Project configuration file (.wyn360.yaml) (Phase 4)
+- ✅ Custom instructions and project context (Phase 4)
+- ✅ /config command to view settings (Phase 4)
+- ✅ Streaming responses - token-by-token output (Phase 5)
+- ✅ Real-time feedback and progress visibility (Phase 5)
+- ✅ HuggingFace authentication and README generation (Phase 6.1)
+- ✅ HuggingFace Space creation and file upload (Phase 6.2)
+- ✅ Full automatic deployment to HuggingFace Spaces (Phase 6 Complete)
+- ✅ Automatic test generation for Python files (Phase 7.2)
+- ✅ Performance metrics tracking - response times, tool usage, error rates (Phase 10.2)
+- ✅ Enhanced CLI help with <code>-h</code> flag - comprehensive command reference (UX Improvement)
+- ✅ Real-time web search - weather, URLs, current information (Phase 11.1) - <strong>Enhanced in v0.3.23</strong>
+- ✅ GitHub integration - commit, PR creation, branch management, merge (Phase 8.1)</p>
+<p><strong>Recent Improvements (v0.3.23):</strong>
+- ⬆️ Upgraded pydantic-ai from 0.0.19 to 1.13.0 for improved stability and features
+- 🔧 Fixed web search tool integration - now properly recognizes resource/repo search queries
+- 📝 Enhanced system prompt with clearer web search intent examples
+- ✅ Web search now works for queries like "find a popular GitHub repo for X"</p>
+<hr />
+<h2 id="suggested-expansions">🚀 Suggested Expansions<a class="headerlink" href="#suggested-expansions" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-enhanced-context-management-completed-v028">Phase 1: Enhanced Context Management ✅ COMPLETED (v0.2.8)<a class="headerlink" href="#phase-1-enhanced-context-management-completed-v028" title="Permanent link">&para;</a></h3>
+<h4 id="11-conversation-history-in-api-calls">1.1 Conversation History in API Calls<a class="headerlink" href="#11-conversation-history-in-api-calls" title="Permanent link">&para;</a></h4>
+<p><strong>Current:</strong> History stored locally but not sent to API
+<strong>Proposed:</strong> Send conversation history to maintain context across turns</p>
+<p><strong>Benefits:</strong>
+- Agent remembers previous interactions
+- "Continue from where we left off" workflows
+- Better follow-up question handling</p>
+<p><strong>Implementation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># In agent.py chat() method</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">messages</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;system&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">system_prompt</span><span class="p">}]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">messages</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conversation_history</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">agent</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">user_message</span><span class="p">,</span> <span class="n">message_history</span><span class="o">=</span><span class="n">messages</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Considerations:</strong>
+- Token usage increases significantly
+- Need context window management (max tokens)
+- Add option to disable for cost savings</p>
+<p><strong>Priority:</strong> HIGH - Most requested feature</p>
+<hr />
+<h4 id="12-context-management-commands">1.2 Context Management Commands<a class="headerlink" href="#12-context-management-commands" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> User control over conversation context</p>
+<p><strong>Commands:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/clear<span class="w">      </span><span class="c1"># Clear conversation history</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>/history<span class="w">    </span><span class="c1"># Show conversation history</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>/save<span class="w">       </span><span class="c1"># Save session to file</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>/load<span class="w">       </span><span class="c1"># Load previous session</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>/token<span class="w">      </span><span class="c1"># Show token usage stats</span>
+</code></pre></div></p>
+<p><strong>Implementation:</strong>
+- Add slash command parsing in CLI
+- Store sessions as JSON
+- Display token counts per message</p>
+<p><strong>Priority:</strong> MEDIUM</p>
+<hr />
+<h3 id="phase-2-additional-tools-completed-v029">Phase 2: Additional Tools ✅ COMPLETED (v0.2.9)<a class="headerlink" href="#phase-2-additional-tools-completed-v029" title="Permanent link">&para;</a></h3>
+<h4 id="21-git-operations-tool">2.1 Git Operations Tool<a class="headerlink" href="#21-git-operations-tool" title="Permanent link">&para;</a></h4>
+<p><strong>Why:</strong> Most developers use git constantly</p>
+<p><strong>Tool Functions:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">git_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Get current git status&quot;&quot;&quot;</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">git_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Show git diff for file or all changes&quot;&quot;&quot;</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">git_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create git commit with message&quot;&quot;&quot;</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">git_branch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;List branches&quot;&quot;&quot;</span>
+</code></pre></div></p>
+<p><strong>Use Cases:</strong>
+- "Show me what files changed"
+- "Commit these changes with message 'Add feature X'"
+- "What branch am I on?"</p>
+<p><strong>Priority:</strong> HIGH - Frequently needed</p>
+<hr />
+<h4 id="22-searchgrep-tool">2.2 Search/Grep Tool<a class="headerlink" href="#22-searchgrep-tool" title="Permanent link">&para;</a></h4>
+<p><strong>Why:</strong> Find code patterns across files</p>
+<p><strong>Tool Function:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search_files</span><span class="p">(</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">file_pattern</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;*.py&quot;</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Search for pattern in files matching file_pattern&quot;&quot;&quot;</span>
+</code></pre></div></p>
+<p><strong>Use Cases:</strong>
+- "Find all functions that use 'requests' library"
+- "Where is the User class defined?"
+- "Show me all TODO comments"</p>
+<p><strong>Priority:</strong> HIGH - Essential for large codebases</p>
+<hr />
+<h4 id="23-file-management-tools">2.3 File Management Tools<a class="headerlink" href="#23-file-management-tools" title="Permanent link">&para;</a></h4>
+<p><strong>Why:</strong> Complete file system operations</p>
+<p><strong>Tool Functions:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">delete_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Delete a file (with confirmation)&quot;&quot;&quot;</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">move_file</span><span class="p">(</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">source</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="n">destination</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Move or rename file&quot;&quot;&quot;</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">dir_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create directory structure&quot;&quot;&quot;</span>
+</code></pre></div></p>
+<p><strong>Priority:</strong> MEDIUM</p>
+<hr />
+<h3 id="phase-3-model-selection-optimization-completed-v030">Phase 3: Model Selection &amp; Optimization ✅ COMPLETED (v0.3.0)<a class="headerlink" href="#phase-3-model-selection-optimization-completed-v030" title="Permanent link">&para;</a></h3>
+<h4 id="31-dynamic-model-switching">3.1 Dynamic Model Switching<a class="headerlink" href="#31-dynamic-model-switching" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Choose model based on task complexity</p>
+<p><strong>Implementation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># In CLI</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">wyn360</span> <span class="o">--</span><span class="n">model</span> <span class="n">haiku</span>      <span class="c1"># Fast &amp; cheap for simple tasks</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">wyn360</span> <span class="o">--</span><span class="n">model</span> <span class="n">sonnet</span>     <span class="c1"># Default - balanced</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">wyn360</span> <span class="o">--</span><span class="n">model</span> <span class="n">opus</span>       <span class="c1"># Most capable - expensive</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># Or dynamic in-session</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="s2">&quot;Use Haiku for this simple task&quot;</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="s2">&quot;Switch to Opus for complex refactoring&quot;</span>
+</code></pre></div></p>
+<p><strong>Cost Optimization:</strong>
+| Model | Input Cost | Output Cost | Best For |
+|-------|-----------|-------------|----------|
+| Haiku | $0.25/M | $1.25/M | Simple file ops, quick questions |
+| Sonnet | $3.00/M | $15.00/M | General coding, analysis |
+| Opus | $15.00/M | $75.00/M | Complex reasoning, architecture |</p>
+<p><strong>Priority:</strong> MEDIUM - Good for power users</p>
+<hr />
+<h4 id="32-automatic-model-selection">3.2 Automatic Model Selection<a class="headerlink" href="#32-automatic-model-selection" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Agent chooses appropriate model for task</p>
+<p><strong>Logic:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span><span class="w"> </span><span class="nf">suggest_model</span><span class="p">(</span><span class="n">task_description</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="k">if</span> <span class="n">is_simple_task</span><span class="p">(</span><span class="n">task_description</span><span class="p">):</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        <span class="k">return</span> <span class="s2">&quot;haiku&quot;</span>  <span class="c1"># &quot;read file&quot;, &quot;list files&quot;</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="k">elif</span> <span class="n">is_complex_task</span><span class="p">(</span><span class="n">task_description</span><span class="p">):</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>        <span class="k">return</span> <span class="s2">&quot;opus&quot;</span>   <span class="c1"># &quot;refactor architecture&quot;, &quot;design system&quot;</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>        <span class="k">return</span> <span class="s2">&quot;sonnet&quot;</span>  <span class="c1"># Default</span>
+</code></pre></div></p>
+<p><strong>Priority:</strong> LOW - Nice to have</p>
+<hr />
+<h3 id="phase-4-configuration-personalization-completed-v031">Phase 4: Configuration &amp; Personalization ✅ COMPLETED (v0.3.1)<a class="headerlink" href="#phase-4-configuration-personalization-completed-v031" title="Permanent link">&para;</a></h3>
+<h4 id="41-configuration-file">4.1 Configuration File<a class="headerlink" href="#41-configuration-file" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Persistent user preferences</p>
+<p><strong>File:</strong> <code>~/.wyn360/config.yaml</code>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Default settings</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">claude-sonnet-4-20250514</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nt">max_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4096</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1"># Custom system prompt additions</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="nt">custom_instructions</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">  </span><span class="no">- Always use type hints</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">  </span><span class="no">- Follow PEP 8 strictly</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">  </span><span class="no">- Add docstrings to all functions</span>
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
+<a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="c1"># Shortcuts</span>
+<a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="nt">aliases</span><span class="p">:</span>
+<a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">  </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;run</span><span class="nv"> </span><span class="s">pytest</span><span class="nv"> </span><span class="s">tests/</span><span class="nv"> </span><span class="s">-v&quot;</span>
+<a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">  </span><span class="nt">lint</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;run</span><span class="nv"> </span><span class="s">ruff</span><span class="nv"> </span><span class="s">check</span><span class="nv"> </span><span class="s">.&quot;</span>
+<a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
+<a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="c1"># Favorite directories</span>
+<a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="nt">workspaces</span><span class="p">:</span>
+<a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/projects/app1</span>
+<a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/projects/ml-research</span>
+</code></pre></div></p>
+<p><strong>Priority:</strong> MEDIUM - Improves UX for regular users</p>
+<hr />
+<h4 id="42-project-specific-context">4.2 Project-Specific Context<a class="headerlink" href="#42-project-specific-context" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Auto-load project context</p>
+<p><strong>File:</strong> <code>.wyn360.yaml</code> in project root
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Project-specific instructions</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="no">This is a FastAPI project with:</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="no">- PostgreSQL database</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="no">- Redis caching</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span><span class="no">- Celery for background tasks</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="c1"># Project-specific tools</span>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="nt">dependencies</span><span class="p">:</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fastapi</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sqlalchemy</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">celery</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="c1"># Common commands</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="nt">commands</span><span class="p">:</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="w">  </span><span class="nt">dev</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;uvicorn</span><span class="nv"> </span><span class="s">app.main:app</span><span class="nv"> </span><span class="s">--reload&quot;</span>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="w">  </span><span class="nt">test</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;pytest</span><span class="nv"> </span><span class="s">tests/</span><span class="nv"> </span><span class="s">-v</span><span class="nv"> </span><span class="s">--cov&quot;</span>
+</code></pre></div></p>
+<p><strong>Priority:</strong> MEDIUM - Great for teams</p>
+<hr />
+<h3 id="phase-5-streaming-responses-completed-v032-bugfixes-v033-034">Phase 5: Streaming Responses ✅ COMPLETED (v0.3.2, bugfixes v0.3.3-0.3.4)<a class="headerlink" href="#phase-5-streaming-responses-completed-v032-bugfixes-v033-034" title="Permanent link">&para;</a></h3>
+<h4 id="51-token-by-token-streaming">5.1 Token-by-Token Streaming<a class="headerlink" href="#51-token-by-token-streaming" title="Permanent link">&para;</a></h4>
+<p><strong>Why:</strong> See responses as they generate (like ChatGPT)</p>
+<p><strong>Current Experience:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>You: Generate a large script
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>[Spinner for 10 seconds]
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>WYN360: [Entire response appears at once]
+</code></pre></div></p>
+<p><strong>Proposed Experience:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>You: Generate a large script
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>WYN360: I&#39;ll create a comprehensive... [tokens appear as generated]
+</code></pre></div></p>
+<p><strong>Implementation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Use async streaming API</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">async</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">agent</span><span class="o">.</span><span class="n">run_stream</span><span class="p">(</span><span class="n">user_message</span><span class="p">):</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">chunk</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Benefits:</strong>
+- Feels faster (immediate feedback)
+- Can cancel long responses
+- Better UX for lengthy outputs</p>
+<p><strong>Priority:</strong> HIGH - Significant UX improvement</p>
+<hr />
+<h3 id="phase-6-huggingface-integration-completed-v0316-v0317">Phase 6: HuggingFace Integration ✅ COMPLETED (v0.3.16-v0.3.17)<a class="headerlink" href="#phase-6-huggingface-integration-completed-v0316-v0317" title="Permanent link">&para;</a></h3>
+<h4 id="61-huggingface-authentication-readme-generation-completed-v0316">6.1 HuggingFace Authentication &amp; README Generation ✅ COMPLETED (v0.3.16)<a class="headerlink" href="#61-huggingface-authentication-readme-generation-completed-v0316" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Enable users to deploy apps to HuggingFace Spaces through natural language</p>
+<p><strong>Phase 1 Implementation:</strong></p>
+<p><strong>New Tools:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_hf_authentication</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if user is authenticated with HuggingFace&quot;&quot;&quot;</span>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_hf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Authenticate with HuggingFace using provided token&quot;&quot;&quot;</span>
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_hf_readme</span><span class="p">(</span>
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>    <span class="n">sdk</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;streamlit&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>    <span class="n">sdk_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;1.34.0&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>    <span class="n">app_file</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;app.py&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>    <span class="n">emoji</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;🔥&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>    <span class="n">color_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;indigo&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>    <span class="n">color_to</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;green&quot;</span><span class="p">,</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>    <span class="n">license</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mit&quot;</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate README.md with HuggingFace Space frontmatter&quot;&quot;&quot;</span>
+</code></pre></div></p>
+<p><strong>Workflow:</strong>
+1. User creates an app (e.g., Streamlit chatbot) using WYN360-CLI
+2. User says "push to huggingface"
+3. WYN360 checks for HF_TOKEN authentication
+4. If not authenticated, asks for token and authenticates
+5. Generates README.md with proper YAML frontmatter for Spaces</p>
+<p><strong>Example Use Case:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>You: Create a simple Streamlit echo chatbot
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>WYN360: [Creates app.py with Streamlit code]
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>You: Push this to HuggingFace
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>WYN360: Let me check your HuggingFace authentication...
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>Not authenticated. Please provide your HuggingFace token.
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>Get one from: https://huggingface.co/settings/tokens
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>You: hf_xxxxxxxxxxxxx
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>WYN360: ✓ Authenticated as &#39;username&#39;
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>Creating README.md with Streamlit Space configuration...
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>✓ README.md created
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>[Phase 2 will add: Space creation and file upload]
+</code></pre></div></p>
+<p><strong>Test Coverage:</strong>
+- 12 new unit tests (7 in test_agent.py, 5 in test_utils.py)
+- Tests for authentication checking (authenticated/not authenticated)
+- Tests for authentication success/failure
+- Tests for README creation (Streamlit, Gradio, Docker, Static)
+- Tests for username extraction from HF CLI output</p>
+<p><strong>Priority:</strong> HIGH - Enables direct deployment to HuggingFace Spaces</p>
+<hr />
+<h4 id="62-huggingface-space-creation-file-upload-completed-v0317">6.2 HuggingFace Space Creation &amp; File Upload ✅ COMPLETED (v0.3.17)<a class="headerlink" href="#62-huggingface-space-creation-file-upload-completed-v0317" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Complete the deployment workflow by creating Spaces and uploading files</p>
+<p><strong>Implemented Tools:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">create_hf_space</span><span class="p">(</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>    <span class="n">space_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="n">sdk</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;streamlit&quot;</span><span class="p">,</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>    <span class="n">private</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create HuggingFace Space via CLI&quot;&quot;&quot;</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">push_to_hf_space</span><span class="p">(</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>    <span class="n">space_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>    <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Upload files to HuggingFace Space&quot;&quot;&quot;</span>
+</code></pre></div></p>
+<p><strong>HuggingFace CLI Commands Used:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Create Space</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>hf<span class="w"> </span>repo<span class="w"> </span>create<span class="w"> </span><span class="o">{</span>space_name<span class="o">}</span><span class="w"> </span>--type<span class="o">=</span>space<span class="w"> </span>--space-sdk<span class="o">={</span>sdk<span class="o">}</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1"># Upload files</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>hf<span class="w"> </span>upload<span class="w"> </span><span class="o">{</span>space_name<span class="o">}</span><span class="w"> </span><span class="o">{</span>file_path<span class="o">}</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="c1"># or upload entire directory</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>hf<span class="w"> </span>upload<span class="w"> </span><span class="o">{</span>space_name<span class="o">}</span><span class="w"> </span>.<span class="w"> </span>--repo-type<span class="o">=</span>space
+</code></pre></div></p>
+<p><strong>Complete Workflow (Phase 1 + Phase 2):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>You: Create a Streamlit chatbot and deploy to HuggingFace
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>WYN360:
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>1. Creating Streamlit app...
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>   ✓ app.py created
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>2. Checking HuggingFace authentication...
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>   ✓ Authenticated as &#39;username&#39;
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>3. Creating README.md for Space...
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>   ✓ README.md created
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>4. Creating HuggingFace Space...
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>   What should the Space be called? (format: username/repo-name)
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a>
+<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a>You: username/echo-chatbot
+<a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a>
+<a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a>WYN360:
+<a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a>   ✓ Space created: https://huggingface.co/spaces/username/echo-chatbot
+<a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a>
+<a id="__codelineno-16-21" name="__codelineno-16-21" href="#__codelineno-16-21"></a>5. Uploading files to Space...
+<a id="__codelineno-16-22" name="__codelineno-16-22" href="#__codelineno-16-22"></a>   Uploading: app.py
+<a id="__codelineno-16-23" name="__codelineno-16-23" href="#__codelineno-16-23"></a>   Uploading: README.md
+<a id="__codelineno-16-24" name="__codelineno-16-24" href="#__codelineno-16-24"></a>   Uploading: requirements.txt
+<a id="__codelineno-16-25" name="__codelineno-16-25" href="#__codelineno-16-25"></a>   ✓ All files uploaded
+<a id="__codelineno-16-26" name="__codelineno-16-26" href="#__codelineno-16-26"></a>
+<a id="__codelineno-16-27" name="__codelineno-16-27" href="#__codelineno-16-27"></a>🎉 Your app is live at: https://huggingface.co/spaces/username/echo-chatbot
+</code></pre></div></p>
+<p><strong>Supported SDKs:</strong>
+- Streamlit (most common for demos)
+- Gradio (ML interfaces)
+- Docker (custom environments)
+- Static (HTML/JS apps)</p>
+<p><strong>Priority:</strong> HIGH - Completes the deployment workflow</p>
+<hr />
+<h3 id="phase-7-advanced-workflows-medium-priority">Phase 7: Advanced Workflows (MEDIUM PRIORITY)<a class="headerlink" href="#phase-7-advanced-workflows-medium-priority" title="Permanent link">&para;</a></h3>
+<h4 id="71-multi-file-refactoring">7.1 Multi-File Refactoring<a class="headerlink" href="#71-multi-file-refactoring" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Refactor across multiple files in one operation</p>
+<p><strong>Use Case:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>You: Rename the User class to Account across all files
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>WYN360:
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>Found User class in:
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>- models/user.py
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>- services/user_service.py
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>- api/user_routes.py
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>I&#39;ll refactor all 3 files:
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>1. Read all files
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>2. Update class name and imports
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>3. Write back with changes
+</code></pre></div></p>
+<p><strong>Priority:</strong> MEDIUM - Powerful for large refactors</p>
+<hr />
+<h4 id="72-test-generation-mode-completed-v0318">7.2 Test Generation Mode ✅ COMPLETED (v0.3.18)<a class="headerlink" href="#72-test-generation-mode-completed-v0318" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Automatically generate tests for code</p>
+<p><strong>Use Case:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>You: Generate tests for calculator.py
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>WYN360:
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>Reading calculator.py...
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>Found functions: add(), subtract(), multiply(), divide()
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>Creating test_calculator.py with:
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>- test_add_positive_numbers
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>- test_add_negative_numbers
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>- test_divide_by_zero_raises_error
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>[... comprehensive test suite]
+</code></pre></div></p>
+<p><strong>Priority:</strong> MEDIUM - High value for developers</p>
+<hr />
+<h4 id="73-documentation-generation">7.3 Documentation Generation<a class="headerlink" href="#73-documentation-generation" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Auto-generate documentation</p>
+<p><strong>Use Case:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>You: Generate API documentation for my FastAPI app
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>WYN360:
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>Analyzing routes...
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>Creating API_DOCS.md with:
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>- Endpoints
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>- Request/Response schemas
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>- Example usage
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>- Authentication
+</code></pre></div></p>
+<p><strong>Priority:</strong> LOW - Nice to have</p>
+<hr />
+<h3 id="phase-8-integration-features">Phase 8: Integration Features<a class="headerlink" href="#phase-8-integration-features" title="Permanent link">&para;</a></h3>
+<h4 id="81-github-integration-completed-v0323">8.1 GitHub Integration ✅ COMPLETED (v0.3.23)<a class="headerlink" href="#81-github-integration-completed-v0323" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Complete GitHub workflow management with commit, PR creation, and branch operations</p>
+<p><strong>Implemented Tools:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_gh_authentication</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if user is authenticated with GitHub&quot;&quot;&quot;</span>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">authenticate_gh</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Authenticate with GitHub using access token&quot;&quot;&quot;</span>
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">gh_commit_changes</span><span class="p">(</span>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>    <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>    <span class="n">push</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Commit changes to the current repository and push to GitHub&quot;&quot;&quot;</span>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">gh_create_pr</span><span class="p">(</span>
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-20-17" name="__codelineno-20-17" href="#__codelineno-20-17"></a>    <span class="n">body</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+<a id="__codelineno-20-18" name="__codelineno-20-18" href="#__codelineno-20-18"></a>    <span class="n">base_branch</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;main&quot;</span>
+<a id="__codelineno-20-19" name="__codelineno-20-19" href="#__codelineno-20-19"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-20-20" name="__codelineno-20-20" href="#__codelineno-20-20"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a pull request on GitHub&quot;&quot;&quot;</span>
+<a id="__codelineno-20-21" name="__codelineno-20-21" href="#__codelineno-20-21"></a>
+<a id="__codelineno-20-22" name="__codelineno-20-22" href="#__codelineno-20-22"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">gh_create_branch</span><span class="p">(</span>
+<a id="__codelineno-20-23" name="__codelineno-20-23" href="#__codelineno-20-23"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-20-24" name="__codelineno-20-24" href="#__codelineno-20-24"></a>    <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-20-25" name="__codelineno-20-25" href="#__codelineno-20-25"></a>    <span class="n">checkout</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-20-26" name="__codelineno-20-26" href="#__codelineno-20-26"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-20-27" name="__codelineno-20-27" href="#__codelineno-20-27"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new branch and optionally check it out&quot;&quot;&quot;</span>
+<a id="__codelineno-20-28" name="__codelineno-20-28" href="#__codelineno-20-28"></a>
+<a id="__codelineno-20-29" name="__codelineno-20-29" href="#__codelineno-20-29"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">gh_checkout_branch</span><span class="p">(</span>
+<a id="__codelineno-20-30" name="__codelineno-20-30" href="#__codelineno-20-30"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-20-31" name="__codelineno-20-31" href="#__codelineno-20-31"></a>    <span class="n">branch_name</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-20-32" name="__codelineno-20-32" href="#__codelineno-20-32"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-20-33" name="__codelineno-20-33" href="#__codelineno-20-33"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Check out an existing branch&quot;&quot;&quot;</span>
+<a id="__codelineno-20-34" name="__codelineno-20-34" href="#__codelineno-20-34"></a>
+<a id="__codelineno-20-35" name="__codelineno-20-35" href="#__codelineno-20-35"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">gh_merge_branch</span><span class="p">(</span>
+<a id="__codelineno-20-36" name="__codelineno-20-36" href="#__codelineno-20-36"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-20-37" name="__codelineno-20-37" href="#__codelineno-20-37"></a>    <span class="n">source_branch</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-20-38" name="__codelineno-20-38" href="#__codelineno-20-38"></a>    <span class="n">target_branch</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-20-39" name="__codelineno-20-39" href="#__codelineno-20-39"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-20-40" name="__codelineno-20-40" href="#__codelineno-20-40"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Merge source branch into target branch&quot;&quot;&quot;</span>
+</code></pre></div></p>
+<p><strong>Complete Workflow:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>You: Create branch feature/auth
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>WYN360: [Creates and checks out branch]
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>✓ Branch &#39;feature/auth&#39; created
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>You: [Generate code]
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>You: Commit these changes
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
+<a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>WYN360: [Checks GitHub authentication]
+<a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>✓ Authenticated with GitHub as &#39;username&#39;
+<a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>[Stages all changes]
+<a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>[Commits with message]
+<a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>[Pushes to origin]
+<a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>✓ Successfully committed and pushed changes
+<a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>
+<a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>You: Create pull request
+<a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>
+<a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>WYN360: [Analyzes changes]
+<a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a>[Generates PR description]
+<a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a>[Creates PR on GitHub]
+<a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a>✓ PR created: https://github.com/username/repo/pull/42
+<a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a>
+<a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a>You: Checkout main
+<a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a>
+<a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a>WYN360: [Switches to main branch]
+<a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a>✓ Checked out main
+<a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a>
+<a id="__codelineno-21-29" name="__codelineno-21-29" href="#__codelineno-21-29"></a>You: Merge feature/auth into main
+<a id="__codelineno-21-30" name="__codelineno-21-30" href="#__codelineno-21-30"></a>
+<a id="__codelineno-21-31" name="__codelineno-21-31" href="#__codelineno-21-31"></a>WYN360: [Merges branch]
+<a id="__codelineno-21-32" name="__codelineno-21-32" href="#__codelineno-21-32"></a>✓ Successfully merged feature/auth into main
+</code></pre></div></p>
+<p><strong>Features:</strong>
+- 🔐 GitHub authentication with GH_TOKEN/GITHUB_TOKEN
+- 💾 Commit and push changes directly from CLI
+- 🔀 Create pull requests with title, body, and base branch
+- 🌿 Branch management: create, checkout branches
+- 🔄 Branch merging with conflict detection
+- 🔒 User confirmation for all git operations
+- ✅ Auto-authentication from environment variables
+- 📚 Comprehensive documentation in USE_CASES.md Section 17</p>
+<p><strong>Test Coverage:</strong> Unit tests to be added for all 7 GitHub tools</p>
+<p><strong>Priority:</strong> COMPLETED - Full GitHub workflow management</p>
+<hr />
+<h4 id="82-database-tools">8.2 Database Tools<a class="headerlink" href="#82-database-tools" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Direct database operations</p>
+<p><strong>Capabilities:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">run_query</span><span class="p">(</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>    <span class="n">connection_string</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Execute SQL query and return results&quot;&quot;&quot;</span>
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">describe_table</span><span class="p">(</span>
+<a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>    <span class="bp">self</span><span class="p">,</span>
+<a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>    <span class="n">ctx</span><span class="p">:</span> <span class="n">RunContext</span><span class="p">[</span><span class="kc">None</span><span class="p">],</span>
+<a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a>    <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span>
+<a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Show table schema&quot;&quot;&quot;</span>
+</code></pre></div></p>
+<p><strong>Priority:</strong> LOW - Niche use case</p>
+<hr />
+<h3 id="phase-9-safety-quality-high-priority">Phase 9: Safety &amp; Quality (HIGH PRIORITY)<a class="headerlink" href="#phase-9-safety-quality-high-priority" title="Permanent link">&para;</a></h3>
+<h4 id="91-pre-execution-validation">9.1 Pre-Execution Validation<a class="headerlink" href="#91-pre-execution-validation" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Validate code before execution</p>
+<p><strong>Checks:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># Before running command</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="o">-</span> <span class="n">Static</span> <span class="n">analysis</span> <span class="p">(</span><span class="n">syntax</span> <span class="n">errors</span><span class="p">)</span>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="o">-</span> <span class="n">Security</span> <span class="n">scanning</span> <span class="p">(</span><span class="n">dangerous</span> <span class="n">operations</span><span class="p">)</span>
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="o">-</span> <span class="n">Dependency</span> <span class="n">checking</span> <span class="p">(</span><span class="n">missing</span> <span class="n">imports</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>You: Run script.py
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>WYN360:
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>⚠️  WARNING: Security issues detected:
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>- Line 15: eval() is potentially unsafe
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>- Line 23: os.system() without sanitization
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>Continue anyway? (y/N):
+</code></pre></div></p>
+<p><strong>Priority:</strong> HIGH - Safety first</p>
+<hr />
+<h4 id="92-automatic-backups">9.2 Automatic Backups<a class="headerlink" href="#92-automatic-backups" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Create backups before modifications</p>
+<p><strong>Implementation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Before write_file with overwrite=True</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="n">backup_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;.wyn360_backup/</span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">&quot;</span>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">backup_path</span><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>Commands:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>/backup<span class="w"> </span>list<span class="w">     </span><span class="c1"># Show all backups</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>/backup<span class="w"> </span>restore<span class="w">  </span><span class="c1"># Restore from backup</span>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>/backup<span class="w"> </span>clean<span class="w">    </span><span class="c1"># Clean old backups</span>
+</code></pre></div></p>
+<p><strong>Priority:</strong> MEDIUM - Prevents accidents</p>
+<hr />
+<h4 id="93-undorollback">9.3 Undo/Rollback<a class="headerlink" href="#93-undorollback" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Undo last operation</p>
+<p><strong>Implementation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># Track all operations in session</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="n">operations</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;write_file&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;app.py&quot;</span><span class="p">,</span> <span class="s2">&quot;backup&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">},</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;delete_file&quot;</span><span class="p">,</span> <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;old.py&quot;</span><span class="p">,</span> <span class="s2">&quot;backup&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span><span class="p">},</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="p">]</span>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>
+<a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="c1"># Rollback command</span>
+<a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="o">/</span><span class="n">undo</span>  <span class="c1"># Undo last operation</span>
+<a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="o">/</span><span class="n">undo</span> <span class="mi">3</span>  <span class="c1"># Undo last 3 operations</span>
+</code></pre></div></p>
+<p><strong>Priority:</strong> MEDIUM - Safety net</p>
+<hr />
+<h3 id="phase-10-monitoring-analytics-completed-v0319">Phase 10: Monitoring &amp; Analytics ✅ COMPLETED (v0.3.19)<a class="headerlink" href="#phase-10-monitoring-analytics-completed-v0319" title="Permanent link">&para;</a></h3>
+<h4 id="101-token-usage-tracking-completed-phase-1">10.1 Token Usage Tracking ✅ COMPLETED (Phase 1)<a class="headerlink" href="#101-token-usage-tracking-completed-phase-1" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Track and display token usage</p>
+<p><strong>Dashboard:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>You: /tokens
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>Token Usage Statistics:
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>- Input tokens: 45,230 ($0.136)
+<a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>- Output tokens: 12,450 ($0.187)
+<a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>- Total cost: $0.323
+<a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>- Average/message: $0.013
+</code></pre></div></p>
+<p><strong>Status:</strong> Already implemented in Phase 1 with /tokens command</p>
+<hr />
+<h4 id="102-performance-metrics-completed-v0319">10.2 Performance Metrics ✅ COMPLETED (v0.3.19)<a class="headerlink" href="#102-performance-metrics-completed-v0319" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Track response times and success rates</p>
+<p><strong>Implementation:</strong>
+- PerformanceMetrics class in utils.py
+- Tracks response times (avg, min, max)
+- Tracks tool usage and success rates
+- Tracks error frequency and types
+- Persisted in session save/load
+- Integrated into all key tools</p>
+<p><strong>New Command: /stats</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>You: /stats
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>Token Usage              Performance Metrics
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>━━━━━━━━━━━━━━━━━━      ━━━━━━━━━━━━━━━━━━━━━
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>Total Requests: 25      Session Duration: 15m 30s
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>Input Tokens: 45,230    Avg Response Time: 2.3s
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>Output Tokens: 12,450   Min Response Time: 0.8s
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>Total Cost: $0.32       Max Response Time: 5.2s
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>                        Error Count: 0
+<a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a>
+<a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a>Tool Usage
+<a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a>━━━━━━━━━━━━━━━━━━━━━
+<a id="__codelineno-29-13" name="__codelineno-29-13" href="#__codelineno-29-13"></a>Total Tool Calls: 47
+<a id="__codelineno-29-14" name="__codelineno-29-14" href="#__codelineno-29-14"></a>Successful Calls: 45
+<a id="__codelineno-29-15" name="__codelineno-29-15" href="#__codelineno-29-15"></a>Failed Calls: 2
+<a id="__codelineno-29-16" name="__codelineno-29-16" href="#__codelineno-29-16"></a>Success Rate: 95.7%
+<a id="__codelineno-29-17" name="__codelineno-29-17" href="#__codelineno-29-17"></a>
+<a id="__codelineno-29-18" name="__codelineno-29-18" href="#__codelineno-29-18"></a>Most Used Tools
+<a id="__codelineno-29-19" name="__codelineno-29-19" href="#__codelineno-29-19"></a>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+<a id="__codelineno-29-20" name="__codelineno-29-20" href="#__codelineno-29-20"></a>Tool              Success  Failed  Total
+<a id="__codelineno-29-21" name="__codelineno-29-21" href="#__codelineno-29-21"></a>read_file         15       0       15
+<a id="__codelineno-29-22" name="__codelineno-29-22" href="#__codelineno-29-22"></a>write_file        12       1       13
+<a id="__codelineno-29-23" name="__codelineno-29-23" href="#__codelineno-29-23"></a>execute_command   8        0       8
+<a id="__codelineno-29-24" name="__codelineno-29-24" href="#__codelineno-29-24"></a>search_files      5        0       5
+<a id="__codelineno-29-25" name="__codelineno-29-25" href="#__codelineno-29-25"></a>git_status        5        1       6
+</code></pre></div></p>
+<p><strong>Test Coverage:</strong> 11 comprehensive unit tests</p>
+<p><strong>Priority:</strong> COMPLETED - Useful for monitoring and optimization</p>
+<hr />
+<h3 id="phase-11-collaboration-features-low-priority">Phase 11: Collaboration Features (LOW PRIORITY)<a class="headerlink" href="#phase-11-collaboration-features-low-priority" title="Permanent link">&para;</a></h3>
+<h4 id="111-session-sharing">11.1 Session Sharing<a class="headerlink" href="#111-session-sharing" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Share WYN360 sessions with team</p>
+<p><strong>Implementation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="c1"># Export session</span>
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>wyn360<span class="w"> </span>--export<span class="w"> </span>session.json
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+<a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="c1"># Import on another machine</span>
+<a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>wyn360<span class="w"> </span>--import<span class="w"> </span>session.json
+</code></pre></div></p>
+<p><strong>Use Case:</strong> Share coding session with colleague for review</p>
+<p><strong>Priority:</strong> LOW - Team feature</p>
+<hr />
+<h4 id="112-prompt-library">11.2 Prompt Library<a class="headerlink" href="#112-prompt-library" title="Permanent link">&para;</a></h4>
+<p><strong>Feature:</strong> Share and reuse prompts</p>
+<p><strong>Implementation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="c1"># prompts.yaml</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="nt">prompts</span><span class="p">:</span>
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="w">  </span><span class="nt">refactor_for_testing</span><span class="p">:</span>
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Refactor</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">code</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">be</span><span class="nv"> </span><span class="s">more</span><span class="nv"> </span><span class="s">testable</span><span class="nv"> </span><span class="s">by</span><span class="nv"> </span><span class="s">extracting</span><span class="nv"> </span><span class="s">dependencies&quot;</span>
+<a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>
+<a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="w">  </span><span class="nt">add_logging</span><span class="p">:</span>
+<a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Add</span><span class="nv"> </span><span class="s">comprehensive</span><span class="nv"> </span><span class="s">logging</span><span class="nv"> </span><span class="s">to</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">module</span><span class="nv"> </span><span class="s">using</span><span class="nv"> </span><span class="s">Python</span><span class="nv"> </span><span class="s">logging&quot;</span>
+<a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a>
+<a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="w">  </span><span class="nt">optimize_performance</span><span class="p">:</span>
+<a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a><span class="w">    </span><span class="nt">text</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Analyze</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">optimize</span><span class="nv"> </span><span class="s">this</span><span class="nv"> </span><span class="s">code</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">better</span><span class="nv"> </span><span class="s">performance&quot;</span>
+</code></pre></div></p>
+<p><strong>Usage:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>You: @refactor_for_testing app.py
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>
+<a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>WYN360: [Applies the refactor_for_testing prompt to app.py]
+</code></pre></div></p>
+<p><strong>Priority:</strong> LOW - Power user feature</p>
+<hr />
+<h2 id="implementation-priority-matrix">📊 Implementation Priority Matrix<a class="headerlink" href="#implementation-priority-matrix" title="Permanent link">&para;</a></h2>
+<h3 id="high-priority-implement-soon">HIGH Priority (Implement Soon)<a class="headerlink" href="#high-priority-implement-soon" title="Permanent link">&para;</a></h3>
+<ol>
+<li>✨ <strong>Conversation History in API</strong> - Most impactful</li>
+<li>✨ <strong>Git Operations Tool</strong> - Frequently needed</li>
+<li>✨ <strong>Search/Grep Tool</strong> - Essential for large codebases</li>
+<li>✨ <strong>Streaming Responses</strong> - Major UX improvement</li>
+<li>✨ <strong>Pre-Execution Validation</strong> - Safety critical</li>
+</ol>
+<h3 id="medium-priority-next-phase">MEDIUM Priority (Next Phase)<a class="headerlink" href="#medium-priority-next-phase" title="Permanent link">&para;</a></h3>
+<ol>
+<li>🔧 <strong>Context Management Commands</strong> - User control</li>
+<li>🔧 <strong>Model Selection</strong> - Cost optimization</li>
+<li>🔧 <strong>Configuration File</strong> - Personalization</li>
+<li>🔧 <strong>File Management Tools</strong> - Complete file operations</li>
+<li>🔧 <strong>Multi-File Refactoring</strong> - Advanced workflow</li>
+<li>🔧 <strong>Test Generation</strong> - High value</li>
+<li>🔧 <strong>Automatic Backups</strong> - Safety</li>
+<li>🔧 <strong>Undo/Rollback</strong> - Safety net</li>
+</ol>
+<h3 id="low-priority-future-consideration">LOW Priority (Future Consideration)<a class="headerlink" href="#low-priority-future-consideration" title="Permanent link">&para;</a></h3>
+<ol>
+<li>💡 <strong>GitHub Integration</strong> - Nice to have</li>
+<li>💡 <strong>Database Tools</strong> - Niche</li>
+<li>💡 <strong>Token Usage Dashboard</strong> - Analytics</li>
+<li>💡 <strong>Session Sharing</strong> - Collaboration</li>
+<li>💡 <strong>Prompt Library</strong> - Power users</li>
+<li>💡 <strong>Documentation Generation</strong> - Automation</li>
+</ol>
+<hr />
+<h2 id="recommended-development-roadmap">🎯 Recommended Development Roadmap<a class="headerlink" href="#recommended-development-roadmap" title="Permanent link">&para;</a></h2>
+<h3 id="v030-context-history">v0.3.0 - Context &amp; History<a class="headerlink" href="#v030-context-history" title="Permanent link">&para;</a></h3>
+<p><strong>Focus:</strong> Conversation context management
+- Add conversation history to API calls
+- Implement /clear, /history commands
+- Add token usage tracking
+- Session save/load</p>
+<p><strong>Timeline:</strong> 2-3 weeks</p>
+<hr />
+<h3 id="v040-enhanced-tools">v0.4.0 - Enhanced Tools<a class="headerlink" href="#v040-enhanced-tools" title="Permanent link">&para;</a></h3>
+<p><strong>Focus:</strong> Additional tool capabilities
+- Git operations tool
+- Search/grep functionality
+- File management (delete, move, mkdir)
+- Pre-execution validation</p>
+<p><strong>Timeline:</strong> 3-4 weeks</p>
+<hr />
+<h3 id="v050-streaming-ux">v0.5.0 - Streaming &amp; UX<a class="headerlink" href="#v050-streaming-ux" title="Permanent link">&para;</a></h3>
+<p><strong>Focus:</strong> Real-time experience
+- Token-by-token streaming
+- Better progress indicators
+- Configuration file support
+- Project-specific context</p>
+<p><strong>Timeline:</strong> 2-3 weeks</p>
+<hr />
+<h3 id="v060-advanced-workflows">v0.6.0 - Advanced Workflows<a class="headerlink" href="#v060-advanced-workflows" title="Permanent link">&para;</a></h3>
+<p><strong>Focus:</strong> Complex operations
+- Multi-file refactoring
+- Test generation mode
+- Automatic backups
+- Undo/rollback</p>
+<p><strong>Timeline:</strong> 3-4 weeks</p>
+<hr />
+<h3 id="v070-integrations">v0.7.0+ - Integrations<a class="headerlink" href="#v070-integrations" title="Permanent link">&para;</a></h3>
+<p><strong>Focus:</strong> External services
+- GitHub integration
+- Model selection
+- Database tools
+- Analytics dashboard</p>
+<p><strong>Timeline:</strong> TBD</p>
+<hr />
+<h2 id="quick-wins-easy-to-implement">💡 Quick Wins (Easy to Implement)<a class="headerlink" href="#quick-wins-easy-to-implement" title="Permanent link">&para;</a></h2>
+<h3 id="1-add-version-command">1. Add Version Command<a class="headerlink" href="#1-add-version-command" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>wyn360<span class="w"> </span>--version<span class="w">  </span><span class="c1"># Show current version</span>
+</code></pre></div>
+<h3 id="2-add-help-in-session">2. Add Help in Session<a class="headerlink" href="#2-add-help-in-session" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>You:<span class="w"> </span>/help
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>WYN360:<span class="w"> </span><span class="o">[</span>Shows<span class="w"> </span>available<span class="w"> </span>commands<span class="w"> </span>and<span class="w"> </span>tips<span class="o">]</span>
+</code></pre></div>
+<h3 id="3-keyboard-shortcuts-documentation">3. Keyboard Shortcuts Documentation<a class="headerlink" href="#3-keyboard-shortcuts-documentation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>You:<span class="w"> </span>/shortcuts
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>WYN360:
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>-<span class="w"> </span>Ctrl+C:<span class="w"> </span>Cancel<span class="w"> </span>current<span class="w"> </span>operation
+<a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>-<span class="w"> </span>Ctrl+D:<span class="w"> </span>Exit
+<a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>-<span class="w"> </span>Ctrl+Enter:<span class="w"> </span>New<span class="w"> </span>line
+<a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>-<span class="w"> </span>Enter:<span class="w"> </span>Submit
+</code></pre></div>
+<h3 id="4-exit-code-summary">4. Exit Code Summary<a class="headerlink" href="#4-exit-code-summary" title="Permanent link">&para;</a></h3>
+<p>After each command, show summary:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>✅ Command executed successfully (exit code 0)
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>   Duration: 2.3s
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>   Output lines: 45
+</code></pre></div></p>
+<h3 id="5-better-error-messages">5. Better Error Messages<a class="headerlink" href="#5-better-error-messages" title="Permanent link">&para;</a></h3>
+<p>Instead of: "An error occurred: Tool 'write_file' exceeded max retries"
+Show: "I tried 3 times but couldn't write the file. This usually means..."</p>
+<hr />
+<h2 id="future-vision-v10">🔮 Future Vision (v1.0+)<a class="headerlink" href="#future-vision-v10" title="Permanent link">&para;</a></h2>
+<p><strong>Long-term possibilities:</strong></p>
+<h3 id="1-wyn360-as-code-review-assistant">1. <strong>WYN360 as Code Review Assistant</strong><a class="headerlink" href="#1-wyn360-as-code-review-assistant" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Automated PR reviews</li>
+<li>Security vulnerability detection</li>
+<li>Best practices suggestions</li>
+<li>Performance optimization recommendations</li>
+</ul>
+<h3 id="2-wyn360-as-cicd-integration">2. <strong>WYN360 as CI/CD Integration</strong><a class="headerlink" href="#2-wyn360-as-cicd-integration" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Automatic test generation in CI pipeline</li>
+<li>Documentation generation on commit</li>
+<li>Code quality checks</li>
+<li>Deployment assistance</li>
+</ul>
+<h3 id="3-wyn360-as-teaching-tool">3. <strong>WYN360 as Teaching Tool</strong><a class="headerlink" href="#3-wyn360-as-teaching-tool" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Explain code line-by-line</li>
+<li>Generate learning examples</li>
+<li>Create coding challenges</li>
+<li>Interactive tutorials</li>
+</ul>
+<h3 id="4-wyn360-as-architecture-advisor">4. <strong>WYN360 as Architecture Advisor</strong><a class="headerlink" href="#4-wyn360-as-architecture-advisor" title="Permanent link">&para;</a></h3>
+<ul>
+<li>System design suggestions</li>
+<li>Refactoring recommendations</li>
+<li>Technology selection</li>
+<li>Performance optimization</li>
+</ul>
+<h3 id="5-wyn360-ide-plugin">5. <strong>WYN360 IDE Plugin</strong><a class="headerlink" href="#5-wyn360-ide-plugin" title="Permanent link">&para;</a></h3>
+<ul>
+<li>VSCode extension</li>
+<li>JetBrains plugin</li>
+<li>Vim integration</li>
+<li>Embedded in popular IDEs</li>
+</ul>
+<hr />
+<h2 id="community-feature-requests">📝 Community Feature Requests<a class="headerlink" href="#community-feature-requests" title="Permanent link">&para;</a></h2>
+<p><strong>How to contribute ideas:</strong></p>
+<ol>
+<li>Open GitHub issue with label <code>feature-request</code></li>
+<li>Describe use case and expected behavior</li>
+<li>Discuss implementation approach</li>
+<li>Community votes on priority</li>
+</ol>
+<p><strong>Template:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="gu">## Feature Request: [Name]</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="gs">**Use Case:**</span>
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>[Describe the problem this solves]
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a><span class="gs">**Proposed Solution:**</span>
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>[How it should work]
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="gs">**Example:**</span>
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>[Show example interaction]
+<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a>
+<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a><span class="gs">**Priority:**</span> [High/Medium/Low]
+</code></pre></div></p>
+<hr />
+<h2 id="contributing">🤝 Contributing<a class="headerlink" href="#contributing" title="Permanent link">&para;</a></h2>
+<p>Want to help implement these features?</p>
+<ol>
+<li>Check the <a href="https://github.com/yiqiao-yin/wyn360-cli/issues">GitHub Issues</a> for open feature requests</li>
+<li>Comment on the feature you want to work on</li>
+<li>Fork the repository</li>
+<li>Implement the feature with tests</li>
+<li>Submit a pull request</li>
+</ol>
+<p><strong>Development Setup:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/yiqiao-yin/wyn360-cli.git
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a><span class="nb">cd</span><span class="w"> </span>wyn360-cli
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>poetry<span class="w"> </span>install
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="nv">WYN360_SKIP_CONFIRM</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>poetry<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="w"> </span>-v
+</code></pre></div></p>
+<hr />
+<h2 id="feedback">📞 Feedback<a class="headerlink" href="#feedback" title="Permanent link">&para;</a></h2>
+<p><strong>Have suggestions not listed here?</strong></p>
+<ul>
+<li>📧 Email: yiqiao.yin@wyn-associates.com</li>
+<li>🐛 Issues: https://github.com/yiqiao-yin/wyn360-cli/issues</li>
+<li>💬 Discussions: https://github.com/yiqiao-yin/wyn360-cli/discussions</li>
+</ul>
+<hr />
+<p><strong>Last Updated:</strong> December 10, 2025
+<strong>Current Version:</strong> 0.3.23
+<strong>Next Planned Release:</strong> v0.3.23+ (Phase 7.1 Multi-File Refactoring or Phase 7.3 Documentation Generation)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../testing/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Testing">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Testing
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy", "navigation.footer"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+    
+  </body>
+</html>
