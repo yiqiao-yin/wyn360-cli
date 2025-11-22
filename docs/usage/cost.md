@@ -1058,7 +1058,7 @@ For **most developers**, WYN360 CLI will cost **$1-3 per month** - significantly
 
 - **Anthropic Pricing:** https://www.anthropic.com/pricing
 - **Usage Console:** https://console.anthropic.com/
-- **WYN360 Documentation:** [USE_CASES.md](USE_CASES.md)
+- **WYN360 Documentation:** [USE_CASES.md](use-cases.md)
 - **Token Counting:** https://platform.openai.com/tokenizer (similar to Claude)
 
 ---

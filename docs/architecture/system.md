@@ -1285,7 +1285,7 @@ authentication:
 
 ## 📈 Future Enhancements
 
-See [ROADMAP.md](ROADMAP.md) for planned features including:
+See [ROADMAP.md](../development/roadmap.md) for planned features including:
 - Phase 6: Advanced Workflows (multi-file refactoring, test generation)
 - Phase 7: Integration Features (GitHub, databases)
 - Phase 8: Safety & Quality (validation, backups, undo/rollback)
@@ -1296,11 +1296,11 @@ See [ROADMAP.md](ROADMAP.md) for planned features including:
 
 ## 📚 Related Documentation
 
-- [README.md](../README.md) - Quick start and basic usage
-- [USE_CASES.md](USE_CASES.md) - Detailed examples and use cases
-- [ROADMAP.md](ROADMAP.md) - Feature roadmap and expansion ideas
+- [Getting Started](../getting-started/quickstart.md) - Quick start and basic usage
+- [USE_CASES.md](../usage/use-cases.md) - Detailed examples and use cases
+- [ROADMAP.md](../development/roadmap.md) - Feature roadmap and expansion ideas
 - [ROADMAP_BROWSERUSE.md](ROADMAP_BROWSERUSE.md) - Browser use implementation roadmap
-- [COST.md](COST.md) - Cost analysis and optimization strategies
+- [COST.md](../usage/cost.md) - Cost analysis and optimization strategies
 
 ---
 
