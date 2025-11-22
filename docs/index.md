@@ -6,7 +6,8 @@ An intelligent AI coding assistant that helps you build projects, generate code,
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/yiqiao-yin/wyn360-cli/blob/main/LICENSE)
 
-**GitHub Repository:** [https://github.com/yiqiao-yin/wyn360-cli](https://github.com/yiqiao-yin/wyn360-cli)
+📚 **Documentation:** [https://yiqiao-yin.github.io/wyn360-cli/](https://yiqiao-yin.github.io/wyn360-cli/)
+🔗 **GitHub Repository:** [https://github.com/yiqiao-yin/wyn360-cli](https://github.com/yiqiao-yin/wyn360-cli)
 
 ## Why Choose WYN360 CLI?
 
