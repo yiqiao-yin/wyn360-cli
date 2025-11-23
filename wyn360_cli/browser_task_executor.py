@@ -97,6 +97,7 @@ class BrowserTaskExecutor:
         history = []
         stuck_count = 0
         last_action = None
+        api_error_count = 0  # Track consecutive API errors
 
         try:
             # Initialize browser
@@ -122,13 +123,41 @@ class BrowserTaskExecutor:
 
                     # 2. Analyze and decide (ALL AI via pydantic-ai + Anthropic Vision)
                     logger.debug("Analyzing screenshot with vision engine...")
-                    decision = await self.vision_engine.analyze_and_decide(
-                        screenshot=screenshot,
-                        goal=task,
-                        history=history,
-                        page_state=page_state
-                    )
-                    metrics['vision_api_calls'] += 1
+
+                    try:
+                        decision = await self.vision_engine.analyze_and_decide(
+                            screenshot=screenshot,
+                            goal=task,
+                            history=history,
+                            page_state=page_state
+                        )
+                        metrics['vision_api_calls'] += 1
+                        api_error_count = 0  # Reset on successful API call
+
+                    except Exception as e:
+                        api_error_count += 1
+                        logger.error(f"Vision analysis failed (attempt {api_error_count}): {e}")
+
+                        if api_error_count >= 5:
+                            logger.error("Too many consecutive API failures, giving up")
+                            metrics['end_time'] = asyncio.get_event_loop().time()
+                            metrics['total_duration'] = metrics['end_time'] - metrics['start_time']
+                            return {
+                                'status': 'failed',
+                                'result': None,
+                                'steps_taken': step + 1,
+                                'history': history,
+                                'reasoning': f"Repeated API failures: {e}",
+                                'metrics': metrics
+                            }
+
+                        # Use fallback decision for API failures
+                        decision = {
+                            'status': 'continue',
+                            'action': {'type': 'wait', 'seconds': 2},
+                            'reasoning': f'API error, waiting before retry (attempt {api_error_count})',
+                            'confidence': 10
+                        }
 
                     logger.info(f"Decision: {decision['status']}")
                     logger.info(f"Action: {decision['action'].get('type', 'none')}")

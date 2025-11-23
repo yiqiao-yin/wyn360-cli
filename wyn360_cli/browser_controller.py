@@ -489,20 +489,31 @@ class BrowserController:
         logger.info("Cleaning up browser resources")
 
         try:
+            # Force close operations with timeout to prevent hanging
+            import asyncio
+
+            async def force_close(coro, name, timeout=5):
+                try:
+                    await asyncio.wait_for(coro, timeout=timeout)
+                except asyncio.TimeoutError:
+                    logger.warning(f"Timeout closing {name}, continuing anyway")
+                except Exception as e:
+                    logger.error(f"Error closing {name}: {e}")
+
             if self.page:
-                await self.page.close()
+                await force_close(self.page.close(), "page")
                 self.page = None
 
             if self.context:
-                await self.context.close()
+                await force_close(self.context.close(), "context")
                 self.context = None
 
             if self.browser:
-                await self.browser.close()
+                await force_close(self.browser.close(), "browser")
                 self.browser = None
 
             if self.playwright:
-                await self.playwright.stop()
+                await force_close(self.playwright.stop(), "playwright")
                 self.playwright = None
 
             self._initialized = False
@@ -510,6 +521,12 @@ class BrowserController:
 
         except Exception as e:
             logger.error(f"Error during cleanup: {e}")
+            # Force reset state even if cleanup failed
+            self.page = None
+            self.context = None
+            self.browser = None
+            self.playwright = None
+            self._initialized = False
 
     async def __aenter__(self):
         """Async context manager entry."""

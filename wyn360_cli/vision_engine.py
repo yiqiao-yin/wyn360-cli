@@ -251,8 +251,20 @@ Provide your decision as a JSON object with:
             return response_text
 
         except Exception as e:
-            logger.error(f"Vision API call failed: {e}")
-            raise VisionDecisionError(f"Vision analysis failed: {e}")
+            # Check if it's an API 500 error and provide better error handling
+            error_msg = str(e)
+            if "500" in error_msg or "Internal server error" in error_msg:
+                logger.error(f"Anthropic API experiencing issues: {e}")
+                # Return a safe fallback action instead of failing
+                return {
+                    'status': 'continue',
+                    'action': {'type': 'wait', 'seconds': 3},
+                    'reasoning': 'API temporarily unavailable, waiting before retry',
+                    'confidence': 10
+                }
+            else:
+                logger.error(f"Vision API call failed: {e}")
+                raise VisionDecisionError(f"Vision analysis failed: {e}")
 
     def _parse_decision(
         self,
@@ -274,8 +286,17 @@ Provide your decision as a JSON object with:
         import json
 
         try:
+            # Clean the response - sometimes Claude adds extra text
+            response_clean = response.strip()
+
+            # Try to extract JSON from response if it's wrapped in text
+            import re
+            json_match = re.search(r'\{.*\}', response_clean, re.DOTALL)
+            if json_match:
+                response_clean = json_match.group(0)
+
             # Try to parse as JSON
-            decision = json.loads(response.strip())
+            decision = json.loads(response_clean)
 
             # Validate required fields
             if 'status' not in decision:
@@ -295,8 +316,8 @@ Provide your decision as a JSON object with:
 
             return decision
 
-        except json.JSONDecodeError:
-            logger.warning("Failed to parse decision as JSON, using fallback")
+        except (json.JSONDecodeError, AttributeError, TypeError) as e:
+            logger.warning(f"Failed to parse decision as JSON: {e}, using fallback")
 
             # Fallback: try to extract action from text
             return {
