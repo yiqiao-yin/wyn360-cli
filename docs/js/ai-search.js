@@ -27,11 +27,11 @@ class WYN360AISearch {
     this.config = {
       enabled: true,
       maxResults: 5,
-      similarityThreshold: 0.1, // Lower threshold for simple embedding approximation
+      similarityThreshold: 0.05, // Very low threshold for broader semantic matching
       responseTimeout: 30000, // 30 seconds
       apiEndpoint: null, // Will be set in Phase 3
       fallbackToRegularSearch: true,
-      indexUrl: '/wyn360-cli/assets/search-index.json'
+      indexUrl: this._getSearchIndexUrl()
     };
 
     // UI Elements (will be initialized when DOM is ready)
@@ -271,12 +271,16 @@ class WYN360AISearch {
     try {
       console.log('[AI Search] Performing semantic embedding search');
 
+      // Expand query with synonyms for better matching
+      const expandedQuery = this._expandQueryWithSynonyms(query);
+      console.log(`[AI Search] Expanded query: "${query}" → "${expandedQuery}"`);
+
       // Generate query embedding using browser-based sentence transformer
-      const queryEmbedding = await this._generateQueryEmbedding(query);
+      const queryEmbedding = await this._generateQueryEmbedding(expandedQuery);
 
       if (!queryEmbedding) {
         console.warn('[AI Search] Failed to generate query embedding, falling back to keyword search');
-        return this._performKeywordSearch(query);
+        return this._performKeywordSearch(expandedQuery);
       }
 
       // Calculate cosine similarity with all document embeddings
@@ -315,14 +319,19 @@ class WYN360AISearch {
    * Perform keyword-based search (fallback)
    */
   _performKeywordSearch(query) {
-    const results = this.searchIndex.chunks.filter(chunk => {
-      const queryLower = query.toLowerCase();
-      const titleMatch = chunk.title.toLowerCase().includes(queryLower);
-      const contentMatch = chunk.content.toLowerCase().includes(queryLower);
-      const sectionMatch = chunk.section.toLowerCase().includes(queryLower);
-      const tagMatch = chunk.tags.some(tag => tag.toLowerCase().includes(queryLower));
+    // Expand query for better keyword matching too
+    const expandedQuery = this._expandQueryWithSynonyms(query);
+    const queryTerms = expandedQuery.toLowerCase().split(' ').filter(term => term.length > 2);
 
-      return titleMatch || contentMatch || sectionMatch || tagMatch;
+    const results = this.searchIndex.chunks.filter(chunk => {
+      return queryTerms.some(term => {
+        const titleMatch = chunk.title.toLowerCase().includes(term);
+        const contentMatch = chunk.content.toLowerCase().includes(term);
+        const sectionMatch = chunk.section.toLowerCase().includes(term);
+        const tagMatch = chunk.tags.some(tag => tag.toLowerCase().includes(term));
+
+        return titleMatch || contentMatch || sectionMatch || tagMatch;
+      });
     });
 
     // Sort by relevance (simple scoring for keyword search)
@@ -866,6 +875,73 @@ class WYN360AISearch {
     }
 
     return dotProduct / (normA * normB);
+  }
+
+  /**
+   * Expand query with synonyms for better semantic matching
+   */
+  _expandQueryWithSynonyms(query) {
+    const queryLower = query.toLowerCase();
+    const expansions = [];
+
+    // Add original query
+    expansions.push(query);
+
+    // Internet/web related synonyms
+    if (queryLower.includes('internet') || queryLower.includes('online')) {
+      expansions.push('web search', 'browser use', 'browser automation', 'website fetching', 'web browsing');
+    }
+
+    // Browser related synonyms
+    if (queryLower.includes('browse') || queryLower.includes('browser')) {
+      expansions.push('web automation', 'website navigation', 'autonomous browsing', 'browser use');
+    }
+
+    // Search related synonyms
+    if (queryLower.includes('search') && !queryLower.includes('web search')) {
+      expansions.push('web search', 'internet search');
+    }
+
+    // Installation synonyms
+    if (queryLower.includes('install') || queryLower.includes('setup')) {
+      expansions.push('installation', 'setup', 'configuration', 'getting started');
+    }
+
+    // Automation synonyms
+    if (queryLower.includes('automat')) {
+      expansions.push('browser automation', 'autonomous browsing', 'browser use');
+    }
+
+    return expansions.join(' ');
+  }
+
+  /**
+   * Get the correct search index URL based on current page location
+   */
+  _getSearchIndexUrl() {
+    // Get the base URL from the current page
+    const currentPath = window.location.pathname;
+
+    // For GitHub Pages, determine the correct relative path to assets
+    // Examples:
+    // - From /wyn360-cli/ -> assets/search-index.json
+    // - From /wyn360-cli/features/browser-use/ -> ../../assets/search-index.json
+    // - From /wyn360-cli/usage/commands/ -> ../../assets/search-index.json
+
+    if (currentPath.endsWith('/wyn360-cli/') || currentPath === '/wyn360-cli') {
+      // Homepage - direct relative path
+      return 'assets/search-index.json';
+    }
+
+    // Count directory depth from the base (/wyn360-cli/)
+    const pathParts = currentPath.replace('/wyn360-cli/', '').split('/').filter(part => part);
+    const depth = pathParts.length - (currentPath.endsWith('/') ? 0 : 1);
+
+    // Build relative path with appropriate number of ../
+    const relativePath = '../'.repeat(Math.max(0, depth)) + 'assets/search-index.json';
+
+    console.log(`[AI Search] Current path: ${currentPath}, Using index URL: ${relativePath}`);
+    return relativePath;
   }
 }
 
