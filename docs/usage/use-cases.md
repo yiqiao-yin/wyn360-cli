@@ -627,7 +627,7 @@ wyn360 --model claude-sonnet-4-20250514
 
 ---
 
-### Configuration & Setup
+#### Configuration & Setup
 
 ---
 
@@ -1029,7 +1029,7 @@ WYN360: I'll create a data pipeline with these components:
 - **Same total time**: Response completes at same time
 - **Better perception**: Feels 2-3x faster due to immediate feedback
 
-### Comparison
+#### Comparison
 
 | Aspect | Non-Streaming | Streaming |
 |--------|--------------|-----------|
@@ -1073,7 +1073,7 @@ WYN360: [Streams code file by file]
 # Start planning implementation while rest generates
 ```
 
-### Tips
+#### Tips
 
 **Pro Tips:**
 - Streaming is automatic - no configuration needed
@@ -1083,7 +1083,7 @@ WYN360: [Streams code file by file]
 
 ---
 
-### Deployment & Integration
+#### Deployment & Integration
 
 ---
 
@@ -1308,7 +1308,7 @@ WYN360: [Adds assertions and test data]
 You: Run pytest
 
 WYN360: [Executes tests]
-```bash
+```
 
 **Productivity Benefits:**
 - ✅ Saves time on test boilerplate
@@ -1341,7 +1341,7 @@ WYN360 provides seamless GitHub integration directly from the CLI! This feature 
 - ✅ **Auto-Authentication** - Automatically uses environment token if found
 - 🎯 **Session Persistence** - Token stored in environment across session
 
-### Use Case 14.1: Commit and Push Changes
+#### Use Case 14.1: Commit and Push Changes
 
 Commit your changes to the current repository and push to GitHub with a single command.
 
@@ -1428,7 +1428,7 @@ Now let me commit your changes...
 [Proceeds with commit workflow]
 ```
 
-### Use Case 14.2: Create Pull Request
+#### Use Case 14.2: Create Pull Request
 
 Open a pull request from your current branch to the main branch.
 
@@ -1497,7 +1497,7 @@ Status: Open
 View or merge at: https://github.com/yiqiao-yin/wyn360-cli/pull/42
 ```
 
-### Use Case 14.3: Branch Management
+#### Use Case 14.3: Branch Management
 
 Create new branches and switch between them seamlessly.
 
@@ -1562,7 +1562,7 @@ Current branch: develop
 Last commit: x9y8z7 "Update documentation"
 ```
 
-### Use Case 14.4: Merge Branches
+#### Use Case 14.4: Merge Branches
 
 Merge feature branches into target branches with conflict detection.
 
@@ -1613,7 +1613,7 @@ Next steps:
 - Create PR: "create pull request"
 ```
 
-#### Configuration
+##### Configuration
 
 **Environment Variables:**
 ```
@@ -1636,7 +1636,7 @@ ANTHROPIC_API_KEY=your_anthropic_key
 GH_TOKEN=ghp_your_github_token
 ```
 
-#### Example Workflow: Complete Feature Development
+##### Example Workflow: Complete Feature Development
 
 **Scenario:** Building a new authentication feature
 
@@ -1703,7 +1703,7 @@ WYN360: [Pushes main branch]
 
 ---
 
-#### Advanced Features
+##### Advanced Features
 
 ---
 
@@ -1763,7 +1763,7 @@ You: /stats
 ┗━━━━━━━━━━━┻━━━━━━━┻━━━━━━┻━━━━━┛
 ```
 
-### Use Case 15.1: Identifying Slow Operations
+#### Use Case 15.1: Identifying Slow Operations
 
 **Scenario:** You notice your session feels slow sometimes
 
@@ -1784,7 +1784,7 @@ requests into smaller chunks for faster responses.
 
 **Insight:** Large code generation requests take longer. Break them into smaller, focused tasks.
 
-### Use Case 15.2: Tool Success Rate Analysis
+#### Use Case 15.2: Tool Success Rate Analysis
 
 **Scenario:** Want to see which operations are failing
 
@@ -1807,7 +1807,7 @@ existed. This was corrected in the retry.
 
 **Insight:** Understand which operations need error handling or user confirmation.
 
-### Use Case 15.3: Session Cost Monitoring
+#### Use Case 15.3: Session Cost Monitoring
 
 **Scenario:** Track spending during a long coding session
 
@@ -2721,7 +2721,7 @@ Work with multiple documents at once - compare spreadsheets, find information ac
 - 📦 **Aggregated Summaries** - Combined insights from multiple sources
 - 🎯 **Smart Selection** - Auto-select relevant documents
 
-### Use Case 23.1: Budget vs Actual Comparison
+#### Use Case 23.1: Budget vs Actual Comparison
 
 Compare budget projections with actual expenses.
 
@@ -2752,7 +2752,7 @@ Categories with Variance:
 Overall: 3% over budget ($153,200 vs $150,000 planned)
 ```
 
-### Use Case 23.2: Multi-Report Insights
+#### Use Case 23.2: Multi-Report Insights
 
 Find patterns across quarterly reports.
 
@@ -2781,7 +2781,7 @@ Q4_Report.docx (0 mentions):
 Trend: Issue peaked in Q2, resolved by Q3
 ```
 
-### Use Case 23.3: Document Change Tracking
+#### Use Case 23.3: Document Change Tracking
 
 Track what changed between document versions.
 
