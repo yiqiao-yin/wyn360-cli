@@ -703,16 +703,16 @@ commands:
 model: claude-3-5-haiku-20241022  # Use faster model for simple project
 ```
 
-### Configuration Priority
+#### Configuration Priority
 
 Configurations merge with this precedence (highest to lowest):
 1. **Project config** (`.wyn360.yaml` in current directory)
 2. **User config** (`~/.wyn360/config.yaml`)
 3. **Default values**
 
-#### Example Workflows
+##### Example Workflows
 
-#### Workflow 1: Setting Up User Preferences
+##### Workflow 1: Setting Up User Preferences
 
 ```bash
 # First time setup - create default user config
@@ -730,7 +730,7 @@ $ wyn360
 ✓ Connected using model: claude-sonnet-4-20250514
 ```
 
-#### Workflow 2: Project-Specific Context
+##### Workflow 2: Project-Specific Context
 
 ```yaml
 # Create .wyn360.yaml in your project root
@@ -793,7 +793,7 @@ Tip: Create ~/.wyn360/config.yaml for user settings
 Tip: Create .wyn360.yaml in project root for project settings
 ```
 
-#### Benefits
+##### Benefits
 
 **1. Consistency Across Projects**
 - Same code style and conventions everywhere
@@ -814,7 +814,7 @@ Tip: Create .wyn360.yaml in project root for project settings
 - No explaining project structure repeatedly
 - Quick command aliases
 
-### Real-World Example
+#### Real-World Example
 
 **Scenario:** You're a Python developer who always uses type hints and works on multiple projects (FastAPI, Django, ML).
 
@@ -854,7 +854,7 @@ model: claude-sonnet-4-20250514  # Use more capable model
 
 **Result:** When you work in the FastAPI project, the AI knows about FastAPI and REST APIs. When you switch to the ML project, it knows about PyTorch and transformers. Both use your personal preferences (type hints, docstrings, etc.).
 
-### Tips
+#### Tips
 
 **Best Practices:**
 1. ✅ Keep user config for personal preferences
@@ -883,7 +883,7 @@ model: claude-sonnet-4-20250514  # Use more capable model
 
 **Solution:** WYN360 now streams responses token-by-token as they're generated, providing instant visual feedback and a more responsive experience.
 
-### Before Streaming (Old Behavior)
+#### Before Streaming (Old Behavior)
 
 ```bash
 You: Generate a large Python script for data analysis
@@ -899,7 +899,7 @@ WYN360: [Entire response appears at once after waiting]
 - ❌ Can't see progress
 - ❌ Can't start reading early parts
 
-### After Streaming (New Behavior)
+#### After Streaming (New Behavior)
 
 ```bash
 You: Generate a large Python script for data analysis
@@ -1613,7 +1613,7 @@ Next steps:
 - Create PR: "create pull request"
 ```
 
-### Configuration
+#### Configuration
 
 **Environment Variables:**
 ```
@@ -1716,7 +1716,7 @@ WYN360: [Pushes main branch]
 
 Monitor your CLI usage, response times, tool efficiency, and identify performance bottlenecks with comprehensive metrics tracking.
 
-### What is Performance Monitoring?
+#### What is Performance Monitoring?
 
 WYN360 automatically tracks and analyzes session performance, providing insights into:
 - **Response Times**: How fast the AI responds to your requests
@@ -1724,7 +1724,7 @@ WYN360 automatically tracks and analyzes session performance, providing insights
 - **Error Tracking**: What errors occur and how frequently
 - **Session Statistics**: Overall session duration and activity
 
-### The /stats Command
+#### The /stats Command
 
 View comprehensive performance metrics at any time during your session:
 
@@ -1830,7 +1830,7 @@ Most expensive operations:
 
 **Insight:** Monitor costs in real-time, identify expensive operations, optimize usage.
 
-### Features
+#### Features
 
 **Automatic Tracking:**
 - ✅ Response times tracked for every request
@@ -1849,7 +1849,7 @@ Most expensive operations:
 - ✅ No performance overhead
 - ✅ Compatible with all existing features
 
-### Commands
+#### Commands
 
 | Command | Purpose | Example |
 |---------|---------|---------|
@@ -1868,7 +1868,7 @@ Most expensive operations:
 
 **Feature:** Real-time web search using Claude's native web_search_20250305 tool
 
-### Overview
+#### Overview
 
 WYN360 now has access to real-time web search capabilities! This feature enables the AI assistant to fetch current information from the internet, including weather data, website content, latest documentation, and **finding GitHub repositories and libraries** (enhanced in v0.3.23).
 
@@ -1878,7 +1878,7 @@ WYN360 now has access to real-time web search capabilities! This feature enables
 - 📝 Enhanced system prompt with explicit examples for finding resources
 - ✅ Now properly recognizes queries like "find a popular GitHub repo for X"
 
-#### Key Features
+##### Key Features
 
 - 🌤️ **Weather Queries** - Get current weather for any location
 - 🌐 **Website Reading** - Fetch and summarize web content
@@ -1888,7 +1888,7 @@ WYN360 now has access to real-time web search capabilities! This feature enables
 - 🔗 **Proper Citations** - All results include source URLs
 - 🤖 **Automatic Invocation** - Claude decides when web search is needed
 
-### Use Case 16.1: Weather Queries
+#### Use Case 16.1: Weather Queries
 
 Get real-time weather information for any location.
 
@@ -1913,7 +1913,7 @@ Source: [Weather.com](https://weather.com/weather/today/l/San+Francisco+CA)
 - Plus token costs for input/output (~$0.001-0.003)
 - Total: ~$0.011-0.013 per weather query
 
-### Use Case 16.2: Website Reading & Summarization
+#### Use Case 16.2: Website Reading & Summarization
 
 **Note:** As of v0.3.24, specific URL fetching uses the new `fetch_website` tool for direct DOM extraction. See Use Case 16.5 for details.
 
@@ -1954,7 +1954,7 @@ Source: [Python.org](https://python.org/downloads/release/python-3130/)
 - Token costs vary by page size (typically $0.003-0.010)
 - Total: ~$0.013-0.020 per URL
 
-### Use Case 16.3: Current Information & Latest Updates
+#### Use Case 16.3: Current Information & Latest Updates
 
 Access the latest documentation, package versions, news, and trends.
 
@@ -1994,7 +1994,7 @@ Sources:
 - Token costs for synthesis (~$0.005-0.015)
 - Total: ~$0.015-0.035 per information query
 
-### Use Case 16.4: Finding Resources & GitHub Repositories **(NEW in v0.3.23)**
+#### Use Case 16.4: Finding Resources & GitHub Repositories **(NEW in v0.3.23)**
 
 Find popular GitHub repositories, libraries, tools, and learning resources based on specific topics or technologies.
 
@@ -2059,7 +2059,7 @@ Sources: GitHub, Python Package Index, Stack Overflow trends
 - Token costs for formatting (~$0.005-0.010)
 - Total: ~$0.015-0.030 per resource search
 
-### Use Case 16.5: Direct Website Fetching **(NEW in v0.3.24)**
+#### Use Case 16.5: Direct Website Fetching **(NEW in v0.3.24)**
 
 Fetch full content from specific URLs directly using the `fetch_website` tool. Unlike web search which returns search results, this fetches the complete DOM and converts it to LLM-friendly markdown.
 
@@ -2166,7 +2166,7 @@ browser_use:
 - ✅ **fetch_website**: "Read https://example.com" (specific URL)
 - ✅ **WebSearchTool**: "Find ML repos" (search/discovery)
 
-### When Web Search is Used
+##### When Web Search is Used
 
 **WILL Use Web Search:**
 - ✅ Weather queries ("What's the weather in NYC?")
@@ -2189,7 +2189,7 @@ browser_use:
 - ❌ Git operations ("Show git status")
 - ❌ General programming concepts ("What is async/await?")
 
-### Cost Analysis
+##### Cost Analysis
 
 **Pricing:**
 - **Web Search Cost:** $10.00 per 1,000 searches
@@ -2213,7 +2213,7 @@ browser_use:
 Total: ~$0.091 per session
 ```
 
-### Configuration
+##### Configuration
 
 **Default Settings:**
 ```bash
@@ -2232,7 +2232,7 @@ builtin_tools=[
 
 ---
 
-### Complex Multi-Turn Workflows
+##### Complex Multi-Turn Workflows
 
 ---
 
@@ -2338,12 +2338,11 @@ WYN360:
 **Version:** v0.3.26 - v0.3.29
 
 **Feature:** Intelligent document reading with chunking, summarization, and semantic search
-
-### Overview
+#### Overview
 
 WYN360 can read and analyze structured documents (Excel, Word, PDF) of any size using an intelligent chunking system. Documents are automatically split into manageable pieces, summarized, and cached for fast retrieval.
 
-#### Key Features
+##### Key Features
 
 - 📊 **Excel Files** - Multi-sheet support, formulas, charts, named ranges
 - 📝 **Word Documents** - Structured extraction, tables, images, sections
@@ -2354,7 +2353,7 @@ WYN360 can read and analyze structured documents (Excel, Word, PDF) of any size 
 - ⚡ **Performance** - 3-5x faster with parallel processing (v0.3.36)
 - 🗜️ **Compression** - 50-70% storage reduction (v0.3.36)
 
-### Use Case 19.1: Expense Report Analysis (Excel)
+#### Use Case 19.1: Expense Report Analysis (Excel)
 
 Analyze multi-sheet expense tracking spreadsheets.
 
@@ -2382,7 +2381,7 @@ Breakdown:
 - Week 4: $150
 ```
 
-### Use Case 19.2: Research Paper Summarization (Word)
+#### Use Case 19.2: Research Paper Summarization (Word)
 
 Analyze structured documents with sections, tables, and figures.
 
@@ -2403,7 +2402,7 @@ Methodology Section Summary:
 Full section: Pages 8-15 (2,100 tokens)
 ```
 
-### Use Case 19.3: Textbook Navigation (PDF)
+#### Use Case 19.3: Textbook Navigation (PDF)
 
 Navigate and query large PDF documents efficiently.
 
@@ -2425,7 +2424,7 @@ Chapter 5: Neural Networks
 Would you like me to extract specific sections or code examples?
 ```
 
-### Commands
+##### Commands
 
 | Command | Purpose | Example |
 |---------|---------|---------|
@@ -2447,11 +2446,11 @@ Would you like me to extract specific sections or code examples?
 
 **Feature:** Claude Vision API integration for analyzing images in Word and PDF documents
 
-### Overview
+#### Overview
 
 When documents contain important visual information (charts, diagrams, screenshots), WYN360 can use Claude's Vision API to describe and analyze these images.
 
-#### Key Features
+##### Key Features
 
 - 🖼️ **Three Processing Modes:**
   - `skip` - Ignore images entirely (fastest, cheapest)
@@ -2463,7 +2462,7 @@ When documents contain important visual information (charts, diagrams, screensho
 - 💰 **Cost Transparency** - Separate tracking for vision API calls
 - ⚡ **Batch Processing** - Efficient bulk image analysis
 
-### Use Case 20.1: Sales Report with Charts
+#### Use Case 20.1: Sales Report with Charts
 
 Analyze Excel/PDF reports containing charts and graphs.
 
@@ -2492,7 +2491,7 @@ Chart 3 (Page 10): Product Category Bar Chart
 Vision API tokens used: 4,200 input, 350 output
 ```
 
-### Use Case 20.2: Technical Diagram Understanding
+#### Use Case 20.2: Technical Diagram Understanding
 
 Understand architecture diagrams and flowcharts in documentation.
 
@@ -2529,7 +2528,7 @@ Key Connections:
 - Shared authentication via JWT tokens
 ```
 
-### Commands
+#### Commands
 
 | Command | Purpose | Example |
 |---------|---------|---------|
@@ -2548,7 +2547,7 @@ Key Connections:
 
 **Feature:** Tesseract OCR integration for extracting text from scanned documents
 
-### Overview
+#### Overview
 
 Many PDFs are scanned images with no text layer. WYN360 automatically detects scanned pages and uses OCR to extract text, making these documents searchable and analyzable.
 
@@ -2561,7 +2560,7 @@ Many PDFs are scanned images with no text layer. WYN360 automatically detects sc
 - 🖼️ **Combined Processing** - OCR text + Vision API for images
 - ⚡ **Preprocessing** - Deskew, denoise for better accuracy
 
-### Use Case 21.1: Historical Document Processing
+#### Use Case 21.1: Historical Document Processing
 
 Extract text from old scanned documents.
 
@@ -2585,7 +2584,7 @@ Note: Some degraded text on pages 2 and 11 (confidence <70%)
 Would you like me to describe those sections using Vision API?
 ```
 
-### Use Case 21.2: Receipt Processing
+#### Use Case 21.2: Receipt Processing
 
 Extract data from photographed receipts.
 
@@ -2612,7 +2611,7 @@ Total: $151.86
 Payment: Visa ending in 4242
 ```
 
-### Features
+#### Features
 
 - ✅ Scanned page detection (checks for text layer)
 - ✅ Language auto-detection
@@ -2631,7 +2630,7 @@ Payment: Visa ending in 4242
 
 **Feature:** Embedding-based semantic search using sentence-transformers
 
-### Overview
+#### Overview
 
 Instead of keyword matching, WYN360 uses AI embeddings to understand the *meaning* of your query and find semantically similar content, even if exact keywords don't match.
 
@@ -2644,7 +2643,7 @@ Instead of keyword matching, WYN360 uses AI embeddings to understand the *meanin
 - 🔄 **Fallback Support** - Uses keyword matching if embeddings fail
 - 📈 **30-50% Better** - Significantly improved accuracy vs keywords
 
-### Use Case 22.1: Conceptual Search
+#### Use Case 22.1: Conceptual Search
 
 Find content by meaning, not exact words.
 
@@ -2676,7 +2675,7 @@ Results (ranked by semantic similarity):
 - Understood "memorizing" = "overfitting"
 - Ranked by actual relevance, not just keyword frequency
 
-### Use Case 22.2: Multi-Language Search
+#### Use Case 22.2: Multi-Language Search
 
 Search across languages conceptually.
 
@@ -2692,7 +2691,7 @@ Note: Found Spanish section because embedding understands
 "autenticación" is semantically similar to "authentication"
 ```
 
-### Performance
+#### Performance
 
 - **Retrieval Quality:** +40% accuracy improvement
 - **Query Speed:** <50ms (cached embeddings)
@@ -2710,7 +2709,7 @@ Note: Found Spanish section because embedding understands
 
 **Feature:** Query and analyze multiple cached documents simultaneously
 
-### Overview
+#### Overview
 
 Work with multiple documents at once - compare spreadsheets, find information across reports, track changes between versions.
 
@@ -2818,7 +2817,7 @@ Overall: 23% content change, 2,300 words added
 
 **Feature:** Parallel processing, compression, and LRU caching for maximum speed and efficiency
 
-### Overview
+#### Overview
 
 Phase 5.6 performance optimizations make document processing 3-5x faster with 50-70% less storage.
 
@@ -2830,7 +2829,7 @@ Phase 5.6 performance optimizations make document processing 3-5x faster with 50
 - 📊 **Batch Processing** - Efficient bulk document analysis
 - 🚀 **3-5x Speedup** - Dramatically faster processing
 
-### Use Case 24.1: Bulk Document Processing
+#### Use Case 24.1: Bulk Document Processing
 
 Process multiple large documents efficiently.
 
@@ -2859,7 +2858,7 @@ Speedup: 3.3x faster
 Cache size: 45 MB (compressed from 156 MB)
 ```
 
-### Use Case 24.2: Frequent Access Patterns
+#### Use Case 24.2: Frequent Access Patterns
 
 Optimized caching keeps hot documents instantly available.
 
@@ -2883,7 +2882,7 @@ Cache Stats:
 - Oldest entry: 45 minutes ago
 ```
 
-### Performance Metrics
+#### Performance Metrics
 
 | Metric | Before v0.3.36 | After v0.3.36 | Improvement |
 |--------|---------------|---------------|-------------|
@@ -2893,7 +2892,7 @@ Cache Stats:
 | 100-page PDF | ~30 seconds | ~8 seconds | **3.75x faster** |
 | Cache for 100 docs | ~500 MB | ~180 MB | **64% reduction** |
 
-### Commands
+#### Commands
 
 | Command | Purpose | Performance Impact |
 |---------|---------|-------------------|
@@ -2907,7 +2906,7 @@ Cache Stats:
 **Tools:** `login_to_website`, `fetch_website`, CredentialManager, SessionManager, BrowserAuth
 **Status:** ✅ Ready to use
 
-### Overview
+#### Overview
 
 WYN360 now supports automated login to websites with secure credential storage and session management. After logging in once, all subsequent requests to that domain are automatically authenticated for 30 minutes.
 
@@ -2921,7 +2920,7 @@ WYN360 now supports automated login to websites with secure credential storage a
 
 ---
 
-### Use Case 25.1: Basic Login and Authenticated Access
+#### Use Case 25.1: Basic Login and Authenticated Access
 
 **Scenario:** You want to login to a website and access authenticated content.
 
@@ -2982,7 +2981,7 @@ WYN360: [Session still valid - auto-injecting cookies]
 
 ---
 
-### Use Case 25.2: Session Auto-Detection (Zero Friction)
+#### Use Case 25.2: Session Auto-Detection (Zero Friction)
 
 **Scenario:** After logging in once, you want to access multiple authenticated pages without re-authenticating.
 
@@ -3037,7 +3036,7 @@ WYN360: [Session expired - no saved cookies found]
 
 ---
 
-### Use Case 25.3: CAPTCHA Detection
+#### Use Case 25.3: CAPTCHA Detection
 
 **Scenario:** Website has CAPTCHA protection that requires manual completion.
 
@@ -3073,7 +3072,7 @@ WYN360: [Launches browser]
 
 ---
 
-### Use Case 25.4: Two-Factor Authentication (2FA)
+#### Use Case 25.4: Two-Factor Authentication (2FA)
 
 **Scenario:** Website requires 2FA verification code.
 
@@ -3109,7 +3108,7 @@ WYN360: [Launches browser]
 
 ---
 
-### Use Case 25.5: Multi-Site Session Management
+#### Use Case 25.5: Multi-Site Session Management
 
 **Scenario:** You're working with multiple websites and want to manage sessions for each.
 
@@ -3156,7 +3155,7 @@ WYN360: 📄 **Fetched 🔐 (authenticated):** https://siteC.com/profile
 
 ---
 
-### Use Case 25.6: Testing and Debugging Authentication
+#### Use Case 25.6: Testing and Debugging Authentication
 
 **Scenario:** You want to test login functionality and see detailed feedback.
 
@@ -3209,7 +3208,7 @@ WYN360: [No session for differentsite.com - fetching without auth]
 
 ---
 
-### Storage and Security
+#### Storage and Security
 
 **Where are credentials stored?**
 ```bash
@@ -3247,7 +3246,7 @@ cat ~/.wyn360/logs/auth_audit.log
 
 ---
 
-#### Troubleshooting
+##### Troubleshooting
 
 **Issue: "Could not detect login form"**
 ```bash
@@ -3363,7 +3362,7 @@ Solution:
 
 ---
 
-### Limitations
+#### Limitations
 
 **What Works:**
 - ✅ Standard username/password forms
@@ -3392,7 +3391,7 @@ Solution:
 **Features:** Debug mode, intelligent URL discovery, fuzzy matching, manual selectors
 **Version:** v0.3.43
 
-### Overview
+#### Overview
 
 Phase 4.4 dramatically improves browser authentication success rates with enhanced form detection, debug mode, and fallback strategies. This use case shows you how to use these powerful troubleshooting tools.
 
@@ -3400,7 +3399,7 @@ Phase 4.4 dramatically improves browser authentication success rates with enhanc
 
 ---
 
-### Use Case 26.1: Debug Mode - See What's Happening
+#### Use Case 26.1: Debug Mode - See What's Happening
 
 **Scenario:** Login fails and you want to see exactly what went wrong.
 
@@ -3498,7 +3497,7 @@ cat ~/.wyn360/debug/browser_auth/1699900000_form_detection.json
 
 ---
 
-### Use Case 26.2: Intelligent URL Discovery
+#### Use Case 26.2: Intelligent URL Discovery
 
 **Scenario:** You provide just the domain, and the system finds the login page automatically.
 
@@ -3547,7 +3546,7 @@ If no common URL works, the system:
 
 ---
 
-### Use Case 26.3: Enhanced Form Detection with Fuzzy Matching
+#### Use Case 26.3: Enhanced Form Detection with Fuzzy Matching
 
 **Scenario:** Website uses non-standard field names that traditional detection misses.
 
@@ -3603,7 +3602,7 @@ WYN360: [Enhanced form detection activated]
 
 ---
 
-### Use Case 26.4: Manual Selector Override (When All Else Fails)
+#### Use Case 26.4: Manual Selector Override (When All Else Fails)
 
 **Scenario:** Automatic detection fails even with enhancements. You need manual control.
 
@@ -3672,7 +3671,7 @@ WYN360: [Bypassing automatic form detection]
 
 ---
 
-### Use Case 26.5: Debugging a Failed Login
+#### Use Case 26.5: Debugging a Failed Login
 
 **Scenario:** Login keeps failing and you want to understand why.
 
@@ -3767,7 +3766,7 @@ wyn360 "login using selectors #username-field, #password-field"
 
 ---
 
-### Use Case 26.6: Testing Different Websites
+#### Use Case 26.6: Testing Different Websites
 
 **Common Website Types and Success Rates:**
 
@@ -3865,7 +3864,7 @@ unset WYN360_BROWSER_DEBUG
 
 ---
 
-### Advanced Debug Mode Usage
+#### Advanced Debug Mode Usage
 
 **Custom Debug Workflow:**
 
@@ -3941,7 +3940,7 @@ unset WYN360_BROWSER_DEBUG
 
 ---
 
-### What's New in Phase 4.4
+#### What's New in Phase 4.4
 
 | Feature | Before | After | Benefit |
 |---------|--------|-------|---------|
@@ -3953,7 +3952,7 @@ unset WYN360_BROWSER_DEBUG
 
 ---
 
-### Summary
+#### Summary
 
 **Phase 4.4 gives you:**
 - ✅ **90%+ login success rate** (up from 60%)
@@ -3987,7 +3986,7 @@ If you run into issues or have questions:
 
 **What's New:** WYN360 now supports AWS Bedrock as an alternative to direct Anthropic API authentication. This allows you to use AWS credentials and billing instead of Anthropic API keys.
 
-### Authentication Methods
+#### Authentication Methods
 
 WYN360 supports **two authentication methods** - you can choose whichever fits your needs:
 
@@ -4042,7 +4041,7 @@ WYN360: I'll create a Python script to analyze data.csv...
 
 ---
 
-### Use Case 27.1: Basic AWS Bedrock Setup
+#### Use Case 27.1: Basic AWS Bedrock Setup
 
 **Scenario:** You have an AWS account with Bedrock access and want to use WYN360 with AWS credentials.
 
@@ -4075,7 +4074,7 @@ wyn360 "create a data processing pipeline"
 
 ---
 
-### Use Case 27.2: Using AWS IAM Roles (EC2/ECS/Lambda)
+#### Use Case 27.2: Using AWS IAM Roles (EC2/ECS/Lambda)
 
 **Scenario:** You're running WYN360 on AWS infrastructure with IAM roles.
 
@@ -4116,7 +4115,7 @@ wyn360 "analyze system logs"
 
 ---
 
-### Use Case 27.3: Custom AWS Region
+#### Use Case 27.3: Custom AWS Region
 
 **Scenario:** You want to use a specific AWS region for lower latency or compliance.
 
@@ -4148,7 +4147,7 @@ wyn360 "process EU customer data"
 
 ---
 
-### Use Case 27.4: Custom Model Selection
+#### Use Case 27.4: Custom Model Selection
 
 **Scenario:** You want to use a specific Claude model available in AWS Bedrock.
 
@@ -4177,7 +4176,7 @@ wyn360 "write complex machine learning code"
 
 ---
 
-### Use Case 27.5: Switching Between Anthropic and Bedrock
+#### Use Case 27.5: Switching Between Anthropic and Bedrock
 
 **Scenario:** You want to switch between Anthropic API and AWS Bedrock easily.
 
@@ -4211,7 +4210,7 @@ wyn-anthropic && wyn360 "task using Anthropic"
 
 ---
 
-### Use Case 27.6: Temporary AWS Credentials with STS
+#### Use Case 27.6: Temporary AWS Credentials with STS
 
 **Scenario:** You're using temporary AWS credentials from `aws sts assume-role`.
 
@@ -4308,7 +4307,7 @@ export AWS_SECRET_ACCESS_KEY="xxx..."  # Also set
 
 ---
 
-### Environment Variables Reference
+#### Environment Variables Reference
 
 **Required for AWS Bedrock:**
 - `CLAUDE_CODE_USE_BEDROCK=1` - Enable Bedrock mode
