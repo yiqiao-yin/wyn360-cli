@@ -72,10 +72,30 @@ jobs:
     - name: Build documentation with AI index
       run: |
         # Preserve search index through mkdocs build
-        cp site/assets/search-index.json /tmp/search-index.json
+        if [ -f "site/assets/search-index.json" ]; then
+          cp site/assets/search-index.json /tmp/search-index.json
+        fi
         poetry run mkdocs build
         mkdir -p site/assets
-        cp /tmp/search-index.json site/assets/search-index.json
+        if [ -f "/tmp/search-index.json" ]; then
+          cp /tmp/search-index.json site/assets/search-index.json
+          echo "✅ Search index restored to built site"
+          echo "📊 Search index size: $(wc -c < site/assets/search-index.json) bytes"
+        else
+          echo "⚠️ No search index to restore"
+        fi
+
+    - name: Verify deployment assets
+      run: |
+        echo "🔍 Verifying deployment assets..."
+        ls -la site/assets/ || echo "No assets directory"
+        ls -la site/css/ || echo "No CSS directory"
+        ls -la site/js/ || echo "No JS directory"
+        if [ -f "site/assets/search-index.json" ]; then
+          echo "✅ Search index ready for deployment: $(wc -c < site/assets/search-index.json) bytes"
+        else
+          echo "❌ Search index missing from deployment"
+        fi
 
     - name: Deploy to GitHub Pages (main branch only)
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
