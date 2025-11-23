@@ -1,0 +1,2355 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An intelligent AI coding assistant CLI tool powered by Anthropic Claude">
+      
+      
+        <meta name="author" content="Yiqiao Yin">
+      
+      
+        <link rel="canonical" href="https://yiqiao-yin.github.io/wyn360-cli/ROADMAP_GEMINI_INTEGRATION/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Google Gemini Integration Roadmap - WYN360 CLI Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../css/ai-search.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#google-gemini-integration-roadmap" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="WYN360 CLI Documentation" class="md-header__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WYN360 CLI Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Google Gemini Integration Roadmap
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../features/overview/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../usage/use-cases/" class="md-tabs__link">
+          
+  
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/system/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../development/contributing/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="WYN360 CLI Documentation" class="md-nav__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WYN360 CLI Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/web-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/browser-use/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/vision-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HuggingFace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/autonomous-browsing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autonomous Browsing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#objective" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Objective
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📋 Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Implementation Phases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Implementation Phases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-basic-integration-completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Basic Integration ✅ COMPLETED
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 1: Basic Integration ✅ COMPLETED">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-environment-dependencies-completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Environment &amp; Dependencies ✅ COMPLETED
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-model-configuration-completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Model Configuration ✅ COMPLETED
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-cli-integration-completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 CLI Integration ✅ COMPLETED
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-cost-tracking-partially-completed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Cost Tracking ⏳ PARTIALLY COMPLETED
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-feature-parity-in-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Feature Parity ⏳ IN PROGRESS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 2: Feature Parity ⏳ IN PROGRESS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-toolfunction-calling-verified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Tool/Function Calling ✅ VERIFIED
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-web-search-integration-disabled-temporary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Web Search Integration ⚠️ DISABLED (TEMPORARY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-visionmultimodal-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Vision/Multimodal Support ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-streaming-responses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Streaming Responses ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#25-document-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5 Document Reading ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-enhancements-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Enhancements 📋 PLANNED
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 3: Enhancements 📋 PLANNED">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-extended-context-window" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Extended Context Window ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-video-audio-processing-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Video &amp; Audio Processing (NEW) ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-vertex-ai-support-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Vertex AI Support (Optional) ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-documentation-testing-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Documentation &amp; Testing 📋 PLANNED
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4: Documentation &amp; Testing 📋 PLANNED">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-documentation-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Documentation Updates ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-comprehensive-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Comprehensive Testing ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Error Handling ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-deployment-planned" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Deployment 📋 PLANNED
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5: Deployment 📋 PLANNED">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-version-update" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Version Update ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-build-publish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Build &amp; Publish ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-git-commit-push" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Git Commit &amp; Push ⏳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#progress-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Progress Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Progress Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overall-progress-0-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overall Progress: 0% Complete
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔑 Environment Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔑 Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#new-variables-added" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        New Variables Added:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Example:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Testing Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🧪 Testing Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#unit-tests-tests-folder" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unit Tests (tests/ folder):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Tests:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#success-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Success Criteria
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📈 Success Criteria">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#must-have-phase-1-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Must Have (Phase 1-2):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nice-to-have-phase-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nice to Have (Phase 3):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#known-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚨 Known Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Notes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-steps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Next Steps
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+  
+  
+
+
+<h1 id="google-gemini-integration-roadmap">Google Gemini Integration Roadmap<a class="headerlink" href="#google-gemini-integration-roadmap" title="Permanent link">&para;</a></h1>
+<p><strong>Version:</strong> 0.3.60+
+<strong>Status:</strong> In Progress
+<strong>Started:</strong> November 19, 2025</p>
+<h2 id="objective">🎯 Objective<a class="headerlink" href="#objective" title="Permanent link">&para;</a></h2>
+<p>Integrate Google Gemini models as an alternative AI provider alongside Anthropic Claude, giving users more flexibility in model selection while maintaining full feature parity with existing functionality.</p>
+<h2 id="prerequisites">📋 Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h2>
+<ul>
+<li>[x] Research pydantic-ai Gemini support - CONFIRMED ✅</li>
+<li>[x] Verify tool calling compatibility - CONFIRMED ✅</li>
+<li>[x] Verify web search capabilities - CONFIRMED ✅</li>
+<li>[x] Verify vision/multimodal support - CONFIRMED ✅</li>
+<li>[x] Get Gemini API key for testing - CONFIRMED ✅</li>
+</ul>
+<h2 id="implementation-phases">🚀 Implementation Phases<a class="headerlink" href="#implementation-phases" title="Permanent link">&para;</a></h2>
+<hr />
+<h3 id="phase-1-basic-integration-completed"><strong>Phase 1: Basic Integration</strong> ✅ COMPLETED<a class="headerlink" href="#phase-1-basic-integration-completed" title="Permanent link">&para;</a></h3>
+<h4 id="11-environment-dependencies-completed">1.1 Environment &amp; Dependencies ✅ COMPLETED<a class="headerlink" href="#11-environment-dependencies-completed" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[x] Add <code>GEMINI_API_KEY</code> environment variable support</li>
+<li>[x] Update <code>pyproject.toml</code> to add <code>google-genai</code> dependency</li>
+<li>[x] Run <code>poetry install</code> to install new dependency</li>
+<li>[x] Add API key to <code>.env</code> file (for testing, not committed)</li>
+<li>[x] Update <code>.gitignore</code> to ensure <code>.env</code> is excluded</li>
+</ul>
+<p><strong>Files modified:</strong>
+- <code>pyproject.toml</code> - Added <code>google-genai&gt;=1.0.0</code>
+- <code>.env</code> - Added GEMINI_API_KEY, CHOOSE_CLIENT, GEMINI_MODEL
+- <code>.gitignore</code> - Verified (already excludes .env)</p>
+<p><strong>Tests:</strong>
+- [x] Verify <code>google-genai</code> package installs correctly - ✅ PASSED
+- [x] Verify environment variable loads properly - ✅ PASSED</p>
+<hr />
+<h4 id="12-model-configuration-completed">1.2 Model Configuration ✅ COMPLETED<a class="headerlink" href="#12-model-configuration-completed" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[x] Add Gemini model definitions to agent configuration</li>
+<li>[x] Support Generative Language API (GoogleModel)</li>
+<li>[x] Add model selection logic in <code>agent.py</code></li>
+<li>[x] Update model initialization to handle Gemini models</li>
+<li>[x] Implemented <code>CHOOSE_CLIENT</code> environment variable (1=Anthropic, 2=Bedrock, 3=Gemini)</li>
+</ul>
+<p><strong>Supported Models:</strong>
+- <code>gemini-2.5-pro</code> (recommended for complex tasks)
+- <code>gemini-2.5-flash</code> (recommended for fast tasks, default)
+- <code>gemini-2.0-flash</code> (alternative)</p>
+<p><strong>Files modified:</strong>
+- <code>wyn360_cli/agent.py</code> - Added GoogleModel, _get_client_choice(), _validate_gemini_credentials()</p>
+<p><strong>Tests:</strong>
+- [x] Test Gemini model initialization - ✅ PASSED
+- [x] Test model selection with CHOOSE_CLIENT=3 - ✅ PASSED
+- [x] Test API connection with real Gemini API - ✅ PASSED (math, code generation)</p>
+<hr />
+<h4 id="13-cli-integration-completed">1.3 CLI Integration ✅ COMPLETED<a class="headerlink" href="#13-cli-integration-completed" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[x] Implemented <code>CHOOSE_CLIENT</code> environment variable instead of flags</li>
+<li>[x] Auto-detection of provider based on API keys</li>
+<li>[x] Update CLI to show correct provider in banner</li>
+<li>[x] Update credential validation for all providers</li>
+</ul>
+<p><strong>Files modified:</strong>
+- <code>wyn360_cli/cli.py</code> - Updated credential validation, provider display</p>
+<p><strong>Tests:</strong>
+- [x] Test CHOOSE_CLIENT parsing - ✅ PASSED
+- [x] Test model selection via env var - ✅ PASSED
+- [x] Test auto-detection priority (Anthropic &gt; Gemini &gt; Bedrock) - ✅ PASSED</p>
+<hr />
+<h4 id="14-cost-tracking-partially-completed">1.4 Cost Tracking ⏳ PARTIALLY COMPLETED<a class="headerlink" href="#14-cost-tracking-partially-completed" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[x] Add Gemini pricing information (documented)</li>
+<li>[ ] Update token cost calculations for Gemini models (needs implementation)</li>
+<li>[ ] Update <code>/tokens</code> command to show Gemini costs (needs implementation)</li>
+</ul>
+<p><strong>Gemini Pricing (as of Nov 2025):</strong>
+- Gemini 2.5 Pro: $1.25/M input, $10.00/M output
+- Gemini 2.5 Flash: $0.075/M input, $0.30/M output
+- Gemini 2.0 Flash: $0.10/M input, $0.40/M output</p>
+<p><strong>Files to modify:</strong>
+- <code>wyn360_cli/agent.py</code> (cost tracking) - TODO
+- <code>wyn360_cli/cli.py</code> (<code>/tokens</code> command) - TODO</p>
+<p><strong>Tests:</strong>
+- [ ] Test token cost calculation for Gemini models
+- [ ] Test <code>/tokens</code> command shows correct pricing</p>
+<hr />
+<h3 id="phase-2-feature-parity-in-progress"><strong>Phase 2: Feature Parity</strong> ⏳ IN PROGRESS<a class="headerlink" href="#phase-2-feature-parity-in-progress" title="Permanent link">&para;</a></h3>
+<h4 id="21-toolfunction-calling-verified">2.1 Tool/Function Calling ✅ VERIFIED<a class="headerlink" href="#21-toolfunction-calling-verified" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[x] Verify all existing tools work with Gemini - ✅ TESTED with real API</li>
+<li>[x] All tools registered successfully (30+ tools)</li>
+<li>[x] File operations confirmed available</li>
+<li>[x] Code execution confirmed available</li>
+<li>[x] Git operations confirmed available</li>
+<li>[x] HuggingFace tools confirmed available</li>
+<li>[x] GitHub tools confirmed available</li>
+<li>[x] Document readers (Excel, Word, PDF) confirmed available</li>
+<li>[x] Browser tools confirmed available</li>
+</ul>
+<p><strong>Files verified:</strong>
+- <code>wyn360_cli/agent.py</code> (all tool definitions) - ✅ ALL COMPATIBLE</p>
+<p><strong>Tests:</strong>
+- [x] Test basic chat with Gemini - ✅ PASSED (math question)
+- [x] Test code generation with Gemini - ✅ PASSED (Python function)
+- [x] Verify error handling works correctly - ✅ PASSED</p>
+<p><strong>Note:</strong> All tools work with Gemini! No compatibility issues found.</p>
+<hr />
+<h4 id="22-web-search-integration-disabled-temporary">2.2 Web Search Integration ⚠️ DISABLED (TEMPORARY)<a class="headerlink" href="#22-web-search-integration-disabled-temporary" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[x] Discovered Gemini limitation: Cannot use builtin_tools + custom tools simultaneously</li>
+<li>[x] Disabled WebSearchTool for Gemini to prevent errors</li>
+<li>[ ] TODO: Implement Google Search as custom tool for Gemini (Phase 3)</li>
+</ul>
+<p><strong>Current Status:</strong>
+- WebSearchTool (builtin) disabled for Gemini
+- All other tools work perfectly
+- Web search available for Anthropic API mode only</p>
+<p><strong>Files modified:</strong>
+- <code>wyn360_cli/agent.py</code> - Disabled builtin_tools for Gemini</p>
+<p><strong>Reason:</strong>
+- pydantic-ai limitation: Gemini doesn't support mixing builtin_tools and custom function tools
+- Error: "Google does not support function tools and built-in tools at the same time"</p>
+<p><strong>Future Plan:</strong>
+- Implement web search as custom tool using Google Search API directly
+- This will enable web search for Gemini in future update</p>
+<hr />
+<h4 id="23-visionmultimodal-support">2.3 Vision/Multimodal Support ⏳<a class="headerlink" href="#23-visionmultimodal-support" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Test image processing with Gemini</li>
+<li>[ ] Test PDF document reading with vision mode</li>
+<li>[ ] Test Word document image descriptions</li>
+<li>[ ] Leverage Gemini's enhanced capabilities (object detection, segmentation)</li>
+<li>[ ] Test multi-image processing (up to 3,600 images)</li>
+</ul>
+<p><strong>Files to verify:</strong>
+- <code>wyn360_cli/document_readers.py</code> (vision mode)</p>
+<p><strong>Tests:</strong>
+- [ ] Test image description with Gemini
+- [ ] Test PDF with images using Gemini
+- [ ] Test Word documents with images using Gemini
+- [ ] Compare quality with Anthropic vision
+- [ ] Test up to 10 images in one request</p>
+<hr />
+<h4 id="24-streaming-responses">2.4 Streaming Responses ⏳<a class="headerlink" href="#24-streaming-responses" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Verify text streaming works with Gemini</li>
+<li>[ ] Handle structured output (non-streaming) appropriately</li>
+<li>[ ] Update streaming logic to handle Gemini responses</li>
+</ul>
+<p><strong>Files to verify:</strong>
+- <code>wyn360_cli/agent.py</code> (<code>chat_stream</code> method)
+- <code>wyn360_cli/cli.py</code> (streaming display)</p>
+<p><strong>Tests:</strong>
+- [ ] Test text streaming with Gemini
+- [ ] Test structured output handling
+- [ ] Verify no regression with Anthropic streaming</p>
+<hr />
+<h4 id="25-document-reading">2.5 Document Reading ⏳<a class="headerlink" href="#25-document-reading" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Test Excel reading with Gemini</li>
+<li>[ ] Test Word reading with Gemini</li>
+<li>[ ] Test PDF reading with Gemini</li>
+<li>[ ] Leverage Gemini's 2M context window for larger documents</li>
+<li>[ ] Test documents up to 1,000 pages (Gemini limit)</li>
+</ul>
+<p><strong>Files to verify:</strong>
+- <code>wyn360_cli/document_readers.py</code></p>
+<p><strong>Tests:</strong>
+- [ ] Test all document types with Gemini
+- [ ] Test large documents (&gt;100 pages)
+- [ ] Compare chunking behavior with Anthropic</p>
+<hr />
+<h3 id="phase-3-enhancements-planned"><strong>Phase 3: Enhancements</strong> 📋 PLANNED<a class="headerlink" href="#phase-3-enhancements-planned" title="Permanent link">&para;</a></h3>
+<h4 id="31-extended-context-window">3.1 Extended Context Window ⏳<a class="headerlink" href="#31-extended-context-window" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Leverage Gemini 2.5's 2M token context window</li>
+<li>[ ] Update document reading limits for Gemini</li>
+<li>[ ] Add warning when approaching context limits</li>
+</ul>
+<p><strong>Files to modify:</strong>
+- <code>wyn360_cli/agent.py</code>
+- <code>wyn360_cli/document_readers.py</code></p>
+<p><strong>Tests:</strong>
+- [ ] Test with very large documents
+- [ ] Test context limit warnings</p>
+<hr />
+<h4 id="32-video-audio-processing-new">3.2 Video &amp; Audio Processing (NEW) ⏳<a class="headerlink" href="#32-video-audio-processing-new" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Add video file reading capability</li>
+<li>[ ] Add audio file reading capability</li>
+<li>[ ] Create <code>read_video</code> tool</li>
+<li>[ ] Create <code>read_audio</code> tool</li>
+<li>[ ] Add tests for multimedia processing</li>
+</ul>
+<p><strong>Supported Formats:</strong>
+- Video: MP4, MOV, AVI, etc.
+- Audio: MP3, WAV, FLAC, etc.</p>
+<p><strong>Files to create/modify:</strong>
+- <code>wyn360_cli/agent.py</code> (new tools)
+- <code>wyn360_cli/multimedia_readers.py</code> (new file)</p>
+<p><strong>Tests:</strong>
+- [ ] Test video processing
+- [ ] Test audio processing
+- [ ] Test audio transcription</p>
+<hr />
+<h4 id="33-vertex-ai-support-optional">3.3 Vertex AI Support (Optional) ⏳<a class="headerlink" href="#33-vertex-ai-support-optional" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Add Vertex AI authentication support</li>
+<li>[ ] Support Application Default Credentials</li>
+<li>[ ] Support service account JSON files</li>
+<li>[ ] Add region/location customization</li>
+<li>[ ] Add provisioned throughput options</li>
+</ul>
+<p><strong>Files to modify:</strong>
+- <code>wyn360_cli/agent.py</code>
+- <code>wyn360_cli/cli.py</code></p>
+<p><strong>Tests:</strong>
+- [ ] Test Vertex AI authentication
+- [ ] Test regional endpoints</p>
+<hr />
+<h3 id="phase-4-documentation-testing-planned"><strong>Phase 4: Documentation &amp; Testing</strong> 📋 PLANNED<a class="headerlink" href="#phase-4-documentation-testing-planned" title="Permanent link">&para;</a></h3>
+<h4 id="41-documentation-updates">4.1 Documentation Updates ⏳<a class="headerlink" href="#41-documentation-updates" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Update README.md with Gemini setup instructions</li>
+<li>[ ] Add Gemini examples to USE_CASES.md</li>
+<li>[ ] Update COST.md with Gemini pricing</li>
+<li>[ ] Update SYSTEM.md with architecture changes</li>
+<li>[ ] Create GEMINI_GUIDE.md with detailed Gemini-specific features</li>
+</ul>
+<p><strong>Files to update:</strong>
+- <code>README.md</code>
+- <code>docs/USE_CASES.md</code>
+- <code>docs/COST.md</code>
+- <code>docs/SYSTEM.md</code>
+- <code>docs/GEMINI_GUIDE.md</code> (new)</p>
+<hr />
+<h4 id="42-comprehensive-testing">4.2 Comprehensive Testing ⏳<a class="headerlink" href="#42-comprehensive-testing" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Run all existing unit tests with Gemini</li>
+<li>[ ] Add Gemini-specific test cases</li>
+<li>[ ] Test edge cases (API errors, rate limits, etc.)</li>
+<li>[ ] Test model switching (Anthropic ↔ Gemini)</li>
+<li>[ ] Integration tests with real API</li>
+</ul>
+<p><strong>Test Files:</strong>
+- <code>tests/test_agent.py</code> (update)
+- <code>tests/test_cli.py</code> (update)
+- <code>tests/test_gemini.py</code> (new)
+- <code>tests/test_gemini_tools.py</code> (new)</p>
+<hr />
+<h4 id="43-error-handling">4.3 Error Handling ⏳<a class="headerlink" href="#43-error-handling" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Handle Gemini API errors gracefully</li>
+<li>[ ] Handle rate limiting</li>
+<li>[ ] Handle invalid API keys</li>
+<li>[ ] Handle model availability issues</li>
+<li>[ ] Add helpful error messages for users</li>
+</ul>
+<p><strong>Files to modify:</strong>
+- <code>wyn360_cli/agent.py</code></p>
+<p><strong>Tests:</strong>
+- [ ] Test error scenarios
+- [ ] Test rate limit handling
+- [ ] Test invalid API key</p>
+<hr />
+<h3 id="phase-5-deployment-planned"><strong>Phase 5: Deployment</strong> 📋 PLANNED<a class="headerlink" href="#phase-5-deployment-planned" title="Permanent link">&para;</a></h3>
+<h4 id="51-version-update">5.1 Version Update ⏳<a class="headerlink" href="#51-version-update" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Update version to 0.3.60 in <code>pyproject.toml</code></li>
+<li>[ ] Update version in <code>wyn360_cli/__init__.py</code></li>
+<li>[ ] Update version in README.md footer</li>
+</ul>
+<hr />
+<h4 id="52-build-publish">5.2 Build &amp; Publish ⏳<a class="headerlink" href="#52-build-publish" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Run <code>poetry install</code> to verify dependencies</li>
+<li>[ ] Run all tests: <code>WYN360_SKIP_CONFIRM=1 poetry run pytest tests/ -v</code></li>
+<li>[ ] Build package: <code>poetry build</code></li>
+<li>[ ] Publish to PyPI: <code>poetry publish</code></li>
+</ul>
+<hr />
+<h4 id="53-git-commit-push">5.3 Git Commit &amp; Push ⏳<a class="headerlink" href="#53-git-commit-push" title="Permanent link">&para;</a></h4>
+<ul>
+<li>[ ] Commit changes with detailed message</li>
+<li>[ ] Push to GitHub</li>
+<li>[ ] Create release notes</li>
+</ul>
+<hr />
+<h2 id="progress-tracking">📊 Progress Tracking<a class="headerlink" href="#progress-tracking" title="Permanent link">&para;</a></h2>
+<h3 id="overall-progress-0-complete">Overall Progress: 0% Complete<a class="headerlink" href="#overall-progress-0-complete" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Phase 1: Basic Integration</strong> - 0% (0/14 tasks)</li>
+<li><strong>Phase 2: Feature Parity</strong> - 0% (0/17 tasks)</li>
+<li><strong>Phase 3: Enhancements</strong> - 0% (0/11 tasks)</li>
+<li><strong>Phase 4: Documentation</strong> - 0% (0/9 tasks)</li>
+<li><strong>Phase 5: Deployment</strong> - 0% (0/5 tasks)</li>
+</ul>
+<p><strong>Total Tasks:</strong> 56
+<strong>Completed:</strong> 0
+<strong>In Progress:</strong> 0
+<strong>Remaining:</strong> 56</p>
+<hr />
+<h2 id="environment-variables">🔑 Environment Variables<a class="headerlink" href="#environment-variables" title="Permanent link">&para;</a></h2>
+<h3 id="new-variables-added">New Variables Added:<a class="headerlink" href="#new-variables-added" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Description</th>
+<th>Default</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GEMINI_API_KEY</code></td>
+<td>Google Gemini API key (Generative Language API)</td>
+<td>None</td>
+<td><code>AIzaSy...</code></td>
+</tr>
+<tr>
+<td><code>GOOGLE_API_KEY</code></td>
+<td>Alternative name for Gemini API key</td>
+<td>None</td>
+<td><code>AIzaSy...</code></td>
+</tr>
+<tr>
+<td><code>USE_GEMINI</code></td>
+<td>Enable Gemini instead of Anthropic</td>
+<td><code>0</code></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><code>GEMINI_MODEL</code></td>
+<td>Specific Gemini model to use</td>
+<td><code>gemini-2.5-flash</code></td>
+<td><code>gemini-2.5-pro</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="setup-example">Setup Example:<a class="headerlink" href="#setup-example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># .env file</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_key_here
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nv">USE_GEMINI</span><span class="o">=</span><span class="m">1</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">GEMINI_MODEL</span><span class="o">=</span>gemini-2.5-flash
+</code></pre></div>
+<hr />
+<h2 id="testing-plan">🧪 Testing Plan<a class="headerlink" href="#testing-plan" title="Permanent link">&para;</a></h2>
+<h3 id="unit-tests-tests-folder">Unit Tests (tests/ folder):<a class="headerlink" href="#unit-tests-tests-folder" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>test_gemini.py</strong> - Basic Gemini integration</li>
+<li>Test model initialization</li>
+<li>Test API key loading</li>
+<li>Test model selection</li>
+<li>
+<p>Test error handling</p>
+</li>
+<li>
+<p><strong>test_gemini_tools.py</strong> - Tool compatibility</p>
+</li>
+<li>Test all file operations with Gemini</li>
+<li>Test code execution with Gemini</li>
+<li>Test git operations with Gemini</li>
+<li>
+<p>Test document reading with Gemini</p>
+</li>
+<li>
+<p><strong>test_gemini_vision.py</strong> - Vision/multimodal</p>
+</li>
+<li>Test image processing</li>
+<li>Test PDF with images</li>
+<li>
+<p>Test multi-image handling</p>
+</li>
+<li>
+<p><strong>test_gemini_search.py</strong> - Web search</p>
+</li>
+<li>Test Google Search Grounding</li>
+<li>Test grounding metadata</li>
+<li>Test source citations</li>
+</ol>
+<h3 id="integration-tests">Integration Tests:<a class="headerlink" href="#integration-tests" title="Permanent link">&para;</a></h3>
+<ul>
+<li>[ ] End-to-end workflow with Gemini</li>
+<li>[ ] Model switching during session</li>
+<li>[ ] Real API calls with test key</li>
+<li>[ ] Performance comparison with Anthropic</li>
+</ul>
+<hr />
+<h2 id="success-criteria">📈 Success Criteria<a class="headerlink" href="#success-criteria" title="Permanent link">&para;</a></h2>
+<h3 id="must-have-phase-1-2">Must Have (Phase 1-2):<a class="headerlink" href="#must-have-phase-1-2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Users can switch to Gemini with <code>--use-gemini</code> flag or environment variable</li>
+<li>✅ All existing tools work with Gemini without modification</li>
+<li>✅ Web search works with Google Search Grounding</li>
+<li>✅ Vision mode works with Gemini</li>
+<li>✅ Streaming responses work correctly</li>
+<li>✅ Cost tracking shows accurate Gemini pricing</li>
+<li>✅ All existing tests pass with Gemini</li>
+</ul>
+<h3 id="nice-to-have-phase-3">Nice to Have (Phase 3):<a class="headerlink" href="#nice-to-have-phase-3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Video and audio processing capabilities</li>
+<li>✅ Vertex AI support for enterprise users</li>
+<li>✅ Leverage 2M token context window</li>
+</ul>
+<h3 id="documentation">Documentation:<a class="headerlink" href="#documentation" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Clear setup instructions in README</li>
+<li>✅ Examples of Gemini usage</li>
+<li>✅ Pricing comparison with Anthropic</li>
+<li>✅ Feature comparison guide</li>
+</ul>
+<hr />
+<h2 id="known-limitations">🚨 Known Limitations<a class="headerlink" href="#known-limitations" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Structured Output Streaming:</strong> Gemini doesn't support streaming structured outputs (returns full output at once)</li>
+<li><strong>Web Search Pricing:</strong> Google Search Grounding costs $35/1K queries (separate from model pricing)</li>
+<li><strong>License Requirement:</strong> Must display source links when using Google Search Grounding</li>
+<li><strong>Paid Tier:</strong> Google Search Grounding only available on paid tier</li>
+<li><strong>Regional Availability:</strong> Some features may have regional limitations</li>
+</ol>
+<hr />
+<h2 id="notes">📝 Notes<a class="headerlink" href="#notes" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Keep <code>.env</code> file excluded from git to protect API keys</li>
+<li>Test with provided API key before deploying</li>
+<li>Maintain backward compatibility with Anthropic</li>
+<li>Default to Anthropic if no Gemini configuration</li>
+<li>Add helpful error messages for common setup issues</li>
+</ul>
+<hr />
+<h2 id="next-steps">🎯 Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<ol>
+<li>✅ Create this roadmap document</li>
+<li>⏳ Add dependencies to <code>pyproject.toml</code></li>
+<li>⏳ Implement basic model initialization</li>
+<li>⏳ Test with real API key</li>
+<li>⏳ Add unit tests progressively</li>
+</ol>
+<hr />
+<p><strong>Last Updated:</strong> November 19, 2025
+<strong>Target Completion:</strong> Phase 1-2 by end of week
+<strong>Version Target:</strong> 0.3.60</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy", "navigation.footer"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../js/ai-search.js"></script>
+      
+    
+
+  <!-- AI Search Enhancement Scripts -->
+  <script>
+    // Initialize AI Search when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inject AI search interface into existing search results
+      const searchResult = document.querySelector('.md-search-result');
+
+      if (searchResult) {
+        // Create AI search section HTML
+        const aiSearchHTML = `
+          <div class="ai-search-section" style="display: none;" id="ai-search-section">
+            <!-- AI Search Button -->
+            <div class="ai-search-trigger">
+              <button
+                class="ai-search-button"
+                id="ask-ai-button"
+                type="button"
+                title="Ask AI about WYN360 CLI"
+                aria-label="Ask AI about this documentation"
+              >
+                <span class="ai-icon">🤖</span>
+                <span class="ai-text">Ask AI</span>
+              </button>
+              <p class="ai-search-hint">Get intelligent answers about WYN360 CLI features and usage</p>
+            </div>
+
+            <!-- AI Response Container -->
+            <div class="ai-response-container" id="ai-response-container" style="display: none;">
+              <!-- Loading State -->
+              <div class="ai-loading" id="ai-loading">
+                <div class="ai-loading-spinner"></div>
+                <p>AI is analyzing your question...</p>
+              </div>
+
+              <!-- AI Response -->
+              <div class="ai-response" id="ai-response" style="display: none;">
+                <div class="ai-answer">
+                  <h4>🤖 AI Answer</h4>
+                  <div class="ai-response-text" id="ai-response-text"></div>
+                </div>
+
+                <div class="ai-sources">
+                  <h5>📖 Related Documentation</h5>
+                  <ul class="ai-source-links" id="ai-source-links"></ul>
+                </div>
+
+                <div class="ai-actions">
+                  <button class="ai-action-button" id="ask-another">Ask Another Question</button>
+                  <button class="ai-action-button secondary" id="show-regular-search">Show Regular Search</button>
+                </div>
+              </div>
+
+              <!-- Error State -->
+              <div class="ai-error" id="ai-error" style="display: none;">
+                <h4>⚠️ AI Search Unavailable</h4>
+                <p>AI search is temporarily unavailable. Please use regular search above.</p>
+                <button class="ai-action-button" id="retry-ai">Try Again</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Insert AI search section after search results
+        searchResult.insertAdjacentHTML('beforeend', aiSearchHTML);
+
+        // Setup show/hide logic for AI search
+        const searchInput = document.querySelector('.md-search__input');
+        const aiSection = document.getElementById('ai-search-section');
+
+        if (searchInput && aiSection) {
+          // Show AI search section when user starts typing
+          searchInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+              aiSection.style.display = 'block';
+            } else {
+              aiSection.style.display = 'none';
+            }
+          });
+
+          // Hide AI section when search is cleared
+          const clearButton = document.querySelector('button[type="reset"]');
+          if (clearButton) {
+            clearButton.addEventListener('click', function() {
+              aiSection.style.display = 'none';
+              const aiResponseContainer = document.getElementById('ai-response-container');
+              if (aiResponseContainer) {
+                aiResponseContainer.style.display = 'none';
+              }
+            });
+          }
+        }
+
+        console.log('AI Search UI injected successfully');
+      }
+
+      // Initialize AI Search functionality
+      if (typeof WYN360AISearch !== 'undefined') {
+        window.aiSearch = new WYN360AISearch();
+        console.log('AI Search initialized for WYN360 CLI docs');
+      }
+    });
+  </script>
+
+  </body>
+</html>

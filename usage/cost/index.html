@@ -1,0 +1,3968 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An intelligent AI coding assistant CLI tool powered by Anthropic Claude">
+      
+      
+        <meta name="author" content="Yiqiao Yin">
+      
+      
+        <link rel="canonical" href="https://yiqiao-yin.github.io/wyn360-cli/usage/cost/">
+      
+      
+        <link rel="prev" href="../commands/">
+      
+      
+        <link rel="next" href="../../architecture/system/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Cost Management - WYN360 CLI Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../css/ai-search.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wyn360-cli-cost-analysis-estimation" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="WYN360 CLI Documentation" class="md-header__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WYN360 CLI Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Cost Management
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/overview/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../use-cases/" class="md-tabs__link">
+          
+  
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../architecture/system/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/contributing/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="WYN360 CLI Documentation" class="md-nav__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WYN360 CLI Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/web-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/browser-use/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/vision-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HuggingFace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Management
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pricing-anthropic-claude-sonnet-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💰 Pricing (Anthropic Claude Sonnet 4)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💰 Pricing (Anthropic Claude Sonnet 4)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#token-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token Costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-search-costs-phase-111-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Search Costs (Phase 11.1 - v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vision-api-costs-phase-51-v0330" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vision API Costs (Phase 5.1 - v0.3.30)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autonomous-browsing-costs-phase-52-56-v0352-0356" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autonomous Browsing Costs (Phase 5.2-5.6 - v0.3.52-0.3.56) 🆕
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#token-breakdown-per-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Token Breakdown Per Request
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Token Breakdown Per Request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-system-prompt-1000-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System Prompt (~1,000 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tool-definitions-1800-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tool Definitions (~1,800 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-user-message-50-500-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. User Message (~50-500 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-conversation-history-new-in-v028-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Conversation History (NEW in v0.2.8) (Variable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-tool-call-execution-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Tool Call Execution (Variable)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Tool Call Execution (Variable)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tool-call-request-50-100-tokens-per-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Call Request (~50-100 tokens per call)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-response-highly-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Response (Highly Variable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-assistant-response-200-1500-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Assistant Response (~200-1,500 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-estimates-for-common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Cost Estimates for Common Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📈 Cost Estimates for Common Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-case-1-simple-code-generation-blank-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 1: Simple Code Generation (Blank Project)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-2-update-existing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 2: Update Existing File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-3-execute-python-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 3: Execute Python Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-4-complex-project-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 4: Complex Project Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-5-uv-project-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 5: UV Project Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-6-web-search-weather-query-new-in-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 6: Web Search - Weather Query (NEW in v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-7-web-search-url-reading-new-in-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 7: Web Search - URL Reading (NEW in v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-8-web-search-latest-information-new-in-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 8: Web Search - Latest Information (NEW in v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monthly-cost-estimates-by-usage-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 Monthly Cost Estimates by Usage Pattern
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 Monthly Cost Estimates by Usage Pattern">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#light-user-10-20-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Light User (10-20 requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regular-user-50-100-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regular User (50-100 requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heavy-user-200-500-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heavy User (200-500 requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teamenterprise-1000-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Team/Enterprise (1000+ requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-optimization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Cost Optimization Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Cost Optimization Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-minimize-file-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Minimize File Reads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-use-specific-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Use Specific Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-batch-related-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Batch Related Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-limit-command-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Limit Command Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-clear-conversation-history-periodically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Clear Conversation History Periodically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-use-smaller-model-for-simple-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Use Smaller Model for Simple Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#token-usage-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Token Usage Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Token Usage Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-check-anthropic-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Check Anthropic Console
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-api-response-headers-future-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: API Response Headers (Future Enhancement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-3-estimate-from-response-length" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 3: Estimate from Response Length
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-cost-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 Real-World Cost Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 Real-World Cost Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-building-a-streamlit-app-full-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Building a Streamlit App (Full Session)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-debugging-session-10-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Debugging Session (10 interactions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-monthly-developer-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: Monthly Developer Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠️ Cost Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚠️ Cost Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-increases-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Increases Costs:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-keeps-costs-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Keeps Costs Low:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controlling-response-length-max_tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Controlling Response Length (max_tokens)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ Controlling Response Length (max_tokens)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-current-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        View Current Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-change-max_tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Change max_tokens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Change max_tokens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-globally-all-projects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Globally (All Projects)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-per-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Per Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-comparison-with-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💰 Cost Comparison with Alternatives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📝 Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Formula:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendation:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Additional Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/autonomous-browsing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autonomous Browsing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pricing-anthropic-claude-sonnet-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💰 Pricing (Anthropic Claude Sonnet 4)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💰 Pricing (Anthropic Claude Sonnet 4)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#token-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token Costs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-search-costs-phase-111-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Search Costs (Phase 11.1 - v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vision-api-costs-phase-51-v0330" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Vision API Costs (Phase 5.1 - v0.3.30)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autonomous-browsing-costs-phase-52-56-v0352-0356" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autonomous Browsing Costs (Phase 5.2-5.6 - v0.3.52-0.3.56) 🆕
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#token-breakdown-per-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Token Breakdown Per Request
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Token Breakdown Per Request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-system-prompt-1000-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System Prompt (~1,000 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tool-definitions-1800-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tool Definitions (~1,800 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-user-message-50-500-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. User Message (~50-500 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-conversation-history-new-in-v028-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Conversation History (NEW in v0.2.8) (Variable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-tool-call-execution-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Tool Call Execution (Variable)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Tool Call Execution (Variable)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tool-call-request-50-100-tokens-per-call" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Call Request (~50-100 tokens per call)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-response-highly-variable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool Response (Highly Variable)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-assistant-response-200-1500-tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Assistant Response (~200-1,500 tokens)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-estimates-for-common-use-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Cost Estimates for Common Use Cases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📈 Cost Estimates for Common Use Cases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-case-1-simple-code-generation-blank-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 1: Simple Code Generation (Blank Project)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-2-update-existing-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 2: Update Existing File
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-3-execute-python-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 3: Execute Python Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-4-complex-project-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 4: Complex Project Analysis
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-5-uv-project-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 5: UV Project Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-6-web-search-weather-query-new-in-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 6: Web Search - Weather Query (NEW in v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-7-web-search-url-reading-new-in-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 7: Web Search - URL Reading (NEW in v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-case-8-web-search-latest-information-new-in-v0321" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use Case 8: Web Search - Latest Information (NEW in v0.3.21)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#monthly-cost-estimates-by-usage-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 Monthly Cost Estimates by Usage Pattern
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 Monthly Cost Estimates by Usage Pattern">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#light-user-10-20-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Light User (10-20 requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regular-user-50-100-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regular User (50-100 requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heavy-user-200-500-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Heavy User (200-500 requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teamenterprise-1000-requestsmonth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Team/Enterprise (1000+ requests/month)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-optimization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Cost Optimization Strategies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Cost Optimization Strategies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-minimize-file-reads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Minimize File Reads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-use-specific-requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Use Specific Requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-batch-related-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Batch Related Operations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-limit-command-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Limit Command Output
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-clear-conversation-history-periodically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Clear Conversation History Periodically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-use-smaller-model-for-simple-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Use Smaller Model for Simple Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#token-usage-tracking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Token Usage Tracking
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Token Usage Tracking">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#method-1-check-anthropic-console" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 1: Check Anthropic Console
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-2-api-response-headers-future-enhancement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 2: API Response Headers (Future Enhancement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#method-3-estimate-from-response-length" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Method 3: Estimate from Response Length
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#real-world-cost-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 Real-World Cost Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 Real-World Cost Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example-1-building-a-streamlit-app-full-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 1: Building a Streamlit App (Full Session)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-2-debugging-session-10-interactions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 2: Debugging Session (10 interactions)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-3-monthly-developer-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example 3: Monthly Developer Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠️ Cost Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚠️ Cost Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-increases-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Increases Costs:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-keeps-costs-low" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Keeps Costs Low:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#controlling-response-length-max_tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚙️ Controlling Response Length (max_tokens)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="⚙️ Controlling Response Length (max_tokens)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#view-current-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        View Current Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-to-change-max_tokens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Change max_tokens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="How to Change max_tokens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option-1-globally-all-projects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 1: Globally (All Projects)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option-2-per-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Option 2: Per Project
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Examples
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cost-comparison-with-alternatives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💰 Cost Comparison with Alternatives
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📝 Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📝 Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-formula" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Formula:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommendation:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#additional-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔗 Additional Resources
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+  
+  
+
+
+<h1 id="wyn360-cli-cost-analysis-estimation">WYN360 CLI - Cost Analysis &amp; Estimation<a class="headerlink" href="#wyn360-cli-cost-analysis-estimation" title="Permanent link">&para;</a></h1>
+<p>This document provides a detailed breakdown of the costs associated with using WYN360 CLI, which is powered by Anthropic Claude.</p>
+<h2 id="pricing-anthropic-claude-sonnet-4">💰 Pricing (Anthropic Claude Sonnet 4)<a class="headerlink" href="#pricing-anthropic-claude-sonnet-4" title="Permanent link">&para;</a></h2>
+<p>As of January 2025, the default model <code>claude-sonnet-4-20250514</code> pricing:</p>
+<h3 id="token-costs">Token Costs<a class="headerlink" href="#token-costs" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Token Type</th>
+<th>Cost per Million Tokens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Input Tokens</strong></td>
+<td>$3.00</td>
+</tr>
+<tr>
+<td><strong>Output Tokens</strong></td>
+<td>$15.00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="web-search-costs-phase-111-v0321">Web Search Costs (Phase 11.1 - v0.3.21)<a class="headerlink" href="#web-search-costs-phase-111-v0321" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Web Search</strong></td>
+<td>$10.00 per 1,000 searches</td>
+</tr>
+<tr>
+<td><strong>Session Limit</strong></td>
+<td>5 searches (default, configurable)</td>
+</tr>
+<tr>
+<td><strong>Per Search</strong></td>
+<td>$0.01</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important:</strong> Web search costs are <strong>in addition to</strong> token costs. Each search incurs:
+- Fixed search cost: $0.01
+- Token costs for processing results: ~$0.001-0.015 (varies by result size)
+- Total per search: ~$0.011-0.025</p>
+<p><strong>Formula:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Total Cost = (Input Tokens / 1,000,000 × $3)
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>           + (Output Tokens / 1,000,000 × $15)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>           + (Web Searches × $0.01)
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>           + (Search Result Token Processing)
+</code></pre></div></p>
+<h3 id="vision-api-costs-phase-51-v0330">Vision API Costs (Phase 5.1 - v0.3.30)<a class="headerlink" href="#vision-api-costs-phase-51-v0330" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Vision API (Image Processing)</strong></td>
+<td>Uses Sonnet pricing</td>
+</tr>
+<tr>
+<td><strong>Input (per image + prompt)</strong></td>
+<td>~$0.0033 per image (~1,100 tokens)</td>
+</tr>
+<tr>
+<td><strong>Output (description)</strong></td>
+<td>~$0.0015-0.0030 per image (~100-200 tokens)</td>
+</tr>
+<tr>
+<td><strong>Total per image</strong></td>
+<td><strong>~$0.01-0.05</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important:</strong> Vision API costs are <strong>in addition to</strong> document processing costs. Each image processed incurs:
+- Input tokens: ~1,000 tokens (image encoding) + ~100 tokens (prompt) = ~1,100 tokens
+- Output tokens: ~100-200 tokens (description)
+- Total cost per image: ~$0.01-0.05</p>
+<p><strong>Image Handling Modes:</strong>
+- <code>skip</code> (default) - No vision API calls, zero cost
+- <code>describe</code> - Extract alt text only, zero API cost
+- <code>vision</code> - Full Claude Vision API processing (costs apply)</p>
+<p><strong>Example Costs:</strong>
+- <strong>5-image document:</strong> ~$0.05-0.25
+- <strong>20-image presentation:</strong> ~$0.20-1.00
+- <strong>50-image technical manual:</strong> ~$0.50-2.50</p>
+<p><strong>Formula:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Vision Cost = (Vision Input Tokens / 1,000,000 × $3)
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>            + (Vision Output Tokens / 1,000,000 × $15)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>where:
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  Vision Input Tokens = (Number of Images × 1,100)
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  Vision Output Tokens = (Number of Images × 100-200)
+</code></pre></div></p>
+<p><strong>Combined Formula (with Vision):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Total Cost = (Conversation Input / 1M × $3)
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>           + (Conversation Output / 1M × $15)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>           + (Document Processing Input / 1M × $3)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>           + (Document Processing Output / 1M × $15)
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>           + (Vision Input / 1M × $3)
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>           + (Vision Output / 1M × $15)
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>           + (Web Searches × $0.01)
+</code></pre></div></p>
+<h3 id="autonomous-browsing-costs-phase-52-56-v0352-0356">Autonomous Browsing Costs (Phase 5.2-5.6 - v0.3.52-0.3.56) 🆕<a class="headerlink" href="#autonomous-browsing-costs-phase-52-56-v0352-0356" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Per Screenshot Analysis</strong></td>
+<td>~$0.01-0.02</td>
+</tr>
+<tr>
+<td><strong>Simple Task (10-15 steps)</strong></td>
+<td>~$0.10-0.30</td>
+</tr>
+<tr>
+<td><strong>Medium Task (15-20 steps)</strong></td>
+<td>~$0.15-0.40</td>
+</tr>
+<tr>
+<td><strong>Complex Task (20-30 steps)</strong></td>
+<td>~$0.20-0.60</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Important:</strong> Autonomous browsing uses Claude Vision API to analyze screenshots and make navigation decisions.</p>
+<p><strong>What happens per step:</strong>
+1. <strong>Screenshot capture</strong> - 1024x768 PNG (~100-200KB)
+2. <strong>Vision API call</strong> - Screenshot + analysis prompt
+3. <strong>Decision making</strong> - Parse JSON response with next action</p>
+<p><strong>Token breakdown per screenshot:</strong>
+- <strong>Input:</strong> ~1,792 tokens (screenshot encoding) + ~500-800 tokens (prompt) = ~2,300-2,600 tokens
+- <strong>Output:</strong> ~200-400 tokens (JSON decision + reasoning)
+- <strong>Cost per screenshot:</strong> ~$0.01-0.02</p>
+<p><strong>Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Input cost:  2,500 tokens × $3.00 / 1M = $0.0075
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Output cost: 300 tokens × $15.00 / 1M = $0.0045
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>Total:       ~$0.012 per screenshot
+</code></pre></div></p>
+<p><strong>Real-World Examples:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Task Type</th>
+<th>Steps</th>
+<th>Screenshots</th>
+<th>Estimated Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Simple product search</strong></td>
+<td>8</td>
+<td>8</td>
+<td>$0.10</td>
+</tr>
+<tr>
+<td><strong>Price comparison</strong></td>
+<td>12</td>
+<td>12</td>
+<td>$0.14</td>
+</tr>
+<tr>
+<td><strong>Multi-filter shopping</strong></td>
+<td>18</td>
+<td>18</td>
+<td>$0.22</td>
+</tr>
+<tr>
+<td><strong>Complex exploration</strong></td>
+<td>25</td>
+<td>25</td>
+<td>$0.30</td>
+</tr>
+<tr>
+<td><strong>Multi-page analysis</strong></td>
+<td>30</td>
+<td>30</td>
+<td>$0.36</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cost Optimization Tips:</strong></p>
+<ol>
+<li>
+<p><strong>Use targeted URLs:</strong> Start closer to your goal
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># ❌ Expensive: Start from homepage</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://amazon.com&quot;</span><span class="p">)</span>  <span class="c1"># 20+ steps</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># ✅ Cheaper: Start from relevant page</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="s2">&quot;https://amazon.com/s?k=wireless+mouse&quot;</span><span class="p">)</span>  <span class="c1"># 10 steps</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Set appropriate max_steps:</strong> Don't allow unnecessary actions
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># ✅ Good: Limit steps for simple tasks</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>  <span class="c1"># ~$0.12</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># ❌ Wasteful: Too many steps for simple task</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">max_steps</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>  <span class="c1"># Could reach $0.60</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Cache and reuse sessions:</strong> For authenticated browsing
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Login once</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">await</span> <span class="n">login_to_website</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Reuse session for multiple browsing tasks (no re-login cost)</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="k">await</span> <span class="n">browse_and_find</span><span class="p">(</span><span class="n">task1</span><span class="p">,</span> <span class="n">authenticated_url</span><span class="p">)</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="k">await</span> <span class="n">browse_and_find</span><span class="p">(</span><span class="n">task2</span><span class="p">,</span> <span class="n">authenticated_url</span><span class="p">)</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="k">await</span> <span class="n">browse_and_find</span><span class="p">(</span><span class="n">task3</span><span class="p">,</span> <span class="n">authenticated_url</span><span class="p">)</span>
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Batch similar tasks:</strong> Group related queries
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># ❌ Expensive: 3 separate browsing sessions</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="s2">&quot;Find product A&quot;</span><span class="p">,</span> <span class="s2">&quot;https://site.com&quot;</span><span class="p">)</span>  <span class="c1"># 15 steps</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="s2">&quot;Find product B&quot;</span><span class="p">,</span> <span class="s2">&quot;https://site.com&quot;</span><span class="p">)</span>  <span class="c1"># 15 steps</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="s2">&quot;Find product C&quot;</span><span class="p">,</span> <span class="s2">&quot;https://site.com&quot;</span><span class="p">)</span>  <span class="c1"># 15 steps</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Total: 45 steps × $0.012 = $0.54</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># ✅ Cheaper: Single task with multiple targets</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">browse_and_find</span><span class="p">(</span><span class="s2">&quot;Find products A, B, and C with prices&quot;</span><span class="p">,</span> <span class="s2">&quot;https://site.com&quot;</span><span class="p">)</span>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1"># Total: 20 steps × $0.012 = $0.24</span>
+</code></pre></div></p>
+</li>
+</ol>
+<p><strong>Combined Formula (with Autonomous Browsing):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Total Cost = (Conversation Input / 1M × $3)
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>           + (Conversation Output / 1M × $15)
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>           + (Document Processing Input / 1M × $3)
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>           + (Document Processing Output / 1M × $15)
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>           + (Autonomous Browsing Screenshots × $0.012)
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>           + (Web Searches × $0.01)
+</code></pre></div></p>
+<p><strong>Tracking Costs:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Check vision API usage</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vision images processed: </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">vision_image_count</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vision input tokens: </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">vision_input_tokens</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Vision output tokens: </span><span class="si">{</span><span class="n">agent</span><span class="o">.</span><span class="n">vision_output_tokens</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="c1"># Estimate autonomous browsing cost</span>
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">estimated_cost</span> <span class="o">=</span> <span class="n">agent</span><span class="o">.</span><span class="n">vision_image_count</span> <span class="err">×</span> <span class="mf">0.012</span>
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated autonomous browsing cost: $</span><span class="si">{</span><span class="n">estimated_cost</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div></p>
+<h2 id="token-breakdown-per-request">📊 Token Breakdown Per Request<a class="headerlink" href="#token-breakdown-per-request" title="Permanent link">&para;</a></h2>
+<p>Every interaction with WYN360 CLI consists of several components that contribute to token usage:</p>
+<h3 id="1-system-prompt-1000-tokens">1. System Prompt (~1,000 tokens)<a class="headerlink" href="#1-system-prompt-1000-tokens" title="Permanent link">&para;</a></h3>
+<p>The system prompt is sent with <strong>every request</strong> and includes:
+- Role description and capabilities (~100 tokens)
+- File operation intelligence guidelines (~200 tokens)
+- Command execution guidelines (~150 tokens)
+- HuggingFace integration guidelines (~100 tokens)
+- Test generation guidelines (~100 tokens)
+- <strong>Web search guidelines (~100 tokens)</strong> - NEW in v0.3.21
+- Best practices and examples (~250 tokens)</p>
+<p><strong>Cost per request:</strong> ~$0.003 (input only)</p>
+<h3 id="2-tool-definitions-1800-tokens">2. Tool Definitions (~1,800 tokens)<a class="headerlink" href="#2-tool-definitions-1800-tokens" title="Permanent link">&para;</a></h3>
+<p>All 20 tools are registered with the agent and their schemas are sent with each request (19 custom + 1 builtin):</p>
+<p><strong>Core Tools (Phase 1):</strong>
+- <code>read_file</code> - Read file contents (~100 tokens)
+- <code>write_file</code> - Create/update files (~120 tokens)
+- <code>list_files</code> - Scan directory (~80 tokens)
+- <code>get_project_info</code> - Project summary (~100 tokens)
+- <code>execute_command</code> - Run shell commands (~200 tokens)</p>
+<p><strong>Extended Tools (Phase 2 - Added in v0.2.9):</strong>
+- <code>git_status</code> - Show git status (~80 tokens)
+- <code>git_diff</code> - Show git changes (~80 tokens)
+- <code>git_log</code> - Show commit history (~80 tokens)
+- <code>git_branch</code> - List branches (~80 tokens)
+- <code>search_files</code> - Pattern search across files (~100 tokens)
+- <code>delete_file</code> - Delete files safely (~80 tokens)
+- <code>move_file</code> - Move/rename files (~80 tokens)
+- <code>create_directory</code> - Create nested directories (~80 tokens)</p>
+<p><strong>HuggingFace Tools (Phase 6/7 - Added in v0.3.16-v0.3.17):</strong>
+- <code>check_hf_authentication</code> - Check HF auth status (~80 tokens)
+- <code>authenticate_hf</code> - Authenticate with HF (~80 tokens)
+- <code>create_hf_readme</code> - Create Space README (~100 tokens)
+- <code>create_hf_space</code> - Create new HF Space (~100 tokens)
+- <code>push_to_hf_space</code> - Push files to Space (~100 tokens)</p>
+<p><strong>Test Generation Tool (Phase 7.2 - Added in v0.3.18):</strong>
+- <code>generate_tests</code> - Auto-generate pytest test stubs (~100 tokens)</p>
+<p><strong>Web Search Builtin Tool (Phase 11.1 - Added in v0.3.21):</strong>
+- <code>web_search</code> - Real-time internet search (~60 tokens for definition)
+  - <strong>Note:</strong> This is a builtin tool, not a custom @tool function
+  - Invoked automatically by Claude when current information is needed
+  - Additional cost: $0.01 per search (5 searches max per session)</p>
+<p><strong>Cost per request:</strong> ~$0.0054 (input only, excluding web search usage costs)</p>
+<h3 id="3-user-message-50-500-tokens">3. User Message (~50-500 tokens)<a class="headerlink" href="#3-user-message-50-500-tokens" title="Permanent link">&para;</a></h3>
+<p>Varies based on complexity:
+- Simple: "Create a hello world script" (~10 tokens)
+- Medium: "Add authentication to my FastAPI app" (~15 tokens)
+- Complex: Multi-line detailed requirements (~200-500 tokens)</p>
+<p><strong>Average cost:</strong> ~$0.00015 - $0.0015 (input)</p>
+<h3 id="4-conversation-history-new-in-v028-variable">4. Conversation History (NEW in v0.2.8) (Variable)<a class="headerlink" href="#4-conversation-history-new-in-v028-variable" title="Permanent link">&para;</a></h3>
+<p>Starting with v0.2.8, conversation history is maintained across interactions to provide better context:</p>
+<p><strong>How it works:</strong>
+- Every user message and assistant response is stored
+- The entire conversation history is sent with each subsequent request
+- This allows the agent to maintain context across multiple turns
+- History accumulates throughout the session</p>
+<p><strong>Token Impact:</strong>
+- <strong>Turn 1:</strong> 0 tokens (no history yet)
+- <strong>Turn 2:</strong> ~50-800 tokens (previous turn)
+- <strong>Turn 3:</strong> ~100-1,600 tokens (2 previous turns)
+- <strong>Turn 10:</strong> ~450-8,000 tokens (9 previous turns)</p>
+<p><strong>Cost implications:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Without history (v0.2.7 and earlier):
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  Each request: ~1,500 tokens baseline (5 tools)
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>With history + all tools (v0.3.21):
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  Turn 1:  ~2,850 tokens baseline (20 tools, web search capable)
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>  Turn 5:  ~5,350-7,850 tokens (includes 4 previous turns)
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>  Turn 10: ~9,350-13,850 tokens (includes 9 previous turns)
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>Note: Add $0.01-0.025 per web search if used
+</code></pre></div></p>
+<p><strong>Average conversation history cost per turn:</strong>
+- Turns 1-3: +$0.001 - $0.005
+- Turns 4-7: +$0.005 - $0.015
+- Turns 8-15: +$0.015 - $0.040
+- Turns 16+: +$0.040 - $0.100</p>
+<p><strong>Managing history costs:</strong>
+- Use <code>/clear</code> to reset conversation history when starting a new task
+- Use <code>/save</code> before <code>/clear</code> to preserve important conversations
+- Use <code>/tokens</code> to monitor cumulative costs during long sessions
+- Balance context quality (better with history) vs cost (increases per turn)</p>
+<h3 id="5-tool-call-execution-variable">5. Tool Call Execution (Variable)<a class="headerlink" href="#5-tool-call-execution-variable" title="Permanent link">&para;</a></h3>
+<p>When the agent calls tools, additional tokens are used:</p>
+<h4 id="tool-call-request-50-100-tokens-per-call">Tool Call Request (~50-100 tokens per call)<a class="headerlink" href="#tool-call-request-50-100-tokens-per-call" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">{</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="nt">&quot;tool&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;read_file&quot;</span><span class="p">,</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="nt">&quot;parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;file_path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app.py&quot;</span><span class="p">}</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="tool-response-highly-variable">Tool Response (Highly Variable)<a class="headerlink" href="#tool-response-highly-variable" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Typical Response Size</th>
+<th>Token Estimate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>read_file</code></td>
+<td>File contents</td>
+<td>100-5,000+ tokens</td>
+</tr>
+<tr>
+<td><code>write_file</code></td>
+<td>Success message</td>
+<td>20-50 tokens</td>
+</tr>
+<tr>
+<td><code>list_files</code></td>
+<td>File list</td>
+<td>50-500 tokens</td>
+</tr>
+<tr>
+<td><code>get_project_info</code></td>
+<td>Project summary</td>
+<td>100-1,000 tokens</td>
+</tr>
+<tr>
+<td><code>execute_command</code></td>
+<td>Command output</td>
+<td>50-2,000+ tokens</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Average tool execution:</strong> ~$0.003 - $0.015 per tool call</p>
+<h3 id="6-assistant-response-200-1500-tokens">6. Assistant Response (~200-1,500 tokens)<a class="headerlink" href="#6-assistant-response-200-1500-tokens" title="Permanent link">&para;</a></h3>
+<p>The final response varies by complexity:
+- Simple confirmation: ~50 tokens
+- Code generation: ~500-1,500 tokens
+- Explanation + code: ~800-2,000 tokens</p>
+<p><strong>Average cost:</strong> ~$0.003 - $0.03 (output)</p>
+<h2 id="cost-estimates-for-common-use-cases">📈 Cost Estimates for Common Use Cases<a class="headerlink" href="#cost-estimates-for-common-use-cases" title="Permanent link">&para;</a></h2>
+<h3 id="use-case-1-simple-code-generation-blank-project">Use Case 1: Simple Code Generation (Blank Project)<a class="headerlink" href="#use-case-1-simple-code-generation-blank-project" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "Create a Streamlit hello world app"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>System Prompt:        850 tokens (input)
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>Tool Definitions:     600 tokens (input)
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>User Message:          15 tokens (input)
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>Tool Calls:             0 (no file reading needed)
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>Assistant Response:   800 tokens (output, includes code)
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>---------------------------------------------------
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>Total Input:        1,465 tokens
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>Total Output:         800 tokens
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Input:  1,465 / 1,000,000 × $3  = $0.004395
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Output:   800 / 1,000,000 × $15 = $0.012000
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>---------------------------------------------------
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>Total Cost: $0.016395 (~$0.016 per request)
+</code></pre></div></p>
+<p><strong>Monthly estimate (50 requests):</strong> ~$0.82</p>
+<hr />
+<h3 id="use-case-2-update-existing-file">Use Case 2: Update Existing File<a class="headerlink" href="#use-case-2-update-existing-file" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "Add logging to my script.py"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>System Prompt:        850 tokens (input)
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>Tool Definitions:     600 tokens (input)
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>User Message:          20 tokens (input)
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>---------------------------------------------------
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>Tool Call 1 - read_file:
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>  Request:             50 tokens (input)
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>  Response:         1,200 tokens (input, file contents)
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>---------------------------------------------------
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>Tool Call 2 - write_file:
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>  Request:            100 tokens (input)
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>  Response:            30 tokens (input, success message)
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>---------------------------------------------------
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>Assistant Response:   600 tokens (output, explanation)
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>---------------------------------------------------
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>Total Input:        3,450 tokens
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>Total Output:         600 tokens
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Input:  3,450 / 1,000,000 × $3  = $0.01035
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>Output:   600 / 1,000,000 × $15 = $0.00900
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>---------------------------------------------------
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>Total Cost: $0.01935 (~$0.019 per request)
+</code></pre></div></p>
+<p><strong>Monthly estimate (30 updates):</strong> ~$0.58</p>
+<hr />
+<h3 id="use-case-3-execute-python-script">Use Case 3: Execute Python Script<a class="headerlink" href="#use-case-3-execute-python-script" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "Run my analysis.py script"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>System Prompt:        850 tokens (input)
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>Tool Definitions:     600 tokens (input)
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>User Message:          12 tokens (input)
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>---------------------------------------------------
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>Tool Call - execute_command:
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>  Request:             80 tokens (input)
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>  Response:         1,500 tokens (input, command output)
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>---------------------------------------------------
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>Assistant Response:   400 tokens (output, summary)
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>---------------------------------------------------
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>Total Input:        3,042 tokens
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>Total Output:         400 tokens
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>Input:  3,042 / 1,000,000 × $3  = $0.009126
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>Output:   400 / 1,000,000 × $15 = $0.006000
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>---------------------------------------------------
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>Total Cost: $0.015126 (~$0.015 per request)
+</code></pre></div></p>
+<p><strong>Monthly estimate (20 executions):</strong> ~$0.30</p>
+<hr />
+<h3 id="use-case-4-complex-project-analysis">Use Case 4: Complex Project Analysis<a class="headerlink" href="#use-case-4-complex-project-analysis" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "Analyze my codebase and suggest improvements"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>System Prompt:        850 tokens (input)
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>Tool Definitions:     600 tokens (input)
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>User Message:          25 tokens (input)
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>---------------------------------------------------
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>Tool Call 1 - get_project_info:
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>  Request:             60 tokens (input)
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>  Response:           800 tokens (input, project summary)
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>---------------------------------------------------
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>Tool Call 2 - list_files:
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>  Request:             50 tokens (input)
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>  Response:           300 tokens (input, file list)
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>---------------------------------------------------
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>Tool Call 3 - read_file (main.py):
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>  Request:             50 tokens (input)
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>  Response:         2,500 tokens (input, file contents)
+<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>---------------------------------------------------
+<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a>Tool Call 4 - read_file (config.py):
+<a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a>  Request:             50 tokens (input)
+<a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a>  Response:         1,000 tokens (input, file contents)
+<a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a>---------------------------------------------------
+<a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a>Assistant Response: 1,800 tokens (output, detailed analysis)
+<a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a>---------------------------------------------------
+<a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a>Total Input:        6,285 tokens
+<a id="__codelineno-18-24" name="__codelineno-18-24" href="#__codelineno-18-24"></a>Total Output:       1,800 tokens
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>Input:  6,285 / 1,000,000 × $3  = $0.018855
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Output: 1,800 / 1,000,000 × $15 = $0.027000
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>---------------------------------------------------
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>Total Cost: $0.045855 (~$0.046 per request)
+</code></pre></div></p>
+<p><strong>Monthly estimate (10 analyses):</strong> ~$0.46</p>
+<hr />
+<h3 id="use-case-5-uv-project-setup">Use Case 5: UV Project Setup<a class="headerlink" href="#use-case-5-uv-project-setup" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "Initialize UV project and add dependencies"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>System Prompt:        850 tokens (input)
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Tool Definitions:     600 tokens (input)
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>User Message:          30 tokens (input)
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>---------------------------------------------------
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>Tool Call 1 - execute_command (uv init):
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>  Request:             80 tokens (input)
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>  Response:           400 tokens (input, init output)
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>---------------------------------------------------
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>Tool Call 2 - execute_command (uv add):
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>  Request:             90 tokens (input)
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>  Response:           600 tokens (input, package install output)
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>---------------------------------------------------
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>Assistant Response:   700 tokens (output, setup guide)
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>---------------------------------------------------
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>Total Input:        3,350 tokens
+<a id="__codelineno-20-16" name="__codelineno-20-16" href="#__codelineno-20-16"></a>Total Output:         700 tokens
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>Input:  3,350 / 1,000,000 × $3  = $0.01005
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>Output:   700 / 1,000,000 × $15 = $0.01050
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>---------------------------------------------------
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>Total Cost: $0.02055 (~$0.021 per request)
+</code></pre></div></p>
+<p><strong>Monthly estimate (5 setups):</strong> ~$0.11</p>
+<hr />
+<h3 id="use-case-6-web-search-weather-query-new-in-v0321">Use Case 6: Web Search - Weather Query (NEW in v0.3.21)<a class="headerlink" href="#use-case-6-web-search-weather-query-new-in-v0321" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "What's the weather in San Francisco?"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>System Prompt:      1,000 tokens (input, includes web search guidelines)
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>Tool Definitions:   1,800 tokens (input, 20 tools)
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>User Message:          15 tokens (input)
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>---------------------------------------------------
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>Web Search Call:
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>  Request:             50 tokens (input)
+<a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>  Search Cost:         $0.01 (flat fee per search)
+<a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>  Response:           300 tokens (input, weather data from web)
+<a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>---------------------------------------------------
+<a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>Assistant Response:   250 tokens (output, formatted weather info)
+<a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>---------------------------------------------------
+<a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a>Total Input:        3,165 tokens
+<a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a>Total Output:         250 tokens
+<a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a>Web Search:         1 search
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>Input:  3,165 / 1,000,000 × $3  = $0.009495
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>Output:   250 / 1,000,000 × $15 = $0.003750
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>Web Search: 1 × $0.01          = $0.010000
+<a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>---------------------------------------------------
+<a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>Total Cost: $0.023245 (~$0.023 per weather query)
+</code></pre></div></p>
+<p><strong>Monthly estimate (20 weather queries):</strong> ~$0.46</p>
+<p><strong>Note:</strong> Session limit of 5 searches prevents excessive costs. Start new session if limit reached.</p>
+<hr />
+<h3 id="use-case-7-web-search-url-reading-new-in-v0321">Use Case 7: Web Search - URL Reading (NEW in v0.3.21)<a class="headerlink" href="#use-case-7-web-search-url-reading-new-in-v0321" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "Read this article: https://python.org/downloads/release/python-3130/"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>System Prompt:      1,000 tokens (input)
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>Tool Definitions:   1,800 tokens (input)
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>User Message:          20 tokens (input)
+<a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>---------------------------------------------------
+<a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>Web Search Call:
+<a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>  Request:             60 tokens (input)
+<a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>  Search Cost:         $0.01 (flat fee per search)
+<a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>  Response:         1,200 tokens (input, article content)
+<a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>---------------------------------------------------
+<a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>Assistant Response:   800 tokens (output, summary and analysis)
+<a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a>---------------------------------------------------
+<a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a>Total Input:        4,080 tokens
+<a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a>Total Output:         800 tokens
+<a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a>Web Search:         1 search
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>Input:  4,080 / 1,000,000 × $3  = $0.012240
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>Output:   800 / 1,000,000 × $15 = $0.012000
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>Web Search: 1 × $0.01          = $0.010000
+<a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>---------------------------------------------------
+<a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>Total Cost: $0.034240 (~$0.034 per URL read)
+</code></pre></div></p>
+<p><strong>Monthly estimate (10 URL reads):</strong> ~$0.34</p>
+<hr />
+<h3 id="use-case-8-web-search-latest-information-new-in-v0321">Use Case 8: Web Search - Latest Information (NEW in v0.3.21)<a class="headerlink" href="#use-case-8-web-search-latest-information-new-in-v0321" title="Permanent link">&para;</a></h3>
+<p><strong>Scenario:</strong> "What's new in Python 3.13?"</p>
+<p><strong>Token Breakdown:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>System Prompt:      1,000 tokens (input)
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>Tool Definitions:   1,800 tokens (input)
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>User Message:          15 tokens (input)
+<a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>---------------------------------------------------
+<a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>Web Search Call 1 (main query):
+<a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>  Request:             50 tokens (input)
+<a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>  Search Cost:         $0.01 (flat fee)
+<a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>  Response:           800 tokens (input, search results)
+<a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>---------------------------------------------------
+<a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>Web Search Call 2 (follow-up for details):
+<a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a>  Request:             50 tokens (input)
+<a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a>  Search Cost:         $0.01 (flat fee)
+<a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a>  Response:           600 tokens (input, additional details)
+<a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a>---------------------------------------------------
+<a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a>Assistant Response: 1,200 tokens (output, comprehensive summary)
+<a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>---------------------------------------------------
+<a id="__codelineno-26-17" name="__codelineno-26-17" href="#__codelineno-26-17"></a>Total Input:        4,315 tokens
+<a id="__codelineno-26-18" name="__codelineno-26-18" href="#__codelineno-26-18"></a>Total Output:       1,200 tokens
+<a id="__codelineno-26-19" name="__codelineno-26-19" href="#__codelineno-26-19"></a>Web Searches:       2 searches
+</code></pre></div></p>
+<p><strong>Cost Calculation:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>Input:  4,315 / 1,000,000 × $3  = $0.012945
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>Output: 1,200 / 1,000,000 × $15 = $0.018000
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>Web Searches: 2 × $0.01        = $0.020000
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>---------------------------------------------------
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>Total Cost: $0.050945 (~$0.051 per info query)
+</code></pre></div></p>
+<p><strong>Monthly estimate (8 info queries):</strong> ~$0.41</p>
+<p><strong>Note:</strong> Complex queries may use 1-2 searches. Simple queries typically use 1 search.</p>
+<hr />
+<h2 id="monthly-cost-estimates-by-usage-pattern">💡 Monthly Cost Estimates by Usage Pattern<a class="headerlink" href="#monthly-cost-estimates-by-usage-pattern" title="Permanent link">&para;</a></h2>
+<h3 id="light-user-10-20-requestsmonth">Light User (10-20 requests/month)<a class="headerlink" href="#light-user-10-20-requestsmonth" title="Permanent link">&para;</a></h3>
+<p><strong>Profile:</strong> Occasional quick scripts, simple code generation</p>
+<p><strong>Estimated monthly cost:</strong> $0.20 - $0.40</p>
+<p><strong>Breakdown:</strong>
+- 10 simple code generations: ~$0.16
+- 5 file updates: ~$0.10
+- 5 command executions: ~$0.08</p>
+<hr />
+<h3 id="regular-user-50-100-requestsmonth">Regular User (50-100 requests/month)<a class="headerlink" href="#regular-user-50-100-requestsmonth" title="Permanent link">&para;</a></h3>
+<p><strong>Profile:</strong> Daily coding tasks, project maintenance</p>
+<p><strong>Estimated monthly cost:</strong> $1.00 - $2.50</p>
+<p><strong>Breakdown:</strong>
+- 30 code generations: ~$0.50
+- 40 file updates: ~$0.80
+- 20 command executions: ~$0.30
+- 10 project analyses: ~$0.46</p>
+<hr />
+<h3 id="heavy-user-200-500-requestsmonth">Heavy User (200-500 requests/month)<a class="headerlink" href="#heavy-user-200-500-requestsmonth" title="Permanent link">&para;</a></h3>
+<p><strong>Profile:</strong> Primary coding assistant, extensive project work</p>
+<p><strong>Estimated monthly cost:</strong> $5.00 - $15.00</p>
+<p><strong>Breakdown:</strong>
+- 100 code generations: ~$1.60
+- 150 file updates: ~$2.90
+- 100 command executions: ~$1.50
+- 50 project analyses: ~$2.30
+- Complex multi-tool sessions: ~$5.00+</p>
+<hr />
+<h3 id="teamenterprise-1000-requestsmonth">Team/Enterprise (1000+ requests/month)<a class="headerlink" href="#teamenterprise-1000-requestsmonth" title="Permanent link">&para;</a></h3>
+<p><strong>Profile:</strong> Multiple developers, CI/CD integration</p>
+<p><strong>Estimated monthly cost:</strong> $30.00 - $100.00+</p>
+<p><strong>Considerations:</strong>
+- Shared API key across team
+- Automated workflows
+- Larger codebases (more tokens per file)
+- More complex operations</p>
+<hr />
+<h2 id="cost-optimization-strategies">🎯 Cost Optimization Strategies<a class="headerlink" href="#cost-optimization-strategies" title="Permanent link">&para;</a></h2>
+<h3 id="1-minimize-file-reads">1. <strong>Minimize File Reads</strong><a class="headerlink" href="#1-minimize-file-reads" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Reading large files adds significant input tokens.</p>
+<p><strong>Solution:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># Instead of: &quot;Read all my files and analyze them&quot;</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="c1"># Try: &quot;Analyze app.py only&quot;</span>
+</code></pre></div></p>
+<p><strong>Savings:</strong> Can reduce cost by 50-80% for large codebases</p>
+<hr />
+<h3 id="2-use-specific-requests">2. <strong>Use Specific Requests</strong><a class="headerlink" href="#2-use-specific-requests" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Vague requests trigger multiple tool calls.</p>
+<p><strong>Before:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>&quot;Improve my project&quot;
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>→ Triggers: list_files, read_file (×5), get_project_info
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>→ Cost: ~$0.06
+</code></pre></div></p>
+<p><strong>After:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>&quot;Add error handling to app.py line 45&quot;
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>→ Triggers: read_file (×1), write_file (×1)
+<a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>→ Cost: ~$0.02
+</code></pre></div></p>
+<p><strong>Savings:</strong> ~66% cost reduction</p>
+<hr />
+<h3 id="3-batch-related-operations">3. <strong>Batch Related Operations</strong><a class="headerlink" href="#3-batch-related-operations" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Multiple separate sessions repeat system prompt/tool definitions.</p>
+<p><strong>Instead of:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>Session 1: &quot;Create app.py&quot;         → $0.016
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>Session 2: &quot;Create utils.py&quot;       → $0.016
+<a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>Session 3: &quot;Create config.py&quot;      → $0.016
+<a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>Total: $0.048
+</code></pre></div></p>
+<p><strong>Use:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>Session 1: &quot;Create app.py, utils.py, and config.py&quot;
+<a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>Total: ~$0.025
+</code></pre></div></p>
+<p><strong>Savings:</strong> ~48% cost reduction</p>
+<hr />
+<h3 id="4-limit-command-output">4. <strong>Limit Command Output</strong><a class="headerlink" href="#4-limit-command-output" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Verbose command output increases tokens.</p>
+<p><strong>Strategy:</strong>
+- Use command flags to limit output: <code>ls -1</code> instead of <code>ls -la</code>
+- Filter output in commands: <code>pytest -q</code> instead of <code>pytest -v</code>
+- Redirect stderr when not needed</p>
+<p><strong>Savings:</strong> 20-40% on command execution costs</p>
+<hr />
+<h3 id="5-clear-conversation-history-periodically">5. <strong>Clear Conversation History Periodically</strong><a class="headerlink" href="#5-clear-conversation-history-periodically" title="Permanent link">&para;</a></h3>
+<p><strong>Problem:</strong> Long conversation history increases context tokens (if implemented).</p>
+<p><strong>Current:</strong> WYN360 stores history in memory but doesn't send full history yet.</p>
+<p><strong>Future consideration:</strong> If conversation history is sent with each request, periodically restart CLI to clear history.</p>
+<hr />
+<h3 id="6-use-smaller-model-for-simple-tasks">6. <strong>Use Smaller Model for Simple Tasks</strong><a class="headerlink" href="#6-use-smaller-model-for-simple-tasks" title="Permanent link">&para;</a></h3>
+<p><strong>Current:</strong> Uses <code>claude-sonnet-4-20250514</code> by default</p>
+<p><strong>Alternative:</strong> Could add option for Claude Haiku for simple tasks:
+- Haiku pricing: ~$0.25 per million input tokens (88% cheaper)
+- Good for: Simple file operations, quick questions</p>
+<p><strong>Command:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>wyn360<span class="w"> </span>--model<span class="w"> </span>claude-haiku-3-5-20250304
+</code></pre></div></p>
+<p><strong>Potential savings:</strong> 80-90% for simple operations</p>
+<hr />
+<h2 id="token-usage-tracking">📊 Token Usage Tracking<a class="headerlink" href="#token-usage-tracking" title="Permanent link">&para;</a></h2>
+<h3 id="method-1-check-anthropic-console">Method 1: Check Anthropic Console<a class="headerlink" href="#method-1-check-anthropic-console" title="Permanent link">&para;</a></h3>
+<ol>
+<li>Visit: https://console.anthropic.com/</li>
+<li>Navigate to "Usage" tab</li>
+<li>View token usage by day/month</li>
+<li>Calculate costs using pricing table</li>
+</ol>
+<h3 id="method-2-api-response-headers-future-enhancement">Method 2: API Response Headers (Future Enhancement)<a class="headerlink" href="#method-2-api-response-headers-future-enhancement" title="Permanent link">&para;</a></h3>
+<p>Could add token tracking to WYN360:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="c1"># Potential feature</span>
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">agent</span><span class="o">.</span><span class="n">chat</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tokens used - Input: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">input_tokens</span><span class="si">}</span><span class="s2">, Output: </span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">output_tokens</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Estimated cost: $</span><span class="si">{</span><span class="n">result</span><span class="o">.</span><span class="n">cost</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<h3 id="method-3-estimate-from-response-length">Method 3: Estimate from Response Length<a class="headerlink" href="#method-3-estimate-from-response-length" title="Permanent link">&para;</a></h3>
+<p><strong>Rough estimation:</strong>
+- 1 token ≈ 4 characters for English text
+- 1 token ≈ 0.75 words on average</p>
+<p><strong>Example:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="n">response_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">response_text</span><span class="p">)</span>
+<a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a><span class="n">estimated_output_tokens</span> <span class="o">=</span> <span class="n">response_length</span> <span class="o">/</span> <span class="mi">4</span>
+<a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="n">estimated_cost</span> <span class="o">=</span> <span class="n">estimated_output_tokens</span> <span class="o">/</span> <span class="mi">1_000_000</span> <span class="o">*</span> <span class="mi">15</span>
+</code></pre></div></p>
+<hr />
+<h2 id="real-world-cost-examples">🔍 Real-World Cost Examples<a class="headerlink" href="#real-world-cost-examples" title="Permanent link">&para;</a></h2>
+<h3 id="example-1-building-a-streamlit-app-full-session">Example 1: Building a Streamlit App (Full Session)<a class="headerlink" href="#example-1-building-a-streamlit-app-full-session" title="Permanent link">&para;</a></h3>
+<p><strong>Session transcript:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>1. &quot;Create a Streamlit data visualization app&quot;      → $0.016
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>2. &quot;Add file upload functionality&quot;                   → $0.019
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>3. &quot;Add CSV parsing with pandas&quot;                     → $0.018
+<a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>4. &quot;Add bar chart visualization&quot;                     → $0.020
+<a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a>5. &quot;Run the app with streamlit run app.py&quot;          → $0.015
+<a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>-----------------------------------------------------------
+<a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a>Total session cost: $0.088
+</code></pre></div></p>
+<p><strong>Result:</strong> Complete working app for less than 9 cents</p>
+<hr />
+<h3 id="example-2-debugging-session-10-interactions">Example 2: Debugging Session (10 interactions)<a class="headerlink" href="#example-2-debugging-session-10-interactions" title="Permanent link">&para;</a></h3>
+<p><strong>Session transcript:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>1. &quot;Read my script.py and find the error&quot;           → $0.022
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>2. &quot;The error is on line 45, fix it&quot;                → $0.019
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>3. &quot;Run the script to test&quot;                          → $0.015
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>4. &quot;Still getting error, read the full traceback&quot;   → $0.018
+<a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>5. &quot;Add try-except error handling&quot;                   → $0.021
+<a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>6. &quot;Run it again&quot;                                     → $0.015
+<a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a>7. &quot;Add logging to debug the issue&quot;                  → $0.019
+<a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>8. &quot;Test with sample input&quot;                          → $0.017
+<a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a>9. &quot;Perfect! Add unit tests&quot;                         → $0.023
+<a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>10. &quot;Run the tests&quot;                                   → $0.016
+<a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a>-----------------------------------------------------------
+<a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a>Total session cost: $0.185
+</code></pre></div></p>
+<p><strong>Result:</strong> Debugged and tested code for ~19 cents</p>
+<hr />
+<h3 id="example-3-monthly-developer-usage">Example 3: Monthly Developer Usage<a class="headerlink" href="#example-3-monthly-developer-usage" title="Permanent link">&para;</a></h3>
+<p><strong>Typical month (60 sessions):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>Code generation:        30 sessions × $0.016 = $0.48
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>File updates:           20 sessions × $0.019 = $0.38
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>Command execution:      15 sessions × $0.015 = $0.23
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>Project analysis:        5 sessions × $0.046 = $0.23
+<a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>-----------------------------------------------------------
+<a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>Total monthly cost: $1.32
+</code></pre></div></p>
+<p><strong>Comparison:</strong>
+- GitHub Copilot: $10/month (fixed)
+- WYN360 CLI: ~$1.32/month (usage-based)
+- <strong>Savings:</strong> ~$8.68/month (87% cheaper for typical usage)</p>
+<hr />
+<h2 id="cost-considerations">⚠️ Cost Considerations<a class="headerlink" href="#cost-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="what-increases-costs">What Increases Costs:<a class="headerlink" href="#what-increases-costs" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Large File Operations</strong></li>
+<li>Reading files &gt;5,000 lines: +$0.01-0.05 per file</li>
+<li>
+<p>Reading multiple files: Multiplies costs</p>
+</li>
+<li>
+<p><strong>Verbose Command Output</strong></p>
+</li>
+<li>Long-running scripts with extensive output</li>
+<li>
+<p>Unfiltered logs and stack traces</p>
+</li>
+<li>
+<p><strong>Complex Multi-Step Operations</strong></p>
+</li>
+<li>Multiple tool calls per request</li>
+<li>
+<p>Iterative refinement (trial and error)</p>
+</li>
+<li>
+<p><strong>Conversation Length</strong></p>
+</li>
+<li>Future: If full conversation history is sent</li>
+<li>Currently: Minimal impact (history not sent to API)</li>
+</ol>
+<h3 id="what-keeps-costs-low">What Keeps Costs Low:<a class="headerlink" href="#what-keeps-costs-low" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Focused Requests</strong></li>
+<li>Specific file operations</li>
+<li>
+<p>Clear, concise instructions</p>
+</li>
+<li>
+<p><strong>Small Files</strong></p>
+</li>
+<li>Scripts under 500 lines</li>
+<li>
+<p>Targeted changes</p>
+</li>
+<li>
+<p><strong>Single-Shot Operations</strong></p>
+</li>
+<li>Complete requirements in one message</li>
+<li>Avoid back-and-forth clarifications</li>
+</ol>
+<hr />
+<h2 id="controlling-response-length-max_tokens">⚙️ Controlling Response Length (max_tokens)<a class="headerlink" href="#controlling-response-length-max_tokens" title="Permanent link">&para;</a></h2>
+<p><strong>What is max_tokens?</strong></p>
+<p>The <code>max_tokens</code> setting controls the maximum length of Claude's response. By default, WYN360 CLI is configured with <code>max_tokens: 4096</code>, which provides balanced responses for most use cases.</p>
+<p><strong>How it Affects Cost:</strong></p>
+<p>Higher <code>max_tokens</code> values allow longer responses but increase output token costs:
+- Output tokens cost <strong>$15 per million tokens</strong> (5× more expensive than input tokens)
+- A response using 8,000 tokens costs <strong>$0.12</strong> vs 4,000 tokens at <strong>$0.06</strong>
+- Longer responses = higher costs per request</p>
+<p><strong>Important:</strong> The <code>max_tokens</code> limit doesn't guarantee Claude will use all tokens—it sets a ceiling. Claude typically uses only what's needed, but having a higher limit allows for longer responses when necessary.</p>
+<h3 id="view-current-configuration">View Current Configuration<a class="headerlink" href="#view-current-configuration" title="Permanent link">&para;</a></h3>
+<p>You can check your current <code>max_tokens</code> setting using the <code>/config</code> command:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>wyn360
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>You:<span class="w"> </span>/config
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="c1"># Output shows:</span>
+<a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>Model<span class="w">            </span>claude-sonnet-4-20250514
+<a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>Max<span class="w"> </span>Tokens<span class="w">       </span><span class="m">4096</span><span class="w">  </span>←<span class="w"> </span>Current<span class="w"> </span>limit
+<a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a>Temperature<span class="w">      </span><span class="m">0</span>.7
+</code></pre></div>
+<h3 id="how-to-change-max_tokens">How to Change max_tokens<a class="headerlink" href="#how-to-change-max_tokens" title="Permanent link">&para;</a></h3>
+<p>You have full control over <code>max_tokens</code> without updating the package. Choose one of these options:</p>
+<h4 id="option-1-globally-all-projects">Option 1: Globally (All Projects)<a class="headerlink" href="#option-1-globally-all-projects" title="Permanent link">&para;</a></h4>
+<p>Edit your user configuration file to apply the setting across all projects:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1"># Edit user config</span>
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>nano<span class="w"> </span>~/.wyn360/config.yaml
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>
+<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a><span class="c1"># Change line:</span>
+<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>max_tokens:<span class="w"> </span><span class="m">8192</span><span class="w">  </span><span class="c1"># Or 16384, 32768, etc.</span>
+</code></pre></div>
+<p><strong>User Config Location:</strong> <code>~/.wyn360/config.yaml</code></p>
+<h4 id="option-2-per-project">Option 2: Per Project<a class="headerlink" href="#option-2-per-project" title="Permanent link">&para;</a></h4>
+<p>Override the setting for a specific project by creating/editing a project configuration:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># Create/edit project config in your project root</span>
+<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>nano<span class="w"> </span>.wyn360.yaml
+<a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>
+<a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a><span class="c1"># Add:</span>
+<a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>max_tokens:<span class="w"> </span><span class="m">16384</span>
+</code></pre></div>
+<p><strong>Project Config Location:</strong> <code>.wyn360.yaml</code> (in your project root directory)</p>
+<p><strong>Note:</strong> Project config overrides user config, which overrides the default (4096).</p>
+<h3 id="recommended-values">Recommended Values<a class="headerlink" href="#recommended-values" title="Permanent link">&para;</a></h3>
+<p>Choose a <code>max_tokens</code> value based on your typical use case:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Use Case</th>
+<th>Cost Impact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4096</td>
+<td>Default - balanced responses</td>
+<td>Baseline</td>
+</tr>
+<tr>
+<td>8192</td>
+<td>Longer explanations, more code</td>
+<td>~2× potential cost</td>
+</tr>
+<tr>
+<td>16384</td>
+<td>Very long responses, large file generation</td>
+<td>~4× potential cost</td>
+</tr>
+<tr>
+<td>32768</td>
+<td>Maximum for complex documentation</td>
+<td>~8× potential cost</td>
+</tr>
+</tbody>
+</table>
+<h3 id="cost-examples">Cost Examples<a class="headerlink" href="#cost-examples" title="Permanent link">&para;</a></h3>
+<p><strong>Example 1: Simple Code Generation (4096 tokens limit)</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>Request: &quot;Create a FastAPI hello world app&quot;
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>Response: ~800 tokens
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>Cost: $0.012 (output only)
+</code></pre></div></p>
+<p><strong>Example 2: With 8192 tokens limit</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>Request: &quot;Create a FastAPI app with detailed explanations&quot;
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>Response: ~2,500 tokens
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>Cost: $0.0375 (output only) - 3× more expensive
+</code></pre></div></p>
+<p><strong>Example 3: With 16384 tokens limit</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>Request: &quot;Generate complete FastAPI app with tests and docs&quot;
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>Response: ~6,000 tokens
+<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>Cost: $0.09 (output only) - 7.5× more expensive
+</code></pre></div></p>
+<h3 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Start with default (4096)</strong> - Suitable for 90% of use cases</li>
+<li><strong>Increase for specific projects</strong> - Use project config (<code>.wyn360.yaml</code>) when you need longer responses</li>
+<li><strong>Monitor with <code>/tokens</code></strong> - Check actual usage to see if you're hitting limits</li>
+<li><strong>Use <code>/clear</code> regularly</strong> - Reset conversation history to control input token costs</li>
+<li><strong>Balance quality vs cost</strong> - Higher limits enable longer responses but cost more</li>
+</ol>
+<p><strong>Note:</strong> Higher <code>max_tokens</code> values allow longer responses but cost more. Claude will use only what's needed, but setting a higher ceiling enables more comprehensive responses when required.</p>
+<hr />
+<h2 id="cost-comparison-with-alternatives">💰 Cost Comparison with Alternatives<a class="headerlink" href="#cost-comparison-with-alternatives" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Pricing Model</th>
+<th>Typical Monthly Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>WYN360 CLI</strong></td>
+<td>Pay-per-use</td>
+<td>$1-5 for regular users</td>
+</tr>
+<tr>
+<td><strong>GitHub Copilot</strong></td>
+<td>Fixed subscription</td>
+<td>$10/month</td>
+</tr>
+<tr>
+<td><strong>Cursor IDE</strong></td>
+<td>Fixed subscription</td>
+<td>$20/month</td>
+</tr>
+<tr>
+<td><strong>ChatGPT Plus</strong></td>
+<td>Fixed subscription</td>
+<td>$20/month</td>
+</tr>
+<tr>
+<td><strong>Direct API Usage</strong></td>
+<td>Pay-per-use</td>
+<td>$5-50+ (depending on usage)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>WYN360 Advantages:</strong>
+- ✅ Only pay for what you use
+- ✅ No monthly commitment
+- ✅ Transparent token usage
+- ✅ Can be very cost-effective for light users
+- ✅ Full control over model selection</p>
+<p><strong>When WYN360 Might Cost More:</strong>
+- Heavy daily usage (200+ sessions/day)
+- Very large codebases (constant file reading)
+- Compared to flat-rate tools if you use heavily</p>
+<hr />
+<h2 id="summary">📝 Summary<a class="headerlink" href="#summary" title="Permanent link">&para;</a></h2>
+<h3 id="key-takeaways">Key Takeaways:<a class="headerlink" href="#key-takeaways" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Average cost per request:</strong> $0.015 - $0.025</li>
+<li><strong>Typical monthly cost:</strong> $1 - $5 for regular developers</li>
+<li><strong>Most expensive operation:</strong> Reading large files</li>
+<li><strong>Most economical:</strong> Simple code generation</li>
+<li><strong>Optimization:</strong> Use specific requests, batch operations</li>
+</ol>
+<h3 id="cost-formula">Cost Formula:<a class="headerlink" href="#cost-formula" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>Per Request Cost ≈ Base ($0.0045) + Tool Calls ($0.003-0.015 each) + Response ($0.003-0.03)
+</code></pre></div>
+<h3 id="recommendation">Recommendation:<a class="headerlink" href="#recommendation" title="Permanent link">&para;</a></h3>
+<p>For <strong>most developers</strong>, WYN360 CLI will cost <strong>$1-3 per month</strong> - significantly less than subscription-based alternatives while providing similar capabilities.</p>
+<hr />
+<h2 id="additional-resources">🔗 Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Anthropic Pricing:</strong> https://www.anthropic.com/pricing</li>
+<li><strong>Usage Console:</strong> https://console.anthropic.com/</li>
+<li><strong>WYN360 Documentation:</strong> <a href="../use-cases/">USE_CASES.md</a></li>
+<li><strong>Token Counting:</strong> https://platform.openai.com/tokenizer (similar to Claude)</li>
+</ul>
+<hr />
+<p><strong>Last Updated:</strong> November 2025
+<strong>Version:</strong> 0.3.23</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../commands/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Commands">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Commands
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../architecture/system/" class="md-footer__link md-footer__link--next" aria-label="Next: System Design">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                System Design
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy", "navigation.footer"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../js/ai-search.js"></script>
+      
+    
+
+  <!-- AI Search Enhancement Scripts -->
+  <script>
+    // Initialize AI Search when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inject AI search interface into existing search results
+      const searchResult = document.querySelector('.md-search-result');
+
+      if (searchResult) {
+        // Create AI search section HTML
+        const aiSearchHTML = `
+          <div class="ai-search-section" style="display: none;" id="ai-search-section">
+            <!-- AI Search Button -->
+            <div class="ai-search-trigger">
+              <button
+                class="ai-search-button"
+                id="ask-ai-button"
+                type="button"
+                title="Ask AI about WYN360 CLI"
+                aria-label="Ask AI about this documentation"
+              >
+                <span class="ai-icon">🤖</span>
+                <span class="ai-text">Ask AI</span>
+              </button>
+              <p class="ai-search-hint">Get intelligent answers about WYN360 CLI features and usage</p>
+            </div>
+
+            <!-- AI Response Container -->
+            <div class="ai-response-container" id="ai-response-container" style="display: none;">
+              <!-- Loading State -->
+              <div class="ai-loading" id="ai-loading">
+                <div class="ai-loading-spinner"></div>
+                <p>AI is analyzing your question...</p>
+              </div>
+
+              <!-- AI Response -->
+              <div class="ai-response" id="ai-response" style="display: none;">
+                <div class="ai-answer">
+                  <h4>🤖 AI Answer</h4>
+                  <div class="ai-response-text" id="ai-response-text"></div>
+                </div>
+
+                <div class="ai-sources">
+                  <h5>📖 Related Documentation</h5>
+                  <ul class="ai-source-links" id="ai-source-links"></ul>
+                </div>
+
+                <div class="ai-actions">
+                  <button class="ai-action-button" id="ask-another">Ask Another Question</button>
+                  <button class="ai-action-button secondary" id="show-regular-search">Show Regular Search</button>
+                </div>
+              </div>
+
+              <!-- Error State -->
+              <div class="ai-error" id="ai-error" style="display: none;">
+                <h4>⚠️ AI Search Unavailable</h4>
+                <p>AI search is temporarily unavailable. Please use regular search above.</p>
+                <button class="ai-action-button" id="retry-ai">Try Again</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Insert AI search section after search results
+        searchResult.insertAdjacentHTML('beforeend', aiSearchHTML);
+
+        // Setup show/hide logic for AI search
+        const searchInput = document.querySelector('.md-search__input');
+        const aiSection = document.getElementById('ai-search-section');
+
+        if (searchInput && aiSection) {
+          // Show AI search section when user starts typing
+          searchInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+              aiSection.style.display = 'block';
+            } else {
+              aiSection.style.display = 'none';
+            }
+          });
+
+          // Hide AI section when search is cleared
+          const clearButton = document.querySelector('button[type="reset"]');
+          if (clearButton) {
+            clearButton.addEventListener('click', function() {
+              aiSection.style.display = 'none';
+              const aiResponseContainer = document.getElementById('ai-response-container');
+              if (aiResponseContainer) {
+                aiResponseContainer.style.display = 'none';
+              }
+            });
+          }
+        }
+
+        console.log('AI Search UI injected successfully');
+      }
+
+      // Initialize AI Search functionality
+      if (typeof WYN360AISearch !== 'undefined') {
+        window.aiSearch = new WYN360AISearch();
+        console.log('AI Search initialized for WYN360 CLI docs');
+      }
+    });
+  </script>
+
+  </body>
+</html>

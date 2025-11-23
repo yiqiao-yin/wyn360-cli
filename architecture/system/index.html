@@ -1,0 +1,3659 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An intelligent AI coding assistant CLI tool powered by Anthropic Claude">
+      
+      
+        <meta name="author" content="Yiqiao Yin">
+      
+      
+        <link rel="canonical" href="https://yiqiao-yin.github.io/wyn360-cli/architecture/system/">
+      
+      
+        <link rel="prev" href="../../usage/cost/">
+      
+      
+        <link rel="next" href="../autonomous-browsing/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>System Design - WYN360 CLI Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../../css/ai-search.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#wyn360-cli-system-architecture" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="WYN360 CLI Documentation" class="md-header__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WYN360 CLI Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              System Design
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../features/overview/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../usage/use-cases/" class="md-tabs__link">
+          
+  
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../development/contributing/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="WYN360 CLI Documentation" class="md-nav__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WYN360 CLI Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../getting-started/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/web-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/browser-use/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/vision-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../features/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HuggingFace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../usage/cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏗️ Architecture Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-descriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Component Descriptions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Component Descriptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-interface-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Interface Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-tools-layer-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Tools Layer (Phase 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-tools-layer-phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Tools Layer (Phase 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builtin-tools-layer-phase-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Builtin Tools Layer (Phase 11.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-integration-tools-phase-81" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Integration Tools (Phase 8.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browser-use-tools-layer-phase-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser Use Tools Layer (Phase 12)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Browser Use Tools Layer (Phase 12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-and-how-crawl4ai-is-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where and How crawl4ai is Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fetch_website-tool-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fetch_website Tool Details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websitecache-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WebsiteCache Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show_cache_stats-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        show_cache_stats Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear_website_cache-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clear_website_cache Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-search-vs-fetch-website-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Search vs Fetch Website Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utility-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utility Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Data Flow Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔄 Data Flow Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simple-file-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simple File Read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-execution-with-confirmation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Execution with Confirmation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-tool-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Tool Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-switch-mid-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Switch Mid-Session
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-saveload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Save/Load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#website-fetching-with-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Website Fetching with Cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-search-vs-website-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Search vs Website Fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-features-by-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Key Features by Phase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Key Features by Phase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-context-management-v028" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Context Management (v0.2.8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-additional-tools-v029" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Additional Tools (v0.2.9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-model-selection-v030" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Model Selection (v0.3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-configuration-v031" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Configuration (v0.3.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-streaming-responses-v032-v0315" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Streaming Responses (v0.3.2-v0.3.15)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-81-github-integration-v0322" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8.1: GitHub Integration (v0.3.22)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-111-web-search-v0321-enhanced-v0323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 11.1: Web Search (v0.3.21, Enhanced v0.3.23)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-12-browser-use-direct-website-fetching-v0324-v0325" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 12: Browser Use / Direct Website Fetching (v0.3.24-v0.3.25)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-authenticated-browsing-v0340-v0341" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Authenticated Browsing (v0.3.40-v0.3.41)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Future Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../autonomous-browsing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autonomous Browsing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../development/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏗️ Architecture Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#component-descriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📦 Component Descriptions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📦 Component Descriptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#user-interface-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        User Interface Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#core-tools-layer-phase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Tools Layer (Phase 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extended-tools-layer-phase-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extended Tools Layer (Phase 2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#builtin-tools-layer-phase-111" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Builtin Tools Layer (Phase 11.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-integration-tools-phase-81" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Integration Tools (Phase 8.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#browser-use-tools-layer-phase-12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser Use Tools Layer (Phase 12)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Browser Use Tools Layer (Phase 12)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#where-and-how-crawl4ai-is-used" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where and How crawl4ai is Used
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fetch_website-tool-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fetch_website Tool Details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websitecache-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WebsiteCache Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#show_cache_stats-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        show_cache_stats Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clear_website_cache-tool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        clear_website_cache Tool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-search-vs-fetch-website-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Search vs Fetch Website Comparison
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utility-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Utility Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-flow-examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Data Flow Examples
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔄 Data Flow Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simple-file-read" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Simple File Read
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#command-execution-with-confirmation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Command Execution with Confirmation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-tool-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-Tool Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-switch-mid-session" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model Switch Mid-Session
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-saveload" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Save/Load
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#website-fetching-with-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Website Fetching with Cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#web-search-vs-website-fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Web Search vs Website Fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-features-by-phase" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Key Features by Phase
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Key Features by Phase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-context-management-v028" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Context Management (v0.2.8)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-additional-tools-v029" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Additional Tools (v0.2.9)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-model-selection-v030" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Model Selection (v0.3.0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-configuration-v031" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Configuration (v0.3.1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-streaming-responses-v032-v0315" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Streaming Responses (v0.3.2-v0.3.15)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-81-github-integration-v0322" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 8.1: GitHub Integration (v0.3.22)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-111-web-search-v0321-enhanced-v0323" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 11.1: Web Search (v0.3.21, Enhanced v0.3.23)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-12-browser-use-direct-website-fetching-v0324-v0325" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 12: Browser Use / Direct Website Fetching (v0.3.24-v0.3.25)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-authenticated-browsing-v0340-v0341" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Authenticated Browsing (v0.3.40-v0.3.41)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design-principles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Design Principles
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#future-enhancements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📈 Future Enhancements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+  
+  
+
+
+<h1 id="wyn360-cli-system-architecture">WYN360 CLI - System Architecture<a class="headerlink" href="#wyn360-cli-system-architecture" title="Permanent link">&para;</a></h1>
+<p>This document provides a detailed overview of the WYN360 CLI system architecture, including all components, layers, and data flows.</p>
+<p><strong>Version:</strong> 0.3.41
+<strong>Last Updated:</strong> November 2025</p>
+<hr />
+<h2 id="architecture-overview">🏗️ Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
+<p>WYN360 CLI is built on a modular, layered architecture that separates concerns and enables flexible extensibility.</p>
+<pre class="mermaid"><code>graph TB
+    subgraph "User Interface Layer"
+        CLI[CLI Interface&lt;br/&gt;click + prompt-toolkit]
+        Input[User Input&lt;br/&gt;Multi-line support&lt;br/&gt;Shift+Enter]
+        Output[Rich Console Output&lt;br/&gt;Word-by-word streaming&lt;br/&gt;Markdown rendering]
+        SlashCmd[Slash Commands&lt;br/&gt;/clear /history /save&lt;br/&gt;/load /tokens /model /config]
+    end
+
+    subgraph "Configuration Layer"
+        UserConfig[User Config&lt;br/&gt;~/.wyn360/config.yaml&lt;br/&gt;Default model, instructions]
+        ProjectConfig[Project Config&lt;br/&gt;.wyn360.yaml&lt;br/&gt;Project-specific context]
+        ConfigMerge[Config Merger&lt;br/&gt;Combines user + project settings]
+    end
+
+    subgraph "Agent Layer"
+        Agent[WYN360Agent&lt;br/&gt;pydantic-ai framework]
+        ModelSwitch[Model Switcher&lt;br/&gt;haiku/sonnet/opus]
+        Model[Anthropic Claude&lt;br/&gt;claude-sonnet-4 - default]
+        Prompt[System Prompt&lt;br/&gt;Intent recognition&lt;br/&gt;Context awareness]
+        History[Conversation History&lt;br/&gt;Context persistence&lt;br/&gt;Token tracking]
+    end
+
+    subgraph "Core Tools Layer"
+        ReadFile[read_file&lt;br/&gt;Read file contents&lt;br/&gt;Size limits]
+        WriteFile[write_file&lt;br/&gt;Create/update files&lt;br/&gt;Overwrite protection]
+        ListFiles[list_files&lt;br/&gt;Scan directory&lt;br/&gt;Categorize by type]
+        ProjectInfo[get_project_info&lt;br/&gt;Project summary&lt;br/&gt;File counts]
+        ExecCmd[execute_command&lt;br/&gt;Run shell commands&lt;br/&gt;User confirmation&lt;br/&gt;Timeout protection]
+    end
+
+    subgraph "Extended Tools Layer (Phase 2)"
+        GitStatus[git_status&lt;br/&gt;Show git status]
+        GitDiff[git_diff&lt;br/&gt;Show changes]
+        GitLog[git_log&lt;br/&gt;Commit history]
+        GitBranch[git_branch&lt;br/&gt;List branches]
+        SearchFiles[search_files&lt;br/&gt;Pattern search&lt;br/&gt;File type filtering]
+        DeleteFile[delete_file&lt;br/&gt;Delete files safely]
+        MoveFile[move_file&lt;br/&gt;Move/rename files]
+        CreateDir[create_directory&lt;br/&gt;Create nested dirs]
+    end
+
+    subgraph "Builtin Tools Layer (Phase 11.1)"
+        WebSearch[web_search&lt;br/&gt;Real-time web search&lt;br/&gt;Weather, URLs, current info&lt;br/&gt;$10 per 1K searches]
+    end
+
+    subgraph "Browser Use Tools Layer (Phase 12)"
+        FetchWebsite[fetch_website&lt;br/&gt;Direct URL fetching&lt;br/&gt;crawl4ai integration&lt;br/&gt;Smart truncation]
+        ShowCacheStats[show_cache_stats&lt;br/&gt;View cache statistics&lt;br/&gt;Cached URLs list]
+        ClearCache[clear_website_cache&lt;br/&gt;Clear specific URL&lt;br/&gt;or all cache]
+    end
+
+    subgraph "GitHub Integration Tools (Phase 8.1)"
+        CheckGHAuth[check_gh_authentication&lt;br/&gt;Check GitHub auth status]
+        AuthGH[authenticate_gh&lt;br/&gt;Authenticate with token]
+        GHCommit[gh_commit_changes&lt;br/&gt;Commit and push changes]
+        GHCreatePR[gh_create_pr&lt;br/&gt;Create pull request]
+        GHCreateBranch[gh_create_branch&lt;br/&gt;Create new branch]
+        GHCheckoutBranch[gh_checkout_branch&lt;br/&gt;Switch branch]
+        GHMergeBranch[gh_merge_branch&lt;br/&gt;Merge branches]
+    end
+
+    subgraph "Authentication Tools (Phase 4)"
+        LoginWebsite[login_to_website&lt;br/&gt;Automated browser login&lt;br/&gt;Form detection&lt;br/&gt;CAPTCHA/2FA detection]
+        CredManager[CredentialManager&lt;br/&gt;AES-256-GCM encryption&lt;br/&gt;Secure credential storage]
+        SessionManager[SessionManager&lt;br/&gt;Session cookies&lt;br/&gt;30-min TTL]
+        BrowserAuth[BrowserAuth&lt;br/&gt;Playwright automation&lt;br/&gt;Form detection]
+    end
+
+    subgraph "Utility Layer"
+        FileOps[File Operations&lt;br/&gt;Safe read/write&lt;br/&gt;Backup handling]
+        Scanner[Directory Scanner&lt;br/&gt;Categorize files&lt;br/&gt;Ignore patterns]
+        CmdExec[Command Executor&lt;br/&gt;subprocess + timeout&lt;br/&gt;Output capture]
+        CodeExt[Code Extractor&lt;br/&gt;Parse markdown blocks&lt;br/&gt;Language detection]
+        TokenTrack[Token Tracker&lt;br/&gt;Cost estimation&lt;br/&gt;Usage statistics]
+        SessionMgr[Session Manager&lt;br/&gt;Save/Load JSON&lt;br/&gt;History persistence]
+    end
+
+    subgraph "Data Storage"
+        SessionFiles[Session Files&lt;br/&gt;JSON format&lt;br/&gt;Conversation + tokens]
+        ConfigFiles[Config Files&lt;br/&gt;YAML format&lt;br/&gt;User preferences]
+    end
+
+    Input --&gt; CLI
+    SlashCmd --&gt; CLI
+    CLI --&gt; ConfigMerge
+    UserConfig --&gt; ConfigMerge
+    ProjectConfig --&gt; ConfigMerge
+    ConfigMerge --&gt; Agent
+    CLI --&gt; Agent
+    Agent --&gt; ModelSwitch
+    ModelSwitch --&gt; Model
+    Agent --&gt; Prompt
+    Agent --&gt; History
+
+    Agent --&gt; ReadFile
+    Agent --&gt; WriteFile
+    Agent --&gt; ListFiles
+    Agent --&gt; ProjectInfo
+    Agent --&gt; ExecCmd
+    Agent --&gt; GitStatus
+    Agent --&gt; GitDiff
+    Agent --&gt; GitLog
+    Agent --&gt; GitBranch
+    Agent --&gt; SearchFiles
+    Agent --&gt; DeleteFile
+    Agent --&gt; MoveFile
+    Agent --&gt; CreateDir
+    Agent --&gt; WebSearch
+    Agent --&gt; FetchWebsite
+    Agent --&gt; ShowCacheStats
+    Agent --&gt; ClearCache
+    Agent --&gt; CheckGHAuth
+    Agent --&gt; AuthGH
+    Agent --&gt; GHCommit
+    Agent --&gt; GHCreatePR
+    Agent --&gt; GHCreateBranch
+    Agent --&gt; GHCheckoutBranch
+    Agent --&gt; GHMergeBranch
+    Agent --&gt; LoginWebsite
+    LoginWebsite --&gt; BrowserAuth
+    LoginWebsite --&gt; CredManager
+    LoginWebsite --&gt; SessionManager
+    FetchWebsite --&gt; SessionManager
+
+    ReadFile --&gt; FileOps
+    WriteFile --&gt; FileOps
+    ListFiles --&gt; Scanner
+    ProjectInfo --&gt; Scanner
+    ExecCmd --&gt; CmdExec
+    GitStatus --&gt; CmdExec
+    GitDiff --&gt; CmdExec
+    GitLog --&gt; CmdExec
+    GitBranch --&gt; CmdExec
+    SearchFiles --&gt; FileOps
+    DeleteFile --&gt; FileOps
+    MoveFile --&gt; FileOps
+    CreateDir --&gt; FileOps
+    CheckGHAuth --&gt; CmdExec
+    AuthGH --&gt; CmdExec
+    GHCommit --&gt; CmdExec
+    GHCreatePR --&gt; CmdExec
+    GHCreateBranch --&gt; CmdExec
+    GHCheckoutBranch --&gt; CmdExec
+    GHMergeBranch --&gt; CmdExec
+
+    WriteFile --&gt; CodeExt
+    History --&gt; TokenTrack
+    History --&gt; SessionMgr
+    SessionMgr --&gt; SessionFiles
+    ConfigMerge --&gt; ConfigFiles
+
+    Model --&gt; Output
+    CLI --&gt; Output
+
+    style Agent fill:#e1f5ff
+    style Model fill:#fff3e0
+    style CLI fill:#f3e5f5
+    style ExecCmd fill:#ffebee
+    style History fill:#e8f5e9
+    style ConfigMerge fill:#fff9c4</code></pre>
+<hr />
+<h2 id="component-descriptions">📦 Component Descriptions<a class="headerlink" href="#component-descriptions" title="Permanent link">&para;</a></h2>
+<h3 id="user-interface-layer">User Interface Layer<a class="headerlink" href="#user-interface-layer" title="Permanent link">&para;</a></h3>
+<p><strong>CLI Interface</strong>
+- Built with <code>click</code> for argument parsing
+- Uses <code>prompt-toolkit</code> for advanced input handling
+- Supports multi-line input with Shift+Enter
+- Rich console output with markdown rendering</p>
+<p><strong>Slash Commands</strong>
+- <code>/clear</code> - Clear conversation history and reset token counters
+- <code>/history</code> - Display conversation history in table format
+- <code>/save &lt;file&gt;</code> - Save current session to JSON file
+- <code>/load &lt;file&gt;</code> - Load session from JSON file
+- <code>/tokens</code> - Show detailed token usage statistics and costs
+- <code>/model [name]</code> - Show current model or switch models
+- <code>/config</code> - Show current configuration settings
+- <code>/help</code> - Display help message with all commands</p>
+<p><strong>Output Display</strong>
+- Word-by-word streaming simulation for better UX
+- Syntax highlighting for code blocks
+- Progress indicators (spinners) during processing
+- Confirmation messages for command execution</p>
+<h3 id="configuration-layer">Configuration Layer<a class="headerlink" href="#configuration-layer" title="Permanent link">&para;</a></h3>
+<p><strong>User Configuration</strong> (<code>~/.wyn360/config.yaml</code>)
+- Default model selection
+- Custom system instructions
+- Preferences and settings
+- Applies globally across all projects</p>
+<p><strong>Project Configuration</strong> (<code>.wyn360.yaml</code>)
+- Project-specific instructions
+- Technology stack context
+- Custom commands
+- Overrides user config for project</p>
+<p><strong>Config Merger</strong>
+- Loads both user and project configs
+- Merges settings with project taking precedence
+- Combines custom instructions from both sources</p>
+<h3 id="agent-layer">Agent Layer<a class="headerlink" href="#agent-layer" title="Permanent link">&para;</a></h3>
+<p><strong>WYN360Agent</strong>
+- Core orchestrator using <code>pydantic-ai</code> framework
+- Manages tool calling and execution
+- Handles conversation flow and context
+- Error handling and retry logic</p>
+<p><strong>Model Switcher</strong>
+- Dynamic model selection during session
+- Supports Haiku, Sonnet, and Opus models
+- Cost-aware model recommendations
+- Preserves conversation history across switches</p>
+<p><strong>Anthropic Claude Models</strong>
+- <strong>Haiku</strong>: Fast, cheap for simple tasks ($0.25/$1.25 per M tokens)
+- <strong>Sonnet</strong> (default): Balanced capability ($3.00/$15.00 per M tokens)
+- <strong>Opus</strong>: Most capable for complex tasks ($15.00/$75.00 per M tokens)</p>
+<p><strong>Conversation History</strong>
+- Maintains context across multiple interactions
+- Tracks all user messages and assistant responses
+- Sent with each API request for continuity
+- Can be cleared with <code>/clear</code> command</p>
+<p><strong>Token Tracking</strong>
+- Estimates token usage for input and output
+- Calculates costs based on current model
+- Cumulative tracking across session
+- Displayed with <code>/tokens</code> command</p>
+<h3 id="core-tools-layer-phase-1">Core Tools Layer (Phase 1)<a class="headerlink" href="#core-tools-layer-phase-1" title="Permanent link">&para;</a></h3>
+<p><strong>read_file</strong>
+- Reads file contents safely
+- Enforces size limits
+- Returns error for non-existent files
+- Used for understanding existing code</p>
+<p><strong>write_file</strong>
+- Creates new files or updates existing ones
+- Overwrite protection (requires explicit flag)
+- Validates content size (100KB limit)
+- Creates parent directories automatically</p>
+<p><strong>list_files</strong>
+- Scans directory and lists files
+- Categorizes by type (Python, text, config, data, other)
+- Respects .gitignore patterns
+- Returns structured summary</p>
+<p><strong>get_project_info</strong>
+- Provides project overview
+- File counts by category
+- Technology detection
+- Identifies blank projects</p>
+<p><strong>execute_command</strong>
+- Runs shell commands safely
+- User confirmation prompt with clear feedback
+- Timeout protection (5 min default)
+- Captures stdout, stderr, and exit code
+- Environment variable support</p>
+<h3 id="extended-tools-layer-phase-2">Extended Tools Layer (Phase 2)<a class="headerlink" href="#extended-tools-layer-phase-2" title="Permanent link">&para;</a></h3>
+<p><strong>Git Operations</strong>
+- <code>git_status</code> - Show working tree status
+- <code>git_diff</code> - View changes (all or specific file)
+- <code>git_log</code> - Display commit history
+- <code>git_branch</code> - List all branches</p>
+<p><strong>Code Search</strong>
+- <code>search_files</code> - Pattern matching across files
+- Supports regex patterns
+- File type filtering (<em>.py, </em>.txt, etc.)
+- Line number reporting
+- Smart truncation (first 100 matches)</p>
+<p><strong>File Management</strong>
+- <code>delete_file</code> - Delete files with safety checks
+- <code>move_file</code> - Move/rename files with directory creation
+- <code>create_directory</code> - Create nested directory structures</p>
+<h3 id="builtin-tools-layer-phase-111">Builtin Tools Layer (Phase 11.1)<a class="headerlink" href="#builtin-tools-layer-phase-111" title="Permanent link">&para;</a></h3>
+<p><strong>Web Search (pydantic-ai WebSearchTool)</strong>
+- Real-time internet search using Claude's native web_search_20250305 tool
+- Integrated via pydantic-ai's <code>builtin_tools</code> parameter
+- Configured with <code>max_uses=5</code> to control costs</p>
+<p><strong>Use Cases:</strong>
+1. <strong>Weather Queries</strong>
+   - User asks: "What's the weather in [location]?"
+   - Asks for location if not provided
+   - Searches and displays current weather with source</p>
+<ol>
+<li><strong>Website Reading</strong></li>
+<li>User provides URL: "Read https://example.com"</li>
+<li>Fetches and summarizes website content</li>
+<li>
+<p>Displays key points with proper citations</p>
+</li>
+<li>
+<p><strong>Current Information</strong></p>
+</li>
+<li>Latest documentation and package updates</li>
+<li>Recent news and events</li>
+<li>Real-time data and trends</li>
+<li>Examples: "What's new in Python 3.13?", "Latest React features"</li>
+</ol>
+<p><strong>Cost Structure:</strong>
+- $10.00 per 1,000 searches
+- Plus standard token costs for input/output
+- Limited to 5 searches per session by default</p>
+<p><strong>Integration:</strong>
+- Separate from custom @tool decorated functions
+- Works alongside 19 existing custom tools
+- No conflicts with file operations or git tools
+- Invoked automatically by Claude when needed for current information</p>
+<h3 id="github-integration-tools-phase-81">GitHub Integration Tools (Phase 8.1)<a class="headerlink" href="#github-integration-tools-phase-81" title="Permanent link">&para;</a></h3>
+<p><strong>Authentication Tools</strong>
+- <code>check_gh_authentication</code> - Check GitHub CLI authentication status
+  - Checks GH_TOKEN or GITHUB_TOKEN environment variables
+  - Auto-authenticates if token found
+  - Returns username if authenticated</p>
+<ul>
+<li><code>authenticate_gh(token)</code> - Authenticate with GitHub token</li>
+<li>Validates token format (ghp_<em> or github_pat_</em>)</li>
+<li>Stores token in environment</li>
+<li>Uses gh CLI login command</li>
+<li>Required scopes: repo, workflow</li>
+</ul>
+<p><strong>Repository Operations</strong>
+- <code>gh_commit_changes(message, push)</code> - Commit and push changes
+  - Stages all changes with 'git add -A'
+  - Commits with provided message
+  - Optionally pushes to remote (default: True)
+  - Checks for git repo and remote configuration</p>
+<ul>
+<li><code>gh_create_pr(title, body, base_branch)</code> - Create pull request</li>
+<li>Creates PR using gh CLI</li>
+<li>Validates not on base branch (e.g., main)</li>
+<li>Returns PR URL on success</li>
+<li>Handles existing PR detection</li>
+</ul>
+<p><strong>Branch Management</strong>
+- <code>gh_create_branch(branch_name, checkout)</code> - Create new branch
+  - Validates branch name (no spaces)
+  - Optionally switches to new branch (default: True)
+  - Checks for existing branch with same name</p>
+<ul>
+<li><code>gh_checkout_branch(branch_name)</code> - Switch to existing branch</li>
+<li>Checks for uncommitted changes</li>
+<li>Returns error if branch doesn't exist</li>
+<li>
+<p>Safe branch switching with status checks</p>
+</li>
+<li>
+<p><code>gh_merge_branch(source_branch, target_branch)</code> - Merge branches</p>
+</li>
+<li>Merges source into target (default: current branch)</li>
+<li>Checks for uncommitted changes</li>
+<li>Detects and reports merge conflicts</li>
+<li>Supports fast-forward and 3-way merges</li>
+</ul>
+<p><strong>Common Workflows:</strong></p>
+<ol>
+<li>
+<p><strong>Commit and Push:</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>User: &quot;Commit these changes&quot;
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>→ check_gh_authentication() → gh_commit_changes(&quot;message&quot;, push=True)
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Create Feature Branch:</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>User: &quot;Create branch feature/auth&quot;
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>→ gh_create_branch(&quot;feature/auth&quot;, checkout=True)
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Open Pull Request:</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>User: &quot;Create PR for my changes&quot;
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>→ check_gh_authentication() → gh_create_pr(&quot;title&quot;, &quot;body&quot;, &quot;main&quot;)
+</code></pre></div></p>
+</li>
+<li>
+<p><strong>Merge Feature:</strong>
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>User: &quot;Merge feature/auth into main&quot;
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>→ gh_merge_branch(&quot;feature/auth&quot;, &quot;main&quot;)
+</code></pre></div></p>
+</li>
+</ol>
+<p><strong>Integration Notes:</strong>
+- All tools use execute_command_safe with user confirmation
+- GitHub CLI (gh) must be installed on system
+- Uses existing git repository in current directory
+- Authentication persists across session
+- Follows same pattern as HuggingFace integration</p>
+<h3 id="browser-use-tools-layer-phase-12">Browser Use Tools Layer (Phase 12)<a class="headerlink" href="#browser-use-tools-layer-phase-12" title="Permanent link">&para;</a></h3>
+<p><strong>Overview:</strong>
+Direct website fetching with crawl4ai-powered scraping, TTL-based caching, and smart content truncation.</p>
+<h4 id="where-and-how-crawl4ai-is-used">Where and How crawl4ai is Used<a class="headerlink" href="#where-and-how-crawl4ai-is-used" title="Permanent link">&para;</a></h4>
+<p><strong>crawl4ai</strong> is an LLM-optimized async web crawler built on top of Playwright that extracts web content and converts it to markdown. It is used <strong>exclusively</strong> in the <code>fetch_website</code> tool.</p>
+<p><strong>Location:</strong> <code>wyn360_cli/browser_use.py</code></p>
+<p><strong>Integration Points:</strong>
+1. <strong>Import</strong> (browser_use.py:22-26):
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">try</span><span class="p">:</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">crawl4ai</span><span class="w"> </span><span class="kn">import</span> <span class="n">AsyncWebCrawler</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">HAS_CRAWL4AI</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">HAS_CRAWL4AI</span> <span class="o">=</span> <span class="kc">False</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">AsyncWebCrawler</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div></p>
+<ol>
+<li><strong>Usage</strong> (browser_use.py:420-421):
+   <div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">async</span> <span class="k">with</span> <span class="n">AsyncWebCrawler</span><span class="p">()</span> <span class="k">as</span> <span class="n">crawler</span><span class="p">:</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">crawler</span><span class="o">.</span><span class="n">arun</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</code></pre></div></li>
+</ol>
+<p><strong>What crawl4ai Does:</strong>
+- Launches headless Chromium browser via Playwright
+- Executes JavaScript to render dynamic content
+- Extracts full DOM including JS-generated content
+- Converts HTML to clean markdown format
+- Returns structured result with success status</p>
+<p><strong>Playwright Dependency:</strong>
+- crawl4ai requires Playwright browser binaries (~200MB)
+- One-time installation: <code>playwright install chromium</code>
+- Validated before use via <code>check_playwright_installed()</code> (browser_use.py:29-82)
+- Auto-installation is prevented with <code>PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD='1'</code> (browser_use.py:417)</p>
+<p><strong>Browser Use Architecture:</strong></p>
+<pre class="mermaid"><code>graph TB
+    subgraph "User Request"
+        UserInput["User: Read https://example.com"]
+    end
+
+    subgraph "Agent Layer"
+        Agent[WYN360Agent]
+        ToolCall[Tool Selection:&lt;br/&gt;fetch_website]
+    end
+
+    subgraph "Browser Use Module (browser_use.py)"
+        Validate[URL Validation&lt;br/&gt;is_valid_url]
+        PlaywrightCheck[Playwright Check&lt;br/&gt;check_playwright_installed]
+        CacheCheck[Cache Lookup&lt;br/&gt;WebsiteCache.get]
+        Fetch[Web Fetching&lt;br/&gt;crawl4ai.AsyncWebCrawler]
+        Truncate[Smart Truncation&lt;br/&gt;smart_truncate]
+        CacheStore[Cache Storage&lt;br/&gt;WebsiteCache.set]
+    end
+
+    subgraph "External Dependencies"
+        Playwright[Playwright&lt;br/&gt;Headless Chromium]
+        Website[Target Website&lt;br/&gt;example.com]
+    end
+
+    subgraph "Storage"
+        CacheDir["~/.wyn360/cache/fetched_sites/&lt;br/&gt;- *.md.gz files&lt;br/&gt;- cache_index.json"]
+    end
+
+    UserInput --&gt; Agent
+    Agent --&gt; ToolCall
+    ToolCall --&gt; Validate
+    Validate --&gt; PlaywrightCheck
+    PlaywrightCheck --&gt; CacheCheck
+    CacheCheck --&gt;|Cache Miss| Fetch
+    CacheCheck --&gt;|Cache Hit| Truncate
+    Fetch --&gt; Playwright
+    Playwright --&gt; Website
+    Website --&gt; Playwright
+    Playwright --&gt; Fetch
+    Fetch --&gt; CacheStore
+    CacheStore --&gt; CacheDir
+    Fetch --&gt; Truncate
+    Truncate --&gt; Agent
+    Agent --&gt; UserInput
+
+    style Fetch fill:#e1f5ff
+    style Playwright fill:#fff3e0
+    style CacheCheck fill:#e8f5e9
+    style Truncate fill:#fff9c4</code></pre>
+<h4 id="fetch_website-tool-details">fetch_website Tool Details<a class="headerlink" href="#fetch_website-tool-details" title="Permanent link">&para;</a></h4>
+<p><strong>Function:</strong> <code>fetch_website(url, max_tokens, truncate_strategy)</code>
+<strong>Location:</strong> <code>wyn360_cli/agent.py</code> (tool registration), <code>wyn360_cli/browser_use.py</code> (implementation)</p>
+<p><strong>Parameters:</strong>
+- <code>url</code>: Target URL to fetch (must be http:// or https://)
+- <code>max_tokens</code>: Maximum tokens to return (default: 50,000)
+- <code>truncate_strategy</code>: "smart" | "head" | "tail" (default: "smart")</p>
+<p><strong>Execution Flow:</strong></p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant User
+    participant Agent
+    participant Tool as fetch_website
+    participant Cache as WebsiteCache
+    participant Crawl as crawl4ai
+    participant Web as Website
+
+    User-&gt;&gt;Agent: "Read https://example.com"
+    Agent-&gt;&gt;Tool: fetch_website(url)
+
+    Tool-&gt;&gt;Tool: 1. Validate URL format
+    Tool-&gt;&gt;Tool: 2. Check Playwright installed
+
+    Tool-&gt;&gt;Cache: get(url)
+
+    alt Cache Hit (&lt; 30min old)
+        Cache--&gt;&gt;Tool: Cached markdown
+        Tool-&gt;&gt;Tool: 3b. Skip fetch
+    else Cache Miss or Expired
+        Tool-&gt;&gt;Crawl: AsyncWebCrawler().arun(url)
+        Crawl-&gt;&gt;Web: HTTP request + JS execution
+        Web--&gt;&gt;Crawl: HTML content
+        Crawl-&gt;&gt;Crawl: Convert HTML → Markdown
+        Crawl--&gt;&gt;Tool: markdown content
+        Tool-&gt;&gt;Cache: set(url, content)
+        Cache-&gt;&gt;Cache: Save as .md.gz with TTL
+    end
+
+    Tool-&gt;&gt;Tool: 4. Smart truncate if &gt; max_tokens
+    Tool--&gt;&gt;Agent: Truncated markdown
+    Agent--&gt;&gt;User: Display formatted content</code></pre>
+<h4 id="websitecache-implementation">WebsiteCache Implementation<a class="headerlink" href="#websitecache-implementation" title="Permanent link">&para;</a></h4>
+<p><strong>Class:</strong> <code>WebsiteCache</code>
+<strong>Location:</strong> <code>browser_use.py:85-270</code></p>
+<p><strong>Architecture:</strong></p>
+<pre class="mermaid"><code>graph LR
+    subgraph "Cache Structure"
+        Index[cache_index.json&lt;br/&gt;Metadata]
+        Files[*.md.gz files&lt;br/&gt;Compressed content]
+    end
+
+    subgraph "Cache Operations"
+        Get[get - Retrieve]
+        Set[set - Store]
+        Clear[clear - Delete]
+        Stats[get_stats - Info]
+        Cleanup[cleanup_expired]
+    end
+
+    subgraph "Cache Logic"
+        TTL[TTL Check&lt;br/&gt;30min default]
+        Size[Size Check&lt;br/&gt;100MB max]
+        Hash[MD5 Hash&lt;br/&gt;URL → cache key]
+        Gzip[Gzip Compression&lt;br/&gt;~70% reduction]
+    end
+
+    Get --&gt; TTL
+    Get --&gt; Hash
+    Get --&gt; Files
+
+    Set --&gt; Hash
+    Set --&gt; Size
+    Set --&gt; Gzip
+    Set --&gt; Files
+    Set --&gt; Index
+
+    Clear --&gt; Hash
+    Clear --&gt; Files
+    Clear --&gt; Index
+
+    Stats --&gt; Index
+    Cleanup --&gt; TTL
+    Cleanup --&gt; Files
+
+    style TTL fill:#e8f5e9
+    style Gzip fill:#fff9c4
+    style Hash fill:#e1f5ff</code></pre>
+<p><strong>Cache Features:</strong>
+- <strong>TTL-Based Expiration</strong>: 30 minutes (configurable)
+- <strong>Automatic Cleanup</strong>: Removes expired entries on access
+- <strong>Size Management</strong>: Max 100MB, auto-removes oldest entries
+- <strong>Compression</strong>: Gzip reduces storage by ~70%
+- <strong>MD5 Hashing</strong>: URL → unique cache key
+- <strong>JSON Index</strong>: Metadata tracking (url, timestamp, size)</p>
+<p><strong>Cache Location:</strong> <code>~/.wyn360/cache/fetched_sites/</code></p>
+<p><strong>Files:</strong>
+- <code>cache_index.json</code> - Metadata index
+- <code>&lt;md5_hash&gt;.md.gz</code> - Compressed markdown content</p>
+<h4 id="show_cache_stats-tool">show_cache_stats Tool<a class="headerlink" href="#show_cache_stats-tool" title="Permanent link">&para;</a></h4>
+<p><strong>Function:</strong> Display cache statistics and cached URLs
+<strong>Location:</strong> <code>wyn360_cli/agent.py</code></p>
+<p><strong>Returns:</strong>
+- Total cached entries
+- Total cache size (MB)
+- List of cached URLs with age
+- Expired entry count</p>
+<p><strong>Example Output:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>📊 Website Cache Statistics
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>Total Entries: 3
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>Cache Size: 2.45 MB
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>Expired Entries: 0
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>Cached URLs:
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>- ✓ 5m old: https://github.com/yiqiao-yin/deepspeed-course
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>- ✓ 12m old: https://python.org/downloads
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>- ✓ 25m old: https://docs.anthropic.com
+</code></pre></div></p>
+<h4 id="clear_website_cache-tool">clear_website_cache Tool<a class="headerlink" href="#clear_website_cache-tool" title="Permanent link">&para;</a></h4>
+<p><strong>Function:</strong> Clear specific URL or entire cache
+<strong>Location:</strong> <code>wyn360_cli/agent.py</code></p>
+<p><strong>Parameters:</strong>
+- <code>url</code>: Optional - specific URL to clear, or None for all</p>
+<p><strong>Behavior:</strong>
+- If <code>url</code> provided: Removes single cache entry
+- If <code>url</code> is None: Clears entire cache
+- Updates index and deletes .md.gz files</p>
+<h4 id="web-search-vs-fetch-website-comparison">Web Search vs Fetch Website Comparison<a class="headerlink" href="#web-search-vs-fetch-website-comparison" title="Permanent link">&para;</a></h4>
+<pre class="mermaid"><code>graph TB
+    subgraph "User Intent"
+        Intent1["Find information about X"]
+        Intent2["Read specific URL"]
+    end
+
+    subgraph "web_search (Phase 11.1)"
+        WS1[Builtin WebSearchTool]
+        WS2[Claude's web_search_20250305]
+        WS3[Searches web for keywords]
+        WS4[Returns top 5 results]
+        WS5[Summarizes findings]
+        WS6[Cost: $10 per 1K searches]
+    end
+
+    subgraph "fetch_website (Phase 12)"
+        FW1[Custom Tool + crawl4ai]
+        FW2[Fetches specific URL]
+        FW3[Extracts full page content]
+        FW4[Converts HTML → Markdown]
+        FW5[Smart truncation]
+        FW6[30-minute caching]
+        FW7[Cost: API tokens only]
+    end
+
+    Intent1 --&gt; WS1
+    WS1 --&gt; WS2
+    WS2 --&gt; WS3
+    WS3 --&gt; WS4
+    WS4 --&gt; WS5
+    WS5 --&gt; WS6
+
+    Intent2 --&gt; FW1
+    FW1 --&gt; FW2
+    FW2 --&gt; FW3
+    FW3 --&gt; FW4
+    FW4 --&gt; FW5
+    FW5 --&gt; FW6
+    FW6 --&gt; FW7
+
+    style WS2 fill:#fff3e0
+    style FW1 fill:#e1f5ff</code></pre>
+<p><strong>Key Differences:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>web_search</th>
+<th>fetch_website</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Purpose</strong></td>
+<td>Find/search for information</td>
+<td>Read specific webpage</td>
+</tr>
+<tr>
+<td><strong>Input</strong></td>
+<td>Search query/keywords</td>
+<td>Exact URL</td>
+</tr>
+<tr>
+<td><strong>Output</strong></td>
+<td>Top 5 search results</td>
+<td>Full page markdown</td>
+</tr>
+<tr>
+<td><strong>Technology</strong></td>
+<td>Claude native tool</td>
+<td>crawl4ai + Playwright</td>
+</tr>
+<tr>
+<td><strong>Caching</strong></td>
+<td>None (real-time)</td>
+<td>30-minute TTL cache</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>$10 per 1K searches</td>
+<td>Standard API tokens</td>
+</tr>
+<tr>
+<td><strong>Max Uses</strong></td>
+<td>5 per session</td>
+<td>Unlimited</td>
+</tr>
+<tr>
+<td><strong>Use Cases</strong></td>
+<td>Weather, news, find resources</td>
+<td>GitHub repos, docs, specific pages</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example Comparison:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a># web_search Example
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>User: &quot;Find Python async tutorials&quot;
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>→ Searches web for &quot;python async tutorials&quot;
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>→ Returns: Top 5 articles with summaries
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>→ Best for: Discovery and exploration
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a># fetch_website Example
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>User: &quot;Read https://docs.python.org/3/library/asyncio.html&quot;
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>→ Fetches exact URL
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>→ Returns: Full page content as markdown
+<a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>→ Best for: Deep reading of known pages
+</code></pre></div>
+<h3 id="utility-layer">Utility Layer<a class="headerlink" href="#utility-layer" title="Permanent link">&para;</a></h3>
+<p><strong>File Operations</strong>
+- Safe file reading with encoding detection
+- Safe file writing with backup handling
+- Directory creation with parent path support
+- Error handling for permissions and I/O issues</p>
+<p><strong>Directory Scanner</strong>
+- Recursive file traversal
+- File categorization by extension
+- Ignore pattern support (.gitignore, <strong>pycache</strong>, etc.)
+- Efficient for large codebases</p>
+<p><strong>Command Executor</strong>
+- Subprocess management with timeout
+- Output streaming and capture
+- Working directory support
+- Environment variable injection
+- Exit code handling</p>
+<p><strong>Code Extractor</strong>
+- Parses markdown code blocks
+- Language detection from fence markers
+- Multiple block extraction
+- Used for auto-saving generated code</p>
+<p><strong>Token Tracker</strong>
+- Estimates tokens using char count heuristic
+- Tracks input and output separately
+- Calculates costs based on model pricing
+- Cumulative session tracking
+- Per-message breakdown</p>
+<p><strong>Session Manager</strong>
+- Saves conversations to JSON format
+- Includes conversation history and token stats
+- Loads previous sessions
+- Preserves context across sessions</p>
+<h3 id="data-storage">Data Storage<a class="headerlink" href="#data-storage" title="Permanent link">&para;</a></h3>
+<p><strong>Session Files</strong> (JSON)
+- Conversation history (user + assistant messages)
+- Token usage statistics (input, output, cost)
+- Timestamp and metadata
+- Can be loaded to resume sessions</p>
+<p><strong>Config Files</strong> (YAML)
+- User preferences in <code>~/.wyn360/config.yaml</code>
+- Project settings in <code>.wyn360.yaml</code>
+- Model selection, custom instructions, etc.</p>
+<hr />
+<h2 id="data-flow-examples">🔄 Data Flow Examples<a class="headerlink" href="#data-flow-examples" title="Permanent link">&para;</a></h2>
+<h3 id="simple-file-read">Simple File Read<a class="headerlink" href="#simple-file-read" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>User: &quot;Show me app.py&quot;
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>  → CLI → Agent → read_file tool
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>  → FileOps reads file
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>  → Content returned to Model
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>  → Model generates response
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>  → Output displayed word-by-word
+</code></pre></div>
+<h3 id="command-execution-with-confirmation">Command Execution with Confirmation<a class="headerlink" href="#command-execution-with-confirmation" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>User: &quot;Run the tests&quot;
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  → CLI → Agent → execute_command tool
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>  → Confirmation prompt displayed
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>  → User presses &#39;y&#39; + Enter
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>  → &quot;✓ Confirmed. Executing command...&quot; displayed
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>  → CmdExec runs command with timeout
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>  → Output captured (stdout + stderr)
+<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>  → Results returned to Model
+<a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>  → Model summarizes results
+<a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>  → Output displayed word-by-word
+</code></pre></div>
+<h3 id="multi-tool-workflow">Multi-Tool Workflow<a class="headerlink" href="#multi-tool-workflow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>User: &quot;Create a FastAPI app&quot;
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>  → CLI → Agent → Model analyzes request
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>  → Model calls write_file(&quot;app.py&quot;, code)
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>  → FileOps writes file
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>  → Model calls write_file(&quot;requirements.txt&quot;, deps)
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>  → FileOps writes file
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>  → Model generates response explaining what was created
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>  → Output displayed word-by-word
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>  → Conversation + tokens saved to history
+</code></pre></div>
+<h3 id="model-switch-mid-session">Model Switch Mid-Session<a class="headerlink" href="#model-switch-mid-session" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>User: &quot;/model haiku&quot;
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>  → CLI → SlashCmd handler
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>  → Agent → ModelSwitch
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>  → New model instantiated (claude-3-5-haiku)
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>  → Conversation history preserved
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>  → Confirmation message displayed
+</code></pre></div>
+<h3 id="session-saveload">Session Save/Load<a class="headerlink" href="#session-saveload" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>User: &quot;/save my_session.json&quot;
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>  → CLI → SlashCmd handler
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>  → SessionMgr serializes conversation + tokens
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>  → JSON file written
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>  → Confirmation message
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>Later...
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>User: &quot;/load my_session.json&quot;
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>  → CLI → SlashCmd handler
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>  → SessionMgr reads JSON file
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>  → Conversation history restored
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>  → Token counters restored
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>  → Confirmation message
+</code></pre></div>
+<h3 id="website-fetching-with-cache">Website Fetching with Cache<a class="headerlink" href="#website-fetching-with-cache" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>User: &quot;Read https://github.com/user/repo&quot;
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>  → CLI → Agent → fetch_website tool
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>  → Validate URL format (http/https)
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>  → Check Playwright installation (browser binaries)
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>  → WebsiteCache checks for cached content
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>  If Cache Hit (&lt; 30min):
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    → Return cached markdown (instant)
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>    → Skip web fetch
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>  If Cache Miss:
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>    → crawl4ai launches headless Chromium
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>    → Executes JavaScript on target page
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>    → Extracts full DOM content
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>    → Converts HTML → Markdown
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>    → WebsiteCache stores compressed .md.gz
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>    → Updates cache_index.json
+<a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>
+<a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>  → smart_truncate if content &gt; 50K tokens
+<a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>    → Keep first 70% + last 30%
+<a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>    → Preserve headers and structure
+<a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>  → Model receives markdown content
+<a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>  → Model generates summary/response
+<a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>  → Output displayed word-by-word
+</code></pre></div>
+<h3 id="web-search-vs-website-fetch">Web Search vs Website Fetch<a class="headerlink" href="#web-search-vs-website-fetch" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Scenario 1: &quot;What&#39;s the weather in Boston?&quot;
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>  → Agent recognizes weather query
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>  → Calls web_search (builtin tool)
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>  → Claude&#39;s native search returns current weather
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>  → Cost: 1 search ($0.01)
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>  → No caching
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>Scenario 2: &quot;Read https://docs.python.org/3/library/asyncio.html&quot;
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>  → Agent recognizes specific URL
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>  → Calls fetch_website (custom tool)
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>  → crawl4ai fetches full page content
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>  → Caches for 30 minutes
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>  → Cost: Only API tokens (~5K tokens input)
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>  → Subsequent requests use cache (free)
+</code></pre></div>
+<hr />
+<h2 id="key-features-by-phase">🚀 Key Features by Phase<a class="headerlink" href="#key-features-by-phase" title="Permanent link">&para;</a></h2>
+<h3 id="phase-1-context-management-v028">Phase 1: Context Management (v0.2.8)<a class="headerlink" href="#phase-1-context-management-v028" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Conversation history persistence</li>
+<li>✅ Token tracking and cost monitoring</li>
+<li>✅ Session save/load functionality</li>
+<li>✅ Slash commands (/clear, /history, /save, /load, /tokens, /help)</li>
+</ul>
+<h3 id="phase-2-additional-tools-v029">Phase 2: Additional Tools (v0.2.9)<a class="headerlink" href="#phase-2-additional-tools-v029" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Git operations (status, diff, log, branch)</li>
+<li>✅ Code search across files with pattern matching</li>
+<li>✅ File management (delete, move, create dirs)</li>
+<li>✅ 8 new tools for enhanced project management</li>
+</ul>
+<h3 id="phase-3-model-selection-v030">Phase 3: Model Selection (v0.3.0)<a class="headerlink" href="#phase-3-model-selection-v030" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Dynamic model switching (haiku/sonnet/opus)</li>
+<li>✅ Model information display with pricing</li>
+<li>✅ /model command for mid-session changes</li>
+<li>✅ Cost-aware recommendations</li>
+</ul>
+<h3 id="phase-4-configuration-v031">Phase 4: Configuration (v0.3.1)<a class="headerlink" href="#phase-4-configuration-v031" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ User configuration file (~/.wyn360/config.yaml)</li>
+<li>✅ Project configuration file (.wyn360.yaml)</li>
+<li>✅ Custom instructions and project context</li>
+<li>✅ /config command to view settings</li>
+</ul>
+<h3 id="phase-5-streaming-responses-v032-v0315">Phase 5: Streaming Responses (v0.3.2-v0.3.15)<a class="headerlink" href="#phase-5-streaming-responses-v032-v0315" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Word-by-word output simulation for smooth UX</li>
+<li>✅ Real-time feedback and progress visibility</li>
+<li>✅ Immediate command execution confirmation (v0.3.14)</li>
+<li>✅ No text duplication (fixed in v0.3.13)</li>
+</ul>
+<h3 id="phase-81-github-integration-v0322">Phase 8.1: GitHub Integration (v0.3.22)<a class="headerlink" href="#phase-81-github-integration-v0322" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ GitHub authentication with token management (GH_TOKEN/GITHUB_TOKEN)</li>
+<li>✅ Commit and push changes directly from CLI</li>
+<li>✅ Create pull requests with title, body, and base branch</li>
+<li>✅ Branch management: create, checkout, merge branches</li>
+<li>✅ Auto-authentication from environment variables</li>
+<li>✅ Integration with GitHub CLI (gh) for seamless operations</li>
+<li>✅ 7 new tools for complete GitHub workflow management</li>
+</ul>
+<h3 id="phase-111-web-search-v0321-enhanced-v0323">Phase 11.1: Web Search (v0.3.21, Enhanced v0.3.23)<a class="headerlink" href="#phase-111-web-search-v0321-enhanced-v0323" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Real-time web search using Claude's native web_search_20250305 tool</li>
+<li>✅ Weather queries with location handling</li>
+<li>✅ Website content fetching and summarization</li>
+<li>✅ Current information retrieval (docs, news, trends)</li>
+<li>✅ <strong>Resource finding</strong> - GitHub repos, libraries, tutorials (v0.3.23)</li>
+<li>✅ Cost-controlled with 5 searches per session max</li>
+<li>✅ Integrated via pydantic-ai's WebSearchTool builtin</li>
+<li>✅ <strong>Upgraded to pydantic-ai 1.13.0</strong> for improved stability (v0.3.23)</li>
+<li>✅ <strong>Enhanced system prompt</strong> with clearer intent examples (v0.3.23)</li>
+</ul>
+<h3 id="phase-12-browser-use-direct-website-fetching-v0324-v0325">Phase 12: Browser Use / Direct Website Fetching (v0.3.24-v0.3.25)<a class="headerlink" href="#phase-12-browser-use-direct-website-fetching-v0324-v0325" title="Permanent link">&para;</a></h3>
+<p><strong>Phase 12.1: Basic Website Fetching (v0.3.24)</strong>
+- ✅ Direct URL fetching using crawl4ai (LLM-optimized web crawler)
+- ✅ Full DOM extraction with JavaScript execution support
+- ✅ Automatic HTML → Markdown conversion for LLM consumption
+- ✅ Smart truncation preserving document structure
+- ✅ Configurable max tokens (default: 50,000)
+- ✅ URL validation and error handling
+- ✅ Integration with agent tool system</p>
+<p><strong>Phase 12.2: TTL-Based Caching (v0.3.24)</strong>
+- ✅ Automatic caching with 30-minute TTL (configurable)
+- ✅ Gzip compression for efficient storage
+- ✅ Cache directory: <code>~/.wyn360/cache/fetched_sites/</code>
+- ✅ Automatic cleanup of expired entries
+- ✅ Size-based cache management (max 100MB)
+- ✅ Cache hit/miss tracking
+- ✅ JSON index for metadata management</p>
+<p><strong>Phase 12.3: User-Controlled Cache Management (v0.3.24)</strong>
+- ✅ <code>show_cache_stats</code> - View cache statistics and cached URLs
+- ✅ <code>clear_website_cache</code> - Clear specific URL or all cache
+- ✅ Cache age tracking and expiration display
+- ✅ User-friendly cache information
+- ✅ Integration with agent conversation flow</p>
+<p><strong>Phase 12.4: Playwright Installation Validation (v0.3.25)</strong>
+- ✅ Pre-flight Playwright installation check via <code>check_playwright_installed()</code>
+- ✅ Prevents unwanted auto-installation during execution
+- ✅ Clear error messages with installation instructions
+- ✅ Environment variable <code>PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD='1'</code> to block auto-install
+- ✅ Validates both Playwright CLI and browser binaries (~/.cache/ms-playwright/)
+- ✅ 24 comprehensive unit tests for all browser use functionality
+- ✅ Test coverage: URL validation, caching, truncation, Playwright checks, fetch operations</p>
+<p><strong>Technical Architecture:</strong>
+- <strong>crawl4ai</strong>: Playwright-based async web crawler (optional dependency)
+- <strong>Playwright</strong>: Headless Chromium browser (~200MB, one-time install)
+- <strong>browser_use.py</strong>: Core fetching, caching, truncation, and validation logic
+- <strong>WebsiteCache</strong>: TTL-based cache with automatic cleanup
+- <strong>Smart Truncation</strong>: Preserves headers, keeps first 70% + last 30%
+- <strong>Token Estimation</strong>: ~4 chars per token for truncation decisions
+- <strong>Installation Check</strong>: Subprocess validation before crawl4ai usage</p>
+<p><strong>Configuration (config.yaml):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="nt">browser_use</span><span class="p">:</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span><span class="nt">max_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50000</span><span class="w">  </span><span class="c1"># Configurable per user</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span><span class="nt">truncate_strategy</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;smart&quot;</span><span class="w">  </span><span class="c1"># smart, head, tail</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">  </span><span class="nt">cache</span><span class="p">:</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">    </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span><span class="nt">ttl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1800</span><span class="w">  </span><span class="c1"># 30 minutes</span>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="nt">max_size_mb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+</code></pre></div></p>
+<p><strong>Key Differentiators from WebSearchTool:</strong>
+- <strong>WebSearchTool</strong>: Searches for keywords → Returns top 5 results
+- <strong>fetch_website</strong>: Fetches specific URL → Returns full page content
+- <strong>Use Case Split</strong>: Search (find things) vs Fetch (get specific pages)</p>
+<hr />
+<h3 id="phase-4-authenticated-browsing-v0340-v0341">Phase 4: Authenticated Browsing (v0.3.40-v0.3.41)<a class="headerlink" href="#phase-4-authenticated-browsing-v0340-v0341" title="Permanent link">&para;</a></h3>
+<p><strong>Phase 4.1: Secure Credential Storage (v0.3.40)</strong>
+- ✅ CredentialManager with AES-256-GCM encryption
+- ✅ Per-user encryption key from system entropy
+- ✅ Encrypted credential vault (~/.wyn360/credentials/vault.enc)
+- ✅ File permissions: 0600 (user read/write only)
+- ✅ Audit logging without sensitive data
+- ✅ 21/21 unit tests passing</p>
+<p><strong>Phase 4.2: Browser Authentication &amp; Session Management (v0.3.40)</strong>
+- ✅ SessionManager with TTL-based session cookies (30 min default)
+- ✅ BrowserAuth using Playwright for automated login
+- ✅ Automatic form detection (username, password, submit)
+- ✅ CAPTCHA detection (notifies user)
+- ✅ 2FA/MFA detection (notifies user)
+- ✅ Session persistence and automatic expiration
+- ✅ 27/27 unit tests passing (SessionManager: 16, BrowserAuth: 11)</p>
+<p><strong>Phase 4.3: Authenticated Fetch Integration (v0.3.41)</strong>
+- ✅ Seamless integration of sessions with fetch_website
+- ✅ Automatic session detection and cookie injection
+- ✅ Domain-based session matching
+- ✅ Visual authentication indicator (🔐)
+- ✅ Zero-friction authenticated browsing</p>
+<p><strong>What Happens When User Says "Login to this website":</strong></p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant User
+    participant Agent
+    participant BrowserAuth
+    participant CredentialManager
+    participant SessionManager
+    participant Playwright
+
+    User-&gt;&gt;Agent: "Login to https://site.com with user/pass"
+    Agent-&gt;&gt;BrowserAuth: login(url, username, password)
+    BrowserAuth-&gt;&gt;Playwright: Launch browser (headless)
+    Playwright-&gt;&gt;BrowserAuth: Browser ready
+    BrowserAuth-&gt;&gt;Playwright: Navigate to URL
+    BrowserAuth-&gt;&gt;Playwright: Detect login form elements
+    BrowserAuth-&gt;&gt;Playwright: Fill username field
+    BrowserAuth-&gt;&gt;Playwright: Fill password field
+    BrowserAuth-&gt;&gt;Playwright: Click submit button
+    BrowserAuth-&gt;&gt;Playwright: Wait for navigation
+
+    alt CAPTCHA Detected
+        BrowserAuth--&gt;&gt;User: ⚠️ CAPTCHA detected, manual completion required
+    else 2FA Detected
+        BrowserAuth--&gt;&gt;User: 🔐 2FA detected, manual verification required
+    else Login Failed
+        BrowserAuth--&gt;&gt;User: ❌ Login failed (incorrect credentials)
+    else Login Success
+        BrowserAuth-&gt;&gt;Playwright: Extract session cookies
+        BrowserAuth-&gt;&gt;SessionManager: save_session(domain, cookies)
+        SessionManager--&gt;&gt;Agent: Session saved (30 min TTL)
+        BrowserAuth-&gt;&gt;CredentialManager: save_credential(domain, username, password)
+        CredentialManager--&gt;&gt;Agent: Credentials encrypted and saved
+        Agent--&gt;&gt;User: ✅ Login successful! Session active for 30 minutes
+    end
+
+    BrowserAuth-&gt;&gt;Playwright: Close browser</code></pre>
+<p><strong>Authenticated Fetch Workflow:</strong></p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant User
+    participant Agent
+    participant SessionManager
+    participant browser_use
+    participant Playwright
+
+    User-&gt;&gt;Agent: "Fetch https://site.com/profile"
+    Agent-&gt;&gt;Agent: Extract domain from URL
+    Agent-&gt;&gt;SessionManager: get_session(domain)
+
+    alt Session Exists
+        SessionManager--&gt;&gt;Agent: Return cookies
+        Agent-&gt;&gt;browser_use: fetch_website_content(url, cookies=cookies)
+        browser_use-&gt;&gt;Playwright: Launch with cookies injected
+        Playwright-&gt;&gt;browser_use: Return authenticated content
+        browser_use--&gt;&gt;Agent: Content retrieved
+        Agent--&gt;&gt;User: 📄 Fetched 🔐 (authenticated): [content]
+    else No Session
+        SessionManager--&gt;&gt;Agent: None (no session)
+        Agent-&gt;&gt;browser_use: fetch_website_content(url, cookies=None)
+        browser_use-&gt;&gt;Playwright: Launch without cookies
+        Playwright-&gt;&gt;browser_use: Return public content
+        browser_use--&gt;&gt;Agent: Content retrieved
+        Agent--&gt;&gt;User: 📄 Fetched: [content]
+    end</code></pre>
+<p><strong>Technical Architecture:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>~/.wyn360/
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>├── credentials/
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>│   ├── .keyfile               # AES-256 encryption key (0600)
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>│   └── vault.enc              # Encrypted credentials
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>├── sessions/
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>│   ├── example_com.session.json  # Session cookies with TTL
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>│   └── github_com.session.json   # Domain-based sessions
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>└── logs/
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>    └── auth_audit.log         # Audit log (no sensitive data)
+</code></pre></div>
+<p><strong>Module Architecture:</strong></p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>wyn360_cli/
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>├── credential_manager.py      # AES-256-GCM encryption, vault management
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>├── session_manager.py         # TTL-based session cookie storage
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>├── browser_auth.py            # Playwright automation, form detection
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>├── browser_use.py             # Website fetching with cookie support
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>└── agent.py                   # Tool integration and orchestration
+</code></pre></div>
+<p><strong>Security Features:</strong>
+- <strong>Encryption</strong>: AES-256-GCM for all stored credentials
+- <strong>Key Management</strong>: Per-user encryption key from system entropy
+- <strong>File Permissions</strong>: 0600 (user read/write only)
+- <strong>Session TTL</strong>: 30-minute default with automatic expiration
+- <strong>Audit Trail</strong>: All access logged without sensitive data
+- <strong>No Plain Text</strong>: Credentials only decrypted when needed</p>
+<p><strong>User Experience Examples:</strong></p>
+<p><strong>Example 1: Login and Fetch Authenticated Page</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>User: Login to https://example-site.com with demo_user and SecurePass123!
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>Agent: [Launches Playwright browser]
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>       [Detects login form]
+<a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>       [Fills username: demo_user]
+<a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>       [Fills password: ********]
+<a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>       [Clicks submit]
+<a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>       [Extracts session cookies]
+<a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>       [Saves session with 30min TTL]
+<a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>       [Encrypts and saves credentials]
+<a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>
+<a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>       ✅ Login successful to example-site.com!
+<a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>
+<a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>       Session Details:
+<a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>       - Domain: example-site.com
+<a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>       - Username: demo_user
+<a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a>       - Session saved: Yes (30 minutes TTL)
+<a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a>       - Credentials saved: Yes (encrypted)
+<a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a>
+<a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a>       Next Steps:
+<a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a>       Use fetch_website() to access authenticated pages with this session.
+<a id="__codelineno-18-22" name="__codelineno-18-22" href="#__codelineno-18-22"></a>
+<a id="__codelineno-18-23" name="__codelineno-18-23" href="#__codelineno-18-23"></a>User: Fetch my profile from https://example-site.com/profile
+<a id="__codelineno-18-24" name="__codelineno-18-24" href="#__codelineno-18-24"></a>
+<a id="__codelineno-18-25" name="__codelineno-18-25" href="#__codelineno-18-25"></a>Agent: [Checks SessionManager for example-site.com]
+<a id="__codelineno-18-26" name="__codelineno-18-26" href="#__codelineno-18-26"></a>       [Found valid session with cookies]
+<a id="__codelineno-18-27" name="__codelineno-18-27" href="#__codelineno-18-27"></a>       [Injects cookies into browser]
+<a id="__codelineno-18-28" name="__codelineno-18-28" href="#__codelineno-18-28"></a>       [Fetches authenticated content]
+<a id="__codelineno-18-29" name="__codelineno-18-29" href="#__codelineno-18-29"></a>
+<a id="__codelineno-18-30" name="__codelineno-18-30" href="#__codelineno-18-30"></a>       📄 Fetched 🔐 (authenticated): https://example-site.com/profile
+<a id="__codelineno-18-31" name="__codelineno-18-31" href="#__codelineno-18-31"></a>
+<a id="__codelineno-18-32" name="__codelineno-18-32" href="#__codelineno-18-32"></a>       [Profile content with user-specific data...]
+</code></pre></div></p>
+<p><strong>Example 2: CAPTCHA Detection</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>User: Login to https://example.com with user@email.com and pass123
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>Agent: [Launches browser]
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>       [Navigates to URL]
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>       [Detects CAPTCHA on page]
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>       ❌ Login blocked by CAPTCHA
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>       The website requires CAPTCHA completion:
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>       - URL: https://example.com/login
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>       Action Required:
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>       Please login manually in a browser to complete the CAPTCHA.
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>       Once logged in, you can use the browser&#39;s cookies with fetch_website().
+</code></pre></div></p>
+<p><strong>Example 3: 2FA Required</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>User: Login to https://github.com with myuser and mypassword
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>Agent: [Launches browser]
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>       [Fills credentials]
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>       [Submits form]
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>       [Detects 2FA prompt]
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>       🔐 2FA Required
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>       The website requires two-factor authentication:
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>       - URL: https://github.com/login
+<a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>
+<a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>       Action Required:
+<a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>       Two-factor authentication must be completed manually.
+<a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a>       Please login through a browser to complete 2FA verification.
+</code></pre></div></p>
+<p><strong>Example 4: Session Auto-Detection</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>User: Fetch https://example-site.com/dashboard
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>Agent: [Checks for saved session]
+<a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>       [Found: example-site.com session (expires in 15 minutes)]
+<a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>       [Automatically injects cookies]
+<a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
+<a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>       📄 Fetched 🔐 (authenticated): https://example-site.com/dashboard
+<a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>
+<a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>       [Authenticated dashboard content...]
+</code></pre></div></p>
+<p><strong>Configuration (config.yaml):</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># Future enhancement - not yet implemented</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="nt">authentication</span><span class="p">:</span>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w">  </span><span class="nt">session_ttl</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1800</span><span class="w">  </span><span class="c1"># 30 minutes</span>
+<a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w">  </span><span class="nt">save_credentials</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="w">  </span><span class="nt">headless</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">  </span><span class="nt">timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30000</span><span class="w">  </span><span class="c1"># 30 seconds</span>
+</code></pre></div></p>
+<p><strong>Capabilities Matrix:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Status</th>
+<th>Tool</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Automated Login</td>
+<td>✅</td>
+<td><code>login_to_website</code></td>
+<td>Form detection, CAPTCHA/2FA detection</td>
+</tr>
+<tr>
+<td>Credential Storage</td>
+<td>✅</td>
+<td><code>CredentialManager</code></td>
+<td>AES-256-GCM encrypted</td>
+</tr>
+<tr>
+<td>Session Management</td>
+<td>✅</td>
+<td><code>SessionManager</code></td>
+<td>30-min TTL, auto-expiration</td>
+</tr>
+<tr>
+<td>Authenticated Fetch</td>
+<td>✅</td>
+<td><code>fetch_website</code></td>
+<td>Auto cookie injection</td>
+</tr>
+<tr>
+<td>Form Detection</td>
+<td>✅</td>
+<td><code>BrowserAuth</code></td>
+<td>Username, password, submit</td>
+</tr>
+<tr>
+<td>CAPTCHA Detection</td>
+<td>✅</td>
+<td><code>BrowserAuth</code></td>
+<td>Notifies user</td>
+</tr>
+<tr>
+<td>2FA Detection</td>
+<td>✅</td>
+<td><code>BrowserAuth</code></td>
+<td>Notifies user</td>
+</tr>
+<tr>
+<td>Session Reuse</td>
+<td>✅</td>
+<td>Automatic</td>
+<td>Domain-based matching</td>
+</tr>
+<tr>
+<td>Audit Logging</td>
+<td>✅</td>
+<td><code>CredentialManager</code></td>
+<td>No sensitive data</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Test Coverage:</strong>
+- CredentialManager: 21/21 tests passing
+- SessionManager: 16/16 tests passing
+- BrowserAuth: 11/11 tests passing
+- <strong>Total: 48/48 tests passing</strong> ✅</p>
+<h2 id="design-principles">🎯 Design Principles<a class="headerlink" href="#design-principles" title="Permanent link">&para;</a></h2>
+<ol>
+<li><strong>Safety First</strong>: Confirmation prompts, overwrite protection, timeout limits</li>
+<li><strong>User Control</strong>: Slash commands, model switching, configuration options</li>
+<li><strong>Transparency</strong>: Token tracking, cost visibility, clear error messages</li>
+<li><strong>Context Awareness</strong>: Conversation history, project configs, intent recognition</li>
+<li><strong>Extensibility</strong>: Modular architecture, easy to add new tools</li>
+<li><strong>Performance</strong>: Efficient file operations, smart caching, timeout protection</li>
+</ol>
+<hr />
+<h2 id="future-enhancements">📈 Future Enhancements<a class="headerlink" href="#future-enhancements" title="Permanent link">&para;</a></h2>
+<p>See <a href="../../development/roadmap/">ROADMAP.md</a> for planned features including:
+- Phase 6: Advanced Workflows (multi-file refactoring, test generation)
+- Phase 7: Integration Features (GitHub, databases)
+- Phase 8: Safety &amp; Quality (validation, backups, undo/rollback)
+- Phase 9: Monitoring &amp; Analytics (usage dashboards, performance metrics)
+- Phase 10: Collaboration Features (session sharing, prompt library)</p>
+<hr />
+<h2 id="related-documentation">📚 Related Documentation<a class="headerlink" href="#related-documentation" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="../../getting-started/quickstart/">Getting Started</a> - Quick start and basic usage</li>
+<li><a href="../../usage/use-cases/">USE_CASES.md</a> - Detailed examples and use cases</li>
+<li><a href="../../development/roadmap/">ROADMAP.md</a> - Feature roadmap and expansion ideas</li>
+<li><a href="ROADMAP_BROWSERUSE.md">ROADMAP_BROWSERUSE.md</a> - Browser use implementation roadmap</li>
+<li><a href="../../usage/cost/">COST.md</a> - Cost analysis and optimization strategies</li>
+</ul>
+<hr />
+<p><strong>Version:</strong> 0.3.41
+<strong>Last Updated:</strong> November 2025
+<strong>Maintained by:</strong> Yiqiao Yin (yiqiao.yin@wyn-associates.com)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../usage/cost/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Cost Management">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Cost Management
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../autonomous-browsing/" class="md-footer__link md-footer__link--next" aria-label="Next: Autonomous Browsing">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Autonomous Browsing
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy", "navigation.footer"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../js/ai-search.js"></script>
+      
+    
+
+  <!-- AI Search Enhancement Scripts -->
+  <script>
+    // Initialize AI Search when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inject AI search interface into existing search results
+      const searchResult = document.querySelector('.md-search-result');
+
+      if (searchResult) {
+        // Create AI search section HTML
+        const aiSearchHTML = `
+          <div class="ai-search-section" style="display: none;" id="ai-search-section">
+            <!-- AI Search Button -->
+            <div class="ai-search-trigger">
+              <button
+                class="ai-search-button"
+                id="ask-ai-button"
+                type="button"
+                title="Ask AI about WYN360 CLI"
+                aria-label="Ask AI about this documentation"
+              >
+                <span class="ai-icon">🤖</span>
+                <span class="ai-text">Ask AI</span>
+              </button>
+              <p class="ai-search-hint">Get intelligent answers about WYN360 CLI features and usage</p>
+            </div>
+
+            <!-- AI Response Container -->
+            <div class="ai-response-container" id="ai-response-container" style="display: none;">
+              <!-- Loading State -->
+              <div class="ai-loading" id="ai-loading">
+                <div class="ai-loading-spinner"></div>
+                <p>AI is analyzing your question...</p>
+              </div>
+
+              <!-- AI Response -->
+              <div class="ai-response" id="ai-response" style="display: none;">
+                <div class="ai-answer">
+                  <h4>🤖 AI Answer</h4>
+                  <div class="ai-response-text" id="ai-response-text"></div>
+                </div>
+
+                <div class="ai-sources">
+                  <h5>📖 Related Documentation</h5>
+                  <ul class="ai-source-links" id="ai-source-links"></ul>
+                </div>
+
+                <div class="ai-actions">
+                  <button class="ai-action-button" id="ask-another">Ask Another Question</button>
+                  <button class="ai-action-button secondary" id="show-regular-search">Show Regular Search</button>
+                </div>
+              </div>
+
+              <!-- Error State -->
+              <div class="ai-error" id="ai-error" style="display: none;">
+                <h4>⚠️ AI Search Unavailable</h4>
+                <p>AI search is temporarily unavailable. Please use regular search above.</p>
+                <button class="ai-action-button" id="retry-ai">Try Again</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Insert AI search section after search results
+        searchResult.insertAdjacentHTML('beforeend', aiSearchHTML);
+
+        // Setup show/hide logic for AI search
+        const searchInput = document.querySelector('.md-search__input');
+        const aiSection = document.getElementById('ai-search-section');
+
+        if (searchInput && aiSection) {
+          // Show AI search section when user starts typing
+          searchInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+              aiSection.style.display = 'block';
+            } else {
+              aiSection.style.display = 'none';
+            }
+          });
+
+          // Hide AI section when search is cleared
+          const clearButton = document.querySelector('button[type="reset"]');
+          if (clearButton) {
+            clearButton.addEventListener('click', function() {
+              aiSection.style.display = 'none';
+              const aiResponseContainer = document.getElementById('ai-response-container');
+              if (aiResponseContainer) {
+                aiResponseContainer.style.display = 'none';
+              }
+            });
+          }
+        }
+
+        console.log('AI Search UI injected successfully');
+      }
+
+      // Initialize AI Search functionality
+      if (typeof WYN360AISearch !== 'undefined') {
+        window.aiSearch = new WYN360AISearch();
+        console.log('AI Search initialized for WYN360 CLI docs');
+      }
+    });
+  </script>
+
+  </body>
+</html>

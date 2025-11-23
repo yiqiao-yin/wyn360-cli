@@ -1,0 +1,2476 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="An intelligent AI coding assistant CLI tool powered by Anthropic Claude">
+      
+      
+        <meta name="author" content="Yiqiao Yin">
+      
+      
+        <link rel="canonical" href="https://yiqiao-yin.github.io/wyn360-cli/ROADMAP_PHASE5_SUMMARY/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Phase 5 Enhancements - Implementation Summary - WYN360 CLI Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../css/ai-search.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#phase-5-enhancements-implementation-summary" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="WYN360 CLI Documentation" class="md-header__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            WYN360 CLI Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Phase 5 Enhancements - Implementation Summary
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../getting-started/installation/" class="md-tabs__link">
+          
+  
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../features/overview/" class="md-tabs__link">
+          
+  
+  
+  Features
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../usage/use-cases/" class="md-tabs__link">
+          
+  
+  
+  Usage
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../architecture/system/" class="md-tabs__link">
+          
+  
+  
+  Architecture
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../development/contributing/" class="md-tabs__link">
+          
+  
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="WYN360 CLI Documentation" class="md-nav__button md-logo" aria-label="WYN360 CLI Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    WYN360 CLI Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/yiqiao-yin/wyn360-cli" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    yiqiao-yin/wyn360-cli
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Features
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Features
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/web-search/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Web Search
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/browser-use/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Browser Use
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/vision-mode/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision Mode
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/github/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../features/huggingface/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HuggingFace
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/use-cases/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Use Cases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/commands/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Commands
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../usage/cost/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cost Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Architecture
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/system/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    System Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/autonomous-browsing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Autonomous Browsing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/contributing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/testing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development/roadmap/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Roadmap
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#phase-51-vision-mode-for-images-completed-v0330" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.1: Vision Mode for Images ✅ COMPLETED (v0.3.30)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.1: Vision Mode for Images ✅ COMPLETED (v0.3.30)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-features-delivered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features Delivered
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-52-semantic-matching-completed-v0331" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.2: Semantic Matching ✅ COMPLETED (v0.3.31)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.2: Semantic Matching ✅ COMPLETED (v0.3.31)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Phases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-53-ocr-support-for-scanned-pdfs-completed-v0332" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.3: OCR Support for Scanned PDFs ✅ COMPLETED (v0.3.32)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.3: OCR Support for Scanned PDFs ✅ COMPLETED (v0.3.32)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-phases_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Phases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-metrics_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-54-excel-enhancements-completed-v0333" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.4: Excel Enhancements ✅ COMPLETED (v0.3.33)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.4: Excel Enhancements ✅ COMPLETED (v0.3.33)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features-delivered_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features Delivered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-metrics_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-55-multi-document-queries-completed-v0334" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.5: Multi-Document Queries ✅ COMPLETED (v0.3.34)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.5: Multi-Document Queries ✅ COMPLETED (v0.3.34)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-results_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-modified" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Modified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-metrics-achieved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics Achieved
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-56-performance-optimizations-ongoing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.6: Performance Optimizations 🔄 ONGOING
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.6: Performance Optimizations 🔄 ONGOING">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-parallel-chunk-summarization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Parallel Chunk Summarization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-streaming-for-large-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Streaming for Large Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-incremental-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Incremental Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-background-cache-warming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Background Cache Warming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-compression-for-cached-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Compression for Cached Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-lru-cache-eviction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. LRU Cache Eviction
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-performance-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Performance Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Approach
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-metrics_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-57-advanced-chunking-strategies-completed-v0335" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.7: Advanced Chunking Strategies ✅ COMPLETED (v0.3.35)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 5.7: Advanced Chunking Strategies ✅ COMPLETED (v0.3.35)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#overview_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features-delivered_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features Delivered
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Key Features Delivered">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-adaptive-chunk-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Adaptive Chunk Sizes ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-overlapping-chunks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Overlapping Chunks ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-content-aware-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Content-Aware Boundaries ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-chunk-quality-scoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Chunk Quality Scoring ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-summary_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-results_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#files-modified_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Files Modified
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#success-metrics-achieved_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Success Metrics Achieved
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#overall-phase-5-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Overall Phase 5 Timeline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-progress" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Implementation Progress
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentation-index" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Documentation Index
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+  
+                  
+
+
+  
+  
+
+
+<h1 id="phase-5-enhancements-implementation-summary">Phase 5 Enhancements - Implementation Summary<a class="headerlink" href="#phase-5-enhancements-implementation-summary" title="Permanent link">&para;</a></h1>
+<p>This document provides a high-level summary of all Phase 5 enhancements with links to detailed implementation plans.</p>
+<hr />
+<h2 id="phase-51-vision-mode-for-images-completed-v0330">Phase 5.1: Vision Mode for Images ✅ COMPLETED (v0.3.30)<a class="headerlink" href="#phase-51-vision-mode-for-images-completed-v0330" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> ✅ Implementation Complete
+<strong>Documentation:</strong> <a href="../ROADMAP_VISION/">ROADMAP_VISION.md</a></p>
+<h3 id="key-features-delivered">Key Features Delivered<a class="headerlink" href="#key-features-delivered" title="Permanent link">&para;</a></h3>
+<ul>
+<li>🖼️ ImageProcessor class with Claude Vision API</li>
+<li>📊 Chart, diagram, screenshot recognition</li>
+<li>💰 Separate vision cost tracking</li>
+<li>🎯 Three modes: skip, describe, vision</li>
+<li>⚡ Batch processing</li>
+<li>📋 23 comprehensive tests, 359 total tests passing</li>
+</ul>
+<hr />
+<h2 id="phase-52-semantic-matching-completed-v0331">Phase 5.2: Semantic Matching ✅ COMPLETED (v0.3.31)<a class="headerlink" href="#phase-52-semantic-matching-completed-v0331" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> ✅ Implementation Complete
+<strong>Priority:</strong> High
+<strong>Duration:</strong> Completed
+<strong>Documentation:</strong> <a href="../ROADMAP_SEMANTIC/">ROADMAP_SEMANTIC.md</a></p>
+<h3 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h3>
+<p>Replace keyword-based chunk retrieval with embedding-based semantic search for significantly better retrieval accuracy.</p>
+<h3 id="key-features">Key Features<a class="headerlink" href="#key-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li>🧠 sentence-transformers integration (all-MiniLM-L6-v2)</li>
+<li>📊 Compute embeddings for all chunks during summarization</li>
+<li>🔍 Cosine similarity for query-chunk matching</li>
+<li>⚡ Fallback to keyword matching if embeddings fail</li>
+<li>💾 Cache embeddings alongside chunks</li>
+<li>📈 Performance benchmarking</li>
+</ul>
+<h3 id="implementation-phases">Implementation Phases<a class="headerlink" href="#implementation-phases" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>5.2.1:</strong> Setup and Dependencies - Add embedding library, create EmbeddingModel class</li>
+<li><strong>5.2.2:</strong> Chunk Embedding Generation - Compute embeddings during summarization</li>
+<li><strong>5.2.3:</strong> Semantic Query Matching - Update query_chunks() with cosine similarity</li>
+<li><strong>5.2.4:</strong> Cache Integration - Store embeddings with chunks</li>
+<li><strong>5.2.5:</strong> Performance Benchmarking - Measure improvement vs keyword matching</li>
+</ol>
+<h3 id="success-metrics">Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ +30-50% improvement in retrieval accuracy</li>
+<li>✅ Query latency &lt; 50ms additional overhead</li>
+<li>✅ Memory usage &lt; 200MB additional</li>
+<li>✅ All existing tests pass + 15 new tests</li>
+</ul>
+<hr />
+<h2 id="phase-53-ocr-support-for-scanned-pdfs-completed-v0332">Phase 5.3: OCR Support for Scanned PDFs ✅ COMPLETED (v0.3.32)<a class="headerlink" href="#phase-53-ocr-support-for-scanned-pdfs-completed-v0332" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> ✅ Implementation Complete
+<strong>Priority:</strong> Medium
+<strong>Duration:</strong> Completed
+<strong>Documentation:</strong> <a href="../ROADMAP_OCR/">ROADMAP_OCR.md</a></p>
+<h3 id="overview_1">Overview<a class="headerlink" href="#overview_1" title="Permanent link">&para;</a></h3>
+<p>Enable text extraction from scanned PDFs using Tesseract OCR, making image-based documents searchable and analyzable.</p>
+<h3 id="key-features_1">Key Features<a class="headerlink" href="#key-features_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>🔍 Tesseract OCR integration (pytesseract wrapper)</li>
+<li>📄 Automatic scanned page detection</li>
+<li>🌍 Multi-language support (English, Spanish, French, etc.)</li>
+<li>📊 OCR confidence scoring and quality assessment</li>
+<li>🖼️ Combines with Vision API for images</li>
+<li>⚡ Image preprocessing (deskew, denoise)</li>
+</ul>
+<h3 id="implementation-phases_1">Implementation Phases<a class="headerlink" href="#implementation-phases_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>5.3.1:</strong> OCR Infrastructure - Add Tesseract, create OCRProcessor class</li>
+<li><strong>5.3.2:</strong> PDFReader Integration - Detect and process scanned pages</li>
+<li><strong>5.3.3:</strong> Quality &amp; Optimization - Language detection, preprocessing</li>
+<li><strong>5.3.4:</strong> Testing &amp; Documentation - Comprehensive tests and docs</li>
+</ol>
+<h3 id="success-metrics_1">Success Metrics<a class="headerlink" href="#success-metrics_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ &gt;80% OCR accuracy on clear scans</li>
+<li>✅ &lt;2s processing time per page</li>
+<li>✅ Accurate scanned page detection</li>
+<li>✅ Graceful fallback if Tesseract not installed</li>
+</ul>
+<hr />
+<h2 id="phase-54-excel-enhancements-completed-v0333">Phase 5.4: Excel Enhancements ✅ COMPLETED (v0.3.33)<a class="headerlink" href="#phase-54-excel-enhancements-completed-v0333" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> ✅ Implementation Complete
+<strong>Priority:</strong> Medium
+<strong>Duration:</strong> Completed</p>
+<h3 id="overview_2">Overview<a class="headerlink" href="#overview_2" title="Permanent link">&para;</a></h3>
+<p>Advanced Excel features beyond basic table reading - charts, named ranges, and formula tracking.</p>
+<h3 id="key-features-delivered_1">Key Features Delivered<a class="headerlink" href="#key-features-delivered_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>📊 <strong>Chart/Graph Extraction</strong> ✅</li>
+<li>Extract chart metadata from Excel sheets</li>
+<li>Chart type, title, anchor position, series count</li>
+<li>
+<p>Opt-in via <code>extract_charts=True</code> parameter</p>
+</li>
+<li>
+<p>📛 <strong>Named Ranges</strong> ✅</p>
+</li>
+<li>Extract named ranges and their cell references</li>
+<li>Workbook-scoped named ranges</li>
+<li>
+<p>Opt-in via <code>extract_named_ranges=True</code> parameter</p>
+</li>
+<li>
+<p>🧮 <strong>Formula Tracking</strong> ✅</p>
+</li>
+<li>Track all formula cells in sheets</li>
+<li>Cell coordinates, formulas, sheet names</li>
+<li>Opt-in via <code>track_formulas=True</code> parameter</li>
+</ul>
+<h3 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>5.4.1:</strong> Chart Extraction - <code>_extract_charts()</code> method extracts chart metadata</li>
+<li><strong>5.4.2:</strong> Named Ranges - <code>_extract_named_ranges()</code> method processes workbook.defined_names</li>
+<li><strong>5.4.3:</strong> Formula Tracking - <code>_track_formulas()</code> method identifies formula cells</li>
+<li><strong>5.4.4:</strong> Testing &amp; Documentation - 15 comprehensive tests, all passing</li>
+</ol>
+<h3 id="test-results">Test Results<a class="headerlink" href="#test-results" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ 15 new enhancement tests (chart extraction, named ranges, formulas)</li>
+<li>✅ 14 existing Excel tests still passing</li>
+<li>✅ 29 total Excel tests passing</li>
+<li>✅ All features backward compatible (opt-in via flags)</li>
+</ul>
+<h3 id="success-metrics_2">Success Metrics<a class="headerlink" href="#success-metrics_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Extract and describe charts from Excel files</li>
+<li>✅ Extract named ranges with cell references</li>
+<li>✅ Track all formula cells in workbooks</li>
+<li>✅ Handle complex workbooks with backward compatibility</li>
+</ul>
+<hr />
+<h2 id="phase-55-multi-document-queries-completed-v0334">Phase 5.5: Multi-Document Queries ✅ COMPLETED (v0.3.34)<a class="headerlink" href="#phase-55-multi-document-queries-completed-v0334" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> ✅ Implementation Complete
+<strong>Priority:</strong> Low
+<strong>Duration:</strong> Completed</p>
+<h3 id="overview_3">Overview<a class="headerlink" href="#overview_3" title="Permanent link">&para;</a></h3>
+<p>Query across multiple cached documents simultaneously, enabling cross-document analysis and comparison.</p>
+<h3 id="key-features_2">Key Features<a class="headerlink" href="#key-features_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>🔍 <strong>Unified Search</strong></li>
+<li>Search across all cached documents at once</li>
+<li>Rank results by relevance across documents</li>
+<li>
+<p>Show which document each result came from</p>
+</li>
+<li>
+<p>📊 <strong>Document Comparison</strong></p>
+</li>
+<li>"Compare expenses.xlsx and budget.xlsx"</li>
+<li>"What changed between Q1_report.docx and Q2_report.docx?"</li>
+<li>
+<p>Side-by-side comparison summaries</p>
+</li>
+<li>
+<p>🔗 <strong>Cross-Reference Detection</strong></p>
+</li>
+<li>Identify when multiple documents mention same entities</li>
+<li>Link related information across documents</li>
+<li>
+<p>Build document relationship graph</p>
+</li>
+<li>
+<p>📦 <strong>Aggregated Summaries</strong></p>
+</li>
+<li>Summarize findings across multiple documents</li>
+<li>Extract common themes and patterns</li>
+<li>
+<p>Generate cross-document insights</p>
+</li>
+<li>
+<p>🎯 <strong>Smart Document Selection</strong></p>
+</li>
+<li>Automatically select relevant documents for query</li>
+<li>"Find all documents mentioning 'machine learning'"</li>
+<li>Don't require user to specify which documents</li>
+</ul>
+<h3 id="implementation-summary">Implementation Summary<a class="headerlink" href="#implementation-summary" title="Permanent link">&para;</a></h3>
+<p><strong>MultiDocumentRetriever Class</strong> (~ 230 lines)
+- Added to <code>wyn360_cli/document_readers.py</code> at line 1560
+- Integrates with existing ChunkCache and ChunkRetriever
+- 4 core methods for multi-document operations</p>
+<p><strong>Key Methods:</strong>
+1. <code>search_all_documents(query, top_k)</code> - Unified search across all cached documents
+2. <code>compare_documents(file1, file2, aspect)</code> - Side-by-side document comparison
+3. <code>find_cross_references(entity, min_mentions)</code> - Cross-document entity search
+4. <code>list_cached_documents()</code> - List all cached documents with metadata</p>
+<h3 id="test-results_1">Test Results<a class="headerlink" href="#test-results_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ 12 comprehensive tests (all passing)</li>
+<li>✅ Tests cover: initialization, search, comparison, cross-references</li>
+<li>✅ Handles empty cache, missing documents, single and multiple documents</li>
+<li>✅ Works with both semantic and keyword matching</li>
+</ul>
+<h3 id="files-modified">Files Modified<a class="headerlink" href="#files-modified" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>wyn360_cli/document_readers.py</code>: +230 lines (MultiDocumentRetriever class)</li>
+<li><code>tests/test_multi_document_retriever.py</code>: NEW, 515 lines, 12 tests</li>
+<li><code>pyproject.toml</code>: version 0.3.33 → 0.3.34</li>
+<li><code>docs/ROADMAP_PHASE5_SUMMARY.md</code>: Updated Phase 5.5 status</li>
+</ul>
+<h3 id="success-metrics-achieved">Success Metrics Achieved<a class="headerlink" href="#success-metrics-achieved" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Query across multiple cached documents efficiently</li>
+<li>✅ Accurate document comparison with metadata and diff metrics</li>
+<li>✅ Cross-reference detection across documents</li>
+<li>✅ Seamless integration with existing caching system</li>
+</ul>
+<hr />
+<h2 id="phase-56-performance-optimizations-ongoing">Phase 5.6: Performance Optimizations 🔄 ONGOING<a class="headerlink" href="#phase-56-performance-optimizations-ongoing" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> 📋 High-Level Plan
+<strong>Priority:</strong> Ongoing
+<strong>Duration:</strong> Incremental improvements</p>
+<h3 id="overview_4">Overview<a class="headerlink" href="#overview_4" title="Permanent link">&para;</a></h3>
+<p>Continuous performance improvements to reduce latency, memory usage, and processing time.</p>
+<h3 id="key-features_3">Key Features<a class="headerlink" href="#key-features_3" title="Permanent link">&para;</a></h3>
+<h4 id="1-parallel-chunk-summarization">1. Parallel Chunk Summarization<a class="headerlink" href="#1-parallel-chunk-summarization" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Current:</strong> Chunks summarized sequentially (1 by 1)</li>
+<li><strong>Target:</strong> Parallel summarization using async/await</li>
+<li><strong>Benefit:</strong> ~3-5x faster for large documents
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Current</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">summary</span> <span class="o">=</span> <span class="k">await</span> <span class="n">summarize_chunk</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Optimized</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">summaries</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">summarize_chunk</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span> <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">])</span>
+</code></pre></div></li>
+</ul>
+<h4 id="2-streaming-for-large-files">2. Streaming for Large Files<a class="headerlink" href="#2-streaming-for-large-files" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Current:</strong> Load entire file into memory</li>
+<li><strong>Target:</strong> Stream and process incrementally</li>
+<li><strong>Benefit:</strong> Handle GB-sized files without OOM</li>
+</ul>
+<h4 id="3-incremental-caching">3. Incremental Caching<a class="headerlink" href="#3-incremental-caching" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Current:</strong> Re-process entire document on any change</li>
+<li><strong>Target:</strong> Only process changed pages/chunks</li>
+<li><strong>Benefit:</strong> ~10x faster for updates to large docs</li>
+</ul>
+<h4 id="4-background-cache-warming">4. Background Cache Warming<a class="headerlink" href="#4-background-cache-warming" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Current:</strong> Cache populated on-demand</li>
+<li><strong>Target:</strong> Pre-compute summaries for frequently accessed docs</li>
+<li><strong>Benefit:</strong> Instant results for common queries</li>
+</ul>
+<h4 id="5-compression-for-cached-data">5. Compression for Cached Data<a class="headerlink" href="#5-compression-for-cached-data" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Current:</strong> JSON cached as plaintext</li>
+<li><strong>Target:</strong> gzip compression for cache files</li>
+<li><strong>Benefit:</strong> ~50-70% storage reduction</li>
+</ul>
+<h4 id="6-lru-cache-eviction">6. LRU Cache Eviction<a class="headerlink" href="#6-lru-cache-eviction" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Current:</strong> Delete oldest files when cache full</li>
+<li><strong>Target:</strong> Least-recently-used eviction strategy</li>
+<li><strong>Benefit:</strong> Keep hot documents cached longer</li>
+</ul>
+<h4 id="7-performance-monitoring">7. Performance Monitoring<a class="headerlink" href="#7-performance-monitoring" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>Feature:</strong> Built-in profiling and metrics</li>
+<li><strong>Metrics:</strong> Processing time, cache hit rate, token usage</li>
+<li><strong>Benefit:</strong> Identify bottlenecks, optimize hot paths</li>
+</ul>
+<h3 id="implementation-approach">Implementation Approach<a class="headerlink" href="#implementation-approach" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Incremental improvements in each version</li>
+<li>Benchmark before/after each optimization</li>
+<li>No single "performance release" - ongoing effort</li>
+</ul>
+<h3 id="success-metrics_3">Success Metrics<a class="headerlink" href="#success-metrics_3" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ 50% reduction in document processing time</li>
+<li>✅ 70% cache storage reduction with compression</li>
+<li>✅ Handle 100+ page documents without OOM</li>
+<li>✅ 90%+ cache hit rate on repeated queries</li>
+</ul>
+<hr />
+<h2 id="phase-57-advanced-chunking-strategies-completed-v0335">Phase 5.7: Advanced Chunking Strategies ✅ COMPLETED (v0.3.35)<a class="headerlink" href="#phase-57-advanced-chunking-strategies-completed-v0335" title="Permanent link">&para;</a></h2>
+<p><strong>Status:</strong> ✅ Implementation Complete
+<strong>Priority:</strong> Low
+<strong>Duration:</strong> Completed</p>
+<h3 id="overview_5">Overview<a class="headerlink" href="#overview_5" title="Permanent link">&para;</a></h3>
+<p>Enhanced DocumentChunker with adaptive sizes, overlapping chunks, content-aware boundaries, and quality scoring.</p>
+<h3 id="key-features-delivered_2">Key Features Delivered<a class="headerlink" href="#key-features-delivered_2" title="Permanent link">&para;</a></h3>
+<h4 id="1-adaptive-chunk-sizes">1. Adaptive Chunk Sizes ✅<a class="headerlink" href="#1-adaptive-chunk-sizes" title="Permanent link">&para;</a></h4>
+<ul>
+<li>✅ <code>_calculate_adaptive_size()</code> method analyzes content density</li>
+<li>✅ Dense content (tables, lists, code): smaller chunks (~500 tokens)</li>
+<li>✅ Sparse content (prose): larger chunks (~1500 tokens)</li>
+<li>✅ Opt-in via <code>adaptive_sizing=True</code> parameter</li>
+<li>✅ 8 comprehensive tests, all passing</li>
+</ul>
+<h4 id="2-overlapping-chunks">2. Overlapping Chunks ✅<a class="headerlink" href="#2-overlapping-chunks" title="Permanent link">&para;</a></h4>
+<ul>
+<li>✅ <code>_chunk_with_overlap()</code> method creates overlapping chunks</li>
+<li>✅ Configurable overlap via <code>overlap_tokens</code> parameter</li>
+<li>✅ Preserves context across chunk boundaries</li>
+<li>✅ Example: chunk1: 0-1000, chunk2: 800-1800 (200 token overlap)</li>
+<li>✅ 11 comprehensive tests, all passing</li>
+</ul>
+<h4 id="3-content-aware-boundaries">3. Content-Aware Boundaries ✅<a class="headerlink" href="#3-content-aware-boundaries" title="Permanent link">&para;</a></h4>
+<ul>
+<li>✅ <code>_detect_content_blocks()</code> identifies tables, code blocks, lists</li>
+<li>✅ <code>_chunk_respecting_blocks()</code> avoids splitting semantic units</li>
+<li>✅ Detects and preserves:</li>
+<li>Markdown tables (| ... |)</li>
+<li>Code blocks (```)</li>
+<li>Lists (-, *, 1.)</li>
+<li>✅ Opt-in via <code>content_aware=True</code> parameter</li>
+<li>✅ 14 comprehensive tests, all passing</li>
+</ul>
+<h4 id="4-chunk-quality-scoring">4. Chunk Quality Scoring ✅<a class="headerlink" href="#4-chunk-quality-scoring" title="Permanent link">&para;</a></h4>
+<ul>
+<li>✅ <code>score_chunk_quality()</code> scores chunks 0.0-1.0</li>
+<li>✅ Evaluates coherence, completeness, independence</li>
+<li>✅ <code>_apply_quality_filtering()</code> filters low-quality chunks</li>
+<li>✅ Opt-in via <code>quality_threshold</code> parameter (0.0-1.0)</li>
+<li>✅ 17 comprehensive tests, all passing</li>
+</ul>
+<h3 id="implementation-summary_1">Implementation Summary<a class="headerlink" href="#implementation-summary_1" title="Permanent link">&para;</a></h3>
+<p><strong>DocumentChunker Class Enhancements</strong> (~450 lines added)
+- Modified <code>__init__()</code> to add 4 optional parameters
+- Added 6 new methods for advanced chunking
+- 100% backward compatible (all new features opt-in)</p>
+<p><strong>New Parameters:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">DocumentChunker</span><span class="p">(</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">chunk_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>           <span class="c1"># Default</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>    <span class="n">adaptive_sizing</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>      <span class="c1"># Phase 5.7.1</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">overlap_tokens</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>           <span class="c1"># Phase 5.7.2</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">content_aware</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>        <span class="c1"># Phase 5.7.3</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">quality_threshold</span><span class="o">=</span><span class="mf">0.0</span>       <span class="c1"># Phase 5.7.4</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p">)</span>
+</code></pre></div></p>
+<p><strong>New Methods:</strong>
+1. <code>_calculate_adaptive_size(text)</code> - Calculate adaptive chunk size
+2. <code>_chunk_with_overlap(text, target_chars)</code> - Create overlapping chunks
+3. <code>_detect_content_blocks(text)</code> - Detect tables, code, lists
+4. <code>_chunk_respecting_blocks(text, target_chars)</code> - Chunk respecting blocks
+5. <code>score_chunk_quality(chunk)</code> - Score chunk quality (0.0-1.0)
+6. <code>_apply_quality_filtering(chunks)</code> - Filter low-quality chunks</p>
+<h3 id="test-results_2">Test Results<a class="headerlink" href="#test-results_2" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ <strong>50 new tests</strong> (8 adaptive + 11 overlap + 14 content-aware + 17 quality)</li>
+<li>✅ <strong>All 50 tests passing</strong></li>
+<li>✅ <strong>100% backward compatibility</strong> (existing 437 tests still passing)</li>
+<li>✅ <strong>Integration tests</strong> verify all features work together</li>
+</ul>
+<h3 id="files-modified_1">Files Modified<a class="headerlink" href="#files-modified_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li><code>wyn360_cli/document_readers.py</code>: DocumentChunker class enhanced (~450 lines added)</li>
+<li><code>tests/test_adaptive_chunking.py</code>: NEW, 213 lines, 8 tests</li>
+<li><code>tests/test_overlapping_chunks.py</code>: NEW, 222 lines, 11 tests</li>
+<li><code>tests/test_content_aware_chunking.py</code>: NEW, 303 lines, 14 tests</li>
+<li><code>tests/test_quality_scoring.py</code>: NEW, 309 lines, 17 tests</li>
+<li><code>pyproject.toml</code>: version 0.3.34 → 0.3.35</li>
+<li><code>docs/ROADMAP_PHASE5_SUMMARY.md</code>: Updated Phase 5.7 status</li>
+</ul>
+<h3 id="success-metrics-achieved_1">Success Metrics Achieved<a class="headerlink" href="#success-metrics-achieved_1" title="Permanent link">&para;</a></h3>
+<ul>
+<li>✅ Adaptive sizing adjusts to content density</li>
+<li>✅ Overlapping chunks preserve context across boundaries</li>
+<li>✅ No split tables/code blocks/lists (content-aware)</li>
+<li>✅ Quality scoring identifies coherent, complete chunks</li>
+<li>✅ All features work together (integration tested)</li>
+<li>✅ 100% backward compatible (opt-in only)</li>
+</ul>
+<hr />
+<h2 id="overall-phase-5-timeline">📊 Overall Phase 5 Timeline<a class="headerlink" href="#overall-phase-5-timeline" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Priority</th>
+<th>Duration</th>
+<th>Version</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>5.1</strong> Vision Mode</td>
+<td>High</td>
+<td>3 weeks</td>
+<td>v0.3.30</td>
+<td>✅ COMPLETE</td>
+</tr>
+<tr>
+<td><strong>5.2</strong> Semantic Matching</td>
+<td>High</td>
+<td>3 weeks</td>
+<td>v0.3.31</td>
+<td>✅ COMPLETE</td>
+</tr>
+<tr>
+<td><strong>5.3</strong> OCR Support</td>
+<td>Medium</td>
+<td>3 weeks</td>
+<td>v0.3.32</td>
+<td>✅ COMPLETE</td>
+</tr>
+<tr>
+<td><strong>5.4</strong> Excel Enhancements</td>
+<td>Medium</td>
+<td>2 weeks</td>
+<td>v0.3.33</td>
+<td>✅ COMPLETE</td>
+</tr>
+<tr>
+<td><strong>5.5</strong> Multi-Doc Queries</td>
+<td>Low</td>
+<td>3 weeks</td>
+<td>v0.3.34</td>
+<td>✅ COMPLETE</td>
+</tr>
+<tr>
+<td><strong>5.6</strong> Performance Opts</td>
+<td>Ongoing</td>
+<td>Incremental</td>
+<td>Various</td>
+<td>🔄 ONGOING</td>
+</tr>
+<tr>
+<td><strong>5.7</strong> Advanced Chunking</td>
+<td>Low</td>
+<td>Completed</td>
+<td>v0.3.35</td>
+<td>✅ COMPLETE</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total Duration:</strong> 16 weeks completed</p>
+<hr />
+<h2 id="implementation-progress">🎯 Implementation Progress<a class="headerlink" href="#implementation-progress" title="Permanent link">&para;</a></h2>
+<p>Given priorities and dependencies:</p>
+<ol>
+<li>✅ <strong>Phase 5.1</strong> (COMPLETED v0.3.30) - Vision Mode</li>
+<li>✅ <strong>Phase 5.2</strong> (COMPLETED v0.3.31) - Semantic Matching → Immediate value, no dependencies</li>
+<li>✅ <strong>Phase 5.3</strong> (COMPLETED v0.3.32) - OCR Support → Complements Vision Mode</li>
+<li>✅ <strong>Phase 5.4</strong> (COMPLETED v0.3.33) - Excel Enhancements → Charts, named ranges, formulas</li>
+<li>✅ <strong>Phase 5.5</strong> (COMPLETED v0.3.34) - Multi-Document Queries → Cross-document search and comparison</li>
+<li>✅ <strong>Phase 5.7</strong> (COMPLETED v0.3.35) - Advanced Chunking → Adaptive sizing, overlapping chunks, content-aware, quality scoring</li>
+<li>🔄 <strong>Phase 5.6</strong> (ONGOING) - Performance optimizations alongside other work</li>
+</ol>
+<hr />
+<h2 id="documentation-index">📚 Documentation Index<a class="headerlink" href="#documentation-index" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><a href="../ROADMAP_DOCUMENTS/">ROADMAP_DOCUMENTS.md</a></strong> - Main document readers roadmap</li>
+<li><strong><a href="../ROADMAP_VISION/">ROADMAP_VISION.md</a></strong> - Phase 5.1 detailed plan (✅ IMPLEMENTED)</li>
+<li><strong><a href="../ROADMAP_SEMANTIC/">ROADMAP_SEMANTIC.md</a></strong> - Phase 5.2 detailed plan</li>
+<li><strong><a href="../ROADMAP_OCR/">ROADMAP_OCR.md</a></strong> - Phase 5.3 detailed plan</li>
+<li><strong><a href="./">ROADMAP_PHASE5_SUMMARY.md</a></strong> - This document</li>
+</ul>
+<hr />
+<p><strong>Last Updated:</strong> January 2026
+<strong>Document Version:</strong> 1.0
+<strong>Maintained by:</strong> Yiqiao Yin (yiqiao.yin@wyn-associates.com)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy", "navigation.footer"], "search": "../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+  
+      <script src="../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../js/ai-search.js"></script>
+      
+    
+
+  <!-- AI Search Enhancement Scripts -->
+  <script>
+    // Initialize AI Search when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inject AI search interface into existing search results
+      const searchResult = document.querySelector('.md-search-result');
+
+      if (searchResult) {
+        // Create AI search section HTML
+        const aiSearchHTML = `
+          <div class="ai-search-section" style="display: none;" id="ai-search-section">
+            <!-- AI Search Button -->
+            <div class="ai-search-trigger">
+              <button
+                class="ai-search-button"
+                id="ask-ai-button"
+                type="button"
+                title="Ask AI about WYN360 CLI"
+                aria-label="Ask AI about this documentation"
+              >
+                <span class="ai-icon">🤖</span>
+                <span class="ai-text">Ask AI</span>
+              </button>
+              <p class="ai-search-hint">Get intelligent answers about WYN360 CLI features and usage</p>
+            </div>
+
+            <!-- AI Response Container -->
+            <div class="ai-response-container" id="ai-response-container" style="display: none;">
+              <!-- Loading State -->
+              <div class="ai-loading" id="ai-loading">
+                <div class="ai-loading-spinner"></div>
+                <p>AI is analyzing your question...</p>
+              </div>
+
+              <!-- AI Response -->
+              <div class="ai-response" id="ai-response" style="display: none;">
+                <div class="ai-answer">
+                  <h4>🤖 AI Answer</h4>
+                  <div class="ai-response-text" id="ai-response-text"></div>
+                </div>
+
+                <div class="ai-sources">
+                  <h5>📖 Related Documentation</h5>
+                  <ul class="ai-source-links" id="ai-source-links"></ul>
+                </div>
+
+                <div class="ai-actions">
+                  <button class="ai-action-button" id="ask-another">Ask Another Question</button>
+                  <button class="ai-action-button secondary" id="show-regular-search">Show Regular Search</button>
+                </div>
+              </div>
+
+              <!-- Error State -->
+              <div class="ai-error" id="ai-error" style="display: none;">
+                <h4>⚠️ AI Search Unavailable</h4>
+                <p>AI search is temporarily unavailable. Please use regular search above.</p>
+                <button class="ai-action-button" id="retry-ai">Try Again</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Insert AI search section after search results
+        searchResult.insertAdjacentHTML('beforeend', aiSearchHTML);
+
+        // Setup show/hide logic for AI search
+        const searchInput = document.querySelector('.md-search__input');
+        const aiSection = document.getElementById('ai-search-section');
+
+        if (searchInput && aiSection) {
+          // Show AI search section when user starts typing
+          searchInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+              aiSection.style.display = 'block';
+            } else {
+              aiSection.style.display = 'none';
+            }
+          });
+
+          // Hide AI section when search is cleared
+          const clearButton = document.querySelector('button[type="reset"]');
+          if (clearButton) {
+            clearButton.addEventListener('click', function() {
+              aiSection.style.display = 'none';
+              const aiResponseContainer = document.getElementById('ai-response-container');
+              if (aiResponseContainer) {
+                aiResponseContainer.style.display = 'none';
+              }
+            });
+          }
+        }
+
+        console.log('AI Search UI injected successfully');
+      }
+
+      // Initialize AI Search functionality
+      if (typeof WYN360AISearch !== 'undefined') {
+        window.aiSearch = new WYN360AISearch();
+        console.log('AI Search initialized for WYN360 CLI docs');
+      }
+    });
+  </script>
+
+  </body>
+</html>
