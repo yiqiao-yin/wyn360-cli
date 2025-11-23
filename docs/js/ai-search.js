@@ -31,7 +31,7 @@ class WYN360AISearch {
       responseTimeout: 30000, // 30 seconds
       apiEndpoint: null, // Will be set in Phase 3
       fallbackToRegularSearch: true,
-      indexUrl: '/assets/search-index.json'
+      indexUrl: '/wyn360-cli/assets/search-index.json'
     };
 
     // UI Elements (will be initialized when DOM is ready)
