@@ -2883,47 +2883,84 @@
       const searchResult = document.querySelector('.md-search-result');
 
       if (searchResult) {
-        // Create AI search section HTML
+        // Create AI search section HTML - REDESIGNED FOR BETTER UX
         const aiSearchHTML = `
           <div class="ai-search-section" style="display: none;" id="ai-search-section">
-            <!-- AI Search Button -->
-            <div class="ai-search-trigger">
-              <button
-                class="ai-search-button"
-                id="ask-ai-button"
-                type="button"
-                title="Ask AI about WYN360 CLI"
-                aria-label="Ask AI about this documentation"
-              >
-                <span class="ai-icon">🤖</span>
-                <span class="ai-text">Ask AI</span>
-              </button>
-              <p class="ai-search-hint">Get intelligent answers about WYN360 CLI features and usage</p>
+            <!-- AI Search Header - PROMINENT PLACEMENT -->
+            <div class="ai-search-header">
+              <div class="ai-search-trigger">
+                <button
+                  class="ai-search-button"
+                  id="ask-ai-button"
+                  type="button"
+                  title="Ask AI about your question"
+                  aria-label="Ask AI for intelligent answers"
+                >
+                  <span class="ai-icon">🤖</span>
+                  <span class="ai-text">Ask AI</span>
+                  <span class="ai-status" id="ai-status">Semantic search ready</span>
+                </button>
+              </div>
+              <p class="ai-search-hint">
+                <strong>💡 Pro tip:</strong> Try "browser automation", "installation guide", or "vision mode examples"
+              </p>
             </div>
 
-            <!-- AI Response Container -->
-            <div class="ai-response-container" id="ai-response-container" style="display: none;">
+            <!-- Search Results Status -->
+            <div class="ai-search-status" id="ai-search-status" style="display: none;">
+              <div class="search-type-indicator">
+                <span id="search-type-badge" class="search-badge semantic">🧠 Semantic Search</span>
+                <span class="result-count" id="result-count"></span>
+              </div>
+            </div>
+
+            <!-- AI Chat Interface - CHATBOT-LIKE DESIGN -->
+            <div class="ai-chat-container" id="ai-response-container" style="display: none;">
+
               <!-- Loading State -->
               <div class="ai-loading" id="ai-loading">
-                <div class="ai-loading-spinner"></div>
-                <p>AI is analyzing your question...</p>
+                <div class="chat-message ai-message">
+                  <div class="ai-avatar">🤖</div>
+                  <div class="message-content">
+                    <div class="ai-loading-spinner"></div>
+                    <p>Analyzing your question with semantic search...</p>
+                  </div>
+                </div>
               </div>
 
-              <!-- AI Response -->
+              <!-- AI Chat Response -->
               <div class="ai-response" id="ai-response" style="display: none;">
-                <div class="ai-answer">
-                  <h4>🤖 AI Answer</h4>
-                  <div class="ai-response-text" id="ai-response-text"></div>
+                <div class="chat-conversation">
+                  <!-- User Question -->
+                  <div class="chat-message user-message" id="user-question">
+                    <div class="user-avatar">👤</div>
+                    <div class="message-content">
+                      <div class="user-question-text" id="user-question-text"></div>
+                    </div>
+                  </div>
+
+                  <!-- AI Answer -->
+                  <div class="chat-message ai-message">
+                    <div class="ai-avatar">🤖</div>
+                    <div class="message-content">
+                      <div class="ai-response-text" id="ai-response-text"></div>
+
+                      <!-- Source Links as Cards -->
+                      <div class="ai-sources-section">
+                        <h6>📚 Relevant Documentation</h6>
+                        <div class="ai-source-cards" id="ai-source-links"></div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="ai-sources">
-                  <h5>📖 Related Documentation</h5>
-                  <ul class="ai-source-links" id="ai-source-links"></ul>
-                </div>
-
-                <div class="ai-actions">
-                  <button class="ai-action-button" id="ask-another">Ask Another Question</button>
-                  <button class="ai-action-button secondary" id="show-regular-search">Show Regular Search</button>
+                <div class="ai-chat-actions">
+                  <button class="ai-action-button primary" id="ask-another">
+                    <span>💬</span> Ask Another Question
+                  </button>
+                  <button class="ai-action-button secondary" id="show-regular-search">
+                    <span>🔍</span> Show Regular Search
+                  </button>
                 </div>
               </div>
 
@@ -2937,8 +2974,8 @@
           </div>
         `;
 
-        // Insert AI search section after search results
-        searchResult.insertAdjacentHTML('beforeend', aiSearchHTML);
+        // Insert AI search section at the TOP of search results for better visibility
+        searchResult.insertAdjacentHTML('afterbegin', aiSearchHTML);
 
         // Setup show/hide logic for AI search
         const searchInput = document.querySelector('.md-search__input');

@@ -536,7 +536,7 @@ class WYN360AISearch {
   }
 
   /**
-   * Show AI response
+   * Show AI response in chatbot style
    */
   showResponse(response) {
     this.isLoading = false;
@@ -549,26 +549,35 @@ class WYN360AISearch {
       this.elements.error.style.display = 'none';
     }
 
+    // Show user question
+    const userQuestionElement = document.getElementById('user-question-text');
+    if (userQuestionElement) {
+      userQuestionElement.textContent = this.currentQuery;
+    }
+
     // Set response text
     if (this.elements.responseText) {
       this.elements.responseText.textContent = response.answer;
     }
 
-    // Set source links
+    // Set source links as cards
     if (this.elements.sourceLinks && response.sources) {
       this.elements.sourceLinks.innerHTML = '';
 
       response.sources.forEach(source => {
-        const li = document.createElement('li');
-        li.innerHTML = `
-          <a href="${source.url}" class="ai-source-link">
-            <span class="source-title">${source.title}</span>
-            <span class="source-snippet">${source.snippet}</span>
-          </a>
+        const sourceCard = document.createElement('a');
+        sourceCard.href = source.url;
+        sourceCard.innerHTML = `
+          <span class="source-title">${source.title}</span>
+          <span class="source-snippet">${source.snippet}</span>
+          ${source.searchType ? `<span class="search-type-tag">${source.searchType === 'semantic' ? '🧠 Semantic' : '🔍 Keyword'}</span>` : ''}
         `;
-        this.elements.sourceLinks.appendChild(li);
+        this.elements.sourceLinks.appendChild(sourceCard);
       });
     }
+
+    // Show search type status
+    this.updateSearchStatus(response.sources);
 
     // Show response container
     if (this.elements.response) {
@@ -576,6 +585,35 @@ class WYN360AISearch {
     }
 
     console.log('[AI Search] Response displayed successfully');
+  }
+
+  /**
+   * Update search status indicator
+   */
+  updateSearchStatus(sources) {
+    const statusElement = document.getElementById('ai-search-status');
+    const badgeElement = document.getElementById('search-type-badge');
+    const countElement = document.getElementById('result-count');
+
+    if (statusElement && sources && sources.length > 0) {
+      const hasSemanticResults = sources.some(s => s.searchType === 'semantic');
+
+      if (badgeElement) {
+        if (hasSemanticResults) {
+          badgeElement.textContent = '🧠 Semantic Search';
+          badgeElement.className = 'search-badge semantic';
+        } else {
+          badgeElement.textContent = '🔍 Keyword Search';
+          badgeElement.className = 'search-badge keyword';
+        }
+      }
+
+      if (countElement) {
+        countElement.textContent = `${sources.length} result${sources.length === 1 ? '' : 's'}`;
+      }
+
+      statusElement.style.display = 'block';
+    }
   }
 
   /**
