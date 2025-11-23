@@ -158,8 +158,8 @@ class WYN360AISearch {
       // Show loading state
       this.showLoading();
 
-      // Phase 2: Real search using documentation index
-      if (this.indexLoaded) {
+      // Check if search index is available
+      if (this.indexLoaded && this.searchIndex) {
         // Perform semantic search on documentation
         const searchResults = await this.performSemanticSearch(this.currentQuery);
 
@@ -168,15 +168,25 @@ class WYN360AISearch {
 
         // Show AI response
         this.showResponse(aiResponse);
+      } else if (this.searchIndex === null) {
+        // Search index failed to load - show helpful error
+        this.showError(
+          'AI search index is currently unavailable. ' +
+          'Please try using the regular search above, or check back later when the search index has been deployed.'
+        );
       } else {
-        // Fallback to mock response if index not loaded
-        const mockResponse = await this.generateMockResponse(this.currentQuery);
-        this.showResponse(mockResponse);
+        // Still loading index - try again in a moment
+        this.showError('Search index is still loading. Please wait a moment and try again.');
+
+        // Try to load index again
+        setTimeout(() => {
+          this.loadSearchIndex();
+        }, 2000);
       }
 
     } catch (error) {
       console.error('[AI Search] Search failed:', error);
-      this.showError('AI search is temporarily unavailable. Please try regular search.');
+      this.showError('AI search encountered an error. Please try using the regular search above.');
     }
   }
 
@@ -193,6 +203,8 @@ class WYN360AISearch {
 
       const response = await fetch(this.config.indexUrl);
       if (!response.ok) {
+        // Update UI to show search index is missing
+        this.updateSearchStatus(null, `Search index not available (${response.status})`);
         throw new Error(`Failed to load search index: ${response.status}`);
       }
 
@@ -204,17 +216,31 @@ class WYN360AISearch {
       console.log(`[AI Search] Index loaded: ${indexData.metadata.total_chunks} chunks`);
       console.log(`[AI Search] Sections: ${indexData.metadata.sections.join(', ')}`);
 
-      if (indexData.metadata.has_embeddings) {
-        console.log('[AI Search] Semantic search enabled');
-      } else {
-        console.log('[AI Search] Using keyword-based search');
+      // Update status indicator
+      const aiStatusElement = document.getElementById('ai-status');
+      if (aiStatusElement) {
+        if (indexData.metadata.has_embeddings) {
+          aiStatusElement.textContent = '🧠 Semantic search ready';
+          console.log('[AI Search] Semantic search enabled');
+        } else {
+          aiStatusElement.textContent = '🔍 Keyword search ready';
+          console.log('[AI Search] Using keyword-based search');
+        }
       }
 
     } catch (error) {
       console.error('[AI Search] Failed to load search index:', error);
       this.searchIndex = null;
       this.indexLoaded = false;
-      throw error;
+
+      // Update status to show error
+      const aiStatusElement = document.getElementById('ai-status');
+      if (aiStatusElement) {
+        aiStatusElement.textContent = '⚠️ Search index unavailable';
+      }
+
+      // Don't throw - allow regular search to work
+      console.log('[AI Search] Falling back to regular MkDocs search');
     }
   }
 
