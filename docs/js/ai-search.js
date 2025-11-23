@@ -1,16 +1,20 @@
 /**
- * WYN360 CLI Documentation - AI Search System
+ * WYN360 CLI Documentation - AI Search System (GitHub Book Feature)
  *
  * Provides intelligent search capabilities for WYN360 CLI documentation.
  * Integrates seamlessly with existing MkDocs Material search functionality.
  *
+ * NOTE: This is ONLY for the GitHub book documentation search feature.
+ * Does NOT interfere with the main WYN360 CLI codebase.
+ *
  * Features:
- * - Semantic search across documentation
+ * - Semantic search using sentence-transformers (all-MiniLM-L6-v2)
+ * - Real embedding generation via transformers.js
  * - AI-powered response generation
  * - Source attribution with direct links
  * - Graceful fallback to regular search
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @author WYN360 CLI Documentation Team
  */
 
@@ -21,13 +25,18 @@ class WYN360AISearch {
     this.embeddings = null;
     this.isLoading = false;
     this.currentQuery = '';
+
+    // Transformers.js setup for client-side embeddings
+    this.embeddingPipeline = null;
+    this.isEmbeddingModelLoading = false;
+    this.useTransformersJs = true; // Enable real sentence transformer embeddings
     this.indexLoaded = false;
 
     // Configuration
     this.config = {
       enabled: true,
-      maxResults: 5,
-      similarityThreshold: 0.05, // Very low threshold for broader semantic matching
+      maxResults: 8, // Increased for better context while maintaining quality
+      similarityThreshold: 0.25, // Optimized threshold based on embedding distribution analysis
       responseTimeout: 30000, // 30 seconds
       apiEndpoint: null, // Will be set in Phase 3
       fallbackToRegularSearch: true,
@@ -791,44 +800,197 @@ class WYN360AISearch {
   }
 
   /**
-   * Generate query embedding using simple TF-IDF approach
-   * (Browser-based approximation of sentence transformers)
+   * Generate query embedding using real sentence transformers via transformers.js
+   * Uses the same all-MiniLM-L6-v2 model as the document embeddings
    */
   async _generateQueryEmbedding(query) {
     try {
-      // For Phase 3, we'll use a client-side approximation
-      // In a full implementation, you'd use transformers.js or a dedicated API
-
-      // Simple approach: Create a bag-of-words vector based on the query
-      // and the vocabulary from the document corpus
-      const queryWords = this._tokenize(query.toLowerCase());
-      const vocabulary = this._getVocabulary();
-
-      // Create a simple TF-IDF-like vector
-      const embedding = new Array(Math.min(vocabulary.length, 384)).fill(0);
-
-      queryWords.forEach(word => {
-        const index = vocabulary.indexOf(word);
-        if (index !== -1 && index < embedding.length) {
-          embedding[index] = 1.0; // Simple binary encoding
-        }
-      });
-
-      // Normalize the vector
-      const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
-      if (norm > 0) {
-        for (let i = 0; i < embedding.length; i++) {
-          embedding[i] /= norm;
+      // Try to use real sentence transformers first
+      if (this.useTransformersJs) {
+        const realEmbedding = await this._generateRealEmbedding(query);
+        if (realEmbedding) {
+          return realEmbedding;
         }
       }
 
-      console.log('[AI Search] Generated query embedding (simple approximation)');
-      return embedding;
+      // Fallback to document-based approximation
+      console.log('[AI Search] Using document-based embedding approximation');
+      return this._generateDocumentBasedEmbedding(query);
 
     } catch (error) {
       console.error('[AI Search] Error generating query embedding:', error);
+      return this._generateDocumentBasedEmbedding(query);
+    }
+  }
+
+  /**
+   * Generate embedding using transformers.js with all-MiniLM-L6-v2
+   */
+  async _generateRealEmbedding(query) {
+    try {
+      // Load embedding model if not already loaded
+      if (!this.embeddingPipeline && !this.isEmbeddingModelLoading) {
+        await this._loadEmbeddingModel();
+      }
+
+      if (!this.embeddingPipeline) {
+        console.warn('[AI Search] Embedding model not available, falling back to approximation');
+        return null;
+      }
+
+      console.log(`[AI Search] Generating real embedding for: "${query}"`);
+
+      // Generate embedding using transformers.js
+      const result = await this.embeddingPipeline(query, {
+        pooling: 'mean',
+        normalize: true
+      });
+
+      // Convert to regular array
+      const embedding = Array.from(result.data);
+
+      console.log(`[AI Search] Generated real embedding (${embedding.length}D)`);
+      return embedding;
+
+    } catch (error) {
+      console.error('[AI Search] Error generating real embedding:', error);
       return null;
     }
+  }
+
+  /**
+   * Load the sentence transformer model using transformers.js
+   */
+  async _loadEmbeddingModel() {
+    if (this.isEmbeddingModelLoading) {
+      return;
+    }
+
+    try {
+      this.isEmbeddingModelLoading = true;
+
+      console.log('[AI Search] Loading sentence transformer model...');
+
+      // Wait for transformers.js to be available
+      const { pipeline } = await window.transformersImport;
+
+      // Load the same model used for document embeddings
+      this.embeddingPipeline = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
+
+      console.log('[AI Search] ✅ Sentence transformer model loaded successfully');
+
+      // Update UI status
+      const aiStatusElement = document.getElementById('ai-status');
+      if (aiStatusElement) {
+        aiStatusElement.textContent = '🧠 Advanced semantic search ready';
+      }
+
+    } catch (error) {
+      console.error('[AI Search] Failed to load embedding model:', error);
+      this.embeddingPipeline = null;
+
+      // Update UI status
+      const aiStatusElement = document.getElementById('ai-status');
+      if (aiStatusElement) {
+        aiStatusElement.textContent = '⚠️ Using approximated search';
+      }
+    } finally {
+      this.isEmbeddingModelLoading = false;
+    }
+  }
+
+  /**
+   * Generate embedding by averaging similar document embeddings (fallback method)
+   */
+  _generateDocumentBasedEmbedding(query) {
+    try {
+      console.log(`[AI Search] Generating document-based embedding for: "${query}"`);
+
+      const queryWords = this._tokenize(query.toLowerCase());
+      const expandedQuery = this._expandQueryWithSynonyms(query);
+      const expandedWords = this._tokenize(expandedQuery.toLowerCase());
+      const allQueryWords = [...new Set([...queryWords, ...expandedWords])];
+
+      // Find documents that contain query terms
+      const matchingChunks = [];
+
+      this.searchIndex.chunks.forEach((chunk, index) => {
+        const chunkWords = this._tokenize(chunk.content.toLowerCase() + ' ' + chunk.title.toLowerCase());
+        const matchCount = allQueryWords.filter(word => chunkWords.includes(word)).length;
+
+        if (matchCount > 0 && this.embeddings[index]) {
+          matchingChunks.push({
+            index: index,
+            matchCount: matchCount,
+            embedding: this.embeddings[index]
+          });
+        }
+      });
+
+      if (matchingChunks.length === 0) {
+        console.log('[AI Search] No matching chunks found for document-based embedding');
+        return this._generateFallbackEmbedding();
+      }
+
+      // Sort by relevance and take top matches
+      matchingChunks.sort((a, b) => b.matchCount - a.matchCount);
+      const topMatches = matchingChunks.slice(0, Math.min(5, matchingChunks.length));
+
+      // Create weighted average embedding
+      const queryEmbedding = new Array(384).fill(0);
+      let totalWeight = 0;
+
+      topMatches.forEach(match => {
+        const weight = match.matchCount;
+        totalWeight += weight;
+
+        for (let i = 0; i < 384; i++) {
+          queryEmbedding[i] += match.embedding[i] * weight;
+        }
+      });
+
+      // Normalize
+      if (totalWeight > 0) {
+        for (let i = 0; i < 384; i++) {
+          queryEmbedding[i] /= totalWeight;
+        }
+      }
+
+      // L2 normalization
+      const norm = Math.sqrt(queryEmbedding.reduce((sum, val) => sum + val * val, 0));
+      if (norm > 0) {
+        for (let i = 0; i < 384; i++) {
+          queryEmbedding[i] /= norm;
+        }
+      }
+
+      console.log(`[AI Search] Generated document-based embedding using ${topMatches.length} similar chunks`);
+      return queryEmbedding;
+
+    } catch (error) {
+      console.error('[AI Search] Error in document-based embedding:', error);
+      return this._generateFallbackEmbedding();
+    }
+  }
+
+  /**
+   * Generate simple fallback embedding when other methods fail
+   */
+  _generateFallbackEmbedding() {
+    console.log('[AI Search] Using simple fallback embedding');
+
+    // Create random normalized vector as last resort
+    const embedding = new Array(384).fill(0).map(() => Math.random() - 0.5);
+
+    // Normalize
+    const norm = Math.sqrt(embedding.reduce((sum, val) => sum + val * val, 0));
+    if (norm > 0) {
+      for (let i = 0; i < 384; i++) {
+        embedding[i] /= norm;
+      }
+    }
+
+    return embedding;
   }
 
   /**
