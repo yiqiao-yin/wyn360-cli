@@ -163,5 +163,5 @@ Explore the documentation to learn more about WYN360 CLI's capabilities:
 
 ---
 
-**Current Version:** 0.3.63
+**Current Version:** 0.3.64
 **Last Updated:** November 22, 2025

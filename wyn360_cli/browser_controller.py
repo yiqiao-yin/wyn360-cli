@@ -281,6 +281,36 @@ class BrowserController:
             'attempts': max_attempts
         }
 
+    def _convert_selector(self, selector: str) -> tuple[str, str]:
+        """
+        Convert invalid selectors to proper Playwright selectors.
+
+        Returns:
+            tuple: (selector_type, converted_selector)
+                   selector_type can be 'css', 'text', or 'xpath'
+        """
+        if not selector:
+            return 'css', selector
+
+        # Handle :contains() pseudo-selector (not valid CSS)
+        import re
+        contains_match = re.search(r'([^:]+):contains\(["\']([^"\']+)["\']\)', selector)
+        if contains_match:
+            element_type = contains_match.group(1)
+            text_content = contains_match.group(2)
+            # Convert to text-based selector
+            return 'text', text_content
+
+        # Handle other jQuery/invalid selectors that might appear
+        if ':contains(' in selector:
+            # Extract text from contains
+            text_match = re.search(r':contains\(["\']([^"\']+)["\']\)', selector)
+            if text_match:
+                return 'text', text_match.group(1)
+
+        # Valid CSS selector
+        return 'css', selector
+
     async def _action_click(self, action: Dict[str, Any]) -> Dict[str, Any]:
         """Execute click action (Phase 5.4: configurable timeout)."""
         selector = action.get('selector')
@@ -288,17 +318,31 @@ class BrowserController:
 
         try:
             if selector:
-                # Click by selector with configurable timeout
-                await self.page.click(selector, timeout=BrowserConfig.ACTION_TIMEOUT)
-                logger.info(f"Clicked element: {selector}")
+                # Convert and validate selector
+                selector_type, converted_selector = self._convert_selector(selector)
+
+                if selector_type == 'text':
+                    # Use text-based selection
+                    await self.page.get_by_text(converted_selector).first.click(timeout=BrowserConfig.ACTION_TIMEOUT)
+                    logger.info(f"Clicked element with text: {converted_selector}")
+                    target = f"text:{converted_selector}"
+                elif selector_type == 'css':
+                    # Use CSS selector
+                    await self.page.click(converted_selector, timeout=BrowserConfig.ACTION_TIMEOUT)
+                    logger.info(f"Clicked element: {converted_selector}")
+                    target = converted_selector
+                else:
+                    raise ValueError(f"Unsupported selector type: {selector_type}")
+
             elif text:
-                # Click by text
-                element = await self.page.get_by_text(text).first.click(timeout=BrowserConfig.ACTION_TIMEOUT)
+                # Click by text directly
+                await self.page.get_by_text(text).first.click(timeout=BrowserConfig.ACTION_TIMEOUT)
                 logger.info(f"Clicked element with text: {text}")
+                target = f"text:{text}"
             else:
                 raise ValueError("Click action requires 'selector' or 'text'")
 
-            return {'success': True, 'action': 'click', 'target': selector or text}
+            return {'success': True, 'action': 'click', 'target': target}
 
         except PlaywrightTimeoutError:
             raise BrowserControllerError(f"Click timeout: {selector or text}")

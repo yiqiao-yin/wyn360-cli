@@ -140,11 +140,13 @@ class VisionDecisionEngine:
 
 **Available actions:**
 - **click**: Click an element (button, link, checkbox, etc.)
-  {{type: 'click', selector: '#element-id', text: 'Button Text'}}
-  {{type: 'click', selector: 'button.submit'}}
+  {{type: 'click', selector: '#element-id'}}        (Use CSS selector)
+  {{type: 'click', selector: 'button.submit'}}      (CSS class selector)
+  {{type: 'click', text: 'Button Text'}}            (Text-based when CSS is unclear)
 
 - **type**: Type text into an input field
   {{type: 'type', selector: '#input-id', text: 'text to type'}}
+  {{type: 'type', selector: 'input[placeholder="Search"]', text: 'search term'}}
 
 - **scroll**: Scroll the page to reveal more content
   {{type: 'scroll', direction: 'down'|'up'|'top'|'bottom', amount: 500}}
@@ -195,9 +197,18 @@ Provide your decision as a JSON object with:
     "extracted_data": {{...data if complete...}}
 }}
 
-**Important guidelines:**
-- Use CSS selectors when possible (#id, .class, tag[attribute])
-- Prefer specific selectors over generic ones (e.g., #search-btn vs button)
+**Selector Guidelines:**
+- **IMPORTANT**: Only use standard CSS selectors - NO jQuery syntax!
+- **Valid CSS**: #id, .class, button, input[type="text"], [data-attr="value"]
+- **NEVER use**: :contains(), :visible, :hidden, or other jQuery pseudo-selectors
+- **For text-based clicking**: Use {{text: 'Button Text'}} instead of selectors with :contains()
+- **Examples of good selectors:**
+  - button.primary-btn (CSS class)
+  - #search-button (ID)
+  - input[placeholder="Search"] (attribute selector)
+  - [data-testid="submit"] (data attribute)
+
+**Action Guidelines:**
 - If task is complete, set status='complete' and include extracted_data
 - If you can't find elements or encounter CAPTCHA, set status='stuck'
 - Be specific about what you see and why you're taking the action
