@@ -14,7 +14,7 @@
 
 WYN360 CLI is an AI-powered command-line assistant that helps you build, analyze, and manage Python projects through natural language conversations. This guide will walk you through everything from simple file operations to complex multi-turn development workflows.
 
-### Quick Start Guide
+#### Quick Start Guide
 
 **Installation:**
 ```bash
@@ -68,7 +68,7 @@ This guide is organized as a progressive learning path:
 
 ---
 
-## Use Case 1: Start New Projects from Scratch
+### Use Case 1: Start New Projects from Scratch
 
 **Complexity:** Simple
 **Type:** Single-turn
@@ -107,7 +107,7 @@ WYN360:
 
 ---
 
-## Use Case 2: Analyze Existing Projects
+### Use Case 2: Analyze Existing Projects
 
 **Complexity:** Simple
 **Type:** Single-turn
@@ -150,7 +150,7 @@ WYN360:
 
 ---
 
-## Use Case 3: Code Generation & Refactoring
+### Use Case 3: Code Generation & Refactoring
 
 **Complexity:** Simple to Moderate
 **Type:** Single-turn
@@ -193,7 +193,7 @@ WYN360:
 
 ---
 
-## Use Case 4: Execute Commands and Scripts
+### Use Case 4: Execute Commands and Scripts
 
 **Complexity:** Simple
 **Type:** Single-turn
@@ -261,7 +261,7 @@ Set environment variable `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts.
 
 ---
 
-## Use Case 5: Multi-line Input Support
+### Use Case 5: Multi-line Input Support
 
 **Complexity:** Simple
 **Type:** Feature
@@ -295,7 +295,7 @@ WYN360: [Generates complete multi-featured app]
 
 ---
 
-## Use Case 6: Git Operations
+### Use Case 6: Git Operations
 
 **Complexity:** Simple
 **Type:** Single-turn
@@ -349,7 +349,7 @@ WYN360: [Shows current branch marked with *]
 
 ---
 
-## Use Case 7: Code Search
+### Use Case 7: Code Search
 
 **Complexity:** Simple
 **Type:** Single-turn
@@ -402,7 +402,7 @@ Environment variables accessed in config.py and utils.py
 
 ---
 
-## Use Case 8: File Management
+### Use Case 8: File Management
 
 **Complexity:** Simple
 **Type:** Single-turn
@@ -478,7 +478,7 @@ WYN360:
 
 ---
 
-## Use Case 9: Model Selection & Optimization
+### Use Case 9: Model Selection & Optimization
 
 **Complexity:** Moderate
 **Type:** Configuration
@@ -631,7 +631,7 @@ wyn360 --model claude-sonnet-4-20250514
 
 ---
 
-## Use Case 10: Configuration & Personalization
+### Use Case 10: Configuration & Personalization
 
 **Complexity:** Moderate
 **Type:** Setup/Configuration
@@ -644,7 +644,7 @@ wyn360 --model claude-sonnet-4-20250514
 1. **User Config** (`~/.wyn360/config.yaml`) - Your personal preferences across all projects
 2. **Project Config** (`.wyn360.yaml`) - Project-specific settings and context
 
-### Configuration Levels
+#### Configuration Levels
 
 #### User Configuration (~/.wyn360/config.yaml)
 
@@ -710,7 +710,7 @@ Configurations merge with this precedence (highest to lowest):
 2. **User config** (`~/.wyn360/config.yaml`)
 3. **Default values**
 
-### Example Workflows
+#### Example Workflows
 
 #### Workflow 1: Setting Up User Preferences
 
@@ -793,7 +793,7 @@ Tip: Create ~/.wyn360/config.yaml for user settings
 Tip: Create .wyn360.yaml in project root for project settings
 ```
 
-### Benefits
+#### Benefits
 
 **1. Consistency Across Projects**
 - Same code style and conventions everywhere
@@ -872,7 +872,7 @@ model: claude-sonnet-4-20250514  # Use more capable model
 
 ---
 
-## Use Case 11: Streaming Responses
+### Use Case 11: Streaming Responses
 
 **Complexity:** Simple
 **Type:** Feature
@@ -923,7 +923,7 @@ import pandas as pd
 - ✅ See progress in real-time
 - ✅ Start reading while streaming
 
-### Benefits
+#### Benefits
 
 **1. Faster Perceived Response Time**
 - Even though total time is the same, streaming feels much faster
@@ -940,7 +940,7 @@ import pandas as pd
 - Can stop if going in wrong direction
 - Better sense of AI "thinking" process
 
-### Example Workflows
+#### Example Workflows
 
 #### Workflow 1: Long Code Generation
 
@@ -1016,7 +1016,7 @@ WYN360: I'll create a data pipeline with these components:
 [You're already reading Step 1 while Step 3 is being generated]
 ```
 
-### Technical Details
+#### Technical Details
 
 **How It Works:**
 - Uses pydantic-ai's streaming API
@@ -1039,7 +1039,7 @@ WYN360: I'll create a data pipeline with these components:
 | **Progress Feedback** | None | Real-time |
 | **User Experience** | Waiting | Engaging |
 
-### Use Cases Where Streaming Shines
+#### Use Cases Where Streaming Shines
 
 **1. Documentation Generation**
 ```bash
@@ -1087,7 +1087,7 @@ WYN360: [Streams code file by file]
 
 ---
 
-## Use Case 12: HuggingFace Deployment
+### Use Case 12: HuggingFace Deployment
 
 **Complexity:** Moderate
 **Type:** Deployment
@@ -1194,7 +1194,7 @@ pinned: false
 
 ---
 
-## Use Case 13: Automatic Test Generation
+### Use Case 13: Automatic Test Generation
 
 **Complexity:** Moderate
 **Type:** Testing/Quality Assurance
@@ -1319,7 +1319,7 @@ WYN360: [Executes tests]
 
 ---
 
-## Use Case 14: GitHub Integration
+### Use Case 14: GitHub Integration
 
 **Complexity:** Moderate to Complex
 **Type:** Version Control/CI/CD
@@ -1330,7 +1330,7 @@ WYN360: [Executes tests]
 
 WYN360 provides seamless GitHub integration directly from the CLI! This feature enables complete git workflow management including committing changes, creating pull requests, managing branches, and merging code.
 
-### Key Features
+#### Key Features
 
 - 🔐 **GitHub Authentication** - Token-based authentication with GH_TOKEN/GITHUB_TOKEN
 - 💾 **Commit & Push** - Stage, commit, and push changes directly from CLI
@@ -1636,7 +1636,7 @@ ANTHROPIC_API_KEY=your_anthropic_key
 GH_TOKEN=ghp_your_github_token
 ```
 
-### Example Workflow: Complete Feature Development
+#### Example Workflow: Complete Feature Development
 
 **Scenario:** Building a new authentication feature
 
@@ -1703,11 +1703,11 @@ WYN360: [Pushes main branch]
 
 ---
 
-### Advanced Features
+#### Advanced Features
 
 ---
 
-## Use Case 15: Performance Monitoring & Analytics
+### Use Case 15: Performance Monitoring & Analytics
 
 **Complexity:** Advanced
 **Type:** Monitoring/Analytics
@@ -1859,7 +1859,7 @@ Most expensive operations:
 
 ---
 
-## Use Case 16: Web Search - Real-Time Information Access
+### Use Case 16: Web Search - Real-Time Information Access
 
 **Complexity:** Advanced
 **Type:** Information Retrieval
@@ -1878,7 +1878,7 @@ WYN360 now has access to real-time web search capabilities! This feature enables
 - 📝 Enhanced system prompt with explicit examples for finding resources
 - ✅ Now properly recognizes queries like "find a popular GitHub repo for X"
 
-### Key Features
+#### Key Features
 
 - 🌤️ **Weather Queries** - Get current weather for any location
 - 🌐 **Website Reading** - Fetch and summarize web content
@@ -2236,7 +2236,7 @@ builtin_tools=[
 
 ---
 
-## Use Case 17: Add Features to Existing Code
+### Use Case 17: Add Features to Existing Code
 
 **Complexity:** Complex
 **Type:** Multi-turn
@@ -2274,7 +2274,7 @@ WYN360:
 
 ---
 
-## Use Case 18: Interactive Coding Assistant
+### Use Case 18: Interactive Coding Assistant
 
 **Complexity:** Complex
 **Type:** Multi-turn
@@ -2330,7 +2330,7 @@ WYN360:
 
 ---
 
-## Use Case 19: Document Reading - Excel, Word, and PDF
+### Use Case 19: Document Reading - Excel, Word, and PDF
 
 **Complexity:** Advanced
 **Type:** Document Analysis
@@ -2343,7 +2343,7 @@ WYN360:
 
 WYN360 can read and analyze structured documents (Excel, Word, PDF) of any size using an intelligent chunking system. Documents are automatically split into manageable pieces, summarized, and cached for fast retrieval.
 
-### Key Features
+#### Key Features
 
 - 📊 **Excel Files** - Multi-sheet support, formulas, charts, named ranges
 - 📝 **Word Documents** - Structured extraction, tables, images, sections
@@ -2438,7 +2438,7 @@ Would you like me to extract specific sections or code examples?
 
 ---
 
-## Use Case 20: Vision Mode - Image Analysis in Documents
+### Use Case 20: Vision Mode - Image Analysis in Documents
 
 **Complexity:** Advanced
 **Type:** Multimodal Document Processing
@@ -2451,7 +2451,7 @@ Would you like me to extract specific sections or code examples?
 
 When documents contain important visual information (charts, diagrams, screenshots), WYN360 can use Claude's Vision API to describe and analyze these images.
 
-### Key Features
+#### Key Features
 
 - 🖼️ **Three Processing Modes:**
   - `skip` - Ignore images entirely (fastest, cheapest)
@@ -2539,7 +2539,7 @@ Key Connections:
 
 ---
 
-## Use Case 21: OCR - Scanned Document Processing
+### Use Case 21: OCR - Scanned Document Processing
 
 **Complexity:** Advanced
 **Type:** OCR + Vision Analysis
@@ -2552,7 +2552,7 @@ Key Connections:
 
 Many PDFs are scanned images with no text layer. WYN360 automatically detects scanned pages and uses OCR to extract text, making these documents searchable and analyzable.
 
-### Key Features
+#### Key Features
 
 - 🔍 **Automatic Detection** - Identifies scanned vs text-based PDFs
 - 📄 **Tesseract OCR** - Industry-standard open-source OCR engine
@@ -2622,7 +2622,7 @@ Payment: Visa ending in 4242
 
 ---
 
-## Use Case 22: Semantic Search - Smart Document Retrieval
+### Use Case 22: Semantic Search - Smart Document Retrieval
 
 **Complexity:** Advanced
 **Type:** AI-Powered Search
@@ -2635,7 +2635,7 @@ Payment: Visa ending in 4242
 
 Instead of keyword matching, WYN360 uses AI embeddings to understand the *meaning* of your query and find semantically similar content, even if exact keywords don't match.
 
-### Key Features
+#### Key Features
 
 - 🧠 **Semantic Understanding** - Finds meaning, not just keywords
 - 📊 **Cosine Similarity** - Ranks results by relevance score
@@ -2701,7 +2701,7 @@ Note: Found Spanish section because embedding understands
 
 ---
 
-## Use Case 23: Multi-Document Analysis
+### Use Case 23: Multi-Document Analysis
 
 **Complexity:** Advanced
 **Type:** Cross-Document Intelligence
@@ -2714,7 +2714,7 @@ Note: Found Spanish section because embedding understands
 
 Work with multiple documents at once - compare spreadsheets, find information across reports, track changes between versions.
 
-### Key Features
+#### Key Features
 
 - 🔍 **Unified Search** - Search across all cached documents
 - 📊 **Document Comparison** - Side-by-side analysis
@@ -2809,7 +2809,7 @@ Overall: 23% content change, 2,300 words added
 
 ---
 
-## Use Case 24: High-Performance Document Processing
+### Use Case 24: High-Performance Document Processing
 
 **Complexity:** Advanced
 **Type:** Optimization & Efficiency
@@ -2822,7 +2822,7 @@ Overall: 23% content change, 2,300 words added
 
 Phase 5.6 performance optimizations make document processing 3-5x faster with 50-70% less storage.
 
-### Key Features Delivered
+#### Key Features Delivered
 
 - ⚡ **Parallel Chunk Summarization** - Process multiple chunks concurrently
 - 🗜️ **Gzip Compression** - 50-70% storage reduction for cache
@@ -2901,7 +2901,7 @@ Cache Stats:
 | `/clear_doc_cache` | Clear all or specific cache | Free up space |
 | `regenerate_cache=True` | Force reprocessing | Bypass cache for fresh analysis |
 
-## Use Case 25: Authenticated Browsing - Automated Login and Session Management
+### Use Case 25: Authenticated Browsing - Automated Login and Session Management
 
 **Phase:** 4 (v0.3.40-v0.3.41)
 **Tools:** `login_to_website`, `fetch_website`, CredentialManager, SessionManager, BrowserAuth
@@ -3247,7 +3247,7 @@ cat ~/.wyn360/logs/auth_audit.log
 
 ---
 
-### Troubleshooting
+#### Troubleshooting
 
 **Issue: "Could not detect login form"**
 ```bash
@@ -3296,7 +3296,7 @@ Solution:
 
 ---
 
-### Technical Details
+#### Technical Details
 
 **Form Detection Selectors:**
 - Username: `input[type="email"]`, `input[name*="user"]`, `input[id*="user"]`
@@ -3327,7 +3327,7 @@ Solution:
 
 ---
 
-### Best Practices
+#### Best Practices
 
 **1. Use Specific Login URLs:**
 ```
@@ -3386,7 +3386,7 @@ Solution:
 
 ---
 
-## Use Case 26: Enhanced Browser Authentication - Debug Mode and Troubleshooting (Phase 4.4)
+### Use Case 26: Enhanced Browser Authentication - Debug Mode and Troubleshooting (Phase 4.4)
 
 **Phase:** 4.4 - Enhanced Form Detection
 **Features:** Debug mode, intelligent URL discovery, fuzzy matching, manual selectors
@@ -3809,7 +3809,7 @@ wyn360 "login to https://custom-site.com with user/pass"
 
 ---
 
-### Troubleshooting Guide
+#### Troubleshooting Guide
 
 #### Problem 1: "Could not detect login form"
 
@@ -3915,7 +3915,7 @@ unset WYN360_BROWSER_DEBUG
 
 ---
 
-### Best Practices for Phase 4.4
+#### Best Practices for Phase 4.4
 
 1. **Always try automatic detection first**
    - Phase 4.4 improvements handle 90%+ of websites
@@ -3983,7 +3983,7 @@ If you run into issues or have questions:
 
 ---
 
-## Use Case 27: AWS Bedrock Authentication - Using AWS Credentials (v0.3.45)
+### Use Case 27: AWS Bedrock Authentication - Using AWS Credentials (v0.3.45)
 
 **What's New:** WYN360 now supports AWS Bedrock as an alternative to direct Anthropic API authentication. This allows you to use AWS credentials and billing instead of Anthropic API keys.
 
@@ -4240,7 +4240,7 @@ wyn360 "analyze data with temporary permissions"
 
 ---
 
-### Troubleshooting
+#### Troubleshooting
 
 #### Error: "AWS Bedrock mode enabled but credentials not found"
 
@@ -4294,7 +4294,7 @@ export AWS_SECRET_ACCESS_KEY="xxx..."  # Also set
 
 ---
 
-### Key Differences: Anthropic API vs AWS Bedrock
+#### Key Differences: Anthropic API vs AWS Bedrock
 
 | Feature | Anthropic API | AWS Bedrock |
 |---------|--------------|-------------|
@@ -4328,7 +4328,7 @@ export AWS_SECRET_ACCESS_KEY="xxx..."  # Also set
 
 ---
 
-### Best Practices
+#### Best Practices
 
 1. **Security:**
    - Never commit AWS credentials to version control
@@ -4369,7 +4369,7 @@ Choose the method that best fits your infrastructure and billing preferences!
 
 ## Part 3: Appendices
 
-### Appendix A: Available Tools
+#### Appendix A: Available Tools
 
 WYN360 has access to these specialized tools for file and project operations:
 
@@ -4457,7 +4457,7 @@ WYN360 has access to these specialized tools for file and project operations:
 
 ---
 
-### Appendix B: Smart File Handling
+#### Appendix B: Smart File Handling
 
 #### Automatic Code Saving
 
@@ -4497,7 +4497,7 @@ WYN360 categorizes files to understand your project:
 
 ---
 
-### Appendix C: Intelligent File Operation Handling
+#### Appendix C: Intelligent File Operation Handling
 
 **Version:** NEW in v0.2.1
 
@@ -4587,7 +4587,7 @@ If the agent makes a wrong choice, it can self-correct:
 
 ---
 
-### Appendix D: Example Workflows
+#### Appendix D: Example Workflows
 
 #### Workflow 1: Brand New Project
 ```bash
@@ -4712,7 +4712,7 @@ WYN360:
 
 ---
 
-### Appendix E: Key Strengths
+#### Appendix E: Key Strengths
 
 #### 1. Context-Aware Development
 - Reads and understands your project structure before making changes
@@ -4743,7 +4743,7 @@ WYN360:
 
 ---
 
-### Appendix F: Current Limitations
+#### Appendix F: Current Limitations
 
 #### 1. Python-Focused
 - **Optimized for:** Python projects and development
@@ -4767,7 +4767,7 @@ WYN360:
 
 ---
 
-### Appendix G: Best Use Cases Summary
+#### Appendix G: Best Use Cases Summary
 
 #### ✅ Excellent For:
 
@@ -4829,7 +4829,7 @@ WYN360:
 
 ---
 
-### Appendix H: Pro Tips
+#### Appendix H: Pro Tips
 
 #### 1. Be Specific
 **Instead of:** "Make my code better"
@@ -4908,7 +4908,7 @@ WYN360: [Continues from where you left off with full context]
 
 ---
 
-### Appendix I: Learning Path
+#### Appendix I: Learning Path
 
 #### Beginner
 1. Start in blank directory
@@ -4932,7 +4932,7 @@ WYN360: [Continues from where you left off with full context]
 
 ## Part 4: Reference
 
-### Quick Start Examples
+#### Quick Start Examples
 
 #### Example 1: Build a Web Scraper
 ```bash
