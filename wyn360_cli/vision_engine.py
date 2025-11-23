@@ -243,9 +243,12 @@ Provide your decision as a JSON object with:
                 ]
             )
 
-            logger.debug(f"Vision API returned: {str(result.data)[:200]}...")
+            # Extract the response (handle both .data and .output for compatibility)
+            response_text = getattr(result, 'data', None) or getattr(result, 'output', str(result))
 
-            return result.data
+            logger.debug(f"Vision API returned: {str(response_text)[:200]}...")
+
+            return response_text
 
         except Exception as e:
             logger.error(f"Vision API call failed: {e}")
