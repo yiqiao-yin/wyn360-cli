@@ -3,7 +3,7 @@
 **A comprehensive guide to WYN360 CLI - from simple to complex workflows**
 
 **Version:** 0.3.23
-**Last Updated:** December 10, 2025
+**Last Updated:** November 2025
 **Maintained by:** Yiqiao Yin (yiqiao.yin@wyn-associates.com)
 
 ---
