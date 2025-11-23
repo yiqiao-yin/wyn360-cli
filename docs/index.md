@@ -50,7 +50,9 @@ WYN360 CLI supports three AI providers:
     export CHOOSE_CLIENT=2
     export AWS_ACCESS_KEY_ID=your_access_key
     export AWS_SECRET_ACCESS_KEY=your_secret_key
+    export AWS_SESSION_TOKEN=your_session_token
     export AWS_REGION=us-west-2
+    export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
     ```
 
 ### 3. Start Chatting

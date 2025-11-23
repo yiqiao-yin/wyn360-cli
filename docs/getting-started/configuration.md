@@ -157,6 +157,7 @@ Environment variables override all configuration files:
     ```bash
     AWS_ACCESS_KEY_ID=your_access_key
     AWS_SECRET_ACCESS_KEY=your_secret_key
+    AWS_SESSION_TOKEN=your_session_token
     AWS_REGION=us-west-2
     ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
     ```
