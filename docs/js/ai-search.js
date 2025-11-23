@@ -420,35 +420,64 @@ class WYN360AISearch {
       return `I couldn't find specific information about "${query}" in the WYN360 CLI documentation. Please try a different search term or browse the documentation sections.`;
     }
 
+    // Use actual search results to generate contextual response
     const topResult = searchResults[0];
     const queryLower = query.toLowerCase();
 
-    // Generate contextual responses based on query patterns
-    if (queryLower.includes('install') || queryLower.includes('setup')) {
-      return `To set up WYN360 CLI: First install with \`pip install wyn360-cli\`, then configure your API key with \`export ANTHROPIC_API_KEY=your_key_here\`, and launch with \`wyn360\`. Check the sources below for detailed installation instructions.`;
+    // Analyze the search results to understand what was found
+    const resultTopics = this._analyzeSearchResults(searchResults, queryLower);
+
+    // Generate response based on actual found content
+    let response = `Based on the WYN360 CLI documentation, here's what I found about "${query}": `;
+
+    if (resultTopics.streamlit || resultTopics.webApps) {
+      response += `WYN360 CLI can help you build Streamlit applications! It can generate complete app.py files with Streamlit code for chatbots, data visualization apps, and more. `;
+    }
+    else if (resultTopics.installation) {
+      response += `To set up WYN360 CLI: Install with \`pip install wyn360-cli\`, configure your API key with \`export ANTHROPIC_API_KEY=your_key_here\`, and launch with \`wyn360\`. `;
+    }
+    else if (resultTopics.browserAutomation) {
+      response += `WYN360 CLI provides autonomous browser automation through vision-powered navigation. Perfect for web scraping, form filling, and automated browsing tasks. `;
+    }
+    else if (resultTopics.webSearch) {
+      response += `WYN360 CLI includes real-time web search capabilities for accessing current information, weather data, GitHub repositories, and website content. `;
+    }
+    else if (resultTopics.vision) {
+      response += `Vision Mode allows WYN360 CLI to process images, charts, and diagrams in documents with AI-powered analysis. `;
+    }
+    else {
+      // Use the actual search result content
+      const snippet = topResult.content.substring(0, 300).trim();
+      response += `${snippet}${snippet.endsWith('.') ? '' : '...'} `;
     }
 
-    if (queryLower.includes('browser') || queryLower.includes('automation')) {
-      return `WYN360 CLI provides autonomous browser automation through the \`browse_and_find()\` tool. It uses Claude Vision to analyze web pages and make intelligent navigation decisions. Perfect for e-commerce browsing, form filling, and data extraction tasks.`;
-    }
+    response += `Check the sources below for detailed information.`;
+    return response;
+  }
 
-    if (queryLower.includes('vision') || queryLower.includes('image')) {
-      return `Vision Mode allows WYN360 CLI to process images, charts, and diagrams in documents. When reading Word or PDF files, it automatically analyzes visual content using Claude Vision API and provides intelligent descriptions.`;
-    }
+  /**
+   * Analyze search results to determine topics found
+   */
+  _analyzeSearchResults(searchResults, queryLower) {
+    const topics = {
+      streamlit: false,
+      webApps: false,
+      installation: false,
+      browserAutomation: false,
+      webSearch: false,
+      vision: false
+    };
 
-    // ENHANCED: Better matching for web/internet queries
-    if (queryLower.includes('web') || queryLower.includes('internet') || queryLower.includes('search') ||
-        queryLower.includes('online') || queryLower.includes('fetch') || queryLower.includes('browse')) {
-      return `WYN360 CLI provides powerful web/internet capabilities: **1) Web Search** - Real-time internet search for current information, weather, URLs, and finding GitHub repositories. **2) Browser Automation** - Autonomous web navigation with vision-powered interaction. **3) Website Fetching** - Direct URL content retrieval with full DOM access. Use these tools for accessing current information, browsing websites, and integrating web data into your workflow.`;
-    }
+    const allContent = searchResults.map(r => (r.title + ' ' + r.content).toLowerCase()).join(' ');
 
-    if (queryLower.includes('api') || queryLower.includes('key')) {
-      return `WYN360 CLI supports multiple AI providers: Anthropic Claude (recommended), AWS Bedrock, and Google Gemini. Set your API key using environment variables like \`ANTHROPIC_API_KEY\` or \`GEMINI_API_KEY\` depending on your chosen provider.`;
-    }
+    topics.streamlit = allContent.includes('streamlit') || allContent.includes('app.py');
+    topics.webApps = allContent.includes('fastapi') || allContent.includes('flask') || allContent.includes('django');
+    topics.installation = allContent.includes('install') || allContent.includes('setup') || allContent.includes('configuration');
+    topics.browserAutomation = allContent.includes('browser') || allContent.includes('automation') || allContent.includes('playwright');
+    topics.webSearch = allContent.includes('web search') || allContent.includes('websearchtool');
+    topics.vision = allContent.includes('vision') || allContent.includes('image') || allContent.includes('chart');
 
-    // Default contextual response using the top result
-    const snippet = topResult.content.substring(0, 400);
-    return `Based on the documentation, here's what I found about "${query}": ${snippet}... You can find more detailed information in the sources below.`;
+    return topics;
   }
 
   /**
