@@ -71,18 +71,21 @@ jobs:
 
     - name: Build documentation with AI index
       run: |
-        # Preserve search index through mkdocs build
-        if [ -f "site/assets/search-index.json" ]; then
-          cp site/assets/search-index.json /tmp/search-index.json
-        fi
+        # Build MkDocs first
         poetry run mkdocs build
+
+        # Then add AI search index to the built site
         mkdir -p site/assets
-        if [ -f "/tmp/search-index.json" ]; then
-          cp /tmp/search-index.json site/assets/search-index.json
-          echo "✅ Search index restored to built site"
-          echo "📊 Search index size: $(wc -c < site/assets/search-index.json) bytes"
+        cp site/assets/search-index.json site/assets/search-index-backup.json 2>/dev/null || echo "Creating new search index"
+        poetry run python scripts/build_search_index.py --output-dir site/assets
+
+        # Verify the index is in place
+        if [ -f "site/assets/search-index.json" ]; then
+          echo "✅ AI search index deployed"
+          echo "📊 Index size: $(wc -c < site/assets/search-index.json) bytes"
         else
-          echo "⚠️ No search index to restore"
+          echo "❌ AI search index missing"
+          exit 1
         fi
 
     - name: Verify deployment assets
