@@ -1,0 +1,126 @@
+name: Build AI Documentation Index
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'scripts/build_search_index.py'
+      - '.github/workflows/docs-ai-prep.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'scripts/build_search_index.py'
+
+# Allow manual triggering for testing
+  workflow_dispatch:
+
+jobs:
+  build-ai-index:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+      with:
+        version: latest
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Cache Poetry dependencies
+      uses: actions/cache@v3
+      with:
+        path: .venv
+        key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
+    - name: Install dependencies
+      run: |
+        poetry install --with dev
+
+    - name: Install AI preprocessing dependencies
+      run: |
+        poetry add sentence-transformers torch numpy scikit-learn
+
+    - name: Create scripts directory
+      run: |
+        mkdir -p scripts
+
+    - name: Build AI search index with embeddings
+      run: |
+        poetry run python scripts/build_search_index.py --verbose
+
+    - name: Verify search index
+      run: |
+        if [ -f "site/assets/search-index.json" ]; then
+          echo "✅ Search index generated successfully"
+          echo "📊 Index size: $(wc -c < site/assets/search-index.json) bytes"
+          echo "📝 Chunks: $(jq '.chunks | length' site/assets/search-index.json)"
+        else
+          echo "❌ Search index not found"
+          exit 1
+        fi
+
+    - name: Build documentation with AI index
+      run: |
+        poetry run mkdocs build
+
+    - name: Deploy to GitHub Pages (main branch only)
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./site
+        cname: yiqiao-yin.github.io
+
+    - name: Upload search index as artifact (for PRs and testing)
+      if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+      uses: actions/upload-artifact@v3
+      with:
+        name: ai-search-index
+        path: |
+          site/assets/search-index.json
+          site/assets/embedding-model-info.json
+        retention-days: 7
+
+    - name: Comment on PR with index stats
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const indexPath = 'site/assets/search-index.json';
+
+          if (fs.existsSync(indexPath)) {
+            const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+            const sizeKB = Math.round(fs.statSync(indexPath).size / 1024);
+
+            const comment = `## 🤖 AI Search Index Generated
+
+            **📊 Index Statistics:**
+            - **Chunks:** ${indexData.chunks?.length || 0}
+            - **Size:** ${sizeKB}KB
+            - **Model:** ${indexData.metadata?.embedding_model || 'sentence-transformers/all-MiniLM-L6-v2'}
+            - **Build Date:** ${indexData.metadata?.build_date || 'Unknown'}
+
+            **✅ Status:** AI search index built successfully and ready for deployment.
+
+            **🔍 Test Coverage:** The index includes content from:
+            ${indexData.metadata?.sections?.map(s => `- ${s}`).join('\n') || '- All documentation sections'}
+            `;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+          }
