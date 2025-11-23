@@ -31,7 +31,7 @@ class WYN360AISearch {
       responseTimeout: 30000, // 30 seconds
       apiEndpoint: null, // Will be set in Phase 3
       fallbackToRegularSearch: true,
-      indexUrl: 'assets/search-index.json'
+      indexUrl: '/wyn360-cli/assets/search-index.json'
     };
 
     // UI Elements (will be initialized when DOM is ready)
@@ -427,8 +427,10 @@ class WYN360AISearch {
       return `Vision Mode allows WYN360 CLI to process images, charts, and diagrams in documents. When reading Word or PDF files, it automatically analyzes visual content using Claude Vision API and provides intelligent descriptions.`;
     }
 
-    if (queryLower.includes('web search') || queryLower.includes('search')) {
-      return `WYN360 CLI includes built-in web search capabilities for accessing real-time internet information. You can search for current data, browse websites, and integrate web information into your development workflow.`;
+    // ENHANCED: Better matching for web/internet queries
+    if (queryLower.includes('web') || queryLower.includes('internet') || queryLower.includes('search') ||
+        queryLower.includes('online') || queryLower.includes('fetch') || queryLower.includes('browse')) {
+      return `WYN360 CLI provides powerful web/internet capabilities: **1) Web Search** - Real-time internet search for current information, weather, URLs, and finding GitHub repositories. **2) Browser Automation** - Autonomous web navigation with vision-powered interaction. **3) Website Fetching** - Direct URL content retrieval with full DOM access. Use these tools for accessing current information, browsing websites, and integrating web data into your workflow.`;
     }
 
     if (queryLower.includes('api') || queryLower.includes('key')) {
