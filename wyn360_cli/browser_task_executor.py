@@ -99,6 +99,9 @@ class BrowserTaskExecutor:
         last_action = None
         api_error_count = 0  # Track consecutive API errors
 
+        # Flag to track if we're in the middle of cleanup
+        cleanup_in_progress = False
+
         try:
             # Initialize browser
             logger.info("Initializing browser...")
@@ -113,6 +116,9 @@ class BrowserTaskExecutor:
                 logger.info(f"=== Step {step + 1}/{max_steps} ===")
 
                 try:
+                    # Check for cancellation at the start of each step
+                    await asyncio.sleep(0)  # Yield control to check for cancellation
+
                     # 1. Capture current state
                     logger.debug("Taking screenshot...")
                     screenshot = await self.controller.take_screenshot()
@@ -253,10 +259,35 @@ class BrowserTaskExecutor:
                     # Try to continue
                     continue
 
+        except asyncio.CancelledError:
+            logger.warning("Browser task was cancelled by user")
+            metrics['end_time'] = asyncio.get_event_loop().time()
+            metrics['total_duration'] = metrics['end_time'] - metrics['start_time']
+
+            # Return partial results if we got some progress
+            return {
+                'status': 'cancelled',
+                'result': None,
+                'steps_taken': len(history),
+                'history': history,
+                'reasoning': 'Task cancelled by user interruption (Ctrl+C)',
+                'metrics': metrics
+            }
+
         finally:
-            # Always cleanup browser
-            logger.info("Cleaning up browser...")
-            await self.controller.cleanup()
+            # Always cleanup browser gracefully
+            if not cleanup_in_progress:
+                cleanup_in_progress = True
+                logger.info("Cleaning up browser resources...")
+                try:
+                    await asyncio.wait_for(self.controller.cleanup(), timeout=10.0)
+                    logger.info("Browser cleanup completed successfully")
+                except asyncio.TimeoutError:
+                    logger.warning("Browser cleanup timed out after 10s, forcing termination")
+                except Exception as e:
+                    logger.error(f"Error during browser cleanup: {e}")
+            else:
+                logger.debug("Cleanup already in progress, skipping duplicate cleanup")
 
         # Max steps reached
         logger.warning(f"⚠️ Reached maximum steps ({max_steps}) without completion")

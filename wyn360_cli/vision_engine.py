@@ -262,17 +262,19 @@ Provide your decision as a JSON object with:
             return response_text
 
         except Exception as e:
-            # Check if it's an API 500 error and provide better error handling
+            # Check if it's an API error and provide better error handling
             error_msg = str(e)
-            if "500" in error_msg or "Internal server error" in error_msg:
-                logger.error(f"Anthropic API experiencing issues: {e}")
-                # Return a safe fallback action instead of failing
-                return {
+            if any(keyword in error_msg.lower() for keyword in ["500", "internal server error", "connection error", "timeout", "network"]):
+                logger.error(f"Vision API experiencing connectivity issues: {e}")
+                # Return a safe fallback action as JSON string (not dict!)
+                import json
+                fallback_action = {
                     'status': 'continue',
-                    'action': {'type': 'wait', 'seconds': 3},
-                    'reasoning': 'API temporarily unavailable, waiting before retry',
-                    'confidence': 10
+                    'action': {'type': 'wait', 'seconds': 5},
+                    'reasoning': f'API connectivity issue ({str(e)[:50]}...), waiting before retry',
+                    'confidence': 5
                 }
+                return json.dumps(fallback_action)
             else:
                 logger.error(f"Vision API call failed: {e}")
                 raise VisionDecisionError(f"Vision analysis failed: {e}")

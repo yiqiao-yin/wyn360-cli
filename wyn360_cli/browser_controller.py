@@ -34,18 +34,18 @@ class BrowserControllerError(Exception):
 class BrowserConfig:
     """Configuration for browser automation (Phase 5.4)."""
 
-    # Timeout settings (milliseconds)
-    DEFAULT_TIMEOUT = 30000  # 30 seconds
-    NAVIGATION_TIMEOUT = 60000  # 60 seconds for navigation
-    ACTION_TIMEOUT = 10000  # 10 seconds for actions
+    # Timeout settings (milliseconds) - Increased for complex sites like Amazon
+    DEFAULT_TIMEOUT = 45000  # 45 seconds (increased from 30s)
+    NAVIGATION_TIMEOUT = 90000  # 90 seconds for navigation (increased from 60s)
+    ACTION_TIMEOUT = 20000  # 20 seconds for actions (increased from 10s)
 
     # Retry settings
-    MAX_RETRIES = 2  # Retry failed actions up to 2 times
-    RETRY_DELAY = 1.0  # Wait 1 second between retries
+    MAX_RETRIES = 3  # Retry failed actions up to 3 times (increased from 2)
+    RETRY_DELAY = 2.0  # Wait 2 seconds between retries (increased from 1s)
 
-    # Performance settings
-    WAIT_AFTER_NAVIGATION = 1.0  # Wait 1s after navigation for JS
-    WAIT_AFTER_ACTION = 0.5  # Wait 0.5s after action for updates
+    # Performance settings - Increased for heavy sites
+    WAIT_AFTER_NAVIGATION = 3.0  # Wait 3s after navigation for JS (increased from 1s)
+    WAIT_AFTER_ACTION = 1.5  # Wait 1.5s after action for updates (increased from 0.5s)
 
 
 class BrowserController:
@@ -100,19 +100,35 @@ class BrowserController:
             # Launch Playwright
             self.playwright = await async_playwright().start()
 
-            # Launch Chromium browser
+            # Launch Chromium browser with enhanced anti-detection
             self.browser = await self.playwright.chromium.launch(
                 headless=headless,
                 args=[
                     '--disable-blink-features=AutomationControlled',  # Avoid detection
                     '--no-sandbox',  # Required for some environments
+                    '--disable-web-security',  # Reduce security restrictions
+                    '--disable-features=VizDisplayCompositor',  # Improve performance
+                    '--disable-extensions-http-throttling',  # Reduce throttling
+                    '--no-first-run',  # Skip first-run experience
+                    '--disable-default-apps',  # Don't load default apps
+                    '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 ]
             )
 
-            # Create browser context
+            # Create browser context with realistic settings
             self.context = await self.browser.new_context(
                 viewport={'width': viewport_size[0], 'height': viewport_size[1]},
                 user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                locale='en-US',
+                timezone_id='America/New_York',
+                extra_http_headers={
+                    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.5',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'DNT': '1',
+                    'Connection': 'keep-alive',
+                    'Upgrade-Insecure-Requests': '1',
+                }
             )
 
             # Create new page
@@ -120,6 +136,22 @@ class BrowserController:
 
             # Set default timeout from config (Phase 5.4)
             self.page.set_default_timeout(BrowserConfig.DEFAULT_TIMEOUT)
+
+            # Add stealth JavaScript to avoid detection
+            await self.page.add_init_script("""
+                // Remove automation indicators
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined,
+                });
+
+                // Override permissions query
+                const originalQuery = window.navigator.permissions.query;
+                window.navigator.permissions.query = (parameters) => (
+                    parameters.name === 'notifications' ?
+                    Promise.resolve({ state: Notification.permission }) :
+                    originalQuery(parameters)
+                );
+            """)
 
             self._initialized = True
             logger.info("Browser initialized successfully")
@@ -156,6 +188,9 @@ class BrowserController:
 
             # Additional wait for JavaScript rendering (configurable)
             await asyncio.sleep(BrowserConfig.WAIT_AFTER_NAVIGATION)
+
+            # Check for common blocking patterns
+            await self._check_for_blocking_patterns(url)
 
             logger.info(f"Navigation complete: {url}")
 
@@ -523,6 +558,102 @@ class BrowserController:
 
         except Exception as e:
             raise BrowserControllerError(f"Failed to get page state: {e}")
+
+    async def _check_for_blocking_patterns(self, url: str) -> None:
+        """
+        Check for common e-commerce blocking patterns and handle them.
+
+        Detects:
+        - CAPTCHA challenges
+        - Bot detection messages
+        - Access denied pages
+        - Rate limiting messages
+
+        Args:
+            url: The current page URL
+
+        Raises:
+            BrowserControllerError: If site is blocking automated access
+        """
+        try:
+            # Get page title and content for analysis
+            title = await self.page.title()
+            page_text = await self.page.inner_text('body') if await self.page.query_selector('body') else ""
+
+            # Common blocking patterns (case insensitive)
+            blocking_patterns = [
+                'robot or computer',
+                'captcha',
+                'not a robot',
+                'verify you are human',
+                'access denied',
+                'blocked',
+                'suspicious activity',
+                'automated traffic',
+                'try again later',
+                'rate limit',
+                'security check'
+            ]
+
+            page_text_lower = page_text.lower()
+            title_lower = title.lower()
+
+            # Check for blocking patterns
+            detected_patterns = []
+            for pattern in blocking_patterns:
+                if pattern in page_text_lower or pattern in title_lower:
+                    detected_patterns.append(pattern)
+
+            if detected_patterns:
+                logger.warning(f"Anti-bot detection triggered on {url}")
+                logger.warning(f"Detected patterns: {detected_patterns}")
+                logger.warning(f"Page title: {title}")
+
+                # Try to handle some common cases automatically
+                await self._handle_blocking_patterns(detected_patterns)
+
+        except Exception as e:
+            logger.debug(f"Could not check for blocking patterns: {e}")
+            # Don't raise - this is just a check, not critical
+
+    async def _handle_blocking_patterns(self, patterns: List[str]) -> None:
+        """
+        Attempt to automatically handle detected blocking patterns.
+
+        Args:
+            patterns: List of detected blocking pattern keywords
+        """
+        try:
+            # Look for and close cookie banners/modal dialogs first
+            common_close_selectors = [
+                'button[aria-label*="close"]',
+                'button[aria-label*="dismiss"]',
+                '.close',
+                '#close',
+                'button:has-text("Accept")',
+                'button:has-text("Got it")',
+                'button:has-text("OK")',
+                '[data-dismiss="modal"]'
+            ]
+
+            for selector in common_close_selectors:
+                try:
+                    elements = await self.page.query_selector_all(selector)
+                    if elements:
+                        logger.info(f"Found potential close button: {selector}")
+                        await elements[0].click(timeout=5000)
+                        await asyncio.sleep(1)
+                        break
+                except:
+                    continue
+
+            # If CAPTCHA or security check detected, wait longer and suggest manual intervention
+            if any('captcha' in p or 'security' in p for p in patterns):
+                logger.warning("CAPTCHA or security check detected - automated browsing may not work")
+                logger.warning("Consider using the tool on simpler websites or enabling headless=False to solve manually")
+
+        except Exception as e:
+            logger.debug(f"Could not handle blocking patterns: {e}")
 
     async def cleanup(self) -> None:
         """

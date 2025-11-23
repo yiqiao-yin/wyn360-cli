@@ -2786,6 +2786,30 @@ You may want to:
 - Consider using manual selectors if form detection failed
 """
 
+        except asyncio.CancelledError:
+            return f"""🛑 **Task Cancelled**
+
+**Task:** {task}
+**URL:** {url}
+
+Browser automation was interrupted by user (Ctrl+C).
+The browser has been cleaned up automatically.
+
+You can restart the task by running the command again.
+"""
+
+        except KeyboardInterrupt:
+            return f"""🛑 **Task Interrupted**
+
+**Task:** {task}
+**URL:** {url}
+
+Browser automation was interrupted by user.
+The browser has been cleaned up automatically.
+
+You can restart the task by running the command again.
+"""
+
         except Exception as e:
             logger.error(f"Autonomous browsing error: {e}")
             return f"❌ Error during autonomous browsing: {str(e)}"
