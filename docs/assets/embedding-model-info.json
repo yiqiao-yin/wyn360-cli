@@ -1,0 +1,6 @@
+{
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "embedding_dimension": 384,
+  "max_sequence_length": 256,
+  "device": "cuda:0"
+}
