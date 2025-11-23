@@ -56,14 +56,16 @@ jobs:
 
     - name: Build AI search index with embeddings
       run: |
-        poetry run python scripts/build_search_index.py --verbose
+        # Build the search index to docs directory so MkDocs includes it
+        mkdir -p docs/assets
+        poetry run python scripts/build_search_index.py --output-dir docs/assets --verbose
 
     - name: Verify search index
       run: |
-        if [ -f "site/assets/search-index.json" ]; then
+        if [ -f "docs/assets/search-index.json" ]; then
           echo "✅ Search index generated successfully"
-          echo "📊 Index size: $(wc -c < site/assets/search-index.json) bytes"
-          echo "📝 Chunks: $(jq '.chunks | length' site/assets/search-index.json)"
+          echo "📊 Index size: $(wc -c < docs/assets/search-index.json) bytes"
+          echo "📝 Chunks: $(poetry run python -c "import json; data=json.load(open('docs/assets/search-index.json')); print(data['metadata']['total_chunks'])")"
         else
           echo "❌ Search index not found"
           exit 1
@@ -71,20 +73,16 @@ jobs:
 
     - name: Build documentation with AI index
       run: |
-        # Build MkDocs first
+        # MkDocs will automatically include files from docs/assets/
         poetry run mkdocs build
 
-        # Then add AI search index to the built site
-        mkdir -p site/assets
-        cp site/assets/search-index.json site/assets/search-index-backup.json 2>/dev/null || echo "Creating new search index"
-        poetry run python scripts/build_search_index.py --output-dir site/assets
-
-        # Verify the index is in place
+        # Verify the index was included in the built site
         if [ -f "site/assets/search-index.json" ]; then
-          echo "✅ AI search index deployed"
+          echo "✅ AI search index deployed to site"
           echo "📊 Index size: $(wc -c < site/assets/search-index.json) bytes"
         else
-          echo "❌ AI search index missing"
+          echo "❌ AI search index missing from site build"
+          ls -la site/assets/ || echo "No site/assets directory"
           exit 1
         fi
 
@@ -113,8 +111,8 @@ jobs:
       with:
         name: ai-search-index
         path: |
-          site/assets/search-index.json
-          site/assets/embedding-model-info.json
+          docs/assets/search-index.json
+          docs/assets/embedding-model-info.json
         retention-days: 7
 
     - name: Comment on PR with index stats
@@ -123,7 +121,7 @@ jobs:
       with:
         script: |
           const fs = require('fs');
-          const indexPath = 'site/assets/search-index.json';
+          const indexPath = 'docs/assets/search-index.json';
 
           if (fs.existsSync(indexPath)) {
             const indexData = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
