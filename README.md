@@ -7,6 +7,7 @@ An intelligent AI coding assistant CLI tool powered by Anthropic Claude.
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 📚 **Documentation:** https://yiqiao-yin.github.io/wyn360-cli/
+
 🔗 **GitHub Repository:** https://github.com/yiqiao-yin/wyn360-cli
 
 ## 📑 Table of Contents
@@ -814,4 +815,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ---
 
 **Current Version:** 0.3.66
-**Last Updated:** November 22, 2025
+**Last Updated:** November 23, 2025

@@ -11,6 +11,56 @@ This document provides a detailed overview of the WYN360 CLI system architecture
 
 WYN360 CLI is built on a modular, layered architecture that separates concerns and enables flexible extensibility.
 
+Executive version:
+
+```mermaid
+graph TB
+    subgraph "User Interface"
+        CLI[CLI Interface]
+        Input[User Input]
+        Output[Console Output]
+    end
+
+    subgraph "Core Agent"
+        Agent[WYN360Agent]
+        Model[Claude API]
+        Tools[Tool System]
+    end
+
+    subgraph "Essential Tools"
+        Files[File Operations<br/>read, write, list]
+        Commands[Shell Commands<br/>execute with confirmation]
+        Git[Git Operations<br/>status, diff, commit]
+        Web[Web Tools<br/>search, fetch, browse]
+    end
+
+    subgraph "Advanced Features"
+        GitHub[GitHub Integration<br/>auth, PR, branches]
+        Auth[Website Authentication<br/>login automation]
+        Config[Configuration<br/>user + project settings]
+    end
+
+    Input --> CLI
+    CLI --> Agent
+    Agent --> Model
+    Agent --> Tools
+    Tools --> Files
+    Tools --> Commands
+    Tools --> Git
+    Tools --> Web
+    Tools --> GitHub
+    Tools --> Auth
+    Config --> Agent
+    Model --> Output
+    CLI --> Output
+
+    style Agent fill:#e1f5ff
+    style Model fill:#fff3e0
+    style CLI fill:#f3e5f5
+```
+
+Here's a detailed version:
+
 ```mermaid
 graph TB
     subgraph "User Interface Layer"
