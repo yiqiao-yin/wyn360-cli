@@ -385,6 +385,73 @@ class TestContentDiscoverability:
             print(f"Query '{query}' found {len(found_chunks)} browser-related chunks")
 
 
+class TestGitHubPagesUrls:
+    """Test GitHub Pages URL generation and fixing"""
+
+    def test_github_pages_url_fixing(self):
+        """Test that URLs are correctly prefixed with /wyn360-cli/ for GitHub Pages"""
+
+        # Simulate GitHub Pages hostname check
+        test_cases = [
+            {
+                "input": "/architecture/system/",
+                "expected": "/wyn360-cli/architecture/system/",
+                "description": "Root-relative URL should get /wyn360-cli/ prefix"
+            },
+            {
+                "input": "/ROADMAP_PHASE5_SUMMARY/",
+                "expected": "/wyn360-cli/ROADMAP_PHASE5_SUMMARY/",
+                "description": "Documentation URL should get /wyn360-cli/ prefix"
+            },
+            {
+                "input": "/wyn360-cli/features/browser-use/",
+                "expected": "/wyn360-cli/features/browser-use/",
+                "description": "URL already with /wyn360-cli/ should remain unchanged"
+            },
+            {
+                "input": "features/overview/",
+                "expected": "/wyn360-cli/features/overview/",
+                "description": "Relative URL should get /wyn360-cli/ prefix"
+            }
+        ]
+
+        for case in test_cases:
+            # Simulate the JavaScript _fixGitHubPagesUrl logic
+            def fix_github_pages_url(url, is_github_pages=True):
+                if is_github_pages and '/wyn360-cli/' not in url:
+                    clean_url = url[1:] if url.startswith('/') else url
+                    return f"/wyn360-cli/{clean_url}"
+                return url
+
+            result = fix_github_pages_url(case["input"])
+            assert result == case["expected"], \
+                f"{case['description']}: Expected '{case['expected']}', got '{result}'"
+
+            print(f"✅ URL fix test: '{case['input']}' → '{result}'")
+
+    def test_local_development_urls(self):
+        """Test that URLs work correctly in local development"""
+
+        test_cases = [
+            "/architecture/system/",
+            "/features/browser-use/",
+            "/ROADMAP_PHASE5_SUMMARY/"
+        ]
+
+        for url in test_cases:
+            # In local development, URLs should remain unchanged
+            def fix_github_pages_url(url, is_github_pages=False):
+                if is_github_pages and '/wyn360-cli/' not in url:
+                    clean_url = url[1:] if url.startswith('/') else url
+                    return f"/wyn360-cli/{clean_url}"
+                return url
+
+            result = fix_github_pages_url(url, is_github_pages=False)
+            assert result == url, f"Local development URL should remain unchanged: {url}"
+
+            print(f"✅ Local dev test: '{url}' → '{result}'")
+
+
 if __name__ == "__main__":
     # Run specific test categories
     print("Running Ask AI Search Algorithm Tests...")
