@@ -24,9 +24,7 @@ class TestBrowserAutomationTools:
     def test_tools_initialization(self):
         """Test browser automation tools initialization"""
         assert self.tools.dom_extractor is not None
-        assert self.tools.browser is None
         assert self.tools.page is None
-        assert self.tools.playwright_context is None
 
     def test_determine_automation_approach(self):
         """Test automation approach determination"""
@@ -176,14 +174,15 @@ class TestBrowserAutomationTools:
     @pytest.mark.asyncio
     async def test_analyze_page_dom_success(self):
         """Test successful DOM analysis"""
-        with patch.object(self.tools, '_initialize_browser') as mock_init:
+        with patch('src.wyn360.tools.browser.browser_automation_tools.browser_manager') as mock_manager:
             with patch.object(self.tools.dom_extractor, 'extract_dom') as mock_extract:
-                # Mock successful initialization
+                # Mock unified browser manager
                 mock_page = AsyncMock()
                 mock_page.goto = AsyncMock()
                 mock_page.wait_for_load_state = AsyncMock()
+                mock_manager.initialize = AsyncMock()
+                mock_manager.get_page = AsyncMock(return_value=mock_page)
                 self.tools.page = mock_page
-                self.tools.browser = Mock()
 
                 # Mock DOM analysis
                 mock_dom = DOMAnalysis(
@@ -217,7 +216,8 @@ class TestBrowserAutomationTools:
     @pytest.mark.asyncio
     async def test_analyze_page_dom_failure(self):
         """Test DOM analysis failure"""
-        with patch.object(self.tools, '_initialize_browser', side_effect=Exception("Browser error")):
+        with patch('src.wyn360.tools.browser.browser_automation_tools.browser_manager') as mock_manager:
+            mock_manager.initialize.side_effect = Exception("Browser error")
             result = await self.tools.analyze_page_dom(
                 self.mock_ctx,
                 'https://example.com'
@@ -318,23 +318,16 @@ class TestBrowserAutomationTools:
     @pytest.mark.asyncio
     async def test_close_browser(self):
         """Test browser cleanup"""
-        mock_page = AsyncMock()
-        mock_browser = AsyncMock()
-        mock_playwright = AsyncMock()
+        with patch('src.wyn360.tools.browser.browser_automation_tools.browser_manager') as mock_manager:
+            mock_page = AsyncMock()
+            mock_manager.close_page = AsyncMock()
+            self.tools.page = mock_page
 
-        self.tools.page = mock_page
-        self.tools.browser = mock_browser
-        self.tools.playwright_context = mock_playwright
+            await self.tools.close_browser()
 
-        await self.tools.close_browser()
-
-        mock_page.close.assert_called_once()
-        mock_browser.close.assert_called_once()
-        mock_playwright.stop.assert_called_once()
-
-        assert self.tools.page is None
-        assert self.tools.browser is None
-        assert self.tools.playwright_context is None
+            # Verify that browser manager's close_page was called
+            mock_manager.close_page.assert_called_once_with("dom_analysis")
+            assert self.tools.page is None
 
 
 class TestGlobalBrowserTools:
@@ -348,7 +341,7 @@ class TestGlobalBrowserTools:
     def test_global_instance_initialization(self):
         """Test global instance is properly initialized"""
         assert browser_tools.dom_extractor is not None
-        assert browser_tools.browser is None  # Should be None until initialized
+        assert browser_tools.page is None  # Should be None until initialized
 
 
 class TestIntegration:

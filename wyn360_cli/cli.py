@@ -43,7 +43,13 @@ console = Console(width=console_width, force_terminal=True)
     type=int,
     help='Maximum tokens for model output (default: 4096). Use MAX_TOKEN env var or this flag.'
 )
-def main(api_key, model, max_internet_search_limit, max_token):
+@click.option(
+    '--show-browser',
+    is_flag=True,
+    default=False,
+    help='Show browser window during automation (default: headless mode)'
+)
+def main(api_key, model, max_internet_search_limit, max_token, show_browser):
     """
     WYN360 - An intelligent AI coding assistant CLI tool.
 
@@ -98,6 +104,12 @@ def main(api_key, model, max_internet_search_limit, max_token):
         - Real-time internet access with proper citations
         - Limited to 5 searches per session ($0.01 per search)
 
+      Browser Automation (NEW in v0.3.60):
+        - Intelligent DOM-first automation with vision fallback
+        - Smart routing between approaches for optimal performance
+        - Use --show-browser flag to display browser during automation
+        - Set WYN360_BROWSER_SHOW=true to enable browser display by default
+
     \b
     EXAMPLES:
       # Start with different models
@@ -107,6 +119,7 @@ def main(api_key, model, max_internet_search_limit, max_token):
 
       # Quick commands
       $ wyn360 --api-key sk-ant-...       # Provide API key directly
+      $ wyn360 --show-browser             # Show browser during automation
 
     \b
     DOCUMENTATION:
@@ -146,6 +159,14 @@ def main(api_key, model, max_internet_search_limit, max_token):
     # Ensure it's a positive integer
     if max_token < 1:
         max_token = 4096
+
+    # Get show_browser setting from environment if not set by CLI flag
+    # Priority: 1. CLI argument, 2. Environment variable, 3. Default (False - headless)
+    if not show_browser:
+        # Check WYN360_BROWSER_SHOW environment variable
+        browser_show_env = os.getenv('WYN360_BROWSER_SHOW', 'false').lower()
+        if browser_show_env in ('true', '1', 'yes', 'on'):
+            show_browser = True
 
     # Validate credentials based on client choice
     # For auto-detect (0), we let the agent figure it out
@@ -239,9 +260,9 @@ def main(api_key, model, max_internet_search_limit, max_token):
     try:
         # Use model from CLI arg if provided, otherwise use config model
         if model != 'claude-sonnet-4-20250514':  # If user specified a different model
-            agent = WYN360Agent(api_key=api_key, model=model, config=config, max_search_limit=max_internet_search_limit)
+            agent = WYN360Agent(api_key=api_key, model=model, config=config, max_search_limit=max_internet_search_limit, show_browser=show_browser)
         else:
-            agent = WYN360Agent(api_key=api_key, config=config, max_search_limit=max_internet_search_limit)
+            agent = WYN360Agent(api_key=api_key, config=config, max_search_limit=max_internet_search_limit, show_browser=show_browser)
 
         actual_model = agent.model_name
 
@@ -385,6 +406,21 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
             table.add_row("  Input Cost (Sonnet)", f"${stats['dom_automation_input_cost']:.4f}")
             table.add_row("  Output Cost (Sonnet)", f"${stats['dom_automation_output_cost']:.4f}")
             table.add_row("  Subtotal (DOM Auto)", f"${stats['dom_automation_cost']:.4f}")
+
+        # Add Stagehand automation stats if any
+        if stats["stagehand_automation_total_operations"] > 0:
+            table.add_row("─" * 30, "─" * 20)
+            table.add_row("[bold]Stagehand Automation[/bold]", "")
+            table.add_row("  Total Operations", str(stats["stagehand_automation_total_operations"]))
+            table.add_row("  • Code Generation", f"{stats['stagehand_generation_count']} operations")
+            table.add_row("  • Code Execution", f"{stats['stagehand_execution_count']} operations")
+            table.add_row("  • Enhanced Browse", f"{stats['enhanced_browse_count']} operations")
+            table.add_row("  Input Tokens", f"{stats['stagehand_automation_total_input_tokens']:,}")
+            table.add_row("  Output Tokens", f"{stats['stagehand_automation_total_output_tokens']:,}")
+            table.add_row("  Total Tokens", f"{stats['stagehand_automation_total_tokens']:,}")
+            table.add_row("  Input Cost (Sonnet)", f"${stats['stagehand_automation_input_cost']:.4f}")
+            table.add_row("  Output Cost (Sonnet)", f"${stats['stagehand_automation_output_cost']:.4f}")
+            table.add_row("  Subtotal (Stagehand)", f"${stats['stagehand_automation_cost']:.4f}")
 
         table.add_row("─" * 30, "─" * 20)
         table.add_row("[bold]Total Cost[/bold]", f"[bold]${stats['total_cost']:.4f}[/bold]")

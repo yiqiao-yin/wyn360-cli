@@ -160,7 +160,8 @@ class WYN360Agent:
         config: Optional[WYN360Config] = None,
         use_bedrock: Optional[bool] = None,
         use_gemini: Optional[bool] = None,
-        max_search_limit: int = 5
+        max_search_limit: int = 5,
+        show_browser: bool = False
     ):
         """
         Initialize the WYN360 Agent with Anthropic, AWS Bedrock, or Google Gemini.
@@ -173,6 +174,7 @@ class WYN360Agent:
             use_bedrock: Explicitly set Bedrock mode (overrides env var)
             use_gemini: Explicitly set Gemini mode (overrides env var)
             max_search_limit: Maximum number of web searches per session (default: 5)
+            show_browser: Show browser window during automation (default: False for headless mode)
         """
         self.config = config
 
@@ -273,6 +275,9 @@ class WYN360Agent:
         # Web search limit (configurable, default: 5)
         self.max_search_limit = max_search_limit
 
+        # Browser automation settings
+        self.show_browser = show_browser
+
         # Token usage tracking
         self.total_input_tokens = 0
         self.total_output_tokens = 0
@@ -299,6 +304,17 @@ class WYN360Agent:
         self.intelligent_browse_count = 0
         self.intelligent_browse_input_tokens = 0
         self.intelligent_browse_output_tokens = 0
+
+        # Stagehand automation token tracking (Phase 2.6)
+        self.stagehand_generation_count = 0
+        self.stagehand_generation_input_tokens = 0
+        self.stagehand_generation_output_tokens = 0
+        self.stagehand_execution_count = 0
+        self.stagehand_execution_input_tokens = 0
+        self.stagehand_execution_output_tokens = 0
+        self.enhanced_browse_count = 0
+        self.enhanced_browse_input_tokens = 0
+        self.enhanced_browse_output_tokens = 0
 
         # Document reader settings (Phase 13.1)
         self.doc_token_limits = {
@@ -329,7 +345,7 @@ class WYN360Agent:
 
         # Phase 4.4: Debug mode from environment variable
         debug_mode = os.getenv('WYN360_BROWSER_DEBUG', 'false').lower() == 'true'
-        self.browser_auth = BrowserAuth(debug=debug_mode)
+        self.browser_auth = BrowserAuth(headless=not self.show_browser, debug=debug_mode)
 
         # Initialize model based on authentication mode
         if self.use_gemini:
@@ -2695,7 +2711,7 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         task: str,
         url: str,
         max_steps: int = 20,
-        headless: bool = False
+        headless: Optional[bool] = None
     ) -> str:
         """
         Autonomously browse a website to complete a multi-step task using vision.
@@ -2751,6 +2767,10 @@ from {module_name} import {', '.join([f['name'] for f in functions] + [c['name']
         try:
             # Initialize executor
             executor = BrowserTaskExecutor(self.agent)
+
+            # Use self.show_browser if headless not explicitly specified
+            if headless is None:
+                headless = not self.show_browser
 
             # Execute task
             result = await executor.execute_task(
@@ -3975,6 +3995,17 @@ You can restart the task by running the command again.
         self.intelligent_browse_count = 0
         self.intelligent_browse_input_tokens = 0
         self.intelligent_browse_output_tokens = 0
+
+        # Reset Stagehand automation counters
+        self.stagehand_generation_count = 0
+        self.stagehand_generation_input_tokens = 0
+        self.stagehand_generation_output_tokens = 0
+        self.stagehand_execution_count = 0
+        self.stagehand_execution_input_tokens = 0
+        self.stagehand_execution_output_tokens = 0
+        self.enhanced_browse_count = 0
+        self.enhanced_browse_input_tokens = 0
+        self.enhanced_browse_output_tokens = 0
         self.performance_metrics = PerformanceMetrics()  # Reset performance metrics
 
     def get_history(self) -> List:
@@ -4137,7 +4168,19 @@ You can restart the task by running the command again.
             (dom_total_output / 1_000_000 * 15.0)
         )
 
-        total_cost = conversation_cost + doc_processing_cost + vision_cost + dom_automation_cost
+        # Stagehand automation costs (Sonnet pricing - same as conversation)
+        stagehand_total_input = (self.stagehand_generation_input_tokens +
+                                self.stagehand_execution_input_tokens +
+                                self.enhanced_browse_input_tokens)
+        stagehand_total_output = (self.stagehand_generation_output_tokens +
+                                 self.stagehand_execution_output_tokens +
+                                 self.enhanced_browse_output_tokens)
+        stagehand_automation_cost = (
+            (stagehand_total_input / 1_000_000 * 3.0) +
+            (stagehand_total_output / 1_000_000 * 15.0)
+        )
+
+        total_cost = conversation_cost + doc_processing_cost + vision_cost + dom_automation_cost + stagehand_automation_cost
 
         avg_cost_per_request = total_cost / self.request_count if self.request_count > 0 else 0
 
@@ -4185,6 +4228,25 @@ You can restart the task by running the command again.
             "dom_automation_cost": dom_automation_cost,
             "dom_automation_input_cost": dom_total_input / 1_000_000 * 3.0,
             "dom_automation_output_cost": dom_total_output / 1_000_000 * 15.0,
+            # Stagehand automation stats
+            "stagehand_automation_total_operations": (self.stagehand_generation_count +
+                                                     self.stagehand_execution_count +
+                                                     self.enhanced_browse_count),
+            "stagehand_generation_count": self.stagehand_generation_count,
+            "stagehand_generation_input_tokens": self.stagehand_generation_input_tokens,
+            "stagehand_generation_output_tokens": self.stagehand_generation_output_tokens,
+            "stagehand_execution_count": self.stagehand_execution_count,
+            "stagehand_execution_input_tokens": self.stagehand_execution_input_tokens,
+            "stagehand_execution_output_tokens": self.stagehand_execution_output_tokens,
+            "enhanced_browse_count": self.enhanced_browse_count,
+            "enhanced_browse_input_tokens": self.enhanced_browse_input_tokens,
+            "enhanced_browse_output_tokens": self.enhanced_browse_output_tokens,
+            "stagehand_automation_total_input_tokens": stagehand_total_input,
+            "stagehand_automation_total_output_tokens": stagehand_total_output,
+            "stagehand_automation_total_tokens": stagehand_total_input + stagehand_total_output,
+            "stagehand_automation_cost": stagehand_automation_cost,
+            "stagehand_automation_input_cost": stagehand_total_input / 1_000_000 * 3.0,
+            "stagehand_automation_output_cost": stagehand_total_output / 1_000_000 * 15.0,
         }
 
     def get_performance_stats(self) -> Dict[str, Any]:
@@ -4379,7 +4441,37 @@ You can restart the task by running the command again.
             self.intelligent_browse_input_tokens += input_tokens
             self.intelligent_browse_output_tokens += output_tokens
 
-        logger.debug(f"DOM {operation_type} tokens: input={input_tokens}, output={output_tokens}")
+    def _track_stagehand_automation_tokens(
+        self,
+        operation_type: str,
+        input_text: str,
+        output_text: str
+    ) -> None:
+        """
+        Track token usage for Stagehand automation operations.
+
+        Args:
+            operation_type: Type of operation (generation, execution, enhanced_browse)
+            input_text: Input text to the operation (task description, DOM context, etc.)
+            output_text: Output text from the operation
+        """
+        input_tokens = self._estimate_tokens(input_text)
+        output_tokens = self._estimate_tokens(output_text)
+
+        if operation_type == "generation":
+            self.stagehand_generation_count += 1
+            self.stagehand_generation_input_tokens += input_tokens
+            self.stagehand_generation_output_tokens += output_tokens
+        elif operation_type == "execution":
+            self.stagehand_execution_count += 1
+            self.stagehand_execution_input_tokens += input_tokens
+            self.stagehand_execution_output_tokens += output_tokens
+        elif operation_type == "enhanced_browse":
+            self.enhanced_browse_count += 1
+            self.enhanced_browse_input_tokens += input_tokens
+            self.enhanced_browse_output_tokens += output_tokens
+
+        logger.debug(f"Stagehand {operation_type} tokens: input={input_tokens}, output={output_tokens}")
 
     # DOM-first Browser Automation Tools (Phase 1.5)
 
@@ -4389,7 +4481,7 @@ You can restart the task by running the command again.
         url: str,
         task_description: Optional[str] = None,
         confidence_threshold: float = 0.7,
-        show_browser: bool = False
+        show_browser: Optional[bool] = None
     ) -> str:
         """
         Analyze webpage DOM structure for intelligent automation planning.
@@ -4417,6 +4509,10 @@ You can restart the task by running the command again.
         """
         try:
             logger.info(f"Analyzing DOM for URL: {url}")
+
+            # Use self.show_browser if show_browser not explicitly specified
+            if show_browser is None:
+                show_browser = self.show_browser
 
             # Create input text for token counting
             input_text = f"URL: {url}"
@@ -4480,7 +4576,7 @@ You can restart the task by running the command again.
         target_description: str,
         action_data: Optional[str] = None,
         confidence_threshold: float = 0.7,
-        show_browser: bool = False
+        show_browser: Optional[bool] = None
     ) -> str:
         """
         Execute a single action on a webpage using DOM analysis.
@@ -4516,6 +4612,10 @@ You can restart the task by running the command again.
         """
         try:
             logger.info(f"Executing DOM action: {action} on '{target_description}' at {url}")
+
+            # Use self.show_browser if show_browser not explicitly specified
+            if show_browser is None:
+                show_browser = self.show_browser
 
             # Create input text for token counting
             input_text = f"URL: {url}\nAction: {action}\nTarget: {target_description}"
@@ -4590,7 +4690,7 @@ You can restart the task by running the command again.
         url: str,
         max_steps: int = 15,
         confidence_threshold: float = 0.7,
-        show_browser: bool = False
+        show_browser: Optional[bool] = None
     ) -> str:
         """
         Intelligently browse website using DOM-first approach with fallbacks.
@@ -4625,6 +4725,10 @@ You can restart the task by running the command again.
         """
         try:
             logger.info(f"Starting intelligent browsing task: {task}")
+
+            # Use self.show_browser if show_browser not explicitly specified
+            if show_browser is None:
+                show_browser = self.show_browser
 
             # Create input text for token counting
             input_text = f"Task: {task}\nURL: {url}\nMax Steps: {max_steps}\nConfidence Threshold: {confidence_threshold}"

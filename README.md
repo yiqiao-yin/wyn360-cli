@@ -252,7 +252,7 @@ WYN360: I'll create a Streamlit app for you...
 - 📊 **Current Data** - Latest package versions, documentation, and trends
 - 💰 **Cost Effective** - Limited to 5 searches per session, $10 per 1K searches
 
-### Browser Use / Direct Website Fetching (v0.3.24)
+### Browser Use / Direct Website Fetching (v0.3.24+)
 - 🌐 **Direct URL Fetching** - Fetch specific websites directly (not just search results)
 - 📄 **Full DOM Extraction** - Get complete page content, not just search snippets
 - 🧠 **LLM-Optimized** - Automatic conversion to clean, structured markdown
@@ -260,6 +260,8 @@ WYN360: I'll create a Streamlit app for you...
 - 📏 **Smart Truncation** - Preserves document structure while staying under token limits
 - 🎯 **Configurable** - Adjust max tokens, cache settings, truncation strategy
 - 💾 **Cache Management** - View stats, clear cache, manage storage
+- 🖥️ **Browser Debugging** - Use `--show-browser` flag or `WYN360_BROWSER_SHOW=1` to see automation in action
+- 🔄 **Interactive Error Recovery** - LLM-assisted error analysis with intelligent recovery options when automation fails
 
 ### Vision Mode for Document Images (v0.3.30)
 - 🖼️ **Image Processing** - Intelligently describe images in Word and PDF documents
@@ -679,6 +681,7 @@ git push origin main
 | `MAX_TOKEN` | Maximum tokens for model output (can also use `--max-token` CLI arg) | `4096` |
 | `MAX_INTERNET_SEARCH_LIMIT` | Maximum web searches per session (can also use `--max-internet-search-limit` CLI arg) | `5` |
 | `WYN360_SKIP_CONFIRM` | Skip command execution confirmations | `0` (disabled) |
+| `WYN360_BROWSER_SHOW` | Show browser window during automation (can also use `--show-browser` CLI arg) | `0` (headless) |
 
 ### Anthropic Claude (CHOOSE_CLIENT=1)
 
@@ -721,6 +724,7 @@ MAX_INTERNET_SEARCH_LIMIT=5
 GH_TOKEN=ghp_your_github_token
 HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
+WYN360_BROWSER_SHOW=0
 ```
 
 **Setup Example (Google Gemini):** 🆕
@@ -733,6 +737,7 @@ MAX_TOKEN=4096
 GH_TOKEN=ghp_your_github_token
 HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
+WYN360_BROWSER_SHOW=0
 ```
 
 **Setup Example (AWS Bedrock):**
@@ -748,11 +753,13 @@ MAX_TOKEN=4096
 GH_TOKEN=ghp_your_github_token
 HF_TOKEN=hf_your_huggingface_token
 WYN360_SKIP_CONFIRM=0
+WYN360_BROWSER_SHOW=0
 ```
 
 **Notes:**
 - Set `CHOOSE_CLIENT=0` (or omit it) for auto-detection based on available API keys
 - Set `WYN360_SKIP_CONFIRM=1` to skip confirmation prompts (useful for testing or automation)
+- Set `WYN360_BROWSER_SHOW=1` to show browser window during automation (useful for debugging)
 - Gemini is ~40x cheaper than Claude and has 2M context window!
 
 ## 📋 Requirements
@@ -814,5 +821,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.66
+**Current Version:** 0.3.67
 **Last Updated:** November 23, 2025

@@ -13,6 +13,7 @@ from playwright.async_api import Browser, Page, async_playwright
 from pydantic_ai import RunContext
 
 from .dom_analyzer import DOMExtractor, DOMAnalysis, format_dom_for_llm
+from .browser_manager import browser_manager
 
 logger = logging.getLogger(__name__)
 
@@ -22,9 +23,7 @@ class BrowserAutomationTools:
 
     def __init__(self):
         self.dom_extractor = DOMExtractor()
-        self.browser: Optional[Browser] = None
         self.page: Optional[Page] = None
-        self.playwright_context = None
 
     async def analyze_page_dom(
         self,
@@ -50,9 +49,11 @@ class BrowserAutomationTools:
         try:
             logger.info(f"Analyzing DOM for: {url}")
 
-            # Initialize browser if needed
-            if not self.browser:
-                await self._initialize_browser(headless=not show_browser)
+            # Initialize unified browser if needed
+            await browser_manager.initialize(headless=not show_browser)
+
+            # Get or create page
+            self.page = await browser_manager.get_page("dom_analysis")
 
             # Navigate to page
             await self.page.goto(url)
@@ -202,33 +203,15 @@ class BrowserAutomationTools:
     async def close_browser(self):
         """Clean up browser resources"""
         try:
+            # Close our specific page
             if self.page:
-                await self.page.close()
+                await browser_manager.close_page("dom_analysis")
                 self.page = None
-            if self.browser:
-                await self.browser.close()
-                self.browser = None
-            if self.playwright_context:
-                await self.playwright_context.stop()
-                self.playwright_context = None
-            logger.info("Browser resources cleaned up")
+            logger.info("DOM analysis browser resources cleaned up")
         except Exception as e:
             logger.warning(f"Error closing browser: {e}")
 
-    async def _initialize_browser(self, headless: bool = True) -> None:
-        """Initialize Playwright browser"""
-        try:
-            self.playwright_context = await async_playwright().start()
-            self.browser = await self.playwright_context.chromium.launch(headless=headless)
-            context = await self.browser.new_context(
-                viewport={'width': 1280, 'height': 720},
-                user_agent='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36'
-            )
-            self.page = await context.new_page()
-            logger.info("Browser initialized successfully")
-        except Exception as e:
-            logger.error(f"Failed to initialize browser: {e}")
-            raise
+    # Browser initialization is now handled by the unified browser manager
 
     def _determine_automation_approach(
         self,
