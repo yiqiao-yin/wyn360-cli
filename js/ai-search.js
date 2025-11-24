@@ -405,7 +405,7 @@ class WYN360AISearch {
         answer: this._generateAnswerFromContext(query, searchResults),
         sources: searchResults.map(chunk => ({
           title: chunk.title,
-          url: chunk.url,
+          url: this._fixGitHubPagesUrl(chunk.url),
           snippet: chunk.content.substring(0, 200) + '...',
           section: chunk.section,
           relevance: chunk.similarity || (this._calculateRelevanceScore(chunk, query) / 10),
@@ -1133,6 +1133,29 @@ class WYN360AISearch {
 
     console.log(`[AI Search] Current path: ${currentPath}, Using index URL: ${relativePath}`);
     return relativePath;
+  }
+
+  /**
+   * Fix GitHub Pages URLs by adding the repository name (/wyn360-cli/)
+   */
+  _fixGitHubPagesUrl(url) {
+    // If we're on GitHub Pages and URL doesn't already include /wyn360-cli/
+    const currentHostname = window.location.hostname;
+
+    if (currentHostname.includes('github.io')) {
+      // Check if URL already includes the repo name
+      if (!url.includes('/wyn360-cli/')) {
+        // Remove leading slash if present and add /wyn360-cli/ prefix
+        const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+        const fixedUrl = `/wyn360-cli/${cleanUrl}`;
+
+        console.log(`[AI Search] Fixed GitHub Pages URL: ${url} → ${fixedUrl}`);
+        return fixedUrl;
+      }
+    }
+
+    // For local development or if URL is already correct, return as-is
+    return url;
   }
 }
 
