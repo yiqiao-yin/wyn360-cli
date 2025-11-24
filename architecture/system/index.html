@@ -2199,6 +2199,51 @@
 <hr />
 <h2 id="architecture-overview">🏗️ Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
 <p>WYN360 CLI is built on a modular, layered architecture that separates concerns and enables flexible extensibility.</p>
+<p>Executive version:</p>
+<pre class="mermaid"><code>graph TB
+    subgraph "User Interface"
+        CLI[CLI Interface]
+        Input[User Input]
+        Output[Console Output]
+    end
+
+    subgraph "Core Agent"
+        Agent[WYN360Agent]
+        Model[Claude API]
+        Tools[Tool System]
+    end
+
+    subgraph "Essential Tools"
+        Files[File Operations&lt;br/&gt;read, write, list]
+        Commands[Shell Commands&lt;br/&gt;execute with confirmation]
+        Git[Git Operations&lt;br/&gt;status, diff, commit]
+        Web[Web Tools&lt;br/&gt;search, fetch, browse]
+    end
+
+    subgraph "Advanced Features"
+        GitHub[GitHub Integration&lt;br/&gt;auth, PR, branches]
+        Auth[Website Authentication&lt;br/&gt;login automation]
+        Config[Configuration&lt;br/&gt;user + project settings]
+    end
+
+    Input --&gt; CLI
+    CLI --&gt; Agent
+    Agent --&gt; Model
+    Agent --&gt; Tools
+    Tools --&gt; Files
+    Tools --&gt; Commands
+    Tools --&gt; Git
+    Tools --&gt; Web
+    Tools --&gt; GitHub
+    Tools --&gt; Auth
+    Config --&gt; Agent
+    Model --&gt; Output
+    CLI --&gt; Output
+
+    style Agent fill:#e1f5ff
+    style Model fill:#fff3e0
+    style CLI fill:#f3e5f5</code></pre>
+<p>Here's a detailed version:</p>
 <pre class="mermaid"><code>graph TB
     subgraph "User Interface Layer"
         CLI[CLI Interface&lt;br/&gt;click + prompt-toolkit]
