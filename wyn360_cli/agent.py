@@ -40,7 +40,7 @@ from .session_manager import SessionManager
 from .browser_auth import BrowserAuth
 from .browser_task_executor import BrowserTaskExecutor
 # Import DOM-first browser automation tools
-from src.wyn360.tools.browser import (
+from .tools.browser import (
     browser_tools,
     automation_orchestrator,
     AutomationApproach,
