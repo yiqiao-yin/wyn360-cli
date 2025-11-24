@@ -371,6 +371,21 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
             table.add_row("  Output Cost (Sonnet)", f"${stats['vision_output_cost']:.4f}")
             table.add_row("  Subtotal (Vision)", f"${stats['vision_cost']:.4f}")
 
+        # Add DOM automation stats if any
+        if stats["dom_automation_total_operations"] > 0:
+            table.add_row("─" * 30, "─" * 20)
+            table.add_row("[bold]DOM Automation[/bold]", "")
+            table.add_row("  Total Operations", str(stats["dom_automation_total_operations"]))
+            table.add_row("  • DOM Analysis", f"{stats['dom_analysis_count']} operations")
+            table.add_row("  • DOM Actions", f"{stats['dom_action_count']} operations")
+            table.add_row("  • Intelligent Browse", f"{stats['intelligent_browse_count']} operations")
+            table.add_row("  Input Tokens", f"{stats['dom_automation_total_input_tokens']:,}")
+            table.add_row("  Output Tokens", f"{stats['dom_automation_total_output_tokens']:,}")
+            table.add_row("  Total Tokens", f"{stats['dom_automation_total_tokens']:,}")
+            table.add_row("  Input Cost (Sonnet)", f"${stats['dom_automation_input_cost']:.4f}")
+            table.add_row("  Output Cost (Sonnet)", f"${stats['dom_automation_output_cost']:.4f}")
+            table.add_row("  Subtotal (DOM Auto)", f"${stats['dom_automation_cost']:.4f}")
+
         table.add_row("─" * 30, "─" * 20)
         table.add_row("[bold]Total Cost[/bold]", f"[bold]${stats['total_cost']:.4f}[/bold]")
         table.add_row("─" * 30, "─" * 20)

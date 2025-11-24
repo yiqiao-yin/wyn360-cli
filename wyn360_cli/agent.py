@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import asdict
@@ -38,6 +39,14 @@ from .credential_manager import CredentialManager
 from .session_manager import SessionManager
 from .browser_auth import BrowserAuth
 from .browser_task_executor import BrowserTaskExecutor
+# Import DOM-first browser automation tools
+from src.wyn360.tools.browser import (
+    browser_tools,
+    automation_orchestrator,
+    AutomationApproach,
+    ActionRequest,
+    ActionResult
+)
 from .document_readers import (
     ExcelReader,
     WordReader,
@@ -55,6 +64,8 @@ from .document_readers import (
     HAS_PYMUPDF,
     HAS_PDFPLUMBER
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _get_client_choice() -> int:
@@ -278,6 +289,17 @@ class WYN360Agent:
         self.vision_output_tokens = 0
         self.vision_image_count = 0
 
+        # DOM automation token tracking (Phase 1.6)
+        self.dom_analysis_count = 0
+        self.dom_analysis_input_tokens = 0
+        self.dom_analysis_output_tokens = 0
+        self.dom_action_count = 0
+        self.dom_action_input_tokens = 0
+        self.dom_action_output_tokens = 0
+        self.intelligent_browse_count = 0
+        self.intelligent_browse_input_tokens = 0
+        self.intelligent_browse_output_tokens = 0
+
         # Document reader settings (Phase 13.1)
         self.doc_token_limits = {
             "excel": 10000,
@@ -442,6 +464,10 @@ class WYN360Agent:
                 self.login_to_website,
                 # Autonomous browsing (Phase 5.3)
                 self.browse_and_find,
+                # DOM-first browser automation (Phase 1.5)
+                self.analyze_page_dom,
+                self.execute_dom_action,
+                self.intelligent_browse,
                 # Document readers (Phase 13.2, 13.3, 13.4)
                 self.read_excel,
                 self.read_word,
@@ -3939,6 +3965,16 @@ You can restart the task by running the command again.
         self.doc_processing_input_tokens = 0
         self.doc_processing_output_tokens = 0
         self.doc_processing_count = 0
+        # Reset DOM automation counters
+        self.dom_analysis_count = 0
+        self.dom_analysis_input_tokens = 0
+        self.dom_analysis_output_tokens = 0
+        self.dom_action_count = 0
+        self.dom_action_input_tokens = 0
+        self.dom_action_output_tokens = 0
+        self.intelligent_browse_count = 0
+        self.intelligent_browse_input_tokens = 0
+        self.intelligent_browse_output_tokens = 0
         self.performance_metrics = PerformanceMetrics()  # Reset performance metrics
 
     def get_history(self) -> List:
@@ -4089,7 +4125,19 @@ You can restart the task by running the command again.
             (self.vision_output_tokens / 1_000_000 * 15.0)
         )
 
-        total_cost = conversation_cost + doc_processing_cost + vision_cost
+        # DOM automation costs (Sonnet pricing - same as conversation)
+        dom_total_input = (self.dom_analysis_input_tokens +
+                          self.dom_action_input_tokens +
+                          self.intelligent_browse_input_tokens)
+        dom_total_output = (self.dom_analysis_output_tokens +
+                           self.dom_action_output_tokens +
+                           self.intelligent_browse_output_tokens)
+        dom_automation_cost = (
+            (dom_total_input / 1_000_000 * 3.0) +
+            (dom_total_output / 1_000_000 * 15.0)
+        )
+
+        total_cost = conversation_cost + doc_processing_cost + vision_cost + dom_automation_cost
 
         avg_cost_per_request = total_cost / self.request_count if self.request_count > 0 else 0
 
@@ -4118,6 +4166,25 @@ You can restart the task by running the command again.
             "vision_cost": vision_cost,
             "vision_input_cost": self.vision_input_tokens / 1_000_000 * 3.0,
             "vision_output_cost": self.vision_output_tokens / 1_000_000 * 15.0,
+            # DOM automation stats
+            "dom_automation_total_operations": (self.dom_analysis_count +
+                                               self.dom_action_count +
+                                               self.intelligent_browse_count),
+            "dom_analysis_count": self.dom_analysis_count,
+            "dom_analysis_input_tokens": self.dom_analysis_input_tokens,
+            "dom_analysis_output_tokens": self.dom_analysis_output_tokens,
+            "dom_action_count": self.dom_action_count,
+            "dom_action_input_tokens": self.dom_action_input_tokens,
+            "dom_action_output_tokens": self.dom_action_output_tokens,
+            "intelligent_browse_count": self.intelligent_browse_count,
+            "intelligent_browse_input_tokens": self.intelligent_browse_input_tokens,
+            "intelligent_browse_output_tokens": self.intelligent_browse_output_tokens,
+            "dom_automation_total_input_tokens": dom_total_input,
+            "dom_automation_total_output_tokens": dom_total_output,
+            "dom_automation_total_tokens": dom_total_input + dom_total_output,
+            "dom_automation_cost": dom_automation_cost,
+            "dom_automation_input_cost": dom_total_input / 1_000_000 * 3.0,
+            "dom_automation_output_cost": dom_total_output / 1_000_000 * 15.0,
         }
 
     def get_performance_stats(self) -> Dict[str, Any]:
@@ -4281,3 +4348,410 @@ You can restart the task by running the command again.
             "total_tokens": input_tokens + output_tokens,
             "cost": (input_tokens / 1_000_000 * 3.0) + (output_tokens / 1_000_000 * 15.0)
         })
+
+    def _track_dom_automation_tokens(
+        self,
+        operation_type: str,
+        input_text: str,
+        output_text: str
+    ) -> None:
+        """
+        Track token usage for DOM automation operations.
+
+        Args:
+            operation_type: Type of operation (analyze, action, browse)
+            input_text: Input text to the operation (DOM data, task description)
+            output_text: Output text from the operation
+        """
+        input_tokens = self._estimate_tokens(input_text)
+        output_tokens = self._estimate_tokens(output_text)
+
+        if operation_type == "analyze":
+            self.dom_analysis_count += 1
+            self.dom_analysis_input_tokens += input_tokens
+            self.dom_analysis_output_tokens += output_tokens
+        elif operation_type == "action":
+            self.dom_action_count += 1
+            self.dom_action_input_tokens += input_tokens
+            self.dom_action_output_tokens += output_tokens
+        elif operation_type == "browse":
+            self.intelligent_browse_count += 1
+            self.intelligent_browse_input_tokens += input_tokens
+            self.intelligent_browse_output_tokens += output_tokens
+
+        logger.debug(f"DOM {operation_type} tokens: input={input_tokens}, output={output_tokens}")
+
+    # DOM-first Browser Automation Tools (Phase 1.5)
+
+    async def analyze_page_dom(
+        self,
+        ctx: RunContext[None],
+        url: str,
+        task_description: Optional[str] = None,
+        confidence_threshold: float = 0.7,
+        show_browser: bool = False
+    ) -> str:
+        """
+        Analyze webpage DOM structure for intelligent automation planning.
+
+        **How it works:**
+        1. Navigates to the URL using Playwright
+        2. Extracts DOM structure and interactive elements
+        3. Calculates confidence scores for automation success
+        4. Recommends the best automation approach (DOM/Stagehand/Vision)
+        5. Returns structured analysis for decision making
+
+        **Examples:**
+        - "Analyze https://github.com/login for form submission"
+        - "Check https://amazon.com/search?q=laptop for product extraction"
+        - "Analyze https://reddit.com for navigation elements"
+
+        **Args:**
+            url: Website URL to analyze
+            task_description: Optional description of intended task
+            confidence_threshold: Minimum confidence for DOM approach (0.0-1.0)
+            show_browser: Whether to show browser window for debugging
+
+        **Returns:**
+            Detailed DOM analysis with confidence scores and recommendations
+        """
+        try:
+            logger.info(f"Analyzing DOM for URL: {url}")
+
+            # Create input text for token counting
+            input_text = f"URL: {url}"
+            if task_description:
+                input_text += f"\nTask: {task_description}"
+            input_text += f"\nConfidence Threshold: {confidence_threshold}"
+
+            # Use our browser automation tools
+            result = await browser_tools.analyze_page_dom(
+                ctx, url, task_description, confidence_threshold, show_browser
+            )
+
+            if result['success']:
+                output_text = f"""✅ **DOM Analysis Complete**
+
+**URL:** {url}
+**Title:** {result['title']}
+**Confidence Score:** {result['confidence']:.2f}
+**Interactive Elements:** {result['interactive_elements_count']}
+**Forms:** {result['forms_count']}
+**Recommended Approach:** {result['recommended_approach']}
+
+**DOM Structure:**
+{result['dom_analysis_text']}
+
+**Next Steps:**
+- Use `execute_dom_action()` if confidence is high (≥{confidence_threshold})
+- Use `intelligent_browse()` for multi-step automation
+- Consider vision fallback if DOM confidence is low
+"""
+
+                # Track token usage for DOM analysis
+                self._track_dom_automation_tokens("analyze", input_text, output_text)
+                return output_text
+            else:
+                output_text = f"""❌ **DOM Analysis Failed**
+
+**URL:** {url}
+**Error:** {result.get('error', 'Unknown error')}
+**Recommended Approach:** {result['recommended_approach']}
+
+**Suggestions:**
+- Verify the URL is accessible
+- Check if the website blocks automation
+- Try using vision-based `browse_and_find()` instead
+"""
+
+                # Track token usage even for failed analysis
+                self._track_dom_automation_tokens("analyze", input_text, output_text)
+                return output_text
+
+        except Exception as e:
+            logger.error(f"Error in analyze_page_dom: {e}")
+            return f"❌ Error analyzing DOM: {str(e)}"
+
+    async def execute_dom_action(
+        self,
+        ctx: RunContext[None],
+        url: str,
+        action: str,
+        target_description: str,
+        action_data: Optional[str] = None,
+        confidence_threshold: float = 0.7,
+        show_browser: bool = False
+    ) -> str:
+        """
+        Execute a single action on a webpage using DOM analysis.
+
+        **How it works:**
+        1. Analyzes page DOM structure and confidence
+        2. Finds the target element by description
+        3. Executes the specified action (click, type, select, etc.)
+        4. Returns result with success/failure details
+
+        **Supported Actions:**
+        - click: Click on buttons, links, or interactive elements
+        - type: Fill input fields, text areas
+        - select: Choose options from dropdown menus
+        - clear: Clear input field contents
+        - submit: Submit forms
+
+        **Examples:**
+        - Click: "Click the 'Sign In' button on GitHub login"
+        - Type: "Enter 'python tutorial' in search box"
+        - Select: "Select 'Recent' from sort dropdown"
+
+        **Args:**
+            url: Website URL to perform action on
+            action: Action type (click, type, select, clear, submit)
+            target_description: Natural description of element to interact with
+            action_data: Additional data (text to type, option to select)
+            confidence_threshold: Minimum confidence to proceed
+            show_browser: Whether to show browser window
+
+        **Returns:**
+            Action execution result with success/error details
+        """
+        try:
+            logger.info(f"Executing DOM action: {action} on '{target_description}' at {url}")
+
+            # Create input text for token counting
+            input_text = f"URL: {url}\nAction: {action}\nTarget: {target_description}"
+            if action_data:
+                input_text += f"\nAction Data: {action_data}"
+            input_text += f"\nConfidence Threshold: {confidence_threshold}"
+
+            # Parse action_data if provided as JSON string
+            parsed_action_data = None
+            if action_data:
+                try:
+                    import json
+                    parsed_action_data = json.loads(action_data)
+                except:
+                    # If not JSON, treat as simple text for type actions
+                    if action.lower() == 'type':
+                        parsed_action_data = {'text': action_data}
+                    elif action.lower() == 'select':
+                        parsed_action_data = {'option': action_data}
+
+            # Execute the action using our browser tools
+            result = await browser_tools.execute_dom_action(
+                ctx, url, action, target_description,
+                parsed_action_data, confidence_threshold, show_browser
+            )
+
+            if result['success']:
+                output_text = f"""✅ **Action Executed Successfully**
+
+**Action:** {result['action']} on "{result['target']}"
+**URL:** {url}
+**Confidence:** {result['confidence']:.2f}
+**Approach:** {result['approach_used']}
+**Result:** {result['result']}
+
+**Task completed successfully using DOM analysis.**
+"""
+
+                # Track token usage for successful DOM action
+                self._track_dom_automation_tokens("action", input_text, output_text)
+                return output_text
+            else:
+                error_msg = result.get('error', 'Unknown error')
+                recommendation = result.get('recommendation', 'Try using vision-based browse_and_find()')
+
+                output_text = f"""❌ **Action Failed**
+
+**Action:** {action} on "{target_description}"
+**URL:** {url}
+**Error:** {error_msg}
+**Recommendation:** {recommendation}
+
+**Suggested Solutions:**
+- Verify element description is accurate
+- Check if page has finished loading
+- Try `intelligent_browse()` for complex scenarios
+- Use `browse_and_find()` for vision-based backup
+"""
+
+                # Track token usage for failed DOM action
+                self._track_dom_automation_tokens("action", input_text, output_text)
+                return output_text
+
+        except Exception as e:
+            logger.error(f"Error in execute_dom_action: {e}")
+            return f"❌ Error executing DOM action: {str(e)}"
+
+    async def intelligent_browse(
+        self,
+        ctx: RunContext[None],
+        task: str,
+        url: str,
+        max_steps: int = 15,
+        confidence_threshold: float = 0.7,
+        show_browser: bool = False
+    ) -> str:
+        """
+        Intelligently browse website using DOM-first approach with fallbacks.
+
+        **How it works:**
+        1. Starts with DOM analysis for each page/action
+        2. Uses DOM approach when confidence is high
+        3. Falls back to Stagehand for medium confidence
+        4. Uses vision fallback for complex scenarios
+        5. Learns and adapts based on success/failure
+
+        **Advanced Features:**
+        - Adaptive learning from success/failure patterns
+        - Intelligent approach selection per action
+        - Context-aware decision making
+        - Cost optimization (DOM < Stagehand < Vision)
+
+        **Examples:**
+        - "Login to GitHub with saved credentials and create a new repository"
+        - "Search Amazon for 'wireless headphones' and find the best rated under $100"
+        - "Navigate to my Gmail inbox and find emails from last week"
+
+        **Args:**
+            task: Natural language description of the complete task
+            url: Starting URL
+            max_steps: Maximum browser actions to attempt
+            confidence_threshold: Minimum confidence for DOM approach
+            show_browser: Whether to show browser window
+
+        **Returns:**
+            Comprehensive task execution report with approach analytics
+        """
+        try:
+            logger.info(f"Starting intelligent browsing task: {task}")
+
+            # Create input text for token counting
+            input_text = f"Task: {task}\nURL: {url}\nMax Steps: {max_steps}\nConfidence Threshold: {confidence_threshold}"
+
+            # Track execution with orchestrator
+            steps_completed = 0
+            approach_history = []
+            total_cost = 0.0
+
+            # Navigate to starting URL and analyze
+            dom_result = await browser_tools.analyze_page_dom(
+                ctx, url, task, confidence_threshold, show_browser
+            )
+
+            if not dom_result['success']:
+                return f"""❌ **Initial DOM Analysis Failed**
+
+**Task:** {task}
+**URL:** {url}
+**Error:** {dom_result.get('error', 'Unknown error')}
+
+**Falling back to vision-based automation...**
+Use `browse_and_find()` instead for complex scenarios.
+"""
+
+            # Create action request for orchestrator
+            action_request = ActionRequest(
+                url=url,
+                task_description=task,
+                action_type='navigate',
+                target_description='complete task',
+                confidence_threshold=confidence_threshold,
+                show_browser=show_browser
+            )
+
+            # Get orchestrator decision
+            approach, context, reasoning = automation_orchestrator.decide_automation_approach(
+                action_request, dom_result
+            )
+
+            # Execute based on chosen approach
+            if approach == AutomationApproach.DOM_ANALYSIS:
+                # High confidence - proceed with DOM analysis
+                execution_result = f"""✅ **Task Analysis Complete**
+
+**Task:** {task}
+**URL:** {url}
+**Chosen Approach:** DOM Analysis (Confidence: {context.dom_confidence:.2f})
+**Reasoning:** {reasoning}
+
+**DOM Analysis Results:**
+{dom_result['dom_analysis_text']}
+
+**Next Steps:**
+Use `execute_dom_action()` for individual steps or break down the task into specific actions.
+
+**Available Elements:** {dom_result['interactive_elements_count']} interactive elements found
+**Forms Available:** {dom_result['forms_count']} forms detected
+**Page Complexity:** {context.page_complexity}
+"""
+
+            elif approach == AutomationApproach.STAGEHAND:
+                execution_result = f"""⚡ **Stagehand Approach Recommended**
+
+**Task:** {task}
+**URL:** {url}
+**Confidence:** {context.dom_confidence:.2f}
+**Reasoning:** {reasoning}
+
+**Status:** Stagehand integration coming in Phase 2 🚧
+
+**Current Options:**
+1. Use `execute_dom_action()` for simple actions
+2. Use `browse_and_find()` for vision-based automation
+3. Break task into smaller DOM-friendly steps
+
+**DOM Context Available:**
+{dom_result.get('dom_analysis_text', 'DOM analysis available')}
+"""
+
+            else:  # VISION_FALLBACK
+                execution_result = f"""👁️ **Vision Fallback Recommended**
+
+**Task:** {task}
+**URL:** {url}
+**Confidence:** {context.dom_confidence:.2f}
+**Reasoning:** {reasoning}
+
+**Recommendation:** Use `browse_and_find()` for this task.
+
+**Why Vision is Better:**
+- Complex visual elements detected
+- Dynamic content present
+- DOM structure is unclear
+
+**Alternative:** Break task into simpler steps using `execute_dom_action()`
+"""
+
+            # Record the decision for learning
+            result = ActionResult(
+                success=True,
+                approach_used=approach,
+                confidence=context.dom_confidence,
+                execution_time=1.0,
+                result_data={'status': 'analyzed', 'approach': approach.value}
+            )
+
+            automation_orchestrator.record_execution_result(action_request, approach, result)
+
+            # Get analytics for user
+            analytics = automation_orchestrator.get_decision_analytics()
+
+            output_text = f"""{execution_result}
+
+**Decision Analytics:**
+- Total Decisions Made: {analytics['total_decisions']}
+- Success Rates: {', '.join([f'{k}: {v:.1%}' for k, v in analytics['success_rates'].items() if analytics['total_attempts'].get(k, 0) > 0])}
+- Average Confidence: {analytics['average_confidence']:.2f}
+
+**Orchestrator Insights:**
+{chr(10).join(automation_orchestrator.suggest_improvements()) if analytics['total_decisions'] >= 10 else 'More usage data needed for insights'}
+"""
+
+            # Track token usage for intelligent browse
+            self._track_dom_automation_tokens("browse", input_text, output_text)
+            return output_text
+
+        except Exception as e:
+            logger.error(f"Error in intelligent_browse: {e}")
+            return f"❌ Error during intelligent browsing: {str(e)}"

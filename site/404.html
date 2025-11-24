@@ -51,6 +51,8 @@
     
       <link rel="stylesheet" href="/wyn360-cli/assets/_mkdocstrings.css">
     
+      <link rel="stylesheet" href="/wyn360-cli/css/ai-search.css">
+    
     <script>__md_scope=new URL("/wyn360-cli/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -1250,8 +1252,152 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "/wyn360-cli/", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "search.highlight", "content.code.copy", "navigation.footer"], "search": "/wyn360-cli/assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
+  
       <script src="/wyn360-cli/assets/javascripts/bundle.e71a0d61.min.js"></script>
       
+        <script src="/wyn360-cli/js/ai-search.js"></script>
+      
     
+
+  <!-- AI Search Enhancement Scripts -->
+  <script>
+    // Initialize AI Search when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+      // Inject AI search interface into existing search results
+      const searchResult = document.querySelector('.md-search-result');
+
+      if (searchResult) {
+        // Create AI search section HTML - REDESIGNED FOR BETTER UX
+        const aiSearchHTML = `
+          <div class="ai-search-section" style="display: none;" id="ai-search-section">
+            <!-- AI Search Header - PROMINENT PLACEMENT -->
+            <div class="ai-search-header">
+              <div class="ai-search-trigger">
+                <button
+                  class="ai-search-button"
+                  id="ask-ai-button"
+                  type="button"
+                  title="Ask AI about your question"
+                  aria-label="Ask AI for intelligent answers"
+                >
+                  <span class="ai-icon">🤖</span>
+                  <span class="ai-text">Ask AI</span>
+                  <span class="ai-status" id="ai-status">Semantic search ready</span>
+                </button>
+              </div>
+              <p class="ai-search-hint">
+                <strong>💡 Pro tip:</strong> Try "browser automation", "installation guide", or "vision mode examples"
+              </p>
+            </div>
+
+            <!-- Search Results Status -->
+            <div class="ai-search-status" id="ai-search-status" style="display: none;">
+              <div class="search-type-indicator">
+                <span id="search-type-badge" class="search-badge semantic">🧠 Semantic Search</span>
+                <span class="result-count" id="result-count"></span>
+              </div>
+            </div>
+
+            <!-- AI Chat Interface - CHATBOT-LIKE DESIGN -->
+            <div class="ai-chat-container" id="ai-response-container" style="display: none;">
+
+              <!-- Loading State -->
+              <div class="ai-loading" id="ai-loading">
+                <div class="chat-message ai-message">
+                  <div class="ai-avatar">🤖</div>
+                  <div class="message-content">
+                    <div class="ai-loading-spinner"></div>
+                    <p>Analyzing your question with semantic search...</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AI Chat Response -->
+              <div class="ai-response" id="ai-response" style="display: none;">
+                <div class="chat-conversation">
+                  <!-- User Question -->
+                  <div class="chat-message user-message" id="user-question">
+                    <div class="user-avatar">👤</div>
+                    <div class="message-content">
+                      <div class="user-question-text" id="user-question-text"></div>
+                    </div>
+                  </div>
+
+                  <!-- AI Answer -->
+                  <div class="chat-message ai-message">
+                    <div class="ai-avatar">🤖</div>
+                    <div class="message-content">
+                      <div class="ai-response-text" id="ai-response-text"></div>
+
+                      <!-- Source Links as Cards -->
+                      <div class="ai-sources-section">
+                        <h6>📚 Relevant Documentation</h6>
+                        <div class="ai-source-cards" id="ai-source-links"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ai-chat-actions">
+                  <button class="ai-action-button primary" id="ask-another">
+                    <span>💬</span> Ask Another Question
+                  </button>
+                  <button class="ai-action-button secondary" id="show-regular-search">
+                    <span>🔍</span> Show Regular Search
+                  </button>
+                </div>
+              </div>
+
+              <!-- Error State -->
+              <div class="ai-error" id="ai-error" style="display: none;">
+                <h4>⚠️ AI Search Unavailable</h4>
+                <p>AI search is temporarily unavailable. Please use regular search above.</p>
+                <button class="ai-action-button" id="retry-ai">Try Again</button>
+              </div>
+            </div>
+          </div>
+        `;
+
+        // Insert AI search section at the TOP of search results for better visibility
+        searchResult.insertAdjacentHTML('afterbegin', aiSearchHTML);
+
+        // Setup show/hide logic for AI search
+        const searchInput = document.querySelector('.md-search__input');
+        const aiSection = document.getElementById('ai-search-section');
+
+        if (searchInput && aiSection) {
+          // Show AI search section when user starts typing
+          searchInput.addEventListener('input', function() {
+            if (this.value.length > 0) {
+              aiSection.style.display = 'block';
+            } else {
+              aiSection.style.display = 'none';
+            }
+          });
+
+          // Hide AI section when search is cleared
+          const clearButton = document.querySelector('button[type="reset"]');
+          if (clearButton) {
+            clearButton.addEventListener('click', function() {
+              aiSection.style.display = 'none';
+              const aiResponseContainer = document.getElementById('ai-response-container');
+              if (aiResponseContainer) {
+                aiResponseContainer.style.display = 'none';
+              }
+            });
+          }
+        }
+
+        console.log('AI Search UI injected successfully');
+      }
+
+      // Initialize AI Search functionality
+      if (typeof WYN360AISearch !== 'undefined') {
+        window.aiSearch = new WYN360AISearch();
+        console.log('AI Search initialized for WYN360 CLI docs');
+      }
+    });
+  </script>
+
   </body>
 </html>
