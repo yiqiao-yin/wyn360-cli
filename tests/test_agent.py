@@ -19,18 +19,31 @@ class TestWYN360Agent:
         import os
         os.chdir(self.test_dir)
 
+        # Force Anthropic API mode for all tests by temporarily setting CHOOSE_CLIENT=1
+        self.original_choose_client = os.environ.get('CHOOSE_CLIENT')
+        os.environ['CHOOSE_CLIENT'] = '1'
+
     def teardown_method(self):
         """Clean up after tests"""
         import os
         os.chdir(self.original_dir)
         shutil.rmtree(self.test_dir)
 
+        # Restore original CHOOSE_CLIENT setting
+        if self.original_choose_client is not None:
+            os.environ['CHOOSE_CLIENT'] = self.original_choose_client
+        else:
+            os.environ.pop('CHOOSE_CLIENT', None)
+
     def test_agent_initialization(self):
         """Test that agent initializes correctly"""
         agent = WYN360Agent(api_key="test_key", model="claude-sonnet-4-20250514")
         assert agent.api_key == "test_key"
+        # In Anthropic mode, model name should be the original one passed
         assert agent.model_name == "claude-sonnet-4-20250514"
         assert agent.conversation_history == []
+        assert not agent.use_bedrock
+        assert not agent.use_gemini
 
     def test_system_prompt_contains_key_instructions(self):
         """Test that system prompt has necessary instructions"""

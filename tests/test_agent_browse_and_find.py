@@ -126,17 +126,17 @@ class TestBrowseAndFindTool:
             # Create agent in Bedrock mode
             agent = WYN360Agent(use_bedrock=True)
 
-                result = await agent.browse_and_find(
-                    ctx=None,
-                    task="Test task",
-                    url="https://example.com"
-                )
+            result = await agent.browse_and_find(
+                ctx=None,
+                task="Test task",
+                url="https://example.com"
+            )
 
-                # Verify error message
-                assert '❌' in result
-                assert 'vision capabilities' in result.lower()
-                assert 'Bedrock mode' in result or 'bedrock' in result.lower()
-                assert 'ANTHROPIC_API_KEY' in result
+            # Verify error message
+            assert '❌' in result
+            assert 'vision capabilities' in result.lower()
+            assert 'Bedrock mode' in result or 'bedrock' in result.lower()
+            assert 'ANTHROPIC_API_KEY' in result
 
     @pytest.mark.asyncio
     async def test_browse_and_find_exception(self):
