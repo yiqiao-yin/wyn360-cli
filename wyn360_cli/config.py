@@ -46,6 +46,19 @@ class WYN360Config:
     browser_use_cache_ttl: int = 1800  # 30 minutes
     browser_use_cache_max_size_mb: int = 100
 
+    # Browser automation optimization settings (v0.3.69)
+    browser_navigation_timeout: int = 45000      # Navigation timeout (ms) - Optimized from 90s
+    browser_action_timeout: int = 15000          # Action timeout (ms) - Optimized from 20s
+    browser_default_timeout: int = 30000         # Default timeout (ms) - Optimized from 45s
+    browser_max_retries: int = 2                 # Max retry attempts - Optimized from 3
+    browser_retry_delay: float = 1.5             # Retry delay (seconds) - Optimized from 2s
+    browser_timeout_strategy: str = "progressive"  # fixed|progressive|adaptive
+    browser_wait_strategy: str = "domcontentloaded"  # load|domcontentloaded|networkidle|commit
+    browser_wait_after_navigation: float = 2.0   # Wait after navigation (seconds) - Optimized from 3s
+    browser_wait_after_action: float = 1.0       # Wait after action (seconds) - Optimized from 1.5s
+    browser_enable_stealth: bool = True           # Enable anti-detection measures
+    browser_auto_site_detection: bool = True     # Auto-detect site-specific optimizations
+
     # Config file paths (for reference)
     user_config_path: Optional[str] = None
     project_config_path: Optional[str] = None
@@ -182,18 +195,156 @@ def merge_configs(user_config: Dict[str, Any], project_config: Dict[str, Any]) -
     return config
 
 
+def load_env_config() -> Dict[str, Any]:
+    """
+    Load configuration from environment variables.
+
+    Supports browser automation optimization settings with WYN360_ prefix.
+
+    Returns:
+        Dictionary with environment variable configuration
+    """
+    env_config = {}
+
+    # Browser automation timeouts
+    if timeout := os.getenv("WYN360_NAVIGATION_TIMEOUT"):
+        env_config["browser_navigation_timeout"] = int(timeout)
+
+    if timeout := os.getenv("WYN360_ACTION_TIMEOUT"):
+        env_config["browser_action_timeout"] = int(timeout)
+
+    if timeout := os.getenv("WYN360_DEFAULT_TIMEOUT"):
+        env_config["browser_default_timeout"] = int(timeout)
+
+    # Retry settings
+    if retries := os.getenv("WYN360_MAX_RETRIES"):
+        env_config["browser_max_retries"] = int(retries)
+
+    if delay := os.getenv("WYN360_RETRY_DELAY"):
+        env_config["browser_retry_delay"] = float(delay)
+
+    # Strategy settings
+    if strategy := os.getenv("WYN360_TIMEOUT_STRATEGY"):
+        if strategy.lower() in ["fixed", "progressive", "adaptive"]:
+            env_config["browser_timeout_strategy"] = strategy.lower()
+
+    if wait_strategy := os.getenv("WYN360_WAIT_STRATEGY"):
+        if wait_strategy.lower() in ["load", "domcontentloaded", "networkidle", "commit"]:
+            env_config["browser_wait_strategy"] = wait_strategy.lower()
+
+    # Wait times
+    if wait_nav := os.getenv("WYN360_WAIT_AFTER_NAVIGATION"):
+        env_config["browser_wait_after_navigation"] = float(wait_nav)
+
+    if wait_action := os.getenv("WYN360_WAIT_AFTER_ACTION"):
+        env_config["browser_wait_after_action"] = float(wait_action)
+
+    # Advanced settings
+    if stealth := os.getenv("WYN360_ENABLE_STEALTH"):
+        env_config["browser_enable_stealth"] = stealth.lower() in ("true", "1", "yes")
+
+    if auto_detect := os.getenv("WYN360_AUTO_SITE_DETECTION"):
+        env_config["browser_auto_site_detection"] = auto_detect.lower() in ("true", "1", "yes")
+
+    return env_config
+
+
+def get_progressive_timeout(base_timeout: int, attempt: int, strategy: str = "progressive") -> int:
+    """
+    Calculate timeout for progressive retry strategy.
+
+    Args:
+        base_timeout: Base timeout in milliseconds
+        attempt: Retry attempt number (0-based)
+        strategy: Timeout strategy ("fixed", "progressive", or "adaptive")
+
+    Returns:
+        Calculated timeout in milliseconds
+    """
+    if strategy != "progressive":
+        return base_timeout
+
+    # Progressive multipliers for attempts
+    multipliers = [0.5, 1.0, 1.5, 2.0]
+    multiplier_idx = min(attempt, len(multipliers) - 1)
+    multiplier = multipliers[multiplier_idx]
+
+    return int(base_timeout * multiplier)
+
+
+def get_site_profile(url: str, auto_detection: bool = True) -> Dict[str, Any]:
+    """
+    Get site-specific optimization settings for a URL.
+
+    Args:
+        url: URL to get profile for
+        auto_detection: Whether to enable automatic site detection
+
+    Returns:
+        Dictionary with site-specific settings (empty if no match)
+    """
+    if not auto_detection:
+        return {}
+
+    url_lower = url.lower()
+
+    # Amazon and heavy e-commerce sites
+    if any(domain in url_lower for domain in ["amazon.com", "amazon.co.uk", "amazon.de"]):
+        return {
+            "browser_navigation_timeout": 60000,
+            "browser_action_timeout": 20000,
+            "browser_wait_after_navigation": 5.0,
+            "browser_max_retries": 3
+        }
+
+    # Fast, simple sites
+    if any(domain in url_lower for domain in ["github.com", "stackoverflow.com", "wikipedia.org"]):
+        return {
+            "browser_navigation_timeout": 30000,
+            "browser_action_timeout": 10000,
+            "browser_wait_strategy": "load",
+            "browser_wait_after_navigation": 1.0,
+            "browser_max_retries": 2
+        }
+
+    # Standard e-commerce sites
+    if any(domain in url_lower for domain in ["ebay.com", "walmart.com", "target.com", "bestbuy.com"]):
+        return {
+            "browser_navigation_timeout": 45000,
+            "browser_action_timeout": 15000,
+            "browser_wait_after_navigation": 3.0,
+            "browser_max_retries": 2
+        }
+
+    return {}
+
+
 def load_config() -> WYN360Config:
     """
     Load and merge all configuration sources.
 
     This is the main entry point for configuration loading.
+    Configuration precedence (highest to lowest):
+    1. Environment variables (WYN360_*)
+    2. Project config (.wyn360.yaml)
+    3. User config (~/.wyn360/config.yaml)
+    4. Default values
 
     Returns:
         WYN360Config object with merged configuration from all sources
     """
     user_config = load_user_config()
     project_config = load_project_config()
-    return merge_configs(user_config, project_config)
+    env_config = load_env_config()
+
+    # Merge configs with environment having highest priority
+    merged_config = merge_configs(user_config, project_config)
+
+    # Apply environment variable overrides
+    for key, value in env_config.items():
+        setattr(merged_config, key, value)
+
+    return merged_config
 
 
 def create_default_user_config() -> bool:

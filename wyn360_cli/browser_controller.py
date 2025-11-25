@@ -10,6 +10,9 @@ import logging
 from typing import Dict, Any, Optional, List, Tuple
 from pathlib import Path
 
+# Import configuration system
+from .config import load_config, get_progressive_timeout, get_site_profile
+
 try:
     from playwright.async_api import async_playwright, Browser, BrowserContext, Page, ElementHandle, TimeoutError as PlaywrightTimeoutError
     HAS_PLAYWRIGHT = True
@@ -32,20 +35,140 @@ class BrowserControllerError(Exception):
 
 
 class BrowserConfig:
-    """Configuration for browser automation (Phase 5.4)."""
+    """
+    Configuration for browser automation with enhanced configuration system.
 
-    # Timeout settings (milliseconds) - Increased for complex sites like Amazon
-    DEFAULT_TIMEOUT = 45000  # 45 seconds (increased from 30s)
-    NAVIGATION_TIMEOUT = 90000  # 90 seconds for navigation (increased from 60s)
-    ACTION_TIMEOUT = 20000  # 20 seconds for actions (increased from 10s)
+    Provides both legacy static configuration and new dynamic configuration support.
+    Maintains full backward compatibility while adding advanced features.
+    """
 
-    # Retry settings
-    MAX_RETRIES = 3  # Retry failed actions up to 3 times (increased from 2)
-    RETRY_DELAY = 2.0  # Wait 2 seconds between retries (increased from 1s)
+    # Legacy static settings (for backward compatibility)
+    DEFAULT_TIMEOUT = 30000      # Optimized: 30s (reduced from 45s)
+    NAVIGATION_TIMEOUT = 45000   # Optimized: 45s (reduced from 90s)
+    ACTION_TIMEOUT = 15000       # Optimized: 15s (reduced from 20s)
+    MAX_RETRIES = 2              # Optimized: 2 (reduced from 3)
+    RETRY_DELAY = 1.5            # Optimized: 1.5s (reduced from 2s)
+    WAIT_AFTER_NAVIGATION = 2.0  # Optimized: 2s (reduced from 3s)
+    WAIT_AFTER_ACTION = 1.0      # Optimized: 1s (reduced from 1.5s)
 
-    # Performance settings - Increased for heavy sites
-    WAIT_AFTER_NAVIGATION = 3.0  # Wait 3s after navigation for JS (increased from 1s)
-    WAIT_AFTER_ACTION = 1.5  # Wait 1.5s after action for updates (increased from 0.5s)
+    @classmethod
+    def get_config(cls):
+        """Get current configuration"""
+        try:
+            return load_config()
+        except Exception:
+            # Return None if config loading fails
+            return None
+
+    @classmethod
+    def get_timeout(cls, timeout_type: str, url: str = "", attempt: int = 0) -> int:
+        """
+        Get timeout value with dynamic configuration and site-specific optimization.
+
+        Args:
+            timeout_type: 'navigation', 'action', or 'default'
+            url: URL for site-specific optimization
+            attempt: Retry attempt number (0-based) for progressive timeouts
+
+        Returns:
+            Timeout in milliseconds
+        """
+        config = cls.get_config()
+
+        if not config:
+            # Fallback to static configuration
+            if timeout_type == 'navigation':
+                return cls.NAVIGATION_TIMEOUT
+            elif timeout_type == 'action':
+                return cls.ACTION_TIMEOUT
+            else:
+                return cls.DEFAULT_TIMEOUT
+
+        # Get base timeout from config
+        if timeout_type == 'navigation':
+            base_timeout = config.browser_navigation_timeout
+        elif timeout_type == 'action':
+            base_timeout = config.browser_action_timeout
+        else:
+            base_timeout = config.browser_default_timeout
+
+        # Apply site-specific optimization
+        if url:
+            site_overrides = get_site_profile(url, config.browser_auto_site_detection)
+            timeout_key = f"browser_{timeout_type}_timeout"
+            if timeout_key in site_overrides:
+                base_timeout = site_overrides[timeout_key]
+
+        # Apply progressive timeout strategy
+        return get_progressive_timeout(base_timeout, attempt, config.browser_timeout_strategy)
+
+    @classmethod
+    def get_retries(cls, url: str = "") -> int:
+        """Get max retries with site-specific optimization"""
+        config = cls.get_config()
+
+        if not config:
+            return cls.MAX_RETRIES
+
+        # Check for site-specific settings
+        if url:
+            site_overrides = get_site_profile(url, config.browser_auto_site_detection)
+            if "browser_max_retries" in site_overrides:
+                return site_overrides["browser_max_retries"]
+
+        return config.browser_max_retries
+
+    @classmethod
+    def get_retry_delay(cls, url: str = "") -> float:
+        """Get retry delay with site-specific optimization"""
+        config = cls.get_config()
+
+        if not config:
+            return cls.RETRY_DELAY
+
+        return config.browser_retry_delay
+
+    @classmethod
+    def get_wait_after_navigation(cls, url: str = "") -> float:
+        """Get wait time after navigation with site-specific optimization"""
+        config = cls.get_config()
+
+        if not config:
+            return cls.WAIT_AFTER_NAVIGATION
+
+        # Check for site-specific settings
+        if url:
+            site_overrides = get_site_profile(url, config.browser_auto_site_detection)
+            if "browser_wait_after_navigation" in site_overrides:
+                return site_overrides["browser_wait_after_navigation"]
+
+        return config.browser_wait_after_navigation
+
+    @classmethod
+    def get_wait_after_action(cls, url: str = "") -> float:
+        """Get wait time after action"""
+        config = cls.get_config()
+
+        if not config:
+            return cls.WAIT_AFTER_ACTION
+
+        return config.browser_wait_after_action
+
+    @classmethod
+    def get_wait_strategy(cls, url: str = "") -> str:
+        """Get page load wait strategy"""
+        config = cls.get_config()
+
+        if not config:
+            return 'networkidle'  # Legacy default
+
+        # Check for site-specific settings
+        if url:
+            site_overrides = get_site_profile(url, config.browser_auto_site_detection)
+            if "browser_wait_strategy" in site_overrides:
+                return site_overrides["browser_wait_strategy"]
+
+        return config.browser_wait_strategy
 
 
 class BrowserController:
@@ -161,14 +284,16 @@ class BrowserController:
             await self.cleanup()
             raise BrowserControllerError(f"Browser initialization failed: {e}")
 
-    async def navigate(self, url: str, wait_until: str = 'networkidle') -> None:
+    async def navigate(self, url: str, wait_until: str = None, attempt: int = 0) -> None:
         """
-        Navigate to URL with smart waiting (Phase 5.4: improved timeout handling).
+        Navigate to URL with smart waiting and dynamic configuration.
 
         Args:
             url: URL to navigate to
             wait_until: When to consider navigation complete
                        ('load', 'domcontentloaded', 'networkidle', 'commit')
+                       If None, uses dynamic configuration default
+            attempt: Retry attempt number for progressive timeouts
 
         Raises:
             BrowserControllerError: If navigation fails
@@ -176,18 +301,26 @@ class BrowserController:
         if not self._initialized:
             raise BrowserControllerError("Browser not initialized. Call initialize() first.")
 
-        try:
-            logger.info(f"Navigating to: {url}")
+        # Get dynamic configuration
+        if wait_until is None:
+            wait_until = BrowserConfig.get_wait_strategy(url)
 
-            # Use navigation-specific timeout (Phase 5.4)
+        # Get dynamic timeout with progressive strategy
+        navigation_timeout = BrowserConfig.get_timeout('navigation', url, attempt)
+        wait_after_nav = BrowserConfig.get_wait_after_navigation(url)
+
+        try:
+            logger.info(f"Navigating to: {url} (timeout: {navigation_timeout}ms, wait_until: {wait_until}, attempt: {attempt + 1})")
+
+            # Use dynamic timeout with site-specific and progressive optimization
             await self.page.goto(
                 url,
                 wait_until=wait_until,
-                timeout=BrowserConfig.NAVIGATION_TIMEOUT
+                timeout=navigation_timeout
             )
 
             # Additional wait for JavaScript rendering (configurable)
-            await asyncio.sleep(BrowserConfig.WAIT_AFTER_NAVIGATION)
+            await asyncio.sleep(wait_after_nav)
 
             # Check for common blocking patterns
             await self._check_for_blocking_patterns(url)
@@ -195,7 +328,7 @@ class BrowserController:
             logger.info(f"Navigation complete: {url}")
 
         except PlaywrightTimeoutError as e:
-            logger.warning(f"Navigation timeout ({BrowserConfig.NAVIGATION_TIMEOUT}ms): {url}")
+            logger.warning(f"Navigation timeout ({navigation_timeout}ms): {url}")
             # Try fallback: wait for 'load' instead of 'networkidle'
             if wait_until == 'networkidle':
                 logger.info("Retrying with 'load' wait strategy...")
