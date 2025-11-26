@@ -10,6 +10,7 @@ from dataclasses import asdict
 from pydantic_ai import Agent, RunContext, ModelMessagesTypeAdapter
 from pydantic_ai.models.anthropic import AnthropicModel
 from pydantic_ai.models.google import GoogleModel
+from pydantic_ai.models.openai import OpenAIChatModel
 
 # WebSearchTool is optional - only available in newer pydantic-ai versions
 try:
@@ -76,6 +77,7 @@ def _get_client_choice() -> int:
         1 = Anthropic API
         2 = AWS Bedrock
         3 = Google Gemini
+        4 = OpenAI API
         0 = Auto-detect based on available API keys
     """
     try:
@@ -144,6 +146,34 @@ Or disable Gemini mode:
     return True, ""
 
 
+def _validate_openai_credentials() -> Tuple[bool, str]:
+    """
+    Validate that required OpenAI API credentials are set.
+
+    Returns:
+        Tuple of (is_valid, error_message)
+        - is_valid: True if API key present
+        - error_message: Error message if invalid, empty string if valid
+    """
+    # Check for OPENAI_API_KEY
+    api_key = os.getenv('OPENAI_API_KEY')
+
+    if not api_key:
+        error_msg = """OpenAI mode enabled but API key not found.
+
+Please set the following environment variable:
+  - OPENAI_API_KEY=your_openai_key
+
+Get your API key from: https://platform.openai.com/api-keys
+
+Or disable OpenAI mode:
+  unset CHOOSE_CLIENT
+"""
+        return False, error_msg
+
+    return True, ""
+
+
 class WYN360Agent:
     """
     WYN360 AI coding assistant agent.
@@ -160,19 +190,21 @@ class WYN360Agent:
         config: Optional[WYN360Config] = None,
         use_bedrock: Optional[bool] = None,
         use_gemini: Optional[bool] = None,
+        use_openai: Optional[bool] = None,
         max_search_limit: int = 5,
         show_browser: bool = False
     ):
         """
-        Initialize the WYN360 Agent with Anthropic, AWS Bedrock, or Google Gemini.
+        Initialize the WYN360 Agent with Anthropic, AWS Bedrock, Google Gemini, or OpenAI.
 
         Args:
-            api_key: Anthropic or Gemini API key (required if not using Bedrock)
+            api_key: Anthropic, Gemini, or OpenAI API key (required if not using Bedrock)
             model: Model to use (default: claude-sonnet-4-20250514)
             use_history: Whether to send conversation history with each request (default: True)
             config: Optional WYN360Config object with user/project configuration
             use_bedrock: Explicitly set Bedrock mode (overrides env var)
             use_gemini: Explicitly set Gemini mode (overrides env var)
+            use_openai: Explicitly set OpenAI mode (overrides env var)
             max_search_limit: Maximum number of web searches per session (default: 5)
             show_browser: Show browser window during automation (default: False for headless mode)
         """
@@ -180,7 +212,7 @@ class WYN360Agent:
 
         # Determine authentication mode
         # Priority: 1. CHOOSE_CLIENT env var, 2. Explicit parameters, 3. Auto-detect from API keys
-        # Note: Only one mode can be active at a time (Anthropic OR Bedrock OR Gemini)
+        # Note: Only one mode can be active at a time (Anthropic OR Bedrock OR Gemini OR OpenAI)
 
         client_choice = _get_client_choice()
 
@@ -188,45 +220,69 @@ class WYN360Agent:
             # CHOOSE_CLIENT=1: Force Anthropic API
             self.use_gemini = False
             self.use_bedrock = False
+            self.use_openai = False
         elif client_choice == 2:
             # CHOOSE_CLIENT=2: Force AWS Bedrock
             self.use_gemini = False
             self.use_bedrock = True
+            self.use_openai = False
         elif client_choice == 3:
             # CHOOSE_CLIENT=3: Force Google Gemini
             self.use_gemini = True
             self.use_bedrock = False
+            self.use_openai = False
+        elif client_choice == 4:
+            # CHOOSE_CLIENT=4: Force OpenAI API
+            self.use_gemini = False
+            self.use_bedrock = False
+            self.use_openai = True
         else:
             # CHOOSE_CLIENT=0 or not set: Auto-detect or use explicit parameters
             if use_gemini is not None:
                 # Explicit parameter takes priority
                 self.use_gemini = use_gemini
                 self.use_bedrock = False if use_gemini else (use_bedrock or False)
+                self.use_openai = False if use_gemini else (use_openai or False)
             elif use_bedrock is not None:
                 # Explicit bedrock parameter
                 self.use_gemini = False
                 self.use_bedrock = use_bedrock
+                self.use_openai = False if use_bedrock else (use_openai or False)
+            elif use_openai is not None:
+                # Explicit OpenAI parameter
+                self.use_gemini = False
+                self.use_bedrock = False
+                self.use_openai = use_openai
             else:
-                # Auto-detect: Priority is ANTHROPIC_API_KEY > GEMINI_API_KEY > AWS credentials
+                # Auto-detect: Priority is ANTHROPIC_API_KEY > AWS credentials > GEMINI_API_KEY > OPENAI_API_KEY
                 if api_key or os.getenv('ANTHROPIC_API_KEY'):
                     # Anthropic API key found
                     self.use_gemini = False
                     self.use_bedrock = False
-                elif os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY'):
-                    # Gemini API key found
-                    self.use_gemini = True
-                    self.use_bedrock = False
+                    self.use_openai = False
                 elif os.getenv('AWS_ACCESS_KEY_ID') and os.getenv('AWS_SECRET_ACCESS_KEY'):
                     # AWS credentials found
                     self.use_gemini = False
                     self.use_bedrock = True
+                    self.use_openai = False
+                elif os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY'):
+                    # Gemini API key found
+                    self.use_gemini = True
+                    self.use_bedrock = False
+                    self.use_openai = False
+                elif os.getenv('OPENAI_API_KEY'):
+                    # OpenAI API key found
+                    self.use_gemini = False
+                    self.use_bedrock = False
+                    self.use_openai = True
                 else:
                     # No credentials found, default to Anthropic (will fail with helpful error)
                     self.use_gemini = False
                     self.use_bedrock = False
+                    self.use_openai = False
 
         # Model selection priority:
-        # 1. Model-specific env var (ANTHROPIC_MODEL or GEMINI_MODEL)
+        # 1. Model-specific env var (ANTHROPIC_MODEL, GEMINI_MODEL, or OPENAI_MODEL)
         # 2. Config model (if not the default value)
         # 3. Provided model parameter
         # 4. Default based on authentication mode
@@ -245,6 +301,20 @@ class WYN360Agent:
             else:
                 # Default Gemini model
                 self.model_name = "gemini-2.5-flash"
+        elif self.use_openai:
+            # OpenAI model selection
+            env_model = os.getenv('OPENAI_MODEL')
+            config_model = config.model if config else None
+
+            if env_model:
+                self.model_name = env_model
+            elif config_model and config_model.startswith('gpt'):
+                self.model_name = config_model
+            elif model.startswith('gpt'):
+                self.model_name = model
+            else:
+                # Default OpenAI model
+                self.model_name = "gpt-4"
         else:
             # Anthropic/Bedrock model selection
             env_model = os.getenv('ANTHROPIC_MODEL')
@@ -406,6 +476,31 @@ class WYN360Agent:
             print(f"📡 Region: {aws_region}")
             print(f"🤖 Model: {self.model_name}")
 
+        elif self.use_openai:
+            # OpenAI mode
+            is_valid, error_msg = _validate_openai_credentials()
+            if not is_valid:
+                raise ValueError(error_msg)
+
+            # Get OpenAI API key from environment
+            openai_api_key = os.getenv('OPENAI_API_KEY')
+
+            if not openai_api_key:
+                # This should not happen due to validation above, but adding for safety
+                raise ValueError("OpenAI API key not found")
+
+            # Set API key in environment for pydantic-ai to use
+            os.environ['OPENAI_API_KEY'] = openai_api_key
+
+            # Create OpenAI model using pydantic-ai's built-in support
+            # OpenAIChatModel automatically reads OPENAI_API_KEY from environment
+            self.model = OpenAIChatModel(self.model_name)
+
+            self.api_key = openai_api_key
+
+            print(f"🤖 OpenAI mode enabled")
+            print(f"🤖 Model: {self.model_name}")
+
         else:
             # Direct Anthropic API mode (existing behavior)
             # Try to get API key from parameter or environment
@@ -414,10 +509,11 @@ class WYN360Agent:
 
             if not api_key:
                 raise ValueError(
-                    "ANTHROPIC_API_KEY is required when not using AWS Bedrock or Google Gemini.\n"
+                    "ANTHROPIC_API_KEY is required when not using AWS Bedrock, Google Gemini, or OpenAI.\n"
                     "Set environment variable: export ANTHROPIC_API_KEY=sk-ant-xxx\n"
                     "Or enable Bedrock mode: export CLAUDE_CODE_USE_BEDROCK=1\n"
-                    "Or enable Gemini mode: export USE_GEMINI=1 and GEMINI_API_KEY=your_key"
+                    "Or enable Gemini mode: export USE_GEMINI=1 and GEMINI_API_KEY=your_key\n"
+                    "Or enable OpenAI mode: export CHOOSE_CLIENT=4 and OPENAI_API_KEY=your_key"
                 )
 
             self.api_key = api_key

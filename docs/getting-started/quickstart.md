@@ -4,7 +4,7 @@ Get up and running with WYN360 CLI in under 5 minutes!
 
 ## Step 1: Choose Your AI Provider
 
-WYN360 CLI supports three AI providers. Choose the one that works best for you:
+WYN360 CLI supports four AI providers. Choose the one that works best for you:
 
 === "Google Gemini (Recommended)"
 
@@ -55,6 +55,24 @@ WYN360 CLI supports three AI providers. Choose the one that works best for you:
 
     **Requirements:** Valid AWS account with Bedrock access
 
+=== "OpenAI"
+
+    **Why OpenAI?** Industry-leading performance, competitive pricing, fast response times
+
+    **Setup:**
+    ```bash
+    export CHOOSE_CLIENT=4
+    export OPENAI_API_KEY=your_key_here
+    export OPENAI_MODEL=gpt-4o
+    ```
+
+    **Get API Key:** [OpenAI Platform](https://platform.openai.com/api-keys)
+
+    **Available Models:**
+    - `gpt-4o` - Latest and most capable (default)
+    - `gpt-4` - Stable and reliable
+    - `gpt-3.5-turbo` - Fast and cost-effective
+
 === "Auto-Detection"
 
     **Let WYN360 choose automatically** based on available credentials:
@@ -67,8 +85,9 @@ WYN360 CLI supports three AI providers. Choose the one that works best for you:
 
     **Priority order:**
     1. `ANTHROPIC_API_KEY` → Use Anthropic
-    2. `GEMINI_API_KEY` → Use Gemini
-    3. AWS credentials → Use Bedrock
+    2. AWS credentials → Use Bedrock
+    3. `GEMINI_API_KEY` → Use Gemini
+    4. `OPENAI_API_KEY` → Use OpenAI
 
 ## Step 2: Set Up Environment
 

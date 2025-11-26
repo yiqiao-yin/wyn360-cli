@@ -4,7 +4,7 @@ import pytest
 import os
 import sys
 from unittest.mock import Mock, patch, MagicMock
-from wyn360_cli.agent import WYN360Agent, _get_client_choice, _validate_aws_credentials
+from wyn360_cli.agent import WYN360Agent, _get_client_choice, _validate_aws_credentials, _validate_openai_credentials
 
 
 class TestClientChoiceDetection:
@@ -29,6 +29,11 @@ class TestClientChoiceDetection:
         """Test that client choice is 3 for Google Gemini."""
         with patch.dict(os.environ, {'CHOOSE_CLIENT': '3'}):
             assert _get_client_choice() == 3
+
+    def test_client_choice_openai(self):
+        """Test that client choice is 4 for OpenAI API."""
+        with patch.dict(os.environ, {'CHOOSE_CLIENT': '4'}):
+            assert _get_client_choice() == 4
 
     def test_client_choice_invalid_value(self):
         """Test that invalid values default to 0 (auto-detect)."""
@@ -85,6 +90,144 @@ class TestAWSCredentialValidation:
             assert is_valid is False
             assert 'AWS_ACCESS_KEY_ID' in error
             assert 'AWS_SECRET_ACCESS_KEY' in error
+
+
+class TestOpenAICredentialValidation:
+    """Test OpenAI credential validation."""
+
+    def test_valid_openai_credentials(self):
+        """Test validation with valid OpenAI API key."""
+        with patch.dict(os.environ, {
+            'OPENAI_API_KEY': 'sk-1234567890abcdef',
+        }):
+            is_valid, error = _validate_openai_credentials()
+            assert is_valid is True
+            assert error == ""
+
+    def test_missing_openai_api_key(self):
+        """Test validation with missing OpenAI API key."""
+        with patch.dict(os.environ, {}, clear=True):
+            is_valid, error = _validate_openai_credentials()
+            assert is_valid is False
+            assert 'OPENAI_API_KEY' in error
+            assert 'https://platform.openai.com/api-keys' in error
+
+    def test_empty_openai_api_key(self):
+        """Test validation with empty OpenAI API key."""
+        with patch.dict(os.environ, {
+            'OPENAI_API_KEY': '',
+        }):
+            is_valid, error = _validate_openai_credentials()
+            assert is_valid is False
+            assert 'OPENAI_API_KEY' in error
+
+
+class TestOpenAIAgent:
+    """Test WYN360Agent with OpenAI mode."""
+
+    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.Agent')
+    def test_openai_mode_initialization(self, mock_agent, mock_openai):
+        """Test agent initialization in OpenAI mode."""
+        with patch.dict(os.environ, {
+            'OPENAI_API_KEY': 'sk-1234567890abcdef',
+            'CHOOSE_CLIENT': '4'
+        }):
+            agent = WYN360Agent()
+
+            # Verify OpenAI mode flags
+            assert agent.use_openai is True
+            assert agent.use_bedrock is False
+            assert agent.use_gemini is False
+
+            # Verify model initialization
+            mock_openai.assert_called_once()
+
+    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.Agent')
+    def test_openai_model_selection_from_env(self, mock_agent, mock_openai):
+        """Test OpenAI model selection from environment variable."""
+        with patch.dict(os.environ, {
+            'OPENAI_API_KEY': 'sk-1234567890abcdef',
+            'OPENAI_MODEL': 'gpt-4o',
+            'CHOOSE_CLIENT': '4'
+        }):
+            agent = WYN360Agent()
+
+            # Verify model name from environment
+            assert agent.model_name == 'gpt-4o'
+
+            # Verify model was created with correct name
+            mock_openai.assert_called_once_with('gpt-4o')
+
+    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.Agent')
+    def test_openai_model_selection_default(self, mock_agent, mock_openai):
+        """Test OpenAI model selection with default model."""
+        with patch.dict(os.environ, {
+            'OPENAI_API_KEY': 'sk-1234567890abcdef',
+            'CHOOSE_CLIENT': '4'
+        }):
+            agent = WYN360Agent()
+
+            # Verify default model name
+            assert agent.model_name == 'gpt-4'
+
+    def test_openai_initialization_missing_key(self):
+        """Test OpenAI initialization fails with missing API key."""
+        with patch.dict(os.environ, {'CHOOSE_CLIENT': '4'}, clear=True):
+            with pytest.raises(ValueError, match="OpenAI mode enabled but API key not found"):
+                WYN360Agent()
+
+    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.Agent')
+    def test_openai_auto_detection(self, mock_agent, mock_openai):
+        """Test auto-detection selects OpenAI when OPENAI_API_KEY is available."""
+        with patch.dict(os.environ, {
+            'OPENAI_API_KEY': 'sk-1234567890abcdef',
+            'CHOOSE_CLIENT': '0'  # Auto-detect mode
+        }, clear=True):
+            agent = WYN360Agent()
+
+            # Should auto-detect and use OpenAI
+            assert agent.use_openai is True
+            assert agent.use_bedrock is False
+            assert agent.use_gemini is False
+
+    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.Agent')
+    def test_openai_priority_in_auto_detection(self, mock_agent, mock_openai):
+        """Test OpenAI has correct priority in auto-detection (lowest priority)."""
+        with patch.dict(os.environ, {
+            'ANTHROPIC_API_KEY': 'sk-ant-123',
+            'AWS_ACCESS_KEY_ID': 'AKIA123',
+            'AWS_SECRET_ACCESS_KEY': 'secret',
+            'GEMINI_API_KEY': 'gem-123',
+            'OPENAI_API_KEY': 'sk-1234567890abcdef',
+            'CHOOSE_CLIENT': '0'  # Auto-detect mode
+        }, clear=True):
+            agent = WYN360Agent()
+
+            # Should prioritize Anthropic over everything else
+            assert agent.use_openai is False
+            assert agent.use_bedrock is False
+            assert agent.use_gemini is False
+            # Anthropic should be chosen (no use_anthropic flag, but others are False)
+
+    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.Agent')
+    def test_openai_auto_detection_when_only_openai_available(self, mock_agent, mock_openai):
+        """Test OpenAI is selected when it's the only available credential."""
+        with patch.dict(os.environ, {
+            'OPENAI_API_KEY': 'sk-1234567890abcdef',
+            'CHOOSE_CLIENT': '0'  # Auto-detect mode
+        }, clear=True):
+            agent = WYN360Agent()
+
+            # Should use OpenAI when it's the only option
+            assert agent.use_openai is True
+            assert agent.use_bedrock is False
+            assert agent.use_gemini is False
 
 
 class TestBedrockAgent:

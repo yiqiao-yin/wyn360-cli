@@ -72,7 +72,7 @@ playwright install chromium
 
 ### 1. Choose your AI provider and set up credentials:
 
-WYN360 CLI supports three AI providers. Choose one:
+WYN360 CLI supports four AI providers. Choose one:
 
 ---
 
@@ -154,14 +154,44 @@ GEMINI_MODEL=gemini-2.5-flash
 
 ---
 
+#### **Option 4: OpenAI** 🆕
+
+**Using environment variables:**
+```bash
+export CHOOSE_CLIENT=4
+export OPENAI_API_KEY=your_key_here
+export OPENAI_MODEL=gpt-4o
+```
+
+**Using .env file (recommended):**
+```bash
+# Create .env file in your project directory
+CHOOSE_CLIENT=4
+OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-4o
+```
+
+**Get your API key:** [OpenAI Platform](https://platform.openai.com/api-keys)
+**Available models:** `gpt-4o` (latest), `gpt-4` (stable), `gpt-3.5-turbo` (fast)
+**Cost:** Competitive pricing with good performance
+
+**Features:**
+- ✅ All tools supported (file ops, git, docs, browser, etc.)
+- ✅ 128K token context window
+- ✅ Industry-leading performance
+- ✅ Fast response times
+
+---
+
 #### **Auto-Detection (No CHOOSE_CLIENT)**
 
 If you don't set `CHOOSE_CLIENT`, the system will auto-detect based on available credentials:
 
 **Priority order:**
 1. `ANTHROPIC_API_KEY` → Use Anthropic
-2. `GEMINI_API_KEY` → Use Google Gemini
-3. AWS credentials → Use Bedrock
+2. AWS credentials → Use Bedrock
+3. `GEMINI_API_KEY` → Use Google Gemini
+4. `OPENAI_API_KEY` → Use OpenAI
 
 ```bash
 # Just set your preferred API key
@@ -821,5 +851,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.70
+**Current Version:** 0.3.71
 **Last Updated:** November 24, 2025
