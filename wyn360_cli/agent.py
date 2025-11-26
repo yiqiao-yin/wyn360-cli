@@ -211,6 +211,9 @@ class WYN360Agent:
         """
         self.config = config
 
+        # Initialize cache directory for document processing
+        self.cache_dir = Path.home() / ".wyn360" / "cache"
+
         # Determine authentication mode
         # Priority: 1. CHOOSE_CLIENT env var, 2. Explicit parameters, 3. Auto-detect from API keys
         # Note: Only one mode can be active at a time (Anthropic OR Bedrock OR Gemini OR OpenAI)
