@@ -125,7 +125,7 @@ class TestOpenAICredentialValidation:
 class TestOpenAIAgent:
     """Test WYN360Agent with OpenAI mode."""
 
-    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.OpenAIResponsesModel')
     @patch('wyn360_cli.agent.Agent')
     def test_openai_mode_initialization(self, mock_agent, mock_openai):
         """Test agent initialization in OpenAI mode."""
@@ -143,7 +143,7 @@ class TestOpenAIAgent:
             # Verify model initialization
             mock_openai.assert_called_once()
 
-    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.OpenAIResponsesModel')
     @patch('wyn360_cli.agent.Agent')
     def test_openai_model_selection_from_env(self, mock_agent, mock_openai):
         """Test OpenAI model selection from environment variable."""
@@ -160,7 +160,7 @@ class TestOpenAIAgent:
             # Verify model was created with correct name
             mock_openai.assert_called_once_with('gpt-4o')
 
-    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.OpenAIResponsesModel')
     @patch('wyn360_cli.agent.Agent')
     def test_openai_model_selection_default(self, mock_agent, mock_openai):
         """Test OpenAI model selection with default model."""
@@ -179,7 +179,7 @@ class TestOpenAIAgent:
             with pytest.raises(ValueError, match="OpenAI mode enabled but API key not found"):
                 WYN360Agent()
 
-    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.OpenAIResponsesModel')
     @patch('wyn360_cli.agent.Agent')
     def test_openai_auto_detection(self, mock_agent, mock_openai):
         """Test auto-detection selects OpenAI when OPENAI_API_KEY is available."""
@@ -194,7 +194,7 @@ class TestOpenAIAgent:
             assert agent.use_bedrock is False
             assert agent.use_gemini is False
 
-    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.OpenAIResponsesModel')
     @patch('wyn360_cli.agent.Agent')
     def test_openai_priority_in_auto_detection(self, mock_agent, mock_openai):
         """Test OpenAI has correct priority in auto-detection (lowest priority)."""
@@ -214,7 +214,7 @@ class TestOpenAIAgent:
             assert agent.use_gemini is False
             # Anthropic should be chosen (no use_anthropic flag, but others are False)
 
-    @patch('wyn360_cli.agent.OpenAIChatModel')
+    @patch('wyn360_cli.agent.OpenAIResponsesModel')
     @patch('wyn360_cli.agent.Agent')
     def test_openai_auto_detection_when_only_openai_available(self, mock_agent, mock_openai):
         """Test OpenAI is selected when it's the only available credential."""

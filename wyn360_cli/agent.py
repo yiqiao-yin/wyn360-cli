@@ -10,7 +10,7 @@ from dataclasses import asdict
 from pydantic_ai import Agent, RunContext, ModelMessagesTypeAdapter
 from pydantic_ai.models.anthropic import AnthropicModel
 from pydantic_ai.models.google import GoogleModel
-from pydantic_ai.models.openai import OpenAIChatModel
+from pydantic_ai.models.openai import OpenAIResponsesModel
 
 # WebSearchTool is optional - only available in newer pydantic-ai versions
 try:
@@ -493,8 +493,8 @@ class WYN360Agent:
             os.environ['OPENAI_API_KEY'] = openai_api_key
 
             # Create OpenAI model using pydantic-ai's built-in support
-            # OpenAIChatModel automatically reads OPENAI_API_KEY from environment
-            self.model = OpenAIChatModel(self.model_name)
+            # OpenAIResponsesModel automatically reads OPENAI_API_KEY from environment and supports WebSearchTool
+            self.model = OpenAIResponsesModel(self.model_name)
 
             self.api_key = openai_api_key
 
