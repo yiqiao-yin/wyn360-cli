@@ -5,7 +5,8 @@ import sys
 import time
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Annotated
+from pydantic import Field
 from dataclasses import asdict
 from pydantic_ai import Agent, RunContext, ModelMessagesTypeAdapter
 from pydantic_ai.models.anthropic import AnthropicModel
@@ -685,7 +686,7 @@ When user wants to READ, SEARCH, ANALYZE, or QUERY document files:
 - "What's in data.xlsx?" → read_excel("data.xlsx")
 - "Search for 'budget' in spreadsheet.xlsx" → read_excel("spreadsheet.xlsx", query="budget")
 - "Show conclusions in thesis.docx" → read_word("thesis.docx", query="conclusions")
-- "Read pages 10-20 of manual.pdf" → read_pdf("manual.pdf", page_range=(10, 20))
+- "Read pages 10-20 of manual.pdf" → read_pdf("manual.pdf", page_range=[10, 20])
 - "Find installation steps in guide.pdf" → read_pdf("guide.pdf", query="installation")
 
 **Only write analysis scripts when:**
@@ -3585,7 +3586,7 @@ You can restart the task by running the command again.
         ctx: RunContext[None],
         file_path: str,
         max_tokens: Optional[int] = None,
-        page_range: Optional[Tuple[int, int]] = None,
+        page_range: Optional[Annotated[List[int], Field(min_length=2, max_length=2, description="Page range as [start_page, end_page], e.g. [10, 20]")]] = None,
         use_chunking: bool = True,
         pdf_engine: Optional[str] = None,
         image_handling: Optional[str] = None,
@@ -3631,7 +3632,7 @@ You can restart the task by running the command again.
             content = await agent.read_pdf("report.pdf")
 
             # Read specific pages
-            content = await agent.read_pdf("textbook.pdf", page_range=(50, 75))
+            content = await agent.read_pdf("textbook.pdf", page_range=[50, 75])
 
             # Query for specific content
             content = await agent.read_pdf("manual.pdf", query="installation steps")
@@ -3647,6 +3648,14 @@ You can restart the task by running the command again.
                 "- pymupdf (recommended, fast): pip install pymupdf\n"
                 "- pdfplumber (better for tables): pip install pdfplumber"
             )
+
+        # Convert page_range to tuple format for internal compatibility
+        # This handles both List[int] (from OpenAI) and Tuple[int, int] (from other providers)
+        if page_range is not None:
+            if isinstance(page_range, list) and len(page_range) == 2:
+                page_range = tuple(page_range)  # Convert [start, end] to (start, end)
+            elif not isinstance(page_range, tuple):
+                raise ValueError("page_range must be either a list or tuple of exactly 2 integers")
 
         # Get PDF engine from config if not specified
         if pdf_engine is None:
