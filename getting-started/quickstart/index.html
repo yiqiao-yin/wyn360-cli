@@ -1733,8 +1733,8 @@
 <h1 id="quick-start-guide">Quick Start Guide<a class="headerlink" href="#quick-start-guide" title="Permanent link">&para;</a></h1>
 <p>Get up and running with WYN360 CLI in under 5 minutes!</p>
 <h2 id="step-1-choose-your-ai-provider">Step 1: Choose Your AI Provider<a class="headerlink" href="#step-1-choose-your-ai-provider" title="Permanent link">&para;</a></h2>
-<p>WYN360 CLI supports three AI providers. Choose the one that works best for you:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:4"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Google Gemini (Recommended)</label><label for="__tabbed_1_2">Anthropic Claude</label><label for="__tabbed_1_3">AWS Bedrock</label><label for="__tabbed_1_4">Auto-Detection</label></div>
+<p>WYN360 CLI supports four AI providers. Choose the one that works best for you:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Google Gemini (Recommended)</label><label for="__tabbed_1_2">Anthropic Claude</label><label for="__tabbed_1_3">AWS Bedrock</label><label for="__tabbed_1_4">OpenAI</label><label for="__tabbed_1_5">Auto-Detection</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p><strong>Why Gemini?</strong> ~40x cheaper than Claude, 2M context window, fast performance</p>
@@ -1772,86 +1772,100 @@
 <p><strong>Requirements:</strong> Valid AWS account with Bedrock access</p>
 </div>
 <div class="tabbed-block">
+<p><strong>Why OpenAI?</strong> Industry-leading performance, competitive pricing, fast response times</p>
+<p><strong>Setup:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">4</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span>your_key_here
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_MODEL</span><span class="o">=</span>gpt-4o
+</code></pre></div></p>
+<p><strong>Get API Key:</strong> <a href="https://platform.openai.com/api-keys">OpenAI Platform</a></p>
+<p><strong>Available Models:</strong>
+- <code>gpt-4o</code> - Latest and most capable (default)
+- <code>gpt-4</code> - Stable and reliable
+- <code>gpt-3.5-turbo</code> - Fast and cost-effective</p>
+</div>
+<div class="tabbed-block">
 <p><strong>Let WYN360 choose automatically</strong> based on available credentials:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Just set your preferred API key - no CHOOSE_CLIENT needed</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_key_here
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># System automatically detects and uses Gemini</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Just set your preferred API key - no CHOOSE_CLIENT needed</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_key_here
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># System automatically detects and uses Gemini</span>
 </code></pre></div>
 <p><strong>Priority order:</strong>
 1. <code>ANTHROPIC_API_KEY</code> → Use Anthropic
-2. <code>GEMINI_API_KEY</code> → Use Gemini
-3. AWS credentials → Use Bedrock</p>
+2. AWS credentials → Use Bedrock
+3. <code>GEMINI_API_KEY</code> → Use Gemini
+4. <code>OPENAI_API_KEY</code> → Use OpenAI</p>
 </div>
 </div>
 </div>
 <h2 id="step-2-set-up-environment">Step 2: Set Up Environment<a class="headerlink" href="#step-2-set-up-environment" title="Permanent link">&para;</a></h2>
 <h3 id="option-a-using-env-file-recommended">Option A: Using .env File (Recommended)<a class="headerlink" href="#option-a-using-env-file-recommended" title="Permanent link">&para;</a></h3>
 <p>Create a <code>.env</code> file in your project directory:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># .env file - choose one provider</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">3</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_gemini_key
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nv">GEMINI_MODEL</span><span class="o">=</span>gemini-2.5-flash
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nv">MAX_TOKEN</span><span class="o">=</span><span class="m">4096</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nv">MAX_INTERNET_SEARCH_LIMIT</span><span class="o">=</span><span class="m">5</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># .env file - choose one provider</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">3</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_gemini_key
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nv">GEMINI_MODEL</span><span class="o">=</span>gemini-2.5-flash
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nv">MAX_TOKEN</span><span class="o">=</span><span class="m">4096</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nv">MAX_INTERNET_SEARCH_LIMIT</span><span class="o">=</span><span class="m">5</span>
 </code></pre></div>
 <h3 id="option-b-using-environment-variables">Option B: Using Environment Variables<a class="headerlink" href="#option-b-using-environment-variables" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">3</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_gemini_key
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_MODEL</span><span class="o">=</span>gemini-2.5-flash
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">3</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_gemini_key
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_MODEL</span><span class="o">=</span>gemini-2.5-flash
 </code></pre></div>
 <h3 id="additional-configuration-optional">Additional Configuration (Optional)<a class="headerlink" href="#additional-configuration-optional" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Token limits</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MAX_TOKEN</span><span class="o">=</span><span class="m">4096</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MAX_INTERNET_SEARCH_LIMIT</span><span class="o">=</span><span class="m">5</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1"># Integration tokens (optional)</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GH_TOKEN</span><span class="o">=</span>ghp_your_github_token<span class="w">        </span><span class="c1"># For GitHub features</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HF_TOKEN</span><span class="o">=</span>hf_your_huggingface_token<span class="w">    </span><span class="c1"># For HuggingFace features</span>
-<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
-<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="c1"># Skip confirmations (useful for automation)</span>
-<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="nb">export</span><span class="w"> </span><span class="nv">WYN360_SKIP_CONFIRM</span><span class="o">=</span><span class="m">0</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Token limits</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MAX_TOKEN</span><span class="o">=</span><span class="m">4096</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MAX_INTERNET_SEARCH_LIMIT</span><span class="o">=</span><span class="m">5</span>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Integration tokens (optional)</span>
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GH_TOKEN</span><span class="o">=</span>ghp_your_github_token<span class="w">        </span><span class="c1"># For GitHub features</span>
+<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="nb">export</span><span class="w"> </span><span class="nv">HF_TOKEN</span><span class="o">=</span>hf_your_huggingface_token<span class="w">    </span><span class="c1"># For HuggingFace features</span>
+<a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+<a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1"># Skip confirmations (useful for automation)</span>
+<a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="nb">export</span><span class="w"> </span><span class="nv">WYN360_SKIP_CONFIRM</span><span class="o">=</span><span class="m">0</span>
 </code></pre></div>
 <h2 id="step-3-start-wyn360-cli">Step 3: Start WYN360 CLI<a class="headerlink" href="#step-3-start-wyn360-cli" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>wyn360
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>wyn360
 </code></pre></div>
 <p>You should see:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>🤖 WYN360 CLI v0.3.60
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>🔍 AI Provider: Google Gemini (gemini-2.5-flash)
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>💡 Model: gemini-2.5-flash | Context: 2M tokens
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>💰 Cost: $0.075/$0.30 per M tokens (input/output)
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>Type your message (Shift+Enter for newline, Enter to send, &#39;exit&#39; to quit):
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>You:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>🤖 WYN360 CLI v0.3.60
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>🔍 AI Provider: Google Gemini (gemini-2.5-flash)
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>💡 Model: gemini-2.5-flash | Context: 2M tokens
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>💰 Cost: $0.075/$0.30 per M tokens (input/output)
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>Type your message (Shift+Enter for newline, Enter to send, &#39;exit&#39; to quit):
+<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>You:
 </code></pre></div>
 <h2 id="step-4-try-your-first-commands">Step 4: Try Your First Commands<a class="headerlink" href="#step-4-try-your-first-commands" title="Permanent link">&para;</a></h2>
 <h3 id="basic-chat">Basic Chat<a class="headerlink" href="#basic-chat" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>You: Hello! Can you help me create a Python function?
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>WYN360: Hello! I&#39;d be happy to help you create a Python function.
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>What kind of function would you like me to create for you?
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>You: Hello! Can you help me create a Python function?
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>WYN360: Hello! I&#39;d be happy to help you create a Python function.
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>What kind of function would you like me to create for you?
 </code></pre></div>
 <h3 id="code-generation">Code Generation<a class="headerlink" href="#code-generation" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>You: Create a function that calculates the factorial of a number
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>WYN360: I&#39;ll create a factorial function for you.
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>[Creates factorial.py with the function and saves it]
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>✓ Created factorial.py with factorial function
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>✓ Added error handling for negative numbers
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>✓ Included docstring and example usage
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>You: Create a function that calculates the factorial of a number
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>WYN360: I&#39;ll create a factorial function for you.
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>[Creates factorial.py with the function and saves it]
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>✓ Created factorial.py with factorial function
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>✓ Added error handling for negative numbers
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>✓ Included docstring and example usage
 </code></pre></div>
 <h3 id="project-analysis">Project Analysis<a class="headerlink" href="#project-analysis" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>You: List all Python files in this project
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>WYN360: [Scans directory]
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>📁 **Python Files Found:**
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>- `wyn360_cli/cli.py` (840 lines)
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>- `wyn360_cli/agent.py` (4,259 lines)
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>- `wyn360_cli/config.py` (308 lines)
-<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>- `tests/test_agent.py` (46 tests)
-<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>[... complete listing]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>You: List all Python files in this project
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>WYN360: [Scans directory]
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>📁 **Python Files Found:**
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>- `wyn360_cli/cli.py` (840 lines)
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>- `wyn360_cli/agent.py` (4,259 lines)
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>- `wyn360_cli/config.py` (308 lines)
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>- `tests/test_agent.py` (46 tests)
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>[... complete listing]
 </code></pre></div>
 <h2 id="step-5-explore-slash-commands">Step 5: Explore Slash Commands<a class="headerlink" href="#step-5-explore-slash-commands" title="Permanent link">&para;</a></h2>
 <p>WYN360 CLI includes powerful slash commands for session management:</p>
@@ -1907,42 +1921,42 @@
 </tbody>
 </table>
 <h3 id="example-session-management">Example Session Management<a class="headerlink" href="#example-session-management" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>You: Create a web scraper for Python packages
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>WYN360: [Creates scraper.py with full implementation]
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>You: /save scraper_session.json
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>✓ Session saved to: scraper_session.json
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
-<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>You: /tokens
-<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>📊 **Token Usage This Session**
-<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>Input: 1,245 tokens | Output: 892 tokens
-<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>💰 Cost: $0.002 | Model: gemini-2.5-flash
-<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
-<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>You: /model
-<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>🤖 **Current Model: gemini-2.5-flash**
-<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>💰 Pricing: $0.075/$0.30 per M tokens (input/output)
-<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>📊 Context Window: 2M tokens
-<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>🔧 Max Output: 4096 tokens
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>You: Create a web scraper for Python packages
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>WYN360: [Creates scraper.py with full implementation]
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>You: /save scraper_session.json
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>✓ Session saved to: scraper_session.json
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>You: /tokens
+<a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>📊 **Token Usage This Session**
+<a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>Input: 1,245 tokens | Output: 892 tokens
+<a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>💰 Cost: $0.002 | Model: gemini-2.5-flash
+<a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+<a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>You: /model
+<a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>🤖 **Current Model: gemini-2.5-flash**
+<a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>💰 Pricing: $0.075/$0.30 per M tokens (input/output)
+<a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>📊 Context Window: 2M tokens
+<a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>🔧 Max Output: 4096 tokens
 </code></pre></div>
 <h2 id="common-first-tasks">Common First Tasks<a class="headerlink" href="#common-first-tasks" title="Permanent link">&para;</a></h2>
 <h3 id="file-operations">File Operations<a class="headerlink" href="#file-operations" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>You: Read the contents of config.py
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>You: Update main.py to add logging
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>You: Create a new FastAPI app in app.py
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>You: Delete the old backup files
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>You: Read the contents of config.py
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>You: Update main.py to add logging
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>You: Create a new FastAPI app in app.py
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>You: Delete the old backup files
 </code></pre></div>
 <h3 id="development-workflow">Development Workflow<a class="headerlink" href="#development-workflow" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>You: Run the tests for this project
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>You: Check git status and show me what&#39;s changed
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>You: Install the requirements from requirements.txt
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>You: Create a virtual environment and activate it
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>You: Run the tests for this project
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>You: Check git status and show me what&#39;s changed
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>You: Install the requirements from requirements.txt
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>You: Create a virtual environment and activate it
 </code></pre></div>
 <h3 id="web-and-research">Web and Research<a class="headerlink" href="#web-and-research" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>You: Search for the latest Python web frameworks
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>You: Read https://docs.python.org/3/tutorial/
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>You: Find GitHub repositories for machine learning
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>You: What&#39;s the current weather in San Francisco?
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>You: Search for the latest Python web frameworks
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>You: Read https://docs.python.org/3/tutorial/
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>You: Find GitHub repositories for machine learning
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>You: What&#39;s the current weather in San Francisco?
 </code></pre></div>
 <h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
 <p>Now that you're set up, explore these advanced features:</p>
