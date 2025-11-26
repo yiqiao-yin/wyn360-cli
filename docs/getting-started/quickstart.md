@@ -6,21 +6,6 @@ Get up and running with WYN360 CLI in under 5 minutes!
 
 WYN360 CLI supports four AI providers. Choose the one that works best for you:
 
-=== "Google Gemini (Recommended)"
-
-    **Why Gemini?** ~40x cheaper than Claude, 2M context window, fast performance
-
-    **Setup:**
-    ```bash
-    export CHOOSE_CLIENT=3
-    export GEMINI_API_KEY=your_key_here
-    export GEMINI_MODEL=gemini-2.5-flash
-    ```
-
-    **Get API Key:** [Google AI Studio](https://aistudio.google.com/apikey)
-
-    **Pricing:** $0.075 per million input tokens (vs $3.00 for Claude)
-
 === "Anthropic Claude"
 
     **Why Claude?** Most capable, excellent for complex coding tasks
@@ -54,6 +39,21 @@ WYN360 CLI supports four AI providers. Choose the one that works best for you:
     ```
 
     **Requirements:** Valid AWS account with Bedrock access
+
+=== "Google Gemini (Recommended)"
+
+    **Why Gemini?** ~40x cheaper than Claude, 2M context window, fast performance
+
+    **Setup:**
+    ```bash
+    export CHOOSE_CLIENT=3
+    export GEMINI_API_KEY=your_key_here
+    export GEMINI_MODEL=gemini-2.5-flash
+    ```
+
+    **Get API Key:** [Google AI Studio](https://aistudio.google.com/apikey)
+
+    **Pricing:** $0.075 per million input tokens (vs $3.00 for Claude)
 
 === "OpenAI"
 
