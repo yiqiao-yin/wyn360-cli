@@ -1734,24 +1734,14 @@
 <p>Get up and running with WYN360 CLI in under 5 minutes!</p>
 <h2 id="step-1-choose-your-ai-provider">Step 1: Choose Your AI Provider<a class="headerlink" href="#step-1-choose-your-ai-provider" title="Permanent link">&para;</a></h2>
 <p>WYN360 CLI supports four AI providers. Choose the one that works best for you:</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Google Gemini (Recommended)</label><label for="__tabbed_1_2">Anthropic Claude</label><label for="__tabbed_1_3">AWS Bedrock</label><label for="__tabbed_1_4">OpenAI</label><label for="__tabbed_1_5">Auto-Detection</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Anthropic Claude</label><label for="__tabbed_1_2">AWS Bedrock</label><label for="__tabbed_1_3">Google Gemini (Recommended)</label><label for="__tabbed_1_4">OpenAI</label><label for="__tabbed_1_5">Auto-Detection</label></div>
 <div class="tabbed-content">
-<div class="tabbed-block">
-<p><strong>Why Gemini?</strong> ~40x cheaper than Claude, 2M context window, fast performance</p>
-<p><strong>Setup:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">3</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_key_here
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_MODEL</span><span class="o">=</span>gemini-2.5-flash
-</code></pre></div></p>
-<p><strong>Get API Key:</strong> <a href="https://aistudio.google.com/apikey">Google AI Studio</a></p>
-<p><strong>Pricing:</strong> $0.075 per million input tokens (vs $3.00 for Claude)</p>
-</div>
 <div class="tabbed-block">
 <p><strong>Why Claude?</strong> Most capable, excellent for complex coding tasks</p>
 <p><strong>Setup:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">1</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span>your_key_here
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_MODEL</span><span class="o">=</span>claude-sonnet-4-20250514
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">1</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_API_KEY</span><span class="o">=</span>your_key_here
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_MODEL</span><span class="o">=</span>claude-sonnet-4-20250514
 </code></pre></div></p>
 <p><strong>Get API Key:</strong> <a href="https://console.anthropic.com/">Anthropic Console</a></p>
 <p><strong>Available Models:</strong>
@@ -1762,14 +1752,24 @@
 <div class="tabbed-block">
 <p><strong>Why Bedrock?</strong> Enterprise AWS integration, compliance features</p>
 <p><strong>Setup:</strong>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">2</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>your_access_key
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>your_secret_key
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span>your_session_token
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_REGION</span><span class="o">=</span>us-west-2
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_MODEL</span><span class="o">=</span>us.anthropic.claude-sonnet-4-20250514-v1:0
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">2</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_ACCESS_KEY_ID</span><span class="o">=</span>your_access_key
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SECRET_ACCESS_KEY</span><span class="o">=</span>your_secret_key
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_SESSION_TOKEN</span><span class="o">=</span>your_session_token
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">AWS_REGION</span><span class="o">=</span>us-west-2
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ANTHROPIC_MODEL</span><span class="o">=</span>us.anthropic.claude-sonnet-4-20250514-v1:0
 </code></pre></div></p>
 <p><strong>Requirements:</strong> Valid AWS account with Bedrock access</p>
+</div>
+<div class="tabbed-block">
+<p><strong>Why Gemini?</strong> ~40x cheaper than Claude, 2M context window, fast performance</p>
+<p><strong>Setup:</strong>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">CHOOSE_CLIENT</span><span class="o">=</span><span class="m">3</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_API_KEY</span><span class="o">=</span>your_key_here
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">GEMINI_MODEL</span><span class="o">=</span>gemini-2.5-flash
+</code></pre></div></p>
+<p><strong>Get API Key:</strong> <a href="https://aistudio.google.com/apikey">Google AI Studio</a></p>
+<p><strong>Pricing:</strong> $0.075 per million input tokens (vs $3.00 for Claude)</p>
 </div>
 <div class="tabbed-block">
 <p><strong>Why OpenAI?</strong> Industry-leading performance, competitive pricing, fast response times</p>
