@@ -529,17 +529,37 @@ class WYN360Agent:
         # WebSearchTool is now enabled with pydantic-ai >= 1.13.0
         # Note: Bedrock doesn't support builtin_tools
         # IMPORTANT: Gemini doesn't support builtin_tools + custom tools at the same time
+        # IMPORTANT: OpenAI with ResponsesModel doesn't support builtin_tools + custom tools
         builtin_tools = []
-        if HAS_WEB_SEARCH and not self.use_bedrock and not self.use_gemini:
+        if HAS_WEB_SEARCH and not self.use_bedrock and not self.use_gemini and not self.use_openai:
             # Enable web search with configurable limit (Anthropic API only)
             # For Gemini, we'll need to implement web search as a custom tool
             builtin_tools.append(WebSearchTool(max_uses=self.max_search_limit))
 
-        self.agent = Agent(
-            model=self.model,
-            system_prompt=self._get_system_prompt(),
-            builtin_tools=builtin_tools,
-            tools=[
+        # Define tool lists based on provider capabilities
+        # OpenAI has strict limits on number of tools, so use essential tools only
+        if self.use_openai:
+            tools_list = [
+                # Essential file operations
+                self.read_file,
+                self.write_file,
+                self.list_files,
+                # Essential commands
+                self.execute_command,
+                # Document readers (the main focus)
+                self.read_pdf,
+                self.read_excel,
+                self.read_word,
+                # Essential project operations
+                self.get_project_info,
+                # Essential git operations
+                self.git_status,
+                self.git_diff,
+                # Website fetching
+                self.fetch_website,
+            ]
+        else:
+            tools_list = [
                 self.read_file,
                 self.write_file,
                 self.list_files,
@@ -585,7 +605,13 @@ class WYN360Agent:
                 self.read_excel,
                 self.read_word,
                 self.read_pdf
-            ],
+            ]
+
+        self.agent = Agent(
+            model=self.model,
+            system_prompt=self._get_system_prompt(),
+            builtin_tools=builtin_tools,
+            tools=tools_list,
             retries=0  # No retries - show errors immediately to model for correction
         )
 
