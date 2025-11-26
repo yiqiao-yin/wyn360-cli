@@ -1,6 +1,6 @@
 [project]
 name = "wyn360-cli"
-version = "0.3.75"
+version = "0.3.77"
 description = "WYN360 - An intelligent AI coding assistant CLI tool powered by Anthropic Claude"
 authors = [
     {name = "Yiqiao Yin", email = "yiqiao.yin@wyn-associates.com"}
@@ -24,6 +24,8 @@ dependencies = [
     "pytesseract>=0.3.10",
     "pdf2image>=1.16.0",
     "Pillow>=10.0.0",
+    "pymupdf-layout>=0.1.0",
+    "pymupdf4llm>=0.1.0",
     "cryptography>=42.0.0",
     "playwright>=1.40.0",
     "stagehand-py>=0.1.0",

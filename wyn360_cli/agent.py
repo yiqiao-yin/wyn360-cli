@@ -3728,25 +3728,26 @@ You can restart the task by running the command again.
         if not regenerate_cache:
             cached = cache.load_chunks(cache_key)
             if cached:
-                # Cache hit
-                chunks = cached
+                # Cache hit - extract chunks and metadata
+                cached_chunks = cached["chunks"]
+                cached_metadata = cached["metadata"]
 
                 # Filter by query if provided
                 if query:
                     retriever = ChunkRetriever(top_k=5)
-                    chunks = retriever.get_relevant_chunks(chunks, query)
+                    cached_chunks = retriever.get_relevant_chunks(query, cached_chunks)
 
                 # Format output
                 response = "📄 **PDF File (from cache)**\n\n"
                 response += f"**File:** {file_path_obj.name}\n"
-                response += f"**Pages:** {chunks[0]['metadata'].get('total_pages', 'N/A')}\n"
-                response += f"**Chunks:** {len(chunks)}\n"
+                response += f"**Pages:** {cached_metadata.get('total_pages', 'N/A')}\n"
+                response += f"**Chunks:** {len(cached_chunks)}\n"
                 if query:
-                    response += f"**Query:** {query} (showing top {len(chunks)} relevant chunks)\n"
+                    response += f"**Query:** {query} (showing top {len(cached_chunks)} relevant chunks)\n"
                 response += "\n---\n\n"
 
                 # Show chunk summaries
-                for chunk in chunks[:10]:  # Limit to 10 chunks
+                for chunk in cached_chunks[:10]:  # Limit to 10 chunks
                     page_range_str = f"Pages {chunk['metadata'].get('start_page', '?')}-{chunk['metadata'].get('end_page', '?')}"
                     summary = chunk["metadata"].get("summary", "No summary available")
                     tags = chunk["metadata"].get("tags", [])
@@ -3868,15 +3869,16 @@ You can restart the task by running the command again.
 
             # Build chunks with metadata
             chunks_with_metadata = []
-            total_summary_tokens = 0
+            total_input_tokens = 0
+            total_output_tokens = 0
 
             for i, chunk_data in enumerate(chunks_data):
                 summary_result = summary_results[i]
 
-                # Track tokens
+                # Track tokens separately
                 if "api_tokens" in summary_result:
-                    total_summary_tokens += summary_result["api_tokens"]["input"]
-                    total_summary_tokens += summary_result["api_tokens"]["output"]
+                    total_input_tokens += summary_result["api_tokens"]["input"]
+                    total_output_tokens += summary_result["api_tokens"]["output"]
 
                 # Store chunk with metadata
                 chunks_with_metadata.append({
@@ -3895,8 +3897,8 @@ You can restart the task by running the command again.
                     }
                 })
 
-            # Track document processing tokens
-            self.track_document_processing(total_summary_tokens)
+            # Track document processing tokens with separate input/output
+            self.track_document_processing(total_input_tokens, total_output_tokens)
 
             # Add semantic embeddings to chunks (Phase 5.2.2)
             if summarizer.enable_embeddings:
@@ -3916,8 +3918,40 @@ You can restart the task by running the command again.
                     if "embedding" in chunks_for_embedding[i]:
                         chunk["metadata"]["embedding"] = chunks_for_embedding[i]["embedding"]
 
-            # Cache chunks
-            cache.save_chunks(cache_key, chunks_with_metadata, file_size=file_path_obj.stat().st_size)
+            # Cache chunks with proper metadata
+            import time
+            metadata = DocumentMetadata(
+                file_path=str(file_path_obj),
+                file_hash="",  # We'll compute this in save_chunks if needed
+                file_size=file_path_obj.stat().st_size,
+                total_tokens=total_tokens,
+                chunk_count=len(chunks_with_metadata),
+                chunk_size=1000,  # Default chunk size used
+                created_at=time.time(),
+                ttl=3600,  # 1 hour TTL
+                doc_type="pdf"
+            )
+
+            # Convert chunks to ChunkMetadata instances
+            chunk_metadata_list = []
+            for chunk in chunks_with_metadata:
+                chunk_meta = ChunkMetadata(
+                    chunk_id=chunk["metadata"]["chunk_id"],
+                    position={
+                        "start_page": chunk["metadata"]["start_page"],
+                        "end_page": chunk["metadata"]["end_page"]
+                    },
+                    summary=chunk["metadata"]["summary"],
+                    tags=chunk["metadata"]["tags"],
+                    token_count=chunk["metadata"]["tokens"],
+                    summary_tokens=chunk["metadata"]["summary_tokens"],
+                    tag_tokens=0,  # We don't track this separately yet
+                    page_range=(chunk["metadata"]["start_page"], chunk["metadata"]["end_page"]),
+                    embedding=chunk["metadata"].get("embedding")
+                )
+                chunk_metadata_list.append(chunk_meta)
+
+            cache.save_chunks(str(file_path_obj), metadata, chunk_metadata_list)
 
             # Filter by query if provided (Phase 5.2.3: Semantic matching)
             if query:
@@ -3939,7 +3973,7 @@ You can restart the task by running the command again.
             response += f"**Has Tables:** {'Yes' if has_tables else 'No'}\n"
             if query:
                 response += f"**Query:** {query} (showing top {len(chunks_with_metadata)} relevant chunks)\n"
-            response += f"**Summary Tokens Used:** {total_summary_tokens:,}\n"
+            response += f"**Summary Tokens Used:** {total_input_tokens + total_output_tokens:,}\n"
             response += "\n---\n\n"
 
             # Show chunk summaries

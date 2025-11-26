@@ -43,6 +43,13 @@ except ImportError:
     pymupdf = None
 
 try:
+    import pymupdf.layout  # PyMuPDF Layout for enhanced analysis
+    import pymupdf4llm
+    HAS_PYMUPDF_LAYOUT = True
+except ImportError:
+    HAS_PYMUPDF_LAYOUT = False
+
+try:
     import pdfplumber
     HAS_PDFPLUMBER = True
 except ImportError:
@@ -3282,7 +3289,8 @@ class PDFReader:
         pages_per_chunk: int = 3,
         image_handling: str = "describe",
         enable_ocr: bool = False,
-        ocr_language: str = "eng"
+        ocr_language: str = "eng",
+        enable_layout_analysis: bool = True
     ):
         """
         Initialize PDF reader.
@@ -3295,6 +3303,7 @@ class PDFReader:
             image_handling: How to handle images ("skip", "describe", "vision")
             enable_ocr: Enable OCR for scanned PDFs (Phase 5.3)
             ocr_language: Tesseract language code (eng, spa, fra, etc.)
+            enable_layout_analysis: Use pymupdf_layout for enhanced structure detection (default: True)
         """
         self.file_path = Path(file_path)
         self.chunk_size = chunk_size
@@ -3303,6 +3312,7 @@ class PDFReader:
         self.image_handling = image_handling
         self.enable_ocr = enable_ocr
         self.ocr_language = ocr_language
+        self.enable_layout_analysis = enable_layout_analysis
         self.chunker = DocumentChunker(chunk_size)
 
         # Validate engine
@@ -3349,7 +3359,15 @@ class PDFReader:
         if not self.file_path.exists():
             raise FileNotFoundError(f"PDF file not found: {self.file_path}")
 
-        # Read using appropriate engine
+        # Check if we can use enhanced layout analysis
+        if (self.enable_layout_analysis and
+            self.engine == "pymupdf" and
+            HAS_PYMUPDF_LAYOUT and
+            page_range is None and  # Layout analysis works best on full document
+            image_processor is None):  # Simplified for layout mode
+            return await self._read_with_layout_analysis()
+
+        # Read using standard engines
         if self.engine == "pymupdf":
             return await self._read_with_pymupdf(page_range, image_processor)
         else:
@@ -3616,6 +3634,60 @@ class PDFReader:
             result["images"] = image_descriptions
 
         return result
+
+    async def _read_with_layout_analysis(self) -> Dict[str, Any]:
+        """
+        Read PDF using pymupdf_layout for enhanced structure detection.
+
+        This method provides 10x faster parsing with better layout analysis,
+        automatic OCR when beneficial, and superior structure preservation.
+
+        Returns:
+            Dictionary with enhanced structured content
+        """
+        try:
+            # Open document with pymupdf
+            doc = pymupdf.open(str(self.file_path))
+            total_pages = len(doc)
+
+            # Use layout-enhanced extraction to markdown
+            # The layout analysis automatically handles tables, headers, and structure
+            markdown_content = pymupdf4llm.to_markdown(
+                doc,
+                header=False,  # Filter repetitive headers
+                footer=False   # Filter repetitive footers
+            )
+
+            # Extract structured data as well for additional analysis
+            json_data = pymupdf4llm.to_json(doc)
+
+            # Create a single comprehensive page with structured content
+            pages = [{
+                "page_number": 1,  # Represent as single logical unit
+                "content": markdown_content,
+                "tokens": len(markdown_content.split()),  # Rough token estimate
+                "layout_enhanced": True,
+                "structured_data": json_data,
+                "has_tables": "table" in markdown_content.lower() or "|" in markdown_content,
+                "page_range": (1, total_pages)
+            }]
+
+            doc.close()
+
+            return {
+                "pages": pages,
+                "total_pages": total_pages,
+                "page_range_read": (1, total_pages),
+                "total_tokens": pages[0]["tokens"],
+                "has_tables": pages[0]["has_tables"],
+                "engine": "pymupdf_layout",
+                "layout_enhanced": True
+            }
+
+        except Exception as e:
+            # Fallback to standard pymupdf if layout analysis fails
+            print(f"Layout analysis failed, falling back to standard PyMuPDF: {e}")
+            return await self._read_with_pymupdf(None, None)
 
     def _table_to_markdown_pymupdf(self, table_data: List[List]) -> str:
         """Convert PyMuPDF table data to markdown."""
