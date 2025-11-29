@@ -4372,7 +4372,7 @@ Choose the method that best fits your infrastructure and billing preferences!
 
 WYN360 has access to these specialized tools for file and project operations:
 
-#### `read_file(file_path: str)`
+##### `read_file(file_path: str)`
 **Purpose:** Read the contents of any file in your project
 
 **Parameters:**
@@ -4390,7 +4390,7 @@ WYN360 has access to these specialized tools for file and project operations:
 
 ---
 
-#### `write_file(file_path: str, content: str, overwrite: bool)`
+##### `write_file(file_path: str, content: str, overwrite: bool)`
 **Purpose:** Create new files or update existing ones
 
 **Parameters:**
@@ -4410,7 +4410,7 @@ WYN360 has access to these specialized tools for file and project operations:
 
 ---
 
-#### `list_files(directory: str)`
+##### `list_files(directory: str)`
 **Purpose:** Show all files in a directory, organized by category
 
 **Parameters:**
@@ -4434,7 +4434,7 @@ WYN360 has access to these specialized tools for file and project operations:
 
 ---
 
-#### `get_project_info()`
+##### `get_project_info()`
 **Purpose:** Generate a comprehensive project summary
 
 **Returns:**
@@ -4458,7 +4458,7 @@ WYN360 has access to these specialized tools for file and project operations:
 
 #### Appendix B: Smart File Handling
 
-#### Automatic Code Saving
+##### Automatic Code Saving
 
 When you're in a **blank project** (no Python or text files), WYN360 automatically saves generated code:
 
@@ -4483,7 +4483,7 @@ else:
     filename = 'script.py'
 ```
 
-#### File Type Recognition
+##### File Type Recognition
 
 WYN360 categorizes files to understand your project:
 
@@ -4502,7 +4502,7 @@ WYN360 categorizes files to understand your project:
 
 WYN360 includes advanced intelligence for understanding user intent when working with files, automatically determining whether to create new files or update existing ones.
 
-#### Intent Recognition
+##### Intent Recognition
 
 The agent analyzes your natural language to understand what you want:
 
@@ -4530,7 +4530,7 @@ The agent analyzes your natural language to understand what you want:
 2. Uses `overwrite=False` to prevent accidents
 3. Leaves existing files untouched
 
-#### Context-Aware Updates
+##### Context-Aware Updates
 
 **Before updating any file, the agent:**
 1. ✓ Reads the current file contents
@@ -4551,7 +4551,7 @@ WYN360:
 ✓ Updated: app.py (added script execution feature)
 ```
 
-#### Self-Correcting Behavior
+##### Self-Correcting Behavior
 
 If the agent makes a wrong choice, it can self-correct:
 
@@ -4567,7 +4567,7 @@ If the agent makes a wrong choice, it can self-correct:
 - Seamless user experience
 - Natural language understanding
 
-#### Smart Retry Mechanism
+##### Smart Retry Mechanism
 
 **Configuration:** 3 retries for tool operations
 
@@ -4588,7 +4588,7 @@ If the agent makes a wrong choice, it can self-correct:
 
 #### Appendix D: Example Workflows
 
-#### Workflow 1: Brand New Project
+##### Workflow 1: Brand New Project
 ```bash
 Step 1: Navigate to empty directory
 $ cd my-new-project
@@ -4617,7 +4617,7 @@ WYN360:
 
 ---
 
-#### Workflow 2: Enhance Existing Project
+##### Workflow 2: Enhance Existing Project
 ```bash
 Step 1: Navigate to your project
 $ cd my-existing-project
@@ -4647,7 +4647,7 @@ WYN360:
 
 ---
 
-#### Workflow 3: Debug & Fix
+##### Workflow 3: Debug & Fix
 ```bash
 Step 1: Encounter an error
 $ python script.py
@@ -4683,7 +4683,7 @@ WYN360:
 
 ---
 
-#### Workflow 4: Learning & Guidance
+##### Workflow 4: Learning & Guidance
 ```bash
 You: How do I implement async in Python?
 
@@ -4713,29 +4713,29 @@ WYN360:
 
 #### Appendix E: Key Strengths
 
-#### 1. Context-Aware Development
+##### 1. Context-Aware Development
 - Reads and understands your project structure before making changes
 - Maintains consistency with your existing code style
 - Suggests changes that integrate seamlessly
 
-#### 2. Production-Ready Code
+##### 2. Production-Ready Code
 - Proper error handling and edge cases
 - Comprehensive docstrings
 - Type hints where appropriate
 - Follows best practices
 
-#### 3. Interactive & Iterative
+##### 3. Interactive & Iterative
 - Chat-based interface for natural interaction
 - Ask follow-up questions
 - Refine solutions iteratively
 - Get explanations anytime
 
-#### 4. Automatic File Management
+##### 4. Automatic File Management
 - Saves generated code automatically (in blank projects)
 - Smart file naming based on content
 - Creates directory structures as needed
 
-#### 5. Intelligent Code Analysis
+##### 5. Intelligent Code Analysis
 - Detects code patterns (Streamlit, FastAPI, etc.)
 - Suggests appropriate file names
 - Understands project structure
@@ -4744,22 +4744,22 @@ WYN360:
 
 #### Appendix F: Current Limitations
 
-#### 1. Python-Focused
+##### 1. Python-Focused
 - **Optimized for:** Python projects and development
 - **Can discuss:** Other languages, but tooling is Python-centric
 - **Best for:** Python developers and learners
 
-#### 2. Local Files Only
+##### 2. Local Files Only
 - **Works with:** Files in current directory and subdirectories
 - **Cannot access:** Remote repositories, databases, external APIs
 - **Scope:** Local file system only
 
-#### 3. Session-Based Memory
+##### 3. Session-Based Memory
 - **No persistent memory** between CLI sessions
 - Each session starts fresh
 - **Workaround:** Provide context in each session or use /save and /load
 
-#### 4. File Size Limits
+##### 4. File Size Limits
 - Maximum file size: 1MB per file
 - Prevents reading very large files
 - **Workaround:** Process large files in chunks
@@ -4768,7 +4768,7 @@ WYN360:
 
 #### Appendix G: Best Use Cases Summary
 
-#### ✅ Excellent For:
+##### ✅ Excellent For:
 
 **Rapid Prototyping**
 - Build MVPs quickly
@@ -4802,7 +4802,7 @@ WYN360:
 
 ---
 
-#### ❌ Not Ideal For:
+##### ❌ Not Ideal For:
 
 **Non-Python Projects**
 - JavaScript/TypeScript (can advise, but limited tooling)
@@ -4830,33 +4830,33 @@ WYN360:
 
 #### Appendix H: Pro Tips
 
-#### 1. Be Specific
+##### 1. Be Specific
 **Instead of:** "Make my code better"
 **Try:** "Add error handling to my API endpoints"
 
-#### 2. Provide Context
+##### 2. Provide Context
 **Instead of:** "This doesn't work"
 **Try:** "My FastAPI app returns 500 errors when the database is down"
 
-#### 3. Iterate
+##### 3. Iterate
 - Start with basic version
 - Ask for improvements
 - Refine step by step
 - Build incrementally
 
-#### 4. Use in Combination with IDE
+##### 4. Use in Combination with IDE
 - Generate code with WYN360
 - Refine in your IDE
 - Use IDE for complex refactoring
 - Use WYN360 for quick generation
 
-#### 5. Review Generated Code
+##### 5. Review Generated Code
 - Always read generated code
 - Understand what it does
 - Test before deploying
 - Customize as needed
 
-#### 6. Use Clear Intent Language
+##### 6. Use Clear Intent Language
 - Say "add feature" or "update" when modifying existing files
 - Say "create new" or "make another" for new files
 - Be explicit about what you want to change
@@ -4868,7 +4868,7 @@ WYN360:
 - ✅ "Improve error handling" (updates existing)
 - ✅ "Build a separate API client" (creates new)
 
-#### 7. Manage Context with Slash Commands
+##### 7. Manage Context with Slash Commands
 - Use `/tokens` to monitor API costs during long sessions
 - Use `/save` to preserve important conversations for later
 - Use `/load` to continue previous work sessions
@@ -4909,19 +4909,19 @@ WYN360: [Continues from where you left off with full context]
 
 #### Appendix I: Learning Path
 
-#### Beginner
+##### Beginner
 1. Start in blank directory
 2. Ask to build simple scripts
 3. Learn from generated code
 4. Ask "why" and "how" questions
 
-#### Intermediate
+##### Intermediate
 1. Bring existing projects
 2. Ask for feature additions
 3. Request refactoring help
 4. Learn best practices
 
-#### Advanced
+##### Advanced
 1. Use for rapid prototyping
 2. Generate complex architectures
 3. Get design pattern suggestions

@@ -28,25 +28,32 @@ pip install wyn360-cli
 ```
 
 ### 2. Choose Your AI Provider
+
 WYN360 CLI supports three AI providers:
 
 === "Anthropic Claude"
+
+    **Why Claude?** Most capable, excellent for complex coding tasks
+
+    **Setup:**
     ```bash
     export CHOOSE_CLIENT=1
     export ANTHROPIC_API_KEY=your_key_here
     export ANTHROPIC_MODEL=claude-sonnet-4-20250514
     ```
-    [Get API Key →](https://console.anthropic.com/)
 
-=== "Google Gemini"
-    ```bash
-    export CHOOSE_CLIENT=3
-    export GEMINI_API_KEY=your_key_here
-    export GEMINI_MODEL=gemini-2.5-flash
-    ```
-    [Get API Key →](https://aistudio.google.com/apikey)
+    **Get API Key:** [Anthropic Console](https://console.anthropic.com/)
+
+    **Available Models:**
+    - `claude-sonnet-4-20250514` - Most capable (default)
+    - `claude-3-5-haiku-20241022` - Fastest and cheapest
+    - `claude-opus-4-1-20250805` - Most powerful
 
 === "AWS Bedrock"
+
+    **Why Bedrock?** Enterprise AWS integration, compliance features
+
+    **Setup:**
     ```bash
     export CHOOSE_CLIENT=2
     export AWS_ACCESS_KEY_ID=your_access_key
@@ -55,6 +62,57 @@ WYN360 CLI supports three AI providers:
     export AWS_REGION=us-west-2
     export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
     ```
+
+    **Requirements:** Valid AWS account with Bedrock access
+
+=== "Google Gemini (Recommended)"
+
+    **Why Gemini?** ~40x cheaper than Claude, 2M context window, fast performance
+
+    **Setup:**
+    ```bash
+    export CHOOSE_CLIENT=3
+    export GEMINI_API_KEY=your_key_here
+    export GEMINI_MODEL=gemini-2.5-flash
+    ```
+
+    **Get API Key:** [Google AI Studio](https://aistudio.google.com/apikey)
+
+    **Pricing:** $0.075 per million input tokens (vs $3.00 for Claude)
+
+=== "OpenAI"
+
+    **Why OpenAI?** Industry-leading performance, competitive pricing, fast response times
+
+    **Setup:**
+    ```bash
+    export CHOOSE_CLIENT=4
+    export OPENAI_API_KEY=your_key_here
+    export OPENAI_MODEL=gpt-4o
+    ```
+
+    **Get API Key:** [OpenAI Platform](https://platform.openai.com/api-keys)
+
+    **Available Models:**
+    - `gpt-4o` - Latest and most capable (default)
+    - `gpt-4` - Stable and reliable
+    - `gpt-3.5-turbo` - Fast and cost-effective
+
+=== "Auto-Detection"
+
+    **Let WYN360 choose automatically** based on available credentials:
+
+    ```bash
+    # Just set your preferred API key - no CHOOSE_CLIENT needed
+    export GEMINI_API_KEY=your_key_here
+    # System automatically detects and uses Gemini
+    ```
+
+    **Priority order:**
+    1. `ANTHROPIC_API_KEY` → Use Anthropic
+    2. AWS credentials → Use Bedrock
+    3. `GEMINI_API_KEY` → Use Gemini
+    4. `OPENAI_API_KEY` → Use OpenAI
 
 ### 3. Start Chatting
 ```bash
