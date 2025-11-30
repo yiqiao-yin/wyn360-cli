@@ -3748,9 +3748,21 @@ You can restart the task by running the command again.
 
                 # Show chunk summaries
                 for chunk in cached_chunks[:10]:  # Limit to 10 chunks
-                    page_range_str = f"Pages {chunk['metadata'].get('start_page', '?')}-{chunk['metadata'].get('end_page', '?')}"
-                    summary = chunk["metadata"].get("summary", "No summary available")
-                    tags = chunk["metadata"].get("tags", [])
+                    # Defensive programming: handle different cache formats
+                    if 'metadata' in chunk:
+                        # New cache format with metadata wrapper
+                        start_page = chunk['metadata'].get('start_page', '?')
+                        end_page = chunk['metadata'].get('end_page', '?')
+                        summary = chunk['metadata'].get('summary', 'No summary available')
+                        tags = chunk['metadata'].get('tags', [])
+                    else:
+                        # Legacy cache format or ChunkMetadata objects
+                        start_page = chunk.get('start_page', '?')
+                        end_page = chunk.get('end_page', '?')
+                        summary = chunk.get('summary', 'No summary available')
+                        tags = chunk.get('tags', [])
+
+                    page_range_str = f"Pages {start_page}-{end_page}"
 
                     response += f"### {page_range_str}\n\n"
                     response += f"{summary}\n\n"
