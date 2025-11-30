@@ -19,22 +19,22 @@ This creates a layered automation system that achieves **high success rates** wh
 
 ```mermaid
 graph TD
-    A["🎯 User Request"] --> B["🔍 DOM Analysis"]
+    A["User Request"] --> B["DOM Analysis"]
     B --> C{"Confidence Score"}
-    C -->|High (>0.7)| D["⚡ DOM Automation"]
-    C -->|Medium (0.4-0.7)| E["🤖 Stagehand AI"]
-    C -->|Low (<0.4)| F["👁️ Vision Fallback"]
+    C -->|"High (>0.7)"| D["DOM Automation"]
+    C -->|"Medium (0.4-0.7)"| E["Stagehand AI"]
+    C -->|"Low (<0.4)"| F["Vision Fallback"]
 
     D --> G{Success?}
     E --> G
     F --> G
 
-    G -->|Yes| H["✅ Return Results"]
-    G -->|No| I["🔄 Try Next Approach"]
+    G -->|Yes| H["Return Results"]
+    G -->|No| I["Try Next Approach"]
     I --> J{"More Approaches?"}
-    J -->|Yes| K["📈 Increase Fallback Level"]
+    J -->|Yes| K["Increase Fallback Level"]
     K --> E
-    J -->|No| L["❌ Report Failure"]
+    J -->|No| L["Report Failure"]
 
     style A fill:#e1f5fe
     style B fill:#e8f5e8
