@@ -851,5 +851,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.78
+**Current Version:** 0.3.80
 **Last Updated:** November 24, 2025
