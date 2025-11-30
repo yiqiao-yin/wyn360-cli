@@ -1999,7 +1999,6 @@ result = browse_and_find(
 )
 # Option B can't do this - no context sharing
 ```
-```
 
 **Version:** v0.3.62
 **Estimated Time:** 2-3 days

@@ -8,7 +8,7 @@ WYN360 CLI integrates web search capabilities to help you find current informati
 
 ## Basic Usage
 
-```
+```bash
 You: Find the latest Python web frameworks
 
 WYN360: [Searches the web for current information]

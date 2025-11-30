@@ -382,10 +382,10 @@ User Request → UnifiedAutomationInterface → EnhancedAutomationOrchestrator
     ↓
 Intelligent Routing Decision (DOM → Stagehand → Vision)
     ↓
-┌─────────────┬─────────────┬─────────────┐
-│ DOM Analysis│ Stagehand AI│Vision Fallback│
-│(Fast&Cheap) │(AI-Powered) │(Most Capable)│
-└─────────────┴─────────────┴─────────────┘
+┌─────────────┬─────────────┬────────────────┐
+│ DOM Analysis│ Stagehand AI│Vision Fallback │
+│(Fast&Cheap) │(AI-Powered) │(Most Capable)  │
+└─────────────┴─────────────┴────────────────┘
     ↓
 Unified Error Handling → Consistent Results & Analytics
 ```

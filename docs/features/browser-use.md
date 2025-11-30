@@ -453,7 +453,6 @@ for site in tech_sites:
 🎯 **Extraction Method:** Enhanced code generation with batch processing
 ⏱️ **Time:** 22 seconds across 3 sites
 💸 **Cost:** $0.08 (75% savings vs step-by-step)
-```
 
 ## Performance Metrics
 
