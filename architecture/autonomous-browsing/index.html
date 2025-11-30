@@ -2555,22 +2555,22 @@
 <p>This creates a layered automation system that achieves <strong>high success rates</strong> while minimizing costs through intelligent approach selection.</p>
 <h2 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h2>
 <pre class="mermaid"><code>graph TD
-    A["🎯 User Request"] --&gt; B["🔍 DOM Analysis"]
+    A["User Request"] --&gt; B["DOM Analysis"]
     B --&gt; C{"Confidence Score"}
-    C --&gt;|High (&gt;0.7)| D["⚡ DOM Automation"]
-    C --&gt;|Medium (0.4-0.7)| E["🤖 Stagehand AI"]
-    C --&gt;|Low (&lt;0.4)| F["👁️ Vision Fallback"]
+    C --&gt;|"High (&gt;0.7)"| D["DOM Automation"]
+    C --&gt;|"Medium (0.4-0.7)"| E["Stagehand AI"]
+    C --&gt;|"Low (&lt;0.4)"| F["Vision Fallback"]
 
     D --&gt; G{Success?}
     E --&gt; G
     F --&gt; G
 
-    G --&gt;|Yes| H["✅ Return Results"]
-    G --&gt;|No| I["🔄 Try Next Approach"]
+    G --&gt;|Yes| H["Return Results"]
+    G --&gt;|No| I["Try Next Approach"]
     I --&gt; J{"More Approaches?"}
-    J --&gt;|Yes| K["📈 Increase Fallback Level"]
+    J --&gt;|Yes| K["Increase Fallback Level"]
     K --&gt; E
-    J --&gt;|No| L["❌ Report Failure"]
+    J --&gt;|No| L["Report Failure"]
 
     style A fill:#e1f5fe
     style B fill:#e8f5e8
