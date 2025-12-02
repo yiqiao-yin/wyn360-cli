@@ -1,0 +1,102 @@
+# Deploy Docusaurus documentation to GitHub Pages
+name: Deploy Docusaurus Documentation
+
+on:
+  push:
+    branches:
+      - main
+    # Only trigger when docusaurus-docs or docs directories change
+    paths:
+      - 'docusaurus-docs/**'
+      - 'docs/**'
+      - 'scripts/build_search_index.py'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'docusaurus-docs/**'
+      - 'docs/**'
+      - 'scripts/build_search_index.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: docusaurus-docs/package-lock.json
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: latest
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Cache Poetry dependencies
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Install Python dependencies for search index
+        run: |
+          poetry install --only=main
+          poetry run pip install sentence-transformers torch numpy scikit-learn
+
+      - name: Build AI search index
+        run: |
+          mkdir -p docusaurus-docs/static/assets
+          poetry run python scripts/build_search_index.py \
+            --input-dir docs \
+            --output-dir docusaurus-docs/static/assets \
+            --verbose
+
+      - name: Install Docusaurus dependencies
+        run: npm ci
+        working-directory: ./docusaurus-docs
+
+      - name: Build Docusaurus site
+        run: npm run build
+        working-directory: ./docusaurus-docs
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docusaurus-docs/build
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
