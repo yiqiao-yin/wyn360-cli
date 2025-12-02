@@ -29,25 +29,35 @@ export default function AISearch(): JSX.Element {
   // Add keyboard shortcut for Cmd+K / Ctrl+K to open search
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+      // Check for Cmd+K (Mac) or Ctrl+K (Windows/Linux)
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
         event.preventDefault();
-        setIsVisible(true);
+        event.stopPropagation();
+        console.log('Keyboard shortcut triggered'); // Debug log
+        setIsVisible(prev => !prev); // Toggle visibility
+
         // Focus the search input after opening
-        setTimeout(() => {
-          const searchInput = document.querySelector('.ai-search-input') as HTMLInputElement;
-          if (searchInput) {
-            searchInput.focus();
-          }
-        }, 100);
+        if (!isVisible) {
+          setTimeout(() => {
+            const searchInput = document.querySelector('.ai-search-input') as HTMLInputElement;
+            if (searchInput) {
+              searchInput.focus();
+              console.log('Search input focused'); // Debug log
+            }
+          }, 150);
+        }
       }
+
       // ESC to close
       if (event.key === 'Escape' && isVisible) {
+        event.preventDefault();
         setIsVisible(false);
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    // Add event listener to window for global capture
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [isVisible]);
 
   const loadSearchIndex = async () => {
@@ -179,7 +189,7 @@ export default function AISearch(): JSX.Element {
             background: 'rgba(255,255,255,0.2)',
             borderRadius: '3px'
           }}>
-            ⌘K
+            {navigator.platform?.includes('Mac') ? '⌘K' : 'Ctrl+K'}
           </kbd>
         </button>
       </div>
