@@ -72,7 +72,7 @@ jobs:
         run: |
           mkdir -p docusaurus-docs/static/assets
           poetry run python scripts/build_search_index.py \
-            --input-dir docs \
+            --docs-dir docs \
             --output-dir docusaurus-docs/static/assets \
             --verbose
 
