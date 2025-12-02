@@ -53,6 +53,13 @@ const config: Config = {
     ],
   ],
 
+  themes: ['@docusaurus/theme-mermaid'],
+
+  // Add Mermaid configuration
+  markdown: {
+    mermaid: true,
+  },
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
@@ -63,7 +70,7 @@ const config: Config = {
       title: 'WYN360 CLI',
       logo: {
         alt: 'WYN360 CLI Logo',
-        src: 'img/logo.svg',
+        src: 'img/wyn360_logo.png',
       },
       items: [
         {
