@@ -68,9 +68,9 @@ function AISearchComponent(): JSX.Element {
         const data = await response.json();
         setSearchIndex(data.chunks || []);
         setEmbeddings(data.embeddings || []);
-        console.log('Search index loaded:', data.chunks?.length || 0, 'chunks');
+        console.log('Search index loaded:', data.chunks?.length || 0, 'chunks', 'with embeddings:', data.embeddings?.length || 0);
       } else {
-        console.warn('Search index not found, AI search disabled');
+        console.warn('Search index not found, AI search disabled', response.status, response.statusText);
       }
     } catch (error) {
       console.warn('Failed to load search index:', error);
@@ -79,14 +79,23 @@ function AISearchComponent(): JSX.Element {
 
   const performSemanticSearch = useCallback(async (searchQuery: string): Promise<SearchResult[]> => {
     if (!searchIndex || !embeddings) {
+      console.log('Search index or embeddings not loaded, falling back to keyword search');
       return performKeywordSearch(searchQuery);
     }
 
     try {
-      // For now, fallback to keyword search
-      // In a full implementation, you would use transformers.js here
       console.log('Performing semantic search for:', searchQuery);
-      return performKeywordSearch(searchQuery);
+
+      // For now, use enhanced keyword search with better matching
+      // TODO: Implement full transformers.js semantic search in future
+      const keywordResults = performKeywordSearch(searchQuery);
+
+      if (keywordResults.length > 0) {
+        return keywordResults;
+      }
+
+      // If keyword search fails, try fuzzy matching
+      return performFuzzySearch(searchQuery);
     } catch (error) {
       console.warn('Semantic search failed, falling back to keyword search:', error);
       return performKeywordSearch(searchQuery);
@@ -96,21 +105,33 @@ function AISearchComponent(): JSX.Element {
   const performKeywordSearch = (searchQuery: string): SearchResult[] => {
     if (!searchIndex) return [];
 
-    const queryWords = searchQuery.toLowerCase().split(' ');
+    const queryWords = searchQuery.toLowerCase().split(' ').filter(word => word.length > 0);
     const results: SearchResult[] = [];
 
     searchIndex.forEach((chunk: any) => {
       const content = chunk.content?.toLowerCase() || '';
       const title = chunk.metadata?.title || chunk.title || 'Untitled';
+      const titleLower = title.toLowerCase();
       let score = 0;
 
-      // Calculate relevance score
+      // Calculate relevance score with improved matching
       queryWords.forEach(word => {
-        if (content.includes(word)) {
-          score += 1;
-          if (title.toLowerCase().includes(word)) {
-            score += 2; // Title matches are more important
-          }
+        // Exact word boundary matching
+        const wordRegex = new RegExp(`\\b${word}\\b`, 'i');
+        const partialRegex = new RegExp(word, 'i');
+
+        // Check content for matches
+        if (wordRegex.test(content)) {
+          score += 3; // Exact word match gets highest score
+        } else if (partialRegex.test(content)) {
+          score += 1; // Partial match gets lower score
+        }
+
+        // Check title for matches (title matches are more important)
+        if (wordRegex.test(titleLower)) {
+          score += 5; // Exact title word match
+        } else if (partialRegex.test(titleLower)) {
+          score += 2; // Partial title match
         }
       });
 
@@ -125,6 +146,46 @@ function AISearchComponent(): JSX.Element {
     });
 
     // Sort by score and return top results
+    return results
+      .sort((a, b) => (b.score || 0) - (a.score || 0))
+      .slice(0, 6);
+  };
+
+  const performFuzzySearch = (searchQuery: string): SearchResult[] => {
+    if (!searchIndex) return [];
+
+    const query = searchQuery.toLowerCase();
+    const results: SearchResult[] = [];
+
+    searchIndex.forEach((chunk: any) => {
+      const content = chunk.content?.toLowerCase() || '';
+      const title = chunk.metadata?.title || chunk.title || 'Untitled';
+      const titleLower = title.toLowerCase();
+
+      // Simple fuzzy matching - check if query is a subsequence
+      let score = 0;
+
+      // Check if any part of the query appears in content or title
+      for (let i = 0; i <= query.length - 3; i++) {
+        const substring = query.substring(i, i + 3);
+        if (content.includes(substring)) {
+          score += 1;
+        }
+        if (titleLower.includes(substring)) {
+          score += 2;
+        }
+      }
+
+      if (score > 0) {
+        results.push({
+          title,
+          content: chunk.content?.substring(0, 200) + '...' || '',
+          url: chunk.url || '#',
+          score
+        });
+      }
+    });
+
     return results
       .sort((a, b) => (b.score || 0) - (a.score || 0))
       .slice(0, 6);
