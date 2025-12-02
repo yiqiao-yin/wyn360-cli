@@ -26,6 +26,30 @@ export default function AISearch(): JSX.Element {
     loadSearchIndex();
   }, []);
 
+  // Add keyboard shortcut for Cmd+K / Ctrl+K to open search
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+        event.preventDefault();
+        setIsVisible(true);
+        // Focus the search input after opening
+        setTimeout(() => {
+          const searchInput = document.querySelector('.ai-search-input') as HTMLInputElement;
+          if (searchInput) {
+            searchInput.focus();
+          }
+        }, 100);
+      }
+      // ESC to close
+      if (event.key === 'Escape' && isVisible) {
+        setIsVisible(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isVisible]);
+
   const loadSearchIndex = async () => {
     try {
       const response = await fetch('/wyn360-cli/assets/search-index.json');
@@ -148,6 +172,15 @@ export default function AISearch(): JSX.Element {
           aria-label="Toggle AI Search"
         >
           🤖 Ask AI about WYN360 CLI
+          <kbd style={{
+            fontSize: '0.7rem',
+            marginLeft: '0.5rem',
+            padding: '0.1rem 0.3rem',
+            background: 'rgba(255,255,255,0.2)',
+            borderRadius: '3px'
+          }}>
+            ⌘K
+          </kbd>
         </button>
       </div>
 
@@ -195,10 +228,11 @@ export default function AISearch(): JSX.Element {
           }}>
             <input
               type="text"
+              className="ai-search-input"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask about installation, features, usage..."
+              placeholder="Ask about installation, features, usage... (⌘K to open)"
               style={{
                 flex: 1,
                 padding: '0.5rem',
