@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 interface SearchResult {
   title: string;
@@ -13,7 +14,7 @@ interface ChatMessage {
   results?: SearchResult[];
 }
 
-export default function AISearch(): JSX.Element {
+function AISearchComponent(): JSX.Element {
   const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState('');
@@ -189,7 +190,7 @@ export default function AISearch(): JSX.Element {
             background: 'rgba(255,255,255,0.2)',
             borderRadius: '3px'
           }}>
-            {navigator.platform?.includes('Mac') ? '⌘K' : 'Ctrl+K'}
+            {typeof navigator !== 'undefined' && navigator.platform?.includes('Mac') ? '⌘K' : 'Ctrl+K'}
           </kbd>
         </button>
       </div>
@@ -272,5 +273,13 @@ export default function AISearch(): JSX.Element {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AISearch(): JSX.Element {
+  return (
+    <BrowserOnly fallback={<div>Loading AI Search...</div>}>
+      {() => <AISearchComponent />}
+    </BrowserOnly>
   );
 }
