@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: 'WYN360 CLI Documentation',
   tagline: 'An intelligent AI coding assistant CLI tool powered by Anthropic Claude',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/wyn360_logo.png',
 
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {

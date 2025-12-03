@@ -11,32 +11,38 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
+    title: '🤖 Multi-Provider AI Native',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Built on <strong>pydantic-ai</strong> framework with seamless integration across
+        multiple AI providers: 🧠 <strong>Anthropic Claude</strong>, ☁️ <strong>AWS Bedrock</strong>,
+        🌟 <strong>Google Gemini</strong>, and 🚀 <strong>OpenAI</strong>. Switch providers
+        effortlessly based on your needs.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: '💰 Cost-Effective Intelligence',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Save <strong>90% on costs</strong> compared to Microsoft Copilot! 🎯 Built-in
+        <strong> slash commands</strong> let you customize token usage and track
+        expenses in real-time. Get enterprise-grade AI assistance without the
+        enterprise price tag. 📊
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: '🔓 100% Open Source',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        🐍 <strong>pip-installable</strong> and completely open source! Build upon our
+        robust <strong>agentic framework</strong> for your custom use cases.
+        Fork, extend, and contribute to the future of AI-powered development tools.
+        🚀 No vendor lock-in, just pure innovation.
       </>
     ),
   },
