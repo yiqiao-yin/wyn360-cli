@@ -145,15 +145,7 @@ Environment variables override all configuration files:
 ### AI Provider Credentials
 
 <Tabs>
-<TabItem value="gemini" label="Google Gemini" default>
-
-```bash
-GEMINI_API_KEY=your_key_here
-GEMINI_MODEL=gemini-2.5-flash
-```
-
-</TabItem>
-<TabItem value="anthropic" label="Anthropic Claude">
+<TabItem value="anthropic" label="Anthropic Claude" default>
 
 ```bash
 ANTHROPIC_API_KEY=your_key_here
@@ -169,6 +161,22 @@ AWS_SECRET_ACCESS_KEY=your_secret_key
 AWS_SESSION_TOKEN=your_session_token
 AWS_REGION=us-west-2
 ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
+</TabItem>
+<TabItem value="gemini" label="Google Gemini (Recommended)">
+
+```bash
+GEMINI_API_KEY=your_key_here
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+</TabItem>
+<TabItem value="openai" label="OpenAI">
+
+```bash
+OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-4o
 ```
 
 </TabItem>

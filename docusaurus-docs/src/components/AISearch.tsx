@@ -243,7 +243,7 @@ function AISearchComponent(): JSX.Element {
           onClick={toggleVisibility}
           aria-label="Toggle AI Search"
         >
-          🤖 Ask AI about WYN360 CLI
+          🤖 Ask AI
           <kbd style={{
             fontSize: '0.7rem',
             marginLeft: '0.5rem',
