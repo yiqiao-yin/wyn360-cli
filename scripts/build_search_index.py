@@ -26,7 +26,7 @@ import re
 import hashlib
 from datetime import datetime
 from pathlib import Path
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple, Optional, Set
 import argparse
 import logging
 
@@ -82,6 +82,45 @@ class DocumentChunk:
         }
 
 
+def get_allowed_doc_files() -> Set[str]:
+    """
+    Get the list of documentation files that are actually included in the Docusaurus sidebar.
+    This prevents indexing of files that exist in docs/ but aren't part of the published site.
+    """
+    allowed_files = {
+        # Main index
+        'index.md',
+
+        # Getting Started
+        'getting-started/installation.md',
+        'getting-started/quickstart.md',
+        'getting-started/configuration.md',
+
+        # Features
+        'features/overview.md',
+        'features/web-search.md',
+        'features/browser-use.md',
+        'features/vision-mode.md',
+        'features/github.md',
+        'features/huggingface.md',
+
+        # Usage
+        'usage/use-cases.md',
+        'usage/commands.md',
+        'usage/cost.md',
+
+        # Architecture
+        'architecture/system.md',
+        'architecture/autonomous-browsing.md',
+
+        # Development
+        'development/contributing.md',
+        'development/testing.md',
+        'development/roadmap.md',
+    }
+    return allowed_files
+
+
 class MarkdownProcessor:
     """Processes markdown documentation files into semantic chunks."""
 
@@ -101,15 +140,30 @@ class MarkdownProcessor:
         }
 
     def process_all_docs(self) -> List[DocumentChunk]:
-        """Process all markdown files in the docs directory."""
+        """Process only markdown files that are included in the Docusaurus sidebar."""
         logger.info(f"🔍 Scanning documentation directory: {self.docs_dir}")
 
         if not self.docs_dir.exists():
             logger.error(f"❌ Documentation directory not found: {self.docs_dir}")
             return []
 
-        md_files = list(self.docs_dir.glob("**/*.md"))
-        logger.info(f"📝 Found {len(md_files)} markdown files")
+        # Get list of allowed documentation files
+        allowed_files = get_allowed_doc_files()
+
+        # Find all markdown files
+        all_md_files = list(self.docs_dir.glob("**/*.md"))
+        logger.info(f"📝 Found {len(all_md_files)} total markdown files")
+
+        # Filter to only include files that are in the Docusaurus sidebar
+        md_files = []
+        for md_file in all_md_files:
+            relative_path = md_file.relative_to(self.docs_dir)
+            if str(relative_path) in allowed_files:
+                md_files.append(md_file)
+            else:
+                logger.debug(f"⏭️  Skipping {relative_path} (not in sidebar)")
+
+        logger.info(f"📚 Processing {len(md_files)} sidebar files (skipped {len(all_md_files) - len(md_files)} non-sidebar files)")
 
         for md_file in md_files:
             try:
@@ -118,7 +172,7 @@ class MarkdownProcessor:
                 logger.error(f"❌ Error processing {md_file}: {e}")
                 continue
 
-        logger.info(f"✅ Processed {len(self.chunks)} chunks from {len(md_files)} files")
+        logger.info(f"✅ Processed {len(self.chunks)} chunks from {len(md_files)} sidebar files")
         logger.info(f"📊 Sections found: {', '.join(sorted(self.sections))}")
 
         return self.chunks
