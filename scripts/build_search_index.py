@@ -140,18 +140,21 @@ class MarkdownProcessor:
         self.chunks.extend(chunks)
 
     def _get_url_path(self, file_path: Path) -> str:
-        """Convert file path to documentation URL path with proper base URL for GitHub Pages."""
+        """Convert file path to documentation URL path with proper Docusaurus structure for GitHub Pages."""
         relative_path = file_path.relative_to(self.docs_dir)
 
         # Handle index files
         if relative_path.name == 'index.md':
             if relative_path.parent == Path('.'):
-                # Root index.md becomes /wyn360-cli/
-                url_path = "/wyn360-cli/"
+                # Root index.md becomes /wyn360-cli/docs/ (Docusaurus docs root)
+                url_path = "/wyn360-cli/docs/"
             else:
-                url_path = f"/wyn360-cli/{relative_path.parent}/"
+                # docs/section/index.md becomes /wyn360-cli/docs/section/
+                url_path = f"/wyn360-cli/docs/{relative_path.parent}/"
         else:
-            url_path = f"/wyn360-cli/{relative_path.with_suffix('')}/"
+            # docs/file.md becomes /wyn360-cli/docs/file/
+            # docs/section/file.md becomes /wyn360-cli/docs/section/file/
+            url_path = f"/wyn360-cli/docs/{relative_path.with_suffix('')}/"
 
         return url_path.replace('\\', '/').replace('//', '/')
 
