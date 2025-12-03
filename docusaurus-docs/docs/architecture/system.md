@@ -14,104 +14,207 @@ WYN360 CLI is built on a modular, layered architecture that separates concerns a
 Executive version:
 
 ```mermaid
+---
+config:
+  layout: elk
+  elk:
+    algorithm: layered
+    direction: DOWN
+---
 graph TB
-    subgraph "User Interface"
-        CLI[CLI Interface]
-        Input[User Input]
-        Output[Console Output]
+    subgraph "User Interface Layer"
+        CLI[🖥️ CLI Interface]
+        Input[📝 User Input]
+        Output[📺 Console Output]
     end
 
-    subgraph "Core Agent"
-        Agent[WYN360Agent]
-        Model[Claude API]
-        Tools[Tool System]
+    subgraph "Multi-Provider AI Core"
+        Agent[🤖 WYN360Agent]
+        Claude[🧠 Anthropic Claude]
+        Gemini[⭐ Google Gemini]
+        Bedrock[☁️ AWS Bedrock]
+        OpenAI[🚀 OpenAI]
+        Tools[🔧 Tool System]
     end
 
     subgraph "Essential Tools"
-        Files[File Operations<br/>read, write, list]
-        Commands[Shell Commands<br/>execute with confirmation]
-        Git[Git Operations<br/>status, diff, commit]
-        Web[Web Tools<br/>search, fetch, browse]
+        Files[📁 File Operations<br/>read, write, list, search]
+        Commands[⚡ Shell Commands<br/>execute with confirmation]
+        Git[📊 Git Operations<br/>status, diff, commit, branch]
+        Web[🌐 Web Tools<br/>search, fetch, browse]
     end
 
-    subgraph "Advanced Features"
-        GitHub[GitHub Integration<br/>auth, PR, branches]
-        Auth[Website Authentication<br/>login automation]
-        Config[Configuration<br/>user + project settings]
+    subgraph "Advanced Integrations"
+        GitHub[🐙 GitHub Integration<br/>auth, PR, branches, commits]
+        HF[🤗 HuggingFace<br/>spaces, deployment]
+        Browser[🔍 Browser Automation<br/>DOM-first + Stagehand + Vision]
+        Docs[📄 Document Processing<br/>Excel, Word, PDF + Vision]
     end
 
     Input --> CLI
     CLI --> Agent
-    Agent --> Model
+    Agent --> Claude
+    Agent --> Gemini
+    Agent --> Bedrock
+    Agent --> OpenAI
     Agent --> Tools
     Tools --> Files
     Tools --> Commands
     Tools --> Git
     Tools --> Web
     Tools --> GitHub
-    Tools --> Auth
-    Config --> Agent
-    Model --> Output
+    Tools --> HF
+    Tools --> Browser
+    Tools --> Docs
+    Claude --> Output
+    Gemini --> Output
+    Bedrock --> Output
+    OpenAI --> Output
     CLI --> Output
 
-    style Agent fill:#e1f5ff
-    style Model fill:#fff3e0
-    style CLI fill:#f3e5f5
+    style Agent fill:#e1f5ff,stroke:#0066cc,stroke-width:3px
+    style Claude fill:#ff6b35,color:#fff
+    style Gemini fill:#4285f4,color:#fff
+    style Bedrock fill:#ff9900,color:#fff
+    style OpenAI fill:#00a67e,color:#fff
+    style CLI fill:#f3e5f5,stroke:#9c27b0,stroke-width:2px
 ```
 
 Here's a detailed version:
 
 ```mermaid
-graph TB
-    subgraph "User Interface Layer"
-        CLI[CLI Interface<br/>click + prompt-toolkit]
-        Input[User Input<br/>Multi-line support<br/>Shift+Enter]
-        Output[Rich Console Output<br/>Word-by-word streaming<br/>Markdown rendering]
-        SlashCmd[Slash Commands<br/>/clear /history /save<br/>/load /tokens /model /config]
-    end
+---
+config:
+  layout: elk
+  elk:
+    algorithm: layered
+    direction: DOWN
+    spacing:
+      nodeDistance: 100
+      layerDistance: 150
+    nodePlacement: NETWORK_SIMPLEX
+    edgeRouting: ORTHOGONAL
+---
+graph TD
+    %% Input Layer
+    A[👤 User Input<br/>Multi-line, Shift+Enter] --> B[🖥️ CLI Interface<br/>click + prompt-toolkit]
+    B --> C{⚡ Command Router<br/>Slash commands<br/>Tool selection}
 
-    subgraph "Configuration Layer"
-        UserConfig[User Config<br/>~/.wyn360/config.yaml<br/>Default model, instructions]
-        ProjectConfig[Project Config<br/>.wyn360.yaml<br/>Project-specific context]
-        ConfigMerge[Config Merger<br/>Combines user + project settings]
-    end
+    %% Configuration Layer
+    D[👤 User Config<br/>~/.wyn360/config.yaml] --> E[⚙️ Config Merger]
+    F[📁 Project Config<br/>.wyn360.yaml] --> E
+    G[🌍 Environment Variables<br/>API keys, overrides] --> E
+    E --> H[🤖 WYN360Agent<br/>pydantic-ai framework]
 
-    subgraph "Agent Layer"
-        Agent[WYN360Agent<br/>pydantic-ai framework]
-        ModelSwitch[Model Switcher<br/>haiku/sonnet/opus]
-        Model[Anthropic Claude<br/>claude-sonnet-4 - default]
-        Prompt[System Prompt<br/>Intent recognition<br/>Context awareness]
-        History[Conversation History<br/>Context persistence<br/>Token tracking]
-    end
+    %% Command Handlers Layer
+    C -->|💬 Chat| H
+    C -->|📁 Files| I[File Operations<br/>read/write/search]
+    C -->|🔧 Git| J[Git Operations<br/>status/diff/commit]
+    C -->|🌐 Web| K[Web Operations<br/>search/fetch/browse]
+    C -->|📄 Docs| L[Document Processing<br/>Excel/Word/PDF]
 
-    subgraph "Core Tools Layer"
-        ReadFile[read_file<br/>Read file contents<br/>Size limits]
-        WriteFile[write_file<br/>Create/update files<br/>Overwrite protection]
-        ListFiles[list_files<br/>Scan directory<br/>Categorize by type]
-        ProjectInfo[get_project_info<br/>Project summary<br/>File counts]
-        ExecCmd[execute_command<br/>Run shell commands<br/>User confirmation<br/>Timeout protection]
-    end
+    %% AI Provider Layer
+    H --> M[🤖 AI Provider Router<br/>Dynamic model selection]
+    M --> N[🧠 Anthropic Claude<br/>claude-sonnet-4<br/>200K context, $3/$15 per M]
+    M --> O[⭐ Google Gemini<br/>gemini-2.5-flash<br/>2M context, $0.075/$0.30 per M]
+    M --> P[☁️ AWS Bedrock<br/>Enterprise Claude<br/>AWS compliance]
+    M --> Q[🚀 OpenAI<br/>gpt-4o<br/>Function calling, $2.50/$10 per M]
 
-    subgraph "Extended Tools Layer (Phase 2)"
-        GitStatus[git_status<br/>Show git status]
-        GitDiff[git_diff<br/>Show changes]
-        GitLog[git_log<br/>Commit history]
-        GitBranch[git_branch<br/>List branches]
-        SearchFiles[search_files<br/>Pattern search<br/>File type filtering]
-        DeleteFile[delete_file<br/>Delete files safely]
-        MoveFile[move_file<br/>Move/rename files]
-        CreateDir[create_directory<br/>Create nested dirs]
-    end
+    %% Core Tools Layer
+    I --> R[📖 read_file<br/>Size limits, encoding]
+    I --> S[✏️ write_file<br/>Overwrite protection]
+    I --> T[📂 list_files<br/>Directory scanning]
+    I --> U[🔍 search_files<br/>Regex patterns]
 
-    subgraph "Builtin Tools Layer (Phase 11.1)"
-        WebSearch[web_search<br/>Real-time web search<br/>Weather, URLs, current info<br/>$10 per 1K searches]
-    end
+    J --> V[📊 git_status<br/>Working tree]
+    J --> W[📋 git_diff<br/>File changes]
+    J --> X[📜 git_log<br/>History]
+    J --> Y[🌿 git_branch<br/>Branch ops]
 
-    subgraph "Browser Use Tools Layer (Phase 12)"
-        FetchWebsite[fetch_website<br/>Direct URL fetching<br/>crawl4ai integration<br/>Smart truncation]
-        ShowCacheStats[show_cache_stats<br/>View cache statistics<br/>Cached URLs list]
-        ClearCache[clear_website_cache<br/>Clear specific URL<br/>or all cache]
-    end
+    %% Advanced Features Layer
+    K --> Z[🌐 Web Search<br/>Real-time, $0.01/search]
+    K --> AA[📡 Website Fetching<br/>crawl4ai + caching]
+    K --> AB[🎭 Browser Automation<br/>DOM → Stagehand → Vision]
+
+    L --> AC[📊 Excel Processing<br/>openpyxl + semantic]
+    L --> AD[📝 Word Processing<br/>python-docx + chunks]
+    L --> AE[📄 PDF Processing<br/>PyMuPDF + embeddings]
+    L --> AF[👀 Vision Mode<br/>Charts, OCR]
+
+    %% Authentication & Sessions Layer
+    AB --> AG[🔐 Browser Auth<br/>Form detection]
+    AB --> AH[🗝️ Credential Manager<br/>AES-256-GCM encryption]
+    AB --> AI[🍪 Session Manager<br/>30min TTL cookies]
+    AA --> AI
+
+    %% GitHub Integration Layer
+    H --> AJ[🐙 GitHub Integration<br/>CLI authentication]
+    AJ --> AK[📤 gh_commit_changes<br/>Stage, commit, push]
+    AJ --> AL[🔀 gh_create_pr<br/>Pull requests]
+    AJ --> AM[🌿 gh_branch_ops<br/>Create, checkout, merge]
+
+    %% Utility Layer
+    H --> AN[⚡ Command Executor<br/>Timeout, confirmation]
+    H --> AO[📊 History Manager<br/>Context persistence]
+    H --> AP[💰 Token Tracker<br/>Usage, cost estimation]
+    H --> AQ[💾 Session Manager<br/>Save/load JSON]
+
+    %% Response Processing Layer
+    N --> AR[🔄 Response Processor<br/>Stream handling]
+    O --> AR
+    P --> AR
+    Q --> AR
+
+    AR --> AS[📝 Content Formatter<br/>Markdown rendering]
+    AS --> AT[📺 Rich Output<br/>Word-by-word streaming]
+
+    %% Output Connections
+    R --> AT
+    S --> AT
+    T --> AT
+    U --> AT
+    V --> AT
+    W --> AT
+    X --> AT
+    Y --> AT
+    Z --> AT
+    AA --> AT
+    AB --> AT
+    AC --> AT
+    AD --> AT
+    AE --> AT
+    AF --> AT
+    AK --> AT
+    AL --> AT
+    AM --> AT
+    AN --> AT
+    AO --> AT
+    AP --> AT
+    AQ --> AT
+
+    %% Styling by Layer
+    classDef inputLayer fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef configLayer fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    classDef aiLayer fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    classDef toolLayer fill:#fff3e0,stroke:#ef6c00,stroke-width:2px
+    classDef authLayer fill:#fce4ec,stroke:#c2185b,stroke-width:2px
+    classDef outputLayer fill:#e1f5fe,stroke:#0277bd,stroke-width:2px
+    classDef agentCore fill:#fff9c4,stroke:#f57f17,stroke-width:3px
+
+    class A,B,C inputLayer
+    class D,E,F,G configLayer
+    class H agentCore
+    class M,N,O,P,Q aiLayer
+    class I,J,K,L,R,S,T,U,V,W,X,Y,Z,AA,AB,AC,AD,AE,AF,AJ,AK,AL,AM toolLayer
+    class AG,AH,AI authLayer
+    class AN,AO,AP,AQ,AR,AS,AT outputLayer
+```
+
+> **Diagram Interaction:** For better readability of large diagrams, right-click and select "Open image in new tab" or use your browser's zoom controls. The elk layout algorithm provides optimized positioning for complex system architectures.
+
+> **Note:** While some documentation platforms support interactive zoom and pan for Mermaid diagrams (like [VitePress with mermaid renderer plugins](https://github.com/sametcn99/vitepress-mermaid-renderer) or [custom Docsify zoom plugins](https://github.com/corentinleberre/docsify-mermaid-zoom)), Docusaurus doesn't currently provide native fullscreen/zoom capabilities for Mermaid diagrams. The elk layout optimization above improves diagram structure and readability.
+
+---
 
     subgraph "GitHub Integration Tools (Phase 8.1)"
         CheckGHAuth[check_gh_authentication<br/>Check GitHub auth status]

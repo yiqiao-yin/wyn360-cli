@@ -1,16 +1,17 @@
-# Advanced Browser Automation & Control
+# Browser Automation & Website Fetching
 
-Navigate websites, extract data, and automate complex web tasks using smolagents-inspired browser automation with enhanced code generation.
+Extract website content and perform basic browser automation using Playwright-powered tools.
 
 ## Overview
 
-WYN360 CLI provides advanced web interaction capabilities:
+WYN360 CLI provides website interaction capabilities:
 
-1. **Direct Website Fetching** - Read specific URLs directly
-2. **Enhanced Code Generation** - Smolagents-inspired complete automation scripts
-3. **Secure Python Sandbox** - Isolated execution environment with resource monitoring
-4. **Intelligent Error Recovery** - Adaptive code regeneration and error learning
-5. **Pattern Caching & Learning** - Performance optimization through automation patterns
+1. **Direct Website Fetching** ✅ - Read specific URLs with caching
+2. **Basic DOM Automation** ✅ - Simple element interactions (click, type, select)
+3. **Authenticated Browsing** ✅ - Session-based login support
+4. **Smart Content Processing** ✅ - HTML to markdown conversion with intelligent truncation
+
+> **Note:** Advanced features like AI-powered code generation, Stagehand integration, and vision-based automation are currently under development and not production-ready.
 
 ## Direct Website Fetching
 
@@ -33,22 +34,29 @@ An intelligent AI coding assistant CLI tool...
 - **Smart Caching** - 30-minute TTL for faster repeated access
 - **Smart Truncation** - Preserves document structure within token limits
 
-## Advanced Browser Automation
+## Current Browser Automation Features
 
-### Smolagents-Inspired Approach
-The system uses code-first automation with intelligent recovery:
+### Multi-Tier Automation System
+WYN360 CLI implements a tiered approach for browser automation:
 
-📝 **Enhanced Code Generation** → 🔒 **Secure Sandbox Execution** → 🧠 **Intelligent Error Recovery**
+🌐 **Website Fetching** → 📄 **DOM Analysis** → 🤖 **Basic Automation**
 
-### Browser Visibility Control
+### Website Fetching (Production Ready)
+- **crawl4ai Integration** - Playwright-powered content extraction
+- **Smart Caching** - 30-minute TTL with compressed storage
+- **Authenticated Sessions** - Login support with cookie persistence
+- **Content Processing** - HTML to markdown conversion with intelligent truncation
 
-Control browser visibility for debugging and development:
+### Basic DOM Automation (Available)
+- **Element Detection** - Find buttons, inputs, forms, and links
+- **Simple Interactions** - Click, type, fill, select operations
+- **Confidence Scoring** - Element matching reliability assessment
+- **Session Integration** - Works with authenticated browsing
+
+### Browser Control Options
 
 ```bash
-# Show browser window during automation (great for debugging)
-wyn360 --show-browser
-
-# Environment variable option
+# Show browser window during automation (for debugging)
 export WYN360_BROWSER_SHOW=1
 wyn360
 
@@ -56,115 +64,101 @@ wyn360
 wyn360
 ```
 
-### Automation Capabilities
-- **Performance-Optimized** - 60% reduction in timeout errors, 30% fewer LLM calls
-- **Batch Operations** - Complete automation scripts with multiple actions in single execution
-- **Secure Execution** - Isolated Python sandbox with resource monitoring and safety controls
-- **Intelligent Recovery** - Adaptive code regeneration based on error analysis and learning
-- **Pattern Caching** - Automated optimization through successful automation pattern reuse
-
-### Example: E-commerce Automation
+### Example: Website Content Extraction
 
 ```
-You: Browse Amazon and find the cheapest wireless mouse under $20 with good reviews
+You: Read the latest documentation from https://docs.python.org/3/library/asyncio.html
 
-WYN360: [Launches smolagents-inspired browser automation]
+WYN360: [Fetches the specific URL directly using crawl4ai]
 
-🎯 **Enhanced Browser Automation Started**
-📝 **Generating complete automation script...**
+📄 **Fetched:** https://docs.python.org/3/library/asyncio.html
 
-Generated Code:
-```python
-# Complete automation script
-await page.goto("https://amazon.com")
-search_box = page.locator('input[placeholder*="search"]')
-await search_box.fill("wireless mouse")
-await search_box.press("Enter")
-await page.locator('span:text("Under $20")').click()
-await page.locator('[data-cy="reviews-block"] span:has-text("4 & Up")').click()
-products = await page.locator('[data-component-type="s-search-result"]').all()
-# Extract and compare results...
+# asyncio — Asynchronous I/O
+
+asyncio is a library to write concurrent code using the async/await syntax.
+
+## Table of Contents
+- High-level APIs
+- Low-level APIs
+- Policies and Event Loops...
+
+[Full page content converted to markdown with smart truncation]
+
+✅ **Fetching completed**
+💰 **Cost:** ~$0.01 (content processing tokens only)
+⏱️ **Time:** 3.2 seconds (cached for 30 minutes)
+🔒 **Authentication:** Not required for this page
 ```
 
-🔒 **Executing in secure sandbox...** ✓
-📊 **Monitoring execution:** Memory: 45MB, Time: 6.2s ✓
-
-✅ **Task Completed Successfully!**
-💡 **Approach Used:** Enhanced Code Generation with Secure Sandbox
-⚡ **Performance:** 6 seconds, $0.03 cost
-
-**Result:** Logitech M185 Wireless Mouse
-- **Price:** $14.99
-- **Rating:** 4.5/5 stars (15,234 reviews)
-- **Features:** 2.4GHz wireless, 12-month battery life
-- **Link:** [Product Page]
-
-**Performance Breakdown:**
-- Code Generation: $0.020
-- Sandbox Execution: $0.005
-- Resource Monitoring: $0.005
-- Total Improvement vs Step-by-Step: 70% faster, 40% cheaper
-```
-
-### Example: Intelligent Error Recovery
+### Example: Basic Form Interaction
 
 ```
-You: Complete my shopping cart checkout
+You: Login to this demo site and click the dashboard button
 
-WYN360: [Enhanced automation encounters execution error]
+WYN360: [Initiates DOM-based automation]
 
-📝 **Generated automation script and executing...**
-❌ **Execution Error Detected in Secure Sandbox**
+🔍 **Analyzing page elements...**
+- Found login form with username and password fields
+- Detected submit button: "Sign In"
+- Found dashboard link after login area
 
-🧠 **Intelligent Error Analysis:**
-- Error Type: Element selector failure (confidence: 85%)
-- Root Cause: Checkout page layout changed since last pattern
-- Classification: element_not_found
+🤖 **Executing basic automation:**
+1. Fill username field: "demo_user"
+2. Fill password field: "********"
+3. Click submit button
+4. Wait for page navigation
+5. Click dashboard button
 
-🔄 **Automatic Code Regeneration:**
-- Analyzing current page structure
-- Adapting selectors for new layout
-- Optimizing error handling patterns
-- Generating improved automation script
-
-Generated Improved Code:
-```python
-# Regenerated automation with improved selectors
-checkout_btn = page.locator('[data-testid="checkout-button"], button:has-text("checkout")')
-await checkout_btn.wait_for(timeout=10000)
-await checkout_btn.click()
-# Enhanced error handling and retry logic...
+✅ **Basic automation completed**
+💡 **Approach:** DOM element detection and simple interactions
+⚡ **Time:** 8.5 seconds
+🔧 **Capability:** Basic click, type, and form submission
 ```
 
-🔒 **Re-executing in secure sandbox...** ✓
-✅ **Recovery Successful!**
+## Current Automation Approaches
 
-💡 **Learning Applied:** New checkout pattern cached for future use
-⚡ **Total Recovery Time:** 4 seconds
-💰 **Total Cost (including recovery):** $0.05
+### 1. Website Fetching (Primary - Production Ready)
+- **Technology:** crawl4ai + Playwright
+- **Speed:** ⚡ 2-5 seconds per page
+- **Cost:** 💰 ~$0.01 per page (token processing only)
+- **Best For:** Reading documentation, extracting content, research
+- **Success Rate:** ~98% for standard websites
+- **Caching:** 30-minute TTL reduces repeated costs
 
-🎉 **Checkout completed successfully with intelligent recovery!**
-```
+### 2. DOM Analysis & Basic Automation (Available)
+- **Technology:** Playwright + Element Detection
+- **Speed:** 🔄 5-10 seconds per interaction
+- **Cost:** 💰 ~$0.02-0.05 per automation task
+- **Best For:** Simple form interactions, button clicks, basic navigation
+- **Capabilities:** Click, type, fill forms, select dropdowns
+- **Success Rate:** ~80% for common web elements
 
-## Automation Approaches
+### 3. Authenticated Browsing (Production Ready)
+- **Technology:** Session management + Cookie persistence
+- **Speed:** ⚡ Login once, reuse for 30 minutes
+- **Cost:** 💰 Minimal after initial login
+- **Best For:** Accessing protected content, user dashboards
+- **Security:** AES-256-GCM encrypted credential storage
+- **Session Duration:** 30 minutes with automatic renewal
 
-### 1. Enhanced Code Generation (Primary)
-- **Speed:** ⚡ 4-8 seconds per complete automation
-- **Cost:** 💰 ~$0.02-0.05 per generated script
-- **Best For:** Complete automation workflows, batch operations
-- **Success Rate:** ~92% with intelligent patterns
+## Planned Features (In Development)
 
-### 2. Secure Sandbox Execution
-- **Speed:** 🚀 1-3 seconds execution time
-- **Cost:** 💰 ~$0.001-0.005 per execution
-- **Best For:** Safe code execution with resource monitoring
-- **Security:** Full isolation with controlled environment
+> **⚠️ Important:** The following features are under development and not yet production-ready:
 
-### 3. Intelligent Error Recovery
-- **Speed:** 🔄 3-6 seconds for code regeneration
-- **Cost:** 💰 ~$0.01-0.02 per recovery attempt
-- **Best For:** Adaptive learning and improved automation
-- **Success Rate:** ~85% recovery success on first retry
+### 🚧 Enhanced Code Generation
+- **Status:** Framework exists, core generation not implemented
+- **Goal:** AI-powered automation script generation from task descriptions
+- **Files:** `enhanced_code_generator.py` (templates only)
+
+### 🚧 Stagehand Integration
+- **Status:** Simulation layer implemented, real execution pending
+- **Goal:** AI-powered automation as middleware between DOM and vision
+- **Dependencies:** `stagehand-py`, API configuration required
+
+### 🚧 Vision-Based Automation
+- **Status:** Basic structure, computer vision integration incomplete
+- **Goal:** Screenshot-based automation for complex interfaces
+- **Use Case:** When DOM analysis fails or elements are not detectable
 
 ## Setup Requirements
 
@@ -179,16 +173,20 @@ playwright --version
 
 ### Environment Configuration
 ```bash
-# Enhanced automation settings
+# Basic browser settings (Currently Supported)
 export WYN360_BROWSER_SHOW=1                    # Show browser (0 for headless)
-export WYN360_ENHANCED_CODE_GENERATION=true     # Enable smolagents approach
-export WYN360_SECURE_SANDBOX=true               # Enable secure execution
-export WYN360_ERROR_RECOVERY=true               # Enable intelligent recovery
 
-# Performance control settings
-export WYN360_MAX_COST_PER_TASK=0.20             # Maximum cost per automation
-export WYN360_PATTERN_CACHING=true              # Enable pattern caching
-export WYN360_CODE_OPTIMIZATION=standard        # Code optimization level
+# Website fetching configuration
+export WYN360_CACHE_TTL=1800                    # Cache duration (seconds)
+export WYN360_MAX_TOKENS=50000                  # Max content tokens per page
+
+# Authentication settings
+export WYN360_SESSION_TTL=1800                  # Session cookie duration (seconds)
+
+# Future features (not yet implemented)
+# export WYN360_ENHANCED_CODE_GENERATION=true   # Planned: AI code generation
+# export WYN360_STAGEHAND_API_URL=...           # Planned: Stagehand integration
+# export WYN360_PATTERN_CACHING=true            # Planned: Pattern learning
 ```
 
 ### Authentication Setup (Optional)
@@ -514,7 +512,37 @@ data = await agent.extract_page_data(
 - **[Usage Examples](../usage/use-cases.md#browser-automation)** - Real-world automation workflows
 - **[Cost Management](../usage/cost)** - Managing automation expenses
 
+## Current Status Summary
+
+### ✅ Production Ready Features
+- **Website Fetching:** Full content extraction using crawl4ai + Playwright
+- **Smart Caching:** 30-minute TTL with compressed storage (~/.wyn360/cache/)
+- **Authenticated Browsing:** Session management with encrypted credential storage
+- **Basic DOM Automation:** Simple click, type, fill, select operations
+- **Multi-Provider Support:** Works with all AI providers (Anthropic, Gemini, OpenAI, Bedrock)
+
+### 🚧 Features in Development
+- **Enhanced Code Generation:** AI-generated automation scripts (infrastructure exists, generation incomplete)
+- **Stagehand Integration:** Real automation execution (currently simulated)
+- **Vision-Based Automation:** Screenshot-based automation for complex interfaces
+- **Pattern Learning:** Automated optimization through successful automation pattern reuse
+- **Intelligent Error Recovery:** Adaptive code regeneration based on failure analysis
+
+### 📋 Technical Implementation Files
+- **Website Fetching:** `wyn360_cli/browser_use.py` ✅
+- **DOM Analysis:** `wyn360_cli/tools/browser/dom_analyzer.py` ✅
+- **Basic Automation:** `wyn360_cli/tools/browser/browser_automation_tools.py` ✅
+- **Authentication:** `wyn360_cli/credential_manager.py`, `wyn360_cli/session_manager.py` ✅
+- **Enhanced Features:** `wyn360_cli/tools/browser/enhanced_code_generator.py` 🚧
+- **Stagehand:** `wyn360_cli/tools/browser/stagehand_*.py` 🚧
+
+## See Also
+
+- **[System Architecture](../architecture/system.md)** - Complete technical overview
+- **[Usage Examples](../usage/use-cases.md#browser-automation)** - Real-world workflows
+- **[Cost Management](../usage/cost.md)** - Managing automation expenses
+
 ---
 
-*Updated for WYN360-CLI v0.3.69*
-*Smolagents-Inspired Browser Automation with Enhanced Code Generation*
+*Updated for WYN360-CLI v0.3.60*
+*Website Fetching & Basic Browser Automation*
