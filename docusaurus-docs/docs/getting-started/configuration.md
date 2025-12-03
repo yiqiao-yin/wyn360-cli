@@ -1,5 +1,8 @@
 # Configuration
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 WYN360 CLI uses a hierarchical configuration system that allows you to customize behavior at multiple levels.
 
 ## Configuration Hierarchy
@@ -141,26 +144,35 @@ Environment variables override all configuration files:
 
 ### AI Provider Credentials
 
-=== "Google Gemini"
-    ```bash
-    GEMINI_API_KEY=your_key_here
-    GEMINI_MODEL=gemini-2.5-flash
-    ```
+<Tabs>
+<TabItem value="gemini" label="Google Gemini" default>
 
-=== "Anthropic Claude"
-    ```bash
-    ANTHROPIC_API_KEY=your_key_here
-    ANTHROPIC_MODEL=claude-sonnet-4-20250514
-    ```
+```bash
+GEMINI_API_KEY=your_key_here
+GEMINI_MODEL=gemini-2.5-flash
+```
 
-=== "AWS Bedrock"
-    ```bash
-    AWS_ACCESS_KEY_ID=your_access_key
-    AWS_SECRET_ACCESS_KEY=your_secret_key
-    AWS_SESSION_TOKEN=your_session_token
-    AWS_REGION=us-west-2
-    ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
-    ```
+</TabItem>
+<TabItem value="anthropic" label="Anthropic Claude">
+
+```bash
+ANTHROPIC_API_KEY=your_key_here
+ANTHROPIC_MODEL=claude-sonnet-4-20250514
+```
+
+</TabItem>
+<TabItem value="bedrock" label="AWS Bedrock">
+
+```bash
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_SESSION_TOKEN=your_session_token
+AWS_REGION=us-west-2
+ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+```
+
+</TabItem>
+</Tabs>
 
 ### Integration Tokens
 
