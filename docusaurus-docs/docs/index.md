@@ -1,5 +1,8 @@
 # WYN360 CLI
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 An intelligent AI coding assistant that helps you build projects, generate code, and improve your codebase through natural language conversations.
 
 [![PyPI version](https://badge.fury.io/py/wyn360-cli.svg)](https://pypi.org/project/wyn360-cli/)
@@ -30,90 +33,98 @@ pip install wyn360-cli
 
 ### 2. Choose Your AI Provider
 
-WYN360 CLI supports three AI providers:
+WYN360 CLI supports multiple AI providers:
 
-=== "Anthropic Claude"
+<Tabs>
+<TabItem value="anthropic" label="Anthropic Claude" default>
 
-    **Why Claude?** Most capable, excellent for complex coding tasks
+**Why Claude?** Most capable, excellent for complex coding tasks
 
-    **Setup:**
-    ```bash
-    export CHOOSE_CLIENT=1
-    export ANTHROPIC_API_KEY=your_key_here
-    export ANTHROPIC_MODEL=claude-sonnet-4-20250514
-    ```
+**Setup:**
+```bash
+export CHOOSE_CLIENT=1
+export ANTHROPIC_API_KEY=your_key_here
+export ANTHROPIC_MODEL=claude-sonnet-4-20250514
+```
 
-    **Get API Key:** [Anthropic Console](https://console.anthropic.com/)
+**Get API Key:** [Anthropic Console](https://console.anthropic.com/)
 
-    **Available Models:**
-    - `claude-sonnet-4-20250514` - Most capable (default)
-    - `claude-3-5-haiku-20241022` - Fastest and cheapest
-    - `claude-opus-4-1-20250805` - Most powerful
+**Available Models:**
+- `claude-sonnet-4-20250514` - Most capable (default)
+- `claude-3-5-haiku-20241022` - Fastest and cheapest
+- `claude-opus-4-1-20250805` - Most powerful
 
-=== "AWS Bedrock"
+</TabItem>
+<TabItem value="bedrock" label="AWS Bedrock">
 
-    **Why Bedrock?** Enterprise AWS integration, compliance features
+**Why Bedrock?** Enterprise AWS integration, compliance features
 
-    **Setup:**
-    ```bash
-    export CHOOSE_CLIENT=2
-    export AWS_ACCESS_KEY_ID=your_access_key
-    export AWS_SECRET_ACCESS_KEY=your_secret_key
-    export AWS_SESSION_TOKEN=your_session_token
-    export AWS_REGION=us-west-2
-    export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
-    ```
+**Setup:**
+```bash
+export CHOOSE_CLIENT=2
+export AWS_ACCESS_KEY_ID=your_access_key
+export AWS_SECRET_ACCESS_KEY=your_secret_key
+export AWS_SESSION_TOKEN=your_session_token
+export AWS_REGION=us-west-2
+export ANTHROPIC_MODEL=us.anthropic.claude-sonnet-4-20250514-v1:0
+```
 
-    **Requirements:** Valid AWS account with Bedrock access
+**Requirements:** Valid AWS account with Bedrock access
 
-=== "Google Gemini (Recommended)"
+</TabItem>
+<TabItem value="gemini" label="Google Gemini (Recommended)">
 
-    **Why Gemini?** ~40x cheaper than Claude, 2M context window, fast performance
+**Why Gemini?** ~40x cheaper than Claude, 2M context window, fast performance
 
-    **Setup:**
-    ```bash
-    export CHOOSE_CLIENT=3
-    export GEMINI_API_KEY=your_key_here
-    export GEMINI_MODEL=gemini-2.5-flash
-    ```
+**Setup:**
+```bash
+export CHOOSE_CLIENT=3
+export GEMINI_API_KEY=your_key_here
+export GEMINI_MODEL=gemini-2.5-flash
+```
 
-    **Get API Key:** [Google AI Studio](https://aistudio.google.com/apikey)
+**Get API Key:** [Google AI Studio](https://aistudio.google.com/apikey)
 
-    **Pricing:** $0.075 per million input tokens (vs $3.00 for Claude)
+**Pricing:** $0.075 per million input tokens (vs $3.00 for Claude)
 
-=== "OpenAI"
+</TabItem>
+<TabItem value="openai" label="OpenAI">
 
-    **Why OpenAI?** Industry-leading performance, competitive pricing, fast response times
+**Why OpenAI?** Industry-leading performance, competitive pricing, fast response times
 
-    **Setup:**
-    ```bash
-    export CHOOSE_CLIENT=4
-    export OPENAI_API_KEY=your_key_here
-    export OPENAI_MODEL=gpt-4o
-    ```
+**Setup:**
+```bash
+export CHOOSE_CLIENT=4
+export OPENAI_API_KEY=your_key_here
+export OPENAI_MODEL=gpt-4o
+```
 
-    **Get API Key:** [OpenAI Platform](https://platform.openai.com/api-keys)
+**Get API Key:** [OpenAI Platform](https://platform.openai.com/api-keys)
 
-    **Available Models:**
-    - `gpt-4o` - Latest and most capable (default)
-    - `gpt-4` - Stable and reliable
-    - `gpt-3.5-turbo` - Fast and cost-effective
+**Available Models:**
+- `gpt-4o` - Latest and most capable (default)
+- `gpt-4` - Stable and reliable
+- `gpt-3.5-turbo` - Fast and cost-effective
 
-=== "Auto-Detection"
+</TabItem>
+<TabItem value="auto" label="Auto-Detection">
 
-    **Let WYN360 choose automatically** based on available credentials:
+**Let WYN360 choose automatically** based on available credentials:
 
-    ```bash
-    # Just set your preferred API key - no CHOOSE_CLIENT needed
-    export GEMINI_API_KEY=your_key_here
-    # System automatically detects and uses Gemini
-    ```
+```bash
+# Just set your preferred API key - no CHOOSE_CLIENT needed
+export GEMINI_API_KEY=your_key_here
+# System automatically detects and uses Gemini
+```
 
-    **Priority order:**
-    1. `ANTHROPIC_API_KEY` → Use Anthropic
-    2. AWS credentials → Use Bedrock
-    3. `GEMINI_API_KEY` → Use Gemini
-    4. `OPENAI_API_KEY` → Use OpenAI
+**Priority order:**
+1. `ANTHROPIC_API_KEY` → Use Anthropic
+2. AWS credentials → Use Bedrock
+3. `GEMINI_API_KEY` → Use Gemini
+4. `OPENAI_API_KEY` → Use OpenAI
+
+</TabItem>
+</Tabs>
 
 ### 3. Start Chatting
 ```bash
