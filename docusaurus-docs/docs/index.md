@@ -3,7 +3,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-An intelligent AI coding assistant that helps you build projects, generate code, and improve your codebase through natural language conversations.
+An intelligent AI coding assistant that helps you build projects, generate code, and improve your codebase through natural language conversations. Now featuring enhanced semantic search for documentation.
 
 [![PyPI version](https://badge.fury.io/py/wyn360-cli.svg)](https://pypi.org/project/wyn360-cli/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
