@@ -7,7 +7,7 @@
     "start": "docusaurus start",
     "build": "npm run build:search && docusaurus build",
     "build:docs": "docusaurus build",
-    "build:search": "cd .. && python scripts/build_search_index.py --docs-dir docusaurus-docs/docs --output-dir docusaurus-docs/docs/assets",
+    "build:search": "cd .. && python3 scripts/build_search_index.py --docs-dir docusaurus-docs/docs --output-dir docusaurus-docs/static/assets",
     "build:full": "npm run build:search && npm run build:docs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",

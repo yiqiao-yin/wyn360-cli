@@ -77,10 +77,10 @@ jobs:
 
       - name: Build search index and Docusaurus site
         run: |
-          # Build search index first (run from repo root)
+          # Build search index first - output to static/assets for Docusaurus
           poetry run python ../scripts/build_search_index.py \
             --docs-dir docs \
-            --output-dir docs/assets \
+            --output-dir static/assets \
             --verbose
           # Then build Docusaurus with the updated search index
           npm run build:docs
