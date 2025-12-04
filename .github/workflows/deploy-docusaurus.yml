@@ -75,15 +75,8 @@ jobs:
           npm install @mermaid-js/layout-elk
         working-directory: ./docusaurus-docs
 
-      - name: Build search index and Docusaurus site
-        run: |
-          # Build search index first - output to static/assets for Docusaurus
-          poetry run python ../scripts/build_search_index.py \
-            --docs-dir docs \
-            --output-dir static/assets \
-            --verbose
-          # Then build Docusaurus with the updated search index
-          npm run build:docs
+      - name: Build Docusaurus site with native local search
+        run: npm run build
         working-directory: ./docusaurus-docs
 
       - name: Upload artifact

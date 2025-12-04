@@ -53,6 +53,23 @@ const config: Config = {
     ],
   ],
 
+  plugins: [
+    [
+      '@easyops-cn/docusaurus-search-local',
+      {
+        hashed: true,
+        language: ['en'],
+        highlightSearchTermsOnTargetPage: true,
+        explicitSearchResultPath: true,
+        searchResultLimits: 8,
+        searchResultContextMaxLength: 50,
+        ignoreFiles: [],
+        searchBarShortcut: true,
+        searchBarShortcutHint: true,
+      },
+    ],
+  ],
+
   themes: ['@docusaurus/theme-mermaid'],
 
   // Add Mermaid configuration

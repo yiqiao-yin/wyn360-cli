@@ -5,10 +5,10 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
-    "build": "npm run build:search && docusaurus build",
+    "build": "docusaurus build",
     "build:docs": "docusaurus build",
-    "build:search": "cd .. && python3 scripts/build_search_index.py --docs-dir docusaurus-docs/docs --output-dir docusaurus-docs/static/assets",
-    "build:full": "npm run build:search && npm run build:docs",
+    "build:search": "echo 'Using native Docusaurus local search - no custom index needed'",
+    "build:full": "npm run build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -20,6 +20,8 @@
   "dependencies": {
     "@docusaurus/core": "3.9.2",
     "@docusaurus/preset-classic": "3.9.2",
+    "@docusaurus/theme-mermaid": "^3.9.2",
+    "@easyops-cn/docusaurus-search-local": "^0.52.2",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
     "prism-react-renderer": "^2.3.0",
