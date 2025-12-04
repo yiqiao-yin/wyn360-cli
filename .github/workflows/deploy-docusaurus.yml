@@ -68,14 +68,6 @@ jobs:
           poetry install --only=main
           poetry run pip install sentence-transformers torch numpy scikit-learn
 
-      - name: Build AI search index
-        run: |
-          mkdir -p docusaurus-docs/static/assets
-          poetry run python scripts/build_search_index.py \
-            --docs-dir docs \
-            --output-dir docusaurus-docs/static/assets \
-            --verbose
-
       - name: Install Docusaurus dependencies
         run: |
           npm install
@@ -83,8 +75,15 @@ jobs:
           npm install @mermaid-js/layout-elk
         working-directory: ./docusaurus-docs
 
-      - name: Build Docusaurus site
-        run: npm run build
+      - name: Build search index and Docusaurus site
+        run: |
+          # Build search index first
+          poetry run python scripts/build_search_index.py \
+            --docs-dir docusaurus-docs/docs \
+            --output-dir docusaurus-docs/docs/assets \
+            --verbose
+          # Then build Docusaurus with the updated search index
+          npm run build:docs
         working-directory: ./docusaurus-docs
 
       - name: Upload artifact

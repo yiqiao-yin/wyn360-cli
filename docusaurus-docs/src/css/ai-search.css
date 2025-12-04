@@ -2,14 +2,14 @@
   WYN360 CLI Documentation - AI Search Styles
 
   Custom CSS for AI-enhanced search functionality.
-  Designed to integrate seamlessly with MkDocs Material theme.
+  Designed to integrate seamlessly with Docusaurus Infima theme.
 */
 
 /* AI Search Section - REDESIGNED FOR BETTER UX */
 .ai-search-section {
-  border: 2px solid var(--md-primary-fg-color--light);
+  border: 2px solid var(--ifm-color-primary-lighter);
   margin: 0 0 1rem 0;
-  background: var(--md-default-bg-color);
+  background: var(--ifm-background-color);
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   overflow: hidden;
@@ -20,7 +20,7 @@
 
 /* AI Search Header - Prominent */
 .ai-search-header {
-  background: linear-gradient(135deg, var(--md-primary-fg-color), var(--md-accent-fg-color));
+  background: linear-gradient(135deg, var(--ifm-color-primary), var(--ifm-color-primary-darker));
   color: white;
   padding: 1rem;
   text-align: center;
@@ -70,17 +70,17 @@
 .ai-search-hint {
   margin-top: 0.5rem;
   font-size: 0.8rem;
-  color: var(--md-default-fg-color--light);
+  color: var(--ifm-color-content-secondary);
   font-style: italic;
 }
 
 /* AI Response Container */
 .ai-response-container {
   margin-top: 1rem;
-  border: 1px solid var(--md-default-fg-color--lightest);
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 8px;
   padding: 1rem;
-  background: var(--md-default-bg-color);
+  background: var(--ifm-background-color);
 }
 
 /* Loading State */
@@ -92,8 +92,8 @@
 .ai-loading-spinner {
   width: 32px;
   height: 32px;
-  border: 3px solid var(--md-default-fg-color--lightest);
-  border-top: 3px solid #667eea;
+  border: 3px solid var(--ifm-color-emphasis-300);
+  border-top: 3px solid var(--ifm-color-primary);
   border-radius: 50%;
   animation: ai-spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -105,7 +105,7 @@
 }
 
 .ai-loading p {
-  color: var(--md-default-fg-color--light);
+  color: var(--ifm-color-content-secondary);
   font-size: 0.9rem;
   margin: 0;
 }
@@ -131,7 +131,7 @@
 }
 
 .ai-answer h4 {
-  color: #667eea;
+  color: var(--ifm-color-primary);
   font-size: 1rem;
   font-weight: 600;
   margin: 0 0 0.75rem 0;
@@ -143,8 +143,8 @@
 .ai-response-text {
   font-size: 0.9rem;
   line-height: 1.6;
-  color: var(--md-default-fg-color);
-  background: var(--md-code-bg-color);
+  color: var(--ifm-font-color-base);
+  background: var(--ifm-code-background);
   padding: 1rem;
   border-radius: 6px;
   border-left: 4px solid #667eea;
@@ -156,7 +156,7 @@
 }
 
 .ai-sources h5 {
-  color: var(--md-default-fg-color);
+  color: var(--ifm-font-color-base);
   font-size: 0.9rem;
   font-weight: 600;
   margin: 0 0 0.75rem 0;
@@ -178,31 +178,31 @@
 .ai-source-links a {
   display: block;
   padding: 0.75rem;
-  background: var(--md-default-bg-color);
-  border: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 6px;
   text-decoration: none;
-  color: var(--md-default-fg-color);
+  color: var(--ifm-font-color-base);
   transition: all 0.2s ease;
   font-size: 0.85rem;
 }
 
 .ai-source-links a:hover {
-  background: var(--md-accent-fg-color--transparent);
-  border-color: var(--md-accent-fg-color);
+  background: var(--ifm-color-primary-lightest);
+  border-color: var(--ifm-color-primary);
   transform: translateX(4px);
 }
 
 .ai-source-links .source-title {
   font-weight: 600;
-  color: var(--md-accent-fg-color);
+  color: var(--ifm-color-primary);
   display: block;
   margin-bottom: 0.25rem;
 }
 
 .ai-source-links .source-snippet {
   font-size: 0.8rem;
-  color: var(--md-default-fg-color--light);
+  color: var(--ifm-color-content-secondary);
   line-height: 1.4;
 }
 
@@ -215,7 +215,7 @@
 }
 
 .ai-action-button {
-  background: var(--md-accent-fg-color);
+  background: var(--ifm-color-primary);
   color: white;
   border: none;
   border-radius: 6px;
@@ -227,19 +227,19 @@
 }
 
 .ai-action-button:hover {
-  background: var(--md-accent-fg-color--dark);
+  background: var(--ifm-color-primary-darker);
   transform: translateY(-1px);
 }
 
 .ai-action-button.secondary {
   background: transparent;
-  color: var(--md-default-fg-color--light);
-  border: 1px solid var(--md-default-fg-color--lightest);
+  color: var(--ifm-color-content-secondary);
+  border: 1px solid var(--ifm-color-emphasis-300);
 }
 
 .ai-action-button.secondary:hover {
-  background: var(--md-default-fg-color--lightest);
-  color: var(--md-default-fg-color);
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-font-color-base);
   transform: translateY(-1px);
 }
 
@@ -256,7 +256,7 @@
 }
 
 .ai-error p {
-  color: var(--md-default-fg-color--light);
+  color: var(--ifm-color-content-secondary);
   font-size: 0.9rem;
   margin: 0 0 1rem 0;
 }
@@ -283,7 +283,7 @@
 }
 
 /* Dark Theme Compatibility */
-[data-md-color-scheme="slate"] {
+[data-theme='dark'] {
   .ai-search-button {
     box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
   }
@@ -293,8 +293,8 @@
   }
 
   .ai-response-container {
-    background: var(--md-default-bg-color);
-    border-color: var(--md-default-fg-color--lightest);
+    background: var(--ifm-background-color);
+    border-color: var(--ifm-color-emphasis-300);
   }
 
   .ai-source-links a {
@@ -304,14 +304,12 @@
 
   .ai-source-links a:hover {
     background: rgba(255, 255, 255, 0.1);
-    border-color: var(--md-accent-fg-color);
+    border-color: var(--ifm-color-primary);
   }
 }
 
-/* Search Result Integration */
-.md-search-result {
-  position: relative;
-}
+/* Search Result Integration - Docusaurus */
+/* Note: This section can be removed as it's specific to MkDocs search results */
 
 /* Ensure AI section appears below regular search results */
 .ai-search-section {
@@ -328,12 +326,12 @@
 /* Focus states for accessibility */
 .ai-search-button:focus,
 .ai-action-button:focus {
-  outline: 2px solid var(--md-accent-fg-color);
+  outline: 2px solid var(--ifm-color-primary);
   outline-offset: 2px;
 }
 
 .ai-source-links a:focus {
-  outline: 2px solid var(--md-accent-fg-color);
+  outline: 2px solid var(--ifm-color-primary);
   outline-offset: 1px;
 }
 
@@ -358,8 +356,8 @@
 /* Search status indicators */
 .ai-search-status {
   padding: 0.75rem 1rem;
-  background: var(--md-default-bg-color--light);
-  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--ifm-background-surface-color);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200);
 }
 
 .search-type-indicator {
@@ -387,12 +385,12 @@
 
 .result-count {
   font-size: 0.8rem;
-  color: var(--md-default-fg-color--light);
+  color: var(--ifm-color-content-secondary);
 }
 
 /* Chat Interface */
 .ai-chat-container {
-  background: var(--md-default-bg-color);
+  background: var(--ifm-background-color);
   border-radius: 0 0 12px 12px;
   max-height: 60vh;
   overflow-y: auto;
@@ -427,15 +425,15 @@
 }
 
 .user-avatar {
-  background: var(--md-accent-fg-color--light);
+  background: var(--ifm-color-primary-lighter);
 }
 
 .ai-avatar {
-  background: var(--md-primary-fg-color--light);
+  background: var(--ifm-color-primary-lighter);
 }
 
 .message-content {
-  background: var(--md-default-bg-color--light);
+  background: var(--ifm-background-surface-color);
   padding: 0.75rem 1rem;
   border-radius: 16px;
   max-width: calc(100% - 3.5rem);
@@ -443,37 +441,37 @@
 }
 
 .chat-message.user-message .message-content {
-  background: var(--md-accent-fg-color--transparent);
-  border: 1px solid var(--md-accent-fg-color--light);
+  background: var(--ifm-color-primary-lightest);
+  border: 1px solid var(--ifm-color-primary-lighter);
 }
 
 .chat-message.ai-message .message-content {
-  background: var(--md-default-bg-color--light);
-  border: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
 }
 
 .user-question-text {
   font-weight: 500;
-  color: var(--md-accent-fg-color);
+  color: var(--ifm-color-primary);
 }
 
 .ai-response-text {
   line-height: 1.6;
-  color: var(--md-default-fg-color);
+  color: var(--ifm-font-color-base);
 }
 
 /* Source Cards */
 .ai-sources-section {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--md-default-fg-color--lightest);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
 }
 
 .ai-sources-section h6 {
   margin: 0 0 0.75rem 0;
   font-size: 0.85rem;
   font-weight: 600;
-  color: var(--md-default-fg-color--light);
+  color: var(--ifm-color-content-secondary);
 }
 
 .ai-source-cards {
@@ -484,46 +482,46 @@
 .ai-source-cards a {
   display: block;
   padding: 0.75rem;
-  background: var(--md-default-bg-color);
-  border: 1px solid var(--md-default-fg-color--lightest);
+  background: var(--ifm-background-color);
+  border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 8px;
   text-decoration: none;
-  color: var(--md-default-fg-color);
+  color: var(--ifm-font-color-base);
   transition: all 0.2s ease;
   font-size: 0.85rem;
 }
 
 .ai-source-cards a:hover {
-  background: var(--md-accent-fg-color--transparent);
-  border-color: var(--md-accent-fg-color);
+  background: var(--ifm-color-primary-lightest);
+  border-color: var(--ifm-color-primary);
   transform: translateY(-1px);
 }
 
 .source-title {
   font-weight: 600;
-  color: var(--md-accent-fg-color);
+  color: var(--ifm-color-primary);
   display: block;
   margin-bottom: 0.25rem;
 }
 
 .source-snippet {
   font-size: 0.8rem;
-  color: var(--md-default-fg-color--light);
+  color: var(--ifm-color-content-secondary);
   line-height: 1.4;
 }
 
 /* Chat Actions */
 .ai-chat-actions {
   padding: 1rem;
-  border-top: 1px solid var(--md-default-fg-color--lightest);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
   display: flex;
   gap: 0.75rem;
   justify-content: center;
-  background: var(--md-default-bg-color--light);
+  background: var(--ifm-background-surface-color);
 }
 
 .ai-action-button.primary {
-  background: var(--md-primary-fg-color);
+  background: var(--ifm-color-primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -538,7 +536,7 @@
 }
 
 .ai-action-button.primary:hover {
-  background: var(--md-primary-fg-color--dark);
+  background: var(--ifm-color-primary-darker);
   transform: translateY(-1px);
 }
 
