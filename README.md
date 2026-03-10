@@ -36,6 +36,7 @@ An intelligent AI coding assistant CLI tool powered by Anthropic Claude.
 - [Development & Testing](#-development--testing)
 - [Environment Variables](#-environment-variables)
 - [Requirements](#-requirements)
+- [Web Terminal](#web-terminal)
 - [Contributing](#-contributing)
 - [License](#-license)
 - [Author](#-author)
@@ -810,6 +811,60 @@ WYN360_BROWSER_SHOW=0
 ```bash
 playwright install chromium
 ```
+
+## Web Terminal
+
+WYN360 is also available as a browser-based terminal at:
+
+**https://wyn360terminal-app.azurewebsites.net**
+
+This is a real Linux terminal running in your browser with `wyn360` pre-installed. No account or login required -- just open the URL and start using it.
+
+### Usage
+
+1. Open the terminal URL in your browser
+2. Export your API key:
+   ```bash
+   export ANTHROPIC_API_KEY=sk-ant-your-key-here
+   ```
+3. Launch the assistant:
+   ```bash
+   wyn360
+   ```
+
+All four AI providers are supported (Anthropic, AWS Bedrock, Google Gemini, OpenAI). Your API keys are never stored on the server -- they only exist in your browser terminal session and are discarded when you close the tab.
+
+### Self-Hosting
+
+To deploy your own instance, you need Docker and Azure CLI:
+
+```bash
+az login
+bash deploy-azure.sh
+```
+
+This creates four Azure resources (all prefixed `wyn360terminal`):
+
+| Resource | Name | Purpose |
+|----------|------|---------|
+| Resource Group | `wyn360terminal-rg` | Container for all resources |
+| Container Registry | `wyn360terminalacr` | Stores the Docker image |
+| App Service Plan | `wyn360terminal-plan` (B1) | Compute for the web app |
+| Web App | `wyn360terminal-app` | Serves the terminal UI |
+
+The container uses [ttyd](https://github.com/tsl0922/ttyd) to expose a bash shell over WebSocket, with `wyn360` pre-installed. No secrets are baked into the image.
+
+To tear down:
+```bash
+az group delete --name wyn360terminal-rg --yes
+```
+
+### Related Files
+
+- `Dockerfile.web` -- Container image definition
+- `deploy-azure.sh` -- Azure deployment script
+- `terminal-motd.sh` -- Welcome message shown on terminal connect
+- `docker-compose.web.yml` -- Local development with Docker Compose
 
 ## 🤝 Contributing
 

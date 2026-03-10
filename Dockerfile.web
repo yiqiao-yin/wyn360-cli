@@ -1,0 +1,61 @@
+FROM python:3.11-slim
+
+# System deps: ttyd for web terminal, minimal wyn360 deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libffi-dev \
+    git \
+    curl \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ttyd (web terminal)
+RUN wget -qO /usr/local/bin/ttyd \
+    https://github.com/tsl0922/ttyd/releases/download/1.7.7/ttyd.x86_64 \
+    && chmod +x /usr/local/bin/ttyd
+
+WORKDIR /app
+
+# Copy source
+COPY pyproject.toml poetry.lock* README.md ./
+COPY wyn360_cli/ ./wyn360_cli/
+
+# Install wyn360-cli without the heavy optional deps
+# (torch, sentence-transformers, playwright, tesseract, pdf tools)
+# Users can pip install extras inside the terminal if needed
+RUN pip install --no-cache-dir \
+    click>=8.1.0 \
+    "pydantic-ai>=1.13.0" \
+    "anthropic[bedrock]>=0.39.0" \
+    "google-genai>=1.0.0" \
+    rich>=13.0.0 \
+    "python-dotenv>=1.2.1" \
+    prompt-toolkit>=3.0.0 \
+    pyyaml>=6.0.0 \
+    huggingface-hub>=0.20.0 \
+    "cryptography>=42.0.0" \
+    playwright>=1.40.0 \
+    numpy>=1.24.0 \
+    "crawl4ai>=0.7.6" \
+    "stagehand-py>=0.1.0" \
+    && pip install --no-cache-dir -e . --no-deps
+
+# Create non-root user
+RUN useradd -m -s /bin/bash wyn360 && chown -R wyn360:wyn360 /app
+USER wyn360
+
+# Create cache/config directories
+RUN mkdir -p /home/wyn360/.wyn360/cache
+
+# Custom bashrc with welcome message and terminal setup
+COPY --chown=wyn360:wyn360 terminal-motd.sh /home/wyn360/.terminal-motd.sh
+RUN echo 'source ~/.terminal-motd.sh' >> /home/wyn360/.bashrc && \
+    echo 'export PS1="\[\033[1;32m\]wyn360\[\033[0m\]@\[\033[0;36m\]terminal\[\033[0m\]:\[\033[1;34m\]\w\[\033[0m\]\$ "' >> /home/wyn360/.bashrc
+
+EXPOSE 8360
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=5s \
+    CMD curl -f http://localhost:8360/ || exit 1
+
+# ttyd serves a bash shell on port 8360
+CMD ["ttyd", "--port", "8360", "--writable", "bash", "--login"]
