@@ -30,6 +30,23 @@ Complete reference for WYN360 CLI commands and slash commands.
 | `/tokens` | Show detailed token usage statistics and costs | `/tokens` |
 | `/config` | Show current configuration | `/config` |
 
+### Agentic Features (v0.4.0)
+
+| Command | Description | Example |
+|---------|-------------|---------|
+| `/memory list` | List all stored memories | `/memory list` |
+| `/memory save <type> <name> \| <content>` | Save a new memory | `/memory save user my_role \| Backend engineer` |
+| `/memory search <query>` | Search memories by keyword | `/memory search python style` |
+| `/memory delete <file>` | Delete a memory | `/memory delete user_my_role.md` |
+| `/plan` | Show current plan status | `/plan` |
+| `/plan approve` | Approve plan for execution | `/plan approve` |
+| `/plan reject` | Reject and discard current plan | `/plan reject` |
+| `/plan skip` | Skip the current plan step | `/plan skip` |
+| `/skills` | List available custom skills | `/skills` |
+| `/hooks` | Show registered hooks and stats | `/hooks` |
+| `/workers` | Show sub-agent task status | `/workers` |
+| `/budget` | Show token budget statistics | `/budget` |
+
 ### Help & Information
 
 | Command | Description | Example |

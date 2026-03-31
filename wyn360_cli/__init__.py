@@ -5,11 +5,21 @@ This package provides a command-line interface for interacting with Claude
 to build projects, generate code, and improve your codebase.
 """
 
-__version__ = "0.3.80"
+__version__ = "0.4.0"
 __author__ = "Yiqiao Yin"
 __email__ = "yiqiao.yin@wyn-associates.com"
 
 from .agent import WYN360Agent
 from .cli import main
+from .memory import MemoryManager
+from .subagent import SubAgentManager
+from .planner import Planner
+from .token_budget import TokenBudgetManager
+from .skills import SkillRegistry
+from .hooks import HookManager
 
-__all__ = ["WYN360Agent", "main"]
+__all__ = [
+    "WYN360Agent", "main",
+    "MemoryManager", "SubAgentManager", "Planner",
+    "TokenBudgetManager", "SkillRegistry", "HookManager",
+]

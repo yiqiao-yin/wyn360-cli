@@ -30,6 +30,9 @@ const sidebars: SidebarsConfig = {
       label: 'Features',
       items: [
         'features/overview',
+        'features/agentic-memory',
+        'features/planning-and-agents',
+        'features/hooks-and-budget',
         'features/web-search',
         'features/browser-use',
         'features/vision-mode',

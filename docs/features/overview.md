@@ -16,6 +16,26 @@ WYN360 CLI provides comprehensive AI-powered development assistance through a ri
 - **Intent Recognition** - Understands "update existing" vs "create new" automatically
 - **Self-Correcting** - Smart retry mechanism with error handling
 
+## Agentic Features (v0.4.0)
+
+### 🧠 [Memory & Skills](agentic-memory.md)
+- **Persistent Memory** - Remember context across sessions (user preferences, project decisions, feedback)
+- **Relevance Selection** - Automatically surfaces the most relevant memories per query
+- **Custom Skills** - Define reusable slash commands via YAML files in `~/.wyn360/skills/`
+- **Skill Aliases** - Multiple names for the same skill (e.g., `/review`, `/cr`)
+
+### 📋 [Planning & Sub-Agents](planning-and-agents.md)
+- **Plan Mode** - Structured step-by-step plans with approve/reject/skip workflow
+- **Parallel Workers** - Spawn sub-agents for concurrent research and verification
+- **Task Lifecycle** - Track worker status (pending, running, completed, failed, killed)
+- **Result Synthesis** - AI combines parallel findings into coherent next steps
+
+### 🔧 [Hooks & Token Budget](hooks-and-budget.md)
+- **Hook System** - Pre/post hooks for validation, transformation, and custom processing
+- **Safety Hooks** - Built-in detection of destructive commands (rm -rf, DROP TABLE)
+- **Auto-Continue** - Automatically continues when responses are cut off by token limits
+- **Diminishing Returns** - Detects when continuations produce little new content and stops
+
 ## Advanced Features
 
 ### 🌐 Web Integration
@@ -113,7 +133,15 @@ WYN360 CLI provides comprehensive AI-powered development assistance through a ri
 
 ## Feature Roadmap
 
-### Current Focus (v0.3.x)
+### Current Focus (v0.4.x)
+- ✅ Persistent memory system
+- ✅ Sub-agent parallel workers
+- ✅ Structured plan mode
+- ✅ Token budget auto-continue
+- ✅ Extensible skills system
+- ✅ Hook-based pipeline
+
+### Previous (v0.3.x)
 - ✅ Multi-provider AI support
 - ✅ Autonomous browsing capabilities
 - ✅ Document processing with vision
@@ -123,12 +151,14 @@ WYN360 CLI provides comprehensive AI-powered development assistance through a ri
 - **Claude Computer Use** - Direct computer interaction capabilities
 - **Enhanced Vision** - Advanced image and diagram processing
 - **Team Collaboration** - Shared sessions and project contexts
-- **Plugin System** - Extensible tool architecture
 
 ---
 
 ## Get Started with Specific Features
 
+- **[Memory & Skills →](agentic-memory.md)** - Persistent memory and custom slash commands *(v0.4.0)*
+- **[Planning & Sub-Agents →](planning-and-agents.md)** - Structured plans and parallel workers *(v0.4.0)*
+- **[Hooks & Token Budget →](hooks-and-budget.md)** - Pipeline hooks and auto-continue *(v0.4.0)*
 - **[Web Search →](web-search.md)** - Find current information and resources
 - **[Browser Use →](browser-use.md)** - Autonomous web navigation and data extraction
 - **[Vision Mode →](vision-mode.md)** - Process images and visual content

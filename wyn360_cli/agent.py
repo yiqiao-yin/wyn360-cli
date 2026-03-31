@@ -41,6 +41,12 @@ from .credential_manager import CredentialManager
 from .session_manager import SessionManager
 from .browser_auth import BrowserAuth
 from .browser_task_executor import BrowserTaskExecutor
+from .memory import MemoryManager
+from .subagent import SubAgentManager, TaskType
+from .planner import Planner
+from .token_budget import TokenBudgetManager
+from .skills import SkillRegistry, Skill
+from .hooks import HookManager, HookPoint, HookContext
 # Import DOM-first browser automation tools
 from .tools.browser import (
     browser_tools,
@@ -402,6 +408,25 @@ class WYN360Agent:
         # Performance metrics tracking (Phase 10.2)
         self.performance_metrics = PerformanceMetrics()
 
+        # Memory system (cross-session persistence)
+        self.memory_manager = MemoryManager()
+
+        # Planner (structured planning before execution)
+        self.planner = Planner()
+
+        # Token budget manager (auto-continue on max_tokens)
+        self.token_budget = TokenBudgetManager(
+            default_budget=config.max_tokens if config else 4096
+        )
+
+        # Skills system (extensible slash commands)
+        self.skill_registry = SkillRegistry()
+        self.skill_registry.load_all()
+
+        # Hook system (pre/post response processing)
+        self.hook_manager = HookManager()
+        self.hook_manager.register_builtin_hooks()
+
         # Browser use / website fetching (Phase 12.1, 12.2)
         if config and config.browser_use_cache_enabled and HAS_CRAWL4AI:
             cache_dir = Path.home() / ".wyn360" / "cache" / "fetched_sites"
@@ -616,6 +641,13 @@ class WYN360Agent:
             builtin_tools=builtin_tools,
             tools=tools_list,
             retries=0  # No retries - show errors immediately to model for correction
+        )
+
+        # Sub-agent manager (parallel workers) - initialized after model is ready
+        self.subagent_manager = SubAgentManager(
+            model=self.model,
+            system_prompt=self._get_system_prompt(),
+            max_concurrent=3,
         )
 
     def _get_system_prompt(self) -> str:
@@ -1171,6 +1203,27 @@ You have access to `browse_and_find()` which enables autonomous multi-step brows
                 base_prompt += "This project uses the following key dependencies:\n"
                 for dep in self.config.project_dependencies:
                     base_prompt += f"- {dep}\n"
+
+        # Add memory context
+        memory_prompt = self.memory_manager.build_memory_prompt()
+        if memory_prompt:
+            base_prompt += memory_prompt
+
+        # Add planner context
+        plan_context = self.planner.get_plan_context()
+        if plan_context:
+            base_prompt += plan_context
+
+        # Add planning instructions
+        base_prompt += self.planner.get_planning_prompt()
+
+        # Add skills listing
+        skills = self.skill_registry.list_skills()
+        if skills:
+            base_prompt += "\n\n**Available Custom Skills:**\n"
+            for skill in skills:
+                aliases = f" (aliases: {', '.join(skill.aliases)})" if skill.aliases else ""
+                base_prompt += f"- /{skill.name}{aliases}: {skill.description}\n"
 
         return base_prompt
 
@@ -4067,6 +4120,7 @@ You can restart the task by running the command again.
         CLI will simulate streaming by printing word-by-word.
 
         This uses pydantic-ai's run() which executes tools properly.
+        Integrates hooks (pre/post) and token budget auto-continue.
 
         Args:
             user_message: The user's input message
@@ -4077,6 +4131,15 @@ You can restart the task by running the command again.
         import time
 
         try:
+            # Execute pre-query hooks
+            pre_ctx = HookContext(hook_point=HookPoint.PRE_QUERY, message=user_message)
+            pre_result = await self.hook_manager.execute(HookPoint.PRE_QUERY, pre_ctx)
+            if pre_result.modified_message:
+                user_message = pre_result.modified_message
+
+            # Start token budget tracking for this turn
+            self.token_budget.start_turn()
+
             # Track response time
             start_time = time.time()
 
@@ -4097,12 +4160,46 @@ You can restart the task by running the command again.
                 response_text = str(response_text)
 
             # Update conversation history with all messages from this run
-            # This includes user message, tool calls, tool responses, and assistant response
             if self.use_history:
                 self.conversation_history = result.all_messages()
 
             # Track token usage
             self._track_tokens(user_message, response_text)
+
+            # Token budget auto-continue: if model was cut off, continue automatically
+            output_tokens = len(response_text.split()) * 2  # rough estimate
+            stop_reason = getattr(result, '_result_data', {})
+            # Try to detect max_tokens cutoff (heuristic: response ends mid-sentence)
+            if response_text and not response_text.rstrip().endswith(('.', '!', '?', '```', '`')):
+                decision = self.token_budget.check_should_continue(output_tokens, "max_tokens")
+                while decision.should_continue:
+                    # Auto-continue: send nudge message
+                    continuation = await self.agent.run(
+                        decision.nudge_message,
+                        message_history=self.conversation_history if self.use_history else []
+                    )
+                    cont_text = getattr(continuation, 'data', None) or getattr(continuation, 'output', str(continuation))
+                    if not isinstance(cont_text, str):
+                        cont_text = str(cont_text)
+
+                    response_text += cont_text
+
+                    if self.use_history:
+                        self.conversation_history = continuation.all_messages()
+
+                    self._track_tokens(decision.nudge_message, cont_text)
+                    cont_tokens = len(cont_text.split()) * 2
+                    decision = self.token_budget.check_should_continue(cont_tokens, "max_tokens")
+
+            # Execute post-response hooks
+            post_ctx = HookContext(
+                hook_point=HookPoint.POST_RESPONSE,
+                message=user_message,
+                response=response_text,
+            )
+            post_result = await self.hook_manager.execute(HookPoint.POST_RESPONSE, post_ctx)
+            if post_result.modified_response:
+                response_text = post_result.modified_response
 
             # Check if response contains code blocks and extract them
             code_blocks = extract_code_blocks(response_text)
@@ -4124,6 +4221,14 @@ You can restart the task by running the command again.
             return response_text
 
         except Exception as e:
+            # Execute error hooks
+            err_ctx = HookContext(
+                hook_point=HookPoint.ON_ERROR,
+                message=user_message,
+                error=e,
+            )
+            await self.hook_manager.execute(HookPoint.ON_ERROR, err_ctx)
+
             # Track error
             error_type = type(e).__name__
             self.performance_metrics.track_error(error_type, str(e))

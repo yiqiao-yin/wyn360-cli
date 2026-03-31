@@ -11,6 +11,8 @@ from prompt_toolkit import PromptSession
 from prompt_toolkit.key_binding import KeyBindings
 from .agent import WYN360Agent
 from .config import load_config, get_user_config_path, get_project_config_path
+from .planner import PlanStep
+from .subagent import TaskType
 import shutil
 
 # Get terminal width, with fallback to 120 if detection fails
@@ -799,6 +801,182 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
         agent.pdf_engine = engine
         return True, f"✓ PDF engine set to: {engine}"
 
+    # ── Memory commands ──
+
+    elif cmd == "memory":
+        # /memory [save|list|delete|search] [args]
+        if not arg:
+            return True, (
+                "Memory commands:\n"
+                "  /memory list              - List all memories\n"
+                "  /memory save <type> <name> <content> - Save a memory (types: user, feedback, project, reference)\n"
+                "  /memory delete <filename>  - Delete a memory\n"
+                "  /memory search <query>     - Search memories by keyword"
+            )
+
+        mem_parts = arg.split(maxsplit=1)
+        mem_cmd = mem_parts[0].lower()
+        mem_arg = mem_parts[1] if len(mem_parts) > 1 else ""
+
+        mm = agent.memory_manager
+
+        if mem_cmd == "list":
+            memories = mm.list_memories()
+            if not memories:
+                return True, "No memories stored yet."
+            from rich.table import Table
+            table = Table(title="Stored Memories", show_lines=True)
+            table.add_column("File", style="cyan", width=30)
+            table.add_column("Type", style="magenta", width=10)
+            table.add_column("Name", style="white", width=25)
+            table.add_column("Description", style="dim")
+            for m in memories:
+                table.add_row(m.filename, m.type, m.name, m.description[:60])
+            console.print(table)
+            return True, ""
+
+        elif mem_cmd == "save":
+            # /memory save <type> <name> | <content>
+            try:
+                save_parts = mem_arg.split("|", 1)
+                header = save_parts[0].strip().split(maxsplit=1)
+                content = save_parts[1].strip() if len(save_parts) > 1 else ""
+                mem_type = header[0]
+                mem_name = header[1] if len(header) > 1 else "unnamed"
+                filename = mm.save_memory(mem_name, mem_name, mem_type, content)
+                return True, f"Memory saved: {filename}"
+            except (ValueError, IndexError) as e:
+                return True, f"Usage: /memory save <type> <name> | <content>\nError: {e}"
+
+        elif mem_cmd == "delete":
+            if mm.delete_memory(mem_arg.strip()):
+                return True, f"Deleted memory: {mem_arg.strip()}"
+            return True, f"Memory not found: {mem_arg.strip()}"
+
+        elif mem_cmd == "search":
+            results = mm.find_relevant_memories(mem_arg)
+            if not results:
+                return True, "No relevant memories found."
+            lines = [f"Found {len(results)} relevant memories:"]
+            for m in results:
+                lines.append(f"  [{m.type}] {m.name}: {m.description[:80]}")
+            return True, "\n".join(lines)
+
+        else:
+            return True, f"Unknown memory command: {mem_cmd}"
+
+    # ── Plan commands ──
+
+    elif cmd == "plan":
+        # /plan [approve|reject|skip|status]
+        planner = agent.planner
+
+        if not arg:
+            # Show plan status
+            if planner.current_plan:
+                console.print(Markdown(planner.current_plan.to_markdown()))
+                return True, ""
+            return True, "No active plan. The AI will create a plan when given a complex task."
+
+        plan_cmd = arg.strip().lower()
+
+        if plan_cmd == "approve":
+            if planner.approve_plan():
+                return True, "Plan approved. Execution will begin."
+            return True, "No plan to approve."
+
+        elif plan_cmd == "reject":
+            if planner.reject_plan():
+                return True, "Plan rejected and discarded."
+            return True, "No plan to reject."
+
+        elif plan_cmd == "skip":
+            step = planner.skip_step()
+            if step:
+                return True, f"Skipped to: Step {step.index} - {step.description}"
+            return True, "No step to skip."
+
+        elif plan_cmd == "status":
+            if planner.current_plan:
+                return True, planner.current_plan.progress
+            return True, "No active plan."
+
+        else:
+            return True, "Plan commands: /plan [approve|reject|skip|status]"
+
+    # ── Skills commands ──
+
+    elif cmd == "skills":
+        # /skills - list available skills
+        skills = agent.skill_registry.list_skills()
+        if not skills:
+            return True, "No custom skills loaded.\nCreate skills in ~/.wyn360/skills/ or .wyn360/skills/"
+        lines = ["Available custom skills:"]
+        for s in skills:
+            aliases = f" (aliases: {', '.join(s.aliases)})" if s.aliases else ""
+            src = f" [{s.source}]" if s.source != "user" else ""
+            lines.append(f"  /{s.name}{aliases}{src} - {s.description}")
+        return True, "\n".join(lines)
+
+    # ── Hooks commands ──
+
+    elif cmd == "hooks":
+        # /hooks - list registered hooks
+        hooks = agent.hook_manager.list_hooks()
+        if not hooks:
+            return True, "No hooks registered."
+        stats = agent.hook_manager.get_stats()
+        lines = [f"Registered hooks ({stats['total_registered']} total):"]
+        for h in hooks:
+            status = "enabled" if h.enabled else "disabled"
+            count = stats['execution_counts'].get(h.name, 0)
+            lines.append(f"  {h.name} [{h.hook_point.value}] ({status}, ran {count}x)")
+        lines.append(f"\nTotal execution time: {stats['total_execution_time_ms']:.1f}ms")
+        return True, "\n".join(lines)
+
+    # ── Workers commands ──
+
+    elif cmd == "workers":
+        # /workers - show sub-agent task status
+        tasks = agent.subagent_manager.list_tasks()
+        if not tasks:
+            return True, "No sub-agent tasks have been created this session."
+        from rich.table import Table
+        table = Table(title="Sub-Agent Workers", show_lines=True)
+        table.add_column("ID", style="cyan", width=14)
+        table.add_column("Status", style="magenta", width=10)
+        table.add_column("Type", style="dim", width=10)
+        table.add_column("Description", style="white")
+        table.add_column("Duration", style="yellow", width=10)
+        for t in tasks:
+            dur = f"{t.duration_ms:.0f}ms" if t.duration_ms else "-"
+            table.add_row(t.id, t.status.value, t.task_type.value, t.description[:50], dur)
+        console.print(table)
+        return True, ""
+
+    # ── Budget command ──
+
+    elif cmd == "budget":
+        # /budget - show token budget stats
+        stats = agent.token_budget.get_stats()
+        lines = [
+            "Token Budget Status:",
+            f"  Budget: {stats['budget']} tokens",
+            f"  Used: {stats['total_output_tokens']} tokens ({stats['pct_used']}%)",
+            f"  Continuations this turn: {stats['continuation_count']}",
+            f"  Total auto-continues (session): {stats['total_auto_continues']}",
+            f"  Diminishing returns stops: {stats['total_diminishing_stops']}",
+        ]
+        return True, "\n".join(lines)
+
+    # ── Check for custom skill invocation ──
+
+    elif agent.skill_registry.has_skill(cmd):
+        skill = agent.skill_registry.get_skill(cmd)
+        if skill:
+            rendered = skill.render_prompt(arg or "")
+            return False, rendered  # Return as user message to send to agent
+
     else:
         return False, f"Unknown command: /{cmd}. Type /help for available commands."
 
@@ -844,10 +1022,14 @@ async def chat_loop(agent: WYN360Agent):
             if user_input.startswith('/'):
                 command = user_input[1:]  # Remove the leading /
                 handled, message = handle_slash_command(command, agent)
-                if message:
-                    console.print(f"[cyan]{message}[/cyan]")
-                console.print()
-                continue
+                if handled:
+                    if message:
+                        console.print(f"[cyan]{message}[/cyan]")
+                    console.print()
+                    continue
+                elif message:
+                    # Not handled but has message = skill prompt to send to agent
+                    user_input = message
 
             # Get complete response from agent
             console.print()
