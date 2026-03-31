@@ -48,7 +48,7 @@ jobs:
 
     - name: Install AI preprocessing dependencies
       run: |
-        poetry add sentence-transformers torch numpy scikit-learn
+        poetry add sentence-transformers torch numpy "scikit-learn>=1.5,<1.8"
 
     - name: Create scripts directory
       run: |
