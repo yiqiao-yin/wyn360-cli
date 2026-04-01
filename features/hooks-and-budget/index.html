@@ -779,6 +779,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#how-hooks-are-triggered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Hooks Are Triggered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hook-points" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -790,10 +801,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#built-in-hooks" class="md-nav__link">
+  <a href="#built-in-hooks-always-running" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Built-in Hooks
+        Built-in Hooks (Always Running)
       
     </span>
   </a>
@@ -873,10 +884,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#the-solution" class="md-nav__link">
+  <a href="#the-solution-fully-automatic" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The Solution
+        The Solution (Fully Automatic)
       
     </span>
   </a>
@@ -1634,6 +1645,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#how-hooks-are-triggered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Hooks Are Triggered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hook-points" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1645,10 +1667,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#built-in-hooks" class="md-nav__link">
+  <a href="#built-in-hooks-always-running" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Built-in Hooks
+        Built-in Hooks (Always Running)
       
     </span>
   </a>
@@ -1728,10 +1750,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#the-solution" class="md-nav__link">
+  <a href="#the-solution-fully-automatic" class="md-nav__link">
     <span class="md-ellipsis">
       
-        The Solution
+        The Solution (Fully Automatic)
       
     </span>
   </a>
@@ -1835,95 +1857,116 @@
 <p>WYN360 CLI provides a hook system for customizing the request/response pipeline and a token budget manager that automatically continues responses cut short by token limits.</p>
 <hr />
 <h2 id="hook-system">Hook System<a class="headerlink" href="#hook-system" title="Permanent link">&para;</a></h2>
-<p>Hooks are functions that run at specific points in the request/response lifecycle. They enable validation, transformation, and custom processing without modifying core code.</p>
+<p>Hooks are functions that run <strong>automatically</strong> at specific points in every request/response cycle. You don't trigger them — they fire on their own every time you send a message or the AI responds. Think of them as invisible middleware that watches everything flowing through the pipeline.</p>
+<h3 id="how-hooks-are-triggered">How Hooks Are Triggered<a class="headerlink" href="#how-hooks-are-triggered" title="Permanent link">&para;</a></h3>
+<p><strong>You do nothing.</strong> Hooks run automatically:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>You type a message
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  → pre_query hooks fire (validate/transform your message)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    → Message sent to AI
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      → AI calls a tool (e.g., read_file)
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        → pre_tool hooks fire (can block the tool)
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        → Tool executes
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        → post_tool hooks fire (track results)
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>      → AI generates response
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    → post_response hooks fire (filter/log the response)
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>  → You see the response
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>If anything crashes → on_error hooks fire
+</code></pre></div>
+<p>Every message, every response, every tool call — hooks are watching. The built-in hooks are already running from the moment you start a session.</p>
 <h3 id="hook-points">Hook Points<a class="headerlink" href="#hook-points" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
 <tr>
 <th>Hook Point</th>
-<th>When It Fires</th>
+<th>Fires automatically...</th>
+<th>Every...</th>
 <th>Use Case</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>pre_query</code></td>
-<td>Before sending message to AI</td>
+<td>When you press Enter</td>
+<td>Message you send</td>
 <td>Input validation, message transformation</td>
 </tr>
 <tr>
 <td><code>post_response</code></td>
-<td>After receiving AI response</td>
+<td>When AI finishes responding</td>
+<td>AI response</td>
 <td>Response filtering, logging</td>
 </tr>
 <tr>
 <td><code>pre_tool</code></td>
-<td>Before a tool executes</td>
+<td>When AI is about to use a tool</td>
+<td>Tool call</td>
 <td>Block dangerous operations</td>
 </tr>
 <tr>
 <td><code>post_tool</code></td>
-<td>After a tool completes</td>
+<td>When a tool finishes</td>
+<td>Tool call</td>
 <td>Track tool usage, validate results</td>
 </tr>
 <tr>
 <td><code>on_error</code></td>
-<td>When an error occurs</td>
+<td>When something crashes</td>
+<td>Error</td>
 <td>Error reporting, recovery</td>
 </tr>
 </tbody>
 </table>
-<h3 id="built-in-hooks">Built-in Hooks<a class="headerlink" href="#built-in-hooks" title="Permanent link">&para;</a></h3>
-<p>WYN360 ships with two built-in hooks:</p>
-<p><strong>Safety Check</strong> (<code>builtin_safety_check</code>):
-Warns when potentially destructive patterns are detected in your message:
-- <code>rm -rf</code>
-- <code>DROP TABLE</code>
-- <code>DELETE FROM</code>
-- <code>format c:</code></p>
-<p><strong>Response Tracker</strong> (<code>builtin_response_tracker</code>):
-Logs when responses exceed 50,000 characters for debugging.</p>
+<h3 id="built-in-hooks-always-running">Built-in Hooks (Always Running)<a class="headerlink" href="#built-in-hooks-always-running" title="Permanent link">&para;</a></h3>
+<p>WYN360 ships with two hooks that are <strong>active by default</strong> in every session:</p>
+<p><strong>Safety Check</strong> (<code>builtin_safety_check</code>) — runs on every message you type:
+- Scans for destructive patterns: <code>rm -rf</code>, <code>DROP TABLE</code>, <code>DELETE FROM</code>, <code>format c:</code>
+- If found, adds a warning message (does not block — just warns)
+- Example: you type "please rm -rf /tmp" → you'll see "Warning: Detected potentially destructive pattern 'rm -rf'"</p>
+<p><strong>Response Tracker</strong> (<code>builtin_response_tracker</code>) — runs on every AI response:
+- Silently logs when responses exceed 50,000 characters
+- You won't see anything unless you check the logs — it's for debugging</p>
 <h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># List all registered hooks with execution stats</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>/hooks
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># List all registered hooks with execution stats</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>/hooks
 </code></pre></div>
 <p>Output shows:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Registered hooks (2 total):
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  builtin_safety_check [pre_query] (enabled, ran 3x)
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  builtin_response_tracker [post_response] (enabled, ran 15x)
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Total execution time: 2.4ms
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Registered hooks (2 total):
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  builtin_safety_check [pre_query] (enabled, ran 3x)
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  builtin_response_tracker [post_response] (enabled, ran 15x)
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Total execution time: 2.4ms
 </code></pre></div></p>
 <h3 id="programmatic-hook-registration">Programmatic Hook Registration<a class="headerlink" href="#programmatic-hook-registration" title="Permanent link">&para;</a></h3>
 <p>For advanced users, hooks can be registered in Python:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wyn360_cli.hooks</span><span class="w"> </span><span class="kn">import</span> <span class="n">HookManager</span><span class="p">,</span> <span class="n">HookPoint</span><span class="p">,</span> <span class="n">HookContext</span><span class="p">,</span> <span class="n">HookResult</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">manager</span> <span class="o">=</span> <span class="n">HookManager</span><span class="p">()</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># Sync hook</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">log_queries</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">HookContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HookResult</span><span class="p">:</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">message</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="k">return</span> <span class="n">HookResult</span><span class="p">()</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="n">manager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;query_logger&quot;</span><span class="p">,</span> <span class="n">HookPoint</span><span class="o">.</span><span class="n">PRE_QUERY</span><span class="p">,</span> <span class="n">log_queries</span><span class="p">)</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="c1"># Async hook</span>
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validate_response</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">HookContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HookResult</span><span class="p">:</span>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    <span class="k">if</span> <span class="s2">&quot;TODO&quot;</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">response</span><span class="p">:</span>
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>        <span class="k">return</span> <span class="n">HookResult</span><span class="p">(</span>
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>            <span class="n">extra_messages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Warning: Response contains TODO items&quot;</span><span class="p">]</span>
-<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>        <span class="p">)</span>
-<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    <span class="k">return</span> <span class="n">HookResult</span><span class="p">()</span>
-<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
-<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="n">manager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;todo_checker&quot;</span><span class="p">,</span> <span class="n">HookPoint</span><span class="o">.</span><span class="n">POST_RESPONSE</span><span class="p">,</span> <span class="n">validate_response</span><span class="p">)</span>
-<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>
-<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="c1"># Block dangerous tool calls</span>
-<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="k">def</span><span class="w"> </span><span class="nf">block_rm</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">HookContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HookResult</span><span class="p">:</span>
-<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tool_name</span> <span class="o">==</span> <span class="s2">&quot;execute_command&quot;</span> <span class="ow">and</span> <span class="s2">&quot;rm -rf&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tool_args</span><span class="p">):</span>
-<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>        <span class="k">return</span> <span class="n">HookResult</span><span class="p">(</span><span class="n">block_action</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">block_reason</span><span class="o">=</span><span class="s2">&quot;Blocked rm -rf&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>    <span class="k">return</span> <span class="n">HookResult</span><span class="p">()</span>
-<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
-<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="n">manager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;rm_blocker&quot;</span><span class="p">,</span> <span class="n">HookPoint</span><span class="o">.</span><span class="n">PRE_TOOL</span><span class="p">,</span> <span class="n">block_rm</span><span class="p">,</span> <span class="n">priority</span><span class="o">=-</span><span class="mi">10</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wyn360_cli.hooks</span><span class="w"> </span><span class="kn">import</span> <span class="n">HookManager</span><span class="p">,</span> <span class="n">HookPoint</span><span class="p">,</span> <span class="n">HookContext</span><span class="p">,</span> <span class="n">HookResult</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">manager</span> <span class="o">=</span> <span class="n">HookManager</span><span class="p">()</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># Sync hook</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="k">def</span><span class="w"> </span><span class="nf">log_queries</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">HookContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HookResult</span><span class="p">:</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query: </span><span class="si">{</span><span class="n">ctx</span><span class="o">.</span><span class="n">message</span><span class="p">[:</span><span class="mi">100</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="k">return</span> <span class="n">HookResult</span><span class="p">()</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">manager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;query_logger&quot;</span><span class="p">,</span> <span class="n">HookPoint</span><span class="o">.</span><span class="n">PRE_QUERY</span><span class="p">,</span> <span class="n">log_queries</span><span class="p">)</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="c1"># Async hook</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">validate_response</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">HookContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HookResult</span><span class="p">:</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>    <span class="k">if</span> <span class="s2">&quot;TODO&quot;</span> <span class="ow">in</span> <span class="n">ctx</span><span class="o">.</span><span class="n">response</span><span class="p">:</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>        <span class="k">return</span> <span class="n">HookResult</span><span class="p">(</span>
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>            <span class="n">extra_messages</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Warning: Response contains TODO items&quot;</span><span class="p">]</span>
+<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>        <span class="p">)</span>
+<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>    <span class="k">return</span> <span class="n">HookResult</span><span class="p">()</span>
+<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>
+<a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="n">manager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;todo_checker&quot;</span><span class="p">,</span> <span class="n">HookPoint</span><span class="o">.</span><span class="n">POST_RESPONSE</span><span class="p">,</span> <span class="n">validate_response</span><span class="p">)</span>
+<a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+<a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="c1"># Block dangerous tool calls</span>
+<a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="k">def</span><span class="w"> </span><span class="nf">block_rm</span><span class="p">(</span><span class="n">ctx</span><span class="p">:</span> <span class="n">HookContext</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HookResult</span><span class="p">:</span>
+<a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>    <span class="k">if</span> <span class="n">ctx</span><span class="o">.</span><span class="n">tool_name</span> <span class="o">==</span> <span class="s2">&quot;execute_command&quot;</span> <span class="ow">and</span> <span class="s2">&quot;rm -rf&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">tool_args</span><span class="p">):</span>
+<a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>        <span class="k">return</span> <span class="n">HookResult</span><span class="p">(</span><span class="n">block_action</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">block_reason</span><span class="o">=</span><span class="s2">&quot;Blocked rm -rf&quot;</span><span class="p">)</span>
+<a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>    <span class="k">return</span> <span class="n">HookResult</span><span class="p">()</span>
+<a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>
+<a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="n">manager</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;rm_blocker&quot;</span><span class="p">,</span> <span class="n">HookPoint</span><span class="o">.</span><span class="n">PRE_TOOL</span><span class="p">,</span> <span class="n">block_rm</span><span class="p">,</span> <span class="n">priority</span><span class="o">=-</span><span class="mi">10</span><span class="p">)</span>
 </code></pre></div>
 <h3 id="hook-features">Hook Features<a class="headerlink" href="#hook-features" title="Permanent link">&para;</a></h3>
 <ul>
@@ -1979,45 +2022,46 @@ Logs when responses exceed 50,000 characters for debugging.</p>
 </table>
 <hr />
 <h2 id="token-budget-auto-continue">Token Budget &amp; Auto-Continue<a class="headerlink" href="#token-budget-auto-continue" title="Permanent link">&para;</a></h2>
-<p>The token budget manager tracks output token usage and automatically continues the AI's response when it gets cut off by the <code>max_tokens</code> limit.</p>
+<p>The token budget manager <strong>runs automatically</strong> on every AI response. You don't need to configure or trigger it — it watches for cut-off responses and continues them seamlessly.</p>
 <h3 id="the-problem">The Problem<a class="headerlink" href="#the-problem" title="Permanent link">&para;</a></h3>
 <p>When the AI generates a long response, it may hit the <code>max_tokens</code> limit and stop mid-sentence. Previously, you had to manually ask "please continue" to get the rest.</p>
-<h3 id="the-solution">The Solution<a class="headerlink" href="#the-solution" title="Permanent link">&para;</a></h3>
-<p>WYN360 now:
-1. Detects when a response was cut off (doesn't end with a sentence terminator)
-2. Automatically sends a continuation message
+<h3 id="the-solution-fully-automatic">The Solution (Fully Automatic)<a class="headerlink" href="#the-solution-fully-automatic" title="Permanent link">&para;</a></h3>
+<p>After every AI response, the system automatically:
+1. Checks if the response was cut off (doesn't end with a sentence terminator)
+2. If cut off, sends a continuation message behind the scenes
 3. Appends the continuation to the original response seamlessly
-4. Stops when the response is complete or diminishing returns are detected</p>
+4. Repeats until the response is complete or diminishing returns are detected</p>
+<p><strong>You see one complete response</strong> — the auto-continue happens invisibly. You never need to type "please continue."</p>
 <h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>You: Explain the entire authentication architecture
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>WYN360: [Generates 4096 tokens, gets cut off mid-paragraph]
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>        [Auto-continue: 25% of budget used (1024/4096 tokens). Continuation 1/5.]
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>        [AI continues where it left off...]
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        [Auto-continue: 50% of budget used (2048/4096 tokens). Continuation 2/5.]
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        [AI finishes the explanation]
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>You: Explain the entire authentication architecture
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>WYN360: [Generates 4096 tokens, gets cut off mid-paragraph]
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>        [Auto-continue: 25% of budget used (1024/4096 tokens). Continuation 1/5.]
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>        [AI continues where it left off...]
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        [Auto-continue: 50% of budget used (2048/4096 tokens). Continuation 2/5.]
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>        [AI finishes the explanation]
 </code></pre></div>
 <h3 id="diminishing-returns-detection">Diminishing Returns Detection<a class="headerlink" href="#diminishing-returns-detection" title="Permanent link">&para;</a></h3>
 <p>The system detects when continuations produce very little new content (under 500 tokens for 2+ consecutive continuations) and stops automatically. This prevents infinite loops where the AI keeps repeating itself.</p>
 <h3 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h3>
 <p>The budget is set by your <code>max_token</code> setting:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Set a higher budget for longer responses</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>wyn360<span class="w"> </span>--max-token<span class="w"> </span><span class="m">8192</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Or via environment variable</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MAX_TOKEN</span><span class="o">=</span><span class="m">8192</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Set a higher budget for longer responses</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>wyn360<span class="w"> </span>--max-token<span class="w"> </span><span class="m">8192</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Or via environment variable</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nb">export</span><span class="w"> </span><span class="nv">MAX_TOKEN</span><span class="o">=</span><span class="m">8192</span>
 </code></pre></div>
 <h3 id="commands_1">Commands<a class="headerlink" href="#commands_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Show token budget statistics</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>/budget
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Show token budget statistics</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>/budget
 </code></pre></div>
 <p>Output:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>Token Budget Status:
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>  Budget: 4096 tokens
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>  Used: 2048 tokens (50%)
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>  Continuations this turn: 2
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>  Total auto-continues (session): 5
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>  Diminishing returns stops: 1
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Token Budget Status:
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>  Budget: 4096 tokens
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  Used: 2048 tokens (50%)
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>  Continuations this turn: 2
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>  Total auto-continues (session): 5
+<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>  Diminishing returns stops: 1
 </code></pre></div></p>
 <h3 id="budget-stats-explained">Budget Stats Explained<a class="headerlink" href="#budget-stats-explained" title="Permanent link">&para;</a></h3>
 <table>
