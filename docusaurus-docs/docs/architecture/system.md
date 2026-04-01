@@ -67,7 +67,11 @@ graph TB
     Agent --> Model
     Agent --> Planner
     Agent --> SubAgent
-    Agent --> Tools Layer
+    Agent --> Files
+    Agent --> Git
+    Agent --> Web
+    Agent --> LSP
+    Agent --> PlanTools
     Model --> PostHook
     PostHook --> Rewind
     Rewind --> Compact
