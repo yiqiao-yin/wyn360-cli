@@ -186,19 +186,36 @@ class Planner:
 
         return ""
 
+    @property
+    def is_plan_mode(self) -> bool:
+        """True if we're in plan mode (planning or awaiting approval)."""
+        return self.current_plan is not None and not self.current_plan.approved
+
     def get_planning_prompt(self) -> str:
         """Get the system prompt addition for plan mode."""
         return """
-When the user asks you to plan or when a task is complex (involves multiple files or steps),
-enter plan mode:
+**Plan Mode Tools:**
 
-1. Analyze the task and break it into concrete steps
-2. Present the plan as a numbered list with files involved
-3. Wait for user approval before executing
-4. Execute one step at a time, reporting progress
+You have two tools for structured planning: `enter_plan_mode` and `exit_plan_mode`.
 
-Use /plan to enter plan mode. The plan should be specific:
-- Each step should be a single, actionable change
-- List the files that will be modified
-- Order steps by dependency (do prerequisites first)
+**Use `enter_plan_mode` proactively** when you're about to start a non-trivial task. Getting user sign-off on your approach before writing code prevents wasted effort. Use it when ANY of these apply:
+- New feature implementation (more than a simple function)
+- Multiple valid approaches exist (need to pick one)
+- Multi-file changes (touching 3+ files)
+- Architectural decisions required
+- Unclear requirements that need investigation first
+
+**Do NOT use `enter_plan_mode`** for:
+- Single-line fixes, typos, obvious bugs
+- Tasks where the user gave very specific instructions
+- Pure research or exploration
+
+**Flow:**
+1. You call `enter_plan_mode` with the goal description
+2. You investigate the codebase (read files, search, explore)
+3. You call `exit_plan_mode` with your step-by-step plan
+4. The user sees the plan and uses `/plan approve` or `/plan reject`
+5. Once approved, you execute the plan step by step
+
+**While in plan mode, do NOT modify files.** Only read, search, and explore. Save all changes for after the plan is approved.
 """

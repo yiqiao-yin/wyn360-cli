@@ -1,6 +1,6 @@
 # Planning & Sub-Agents
 
-*New in v0.4.0*
+*New in v0.4.0, enhanced in v0.5.1*
 
 WYN360 CLI introduces structured planning and parallel sub-agent workers, enabling the assistant to break complex tasks into steps and parallelize research across multiple workers.
 
@@ -10,12 +10,33 @@ WYN360 CLI introduces structured planning and parallel sub-agent workers, enabli
 
 Plan mode forces the AI to think through a task before executing it. Instead of jumping straight into code changes, the assistant produces a numbered plan for your approval.
 
-### How It Works
+### How It's Triggered
 
-1. **Create** - The AI analyzes your request and produces a step-by-step plan
-2. **Review** - You see each step with the files involved
-3. **Approve/Reject** - You decide whether to proceed
-4. **Execute** - Steps are executed one at a time with progress tracking
+Plan mode works **two ways**:
+
+**Automatic (AI-initiated):** The AI has `enter_plan_mode` and `exit_plan_mode` tools. When it receives a complex task (multi-file changes, architectural decisions, unclear requirements), it proactively enters plan mode, investigates the codebase, then presents a plan for approval.
+
+**Manual (user-initiated):** Type `/plan` to check plan status, or ask the AI to plan explicitly: "Plan how to add authentication."
+
+### The Flow
+
+```
+1. AI detects complex task → calls enter_plan_mode
+2. AI investigates (reads files, searches — NO modifications)
+3. AI calls exit_plan_mode with step-by-step plan
+4. You see the plan → /plan approve or /plan reject
+5. If approved → AI executes step by step
+```
+
+### When the AI Enters Plan Mode Automatically
+
+The AI is instructed to use plan mode when ANY of these apply:
+- **New feature** requiring architectural decisions
+- **Multiple valid approaches** exist
+- **3+ files** will be modified
+- **Unclear requirements** need investigation first
+
+It will NOT enter plan mode for simple tasks (typos, one-line fixes, specific instructions).
 
 ### Commands
 
@@ -41,7 +62,9 @@ Plan mode forces the AI to think through a task before executing it. Instead of 
 ```
 You: Refactor the auth module to use JWT tokens instead of sessions
 
-WYN360: I'll create a plan for this refactoring:
+WYN360: [Calls enter_plan_mode — investigates codebase...]
+WYN360: [Reads src/auth/session.py, src/auth/middleware.py, tests/...]
+WYN360: [Calls exit_plan_mode with plan:]
 
 ## Plan: Refactor auth to JWT
 
@@ -56,7 +79,7 @@ WYN360: I'll create a plan for this refactoring:
 [ ] Step 5: Update tests
     Files: `tests/test_auth.py`, `tests/test_api.py`
 
-Awaiting approval. Use /plan approve to proceed.
+Waiting for approval. Use /plan approve or /plan reject.
 
 You: /plan approve
 WYN360: Plan approved. Starting Step 1...

@@ -152,3 +152,99 @@ class TestPlanner:
         self.planner.approve_plan()
         ctx = self.planner.get_plan_context()
         assert "executing" in ctx
+
+    def test_is_plan_mode(self):
+        assert not self.planner.is_plan_mode
+        self.planner.create_plan("Task", ["Step 1"])
+        assert self.planner.is_plan_mode
+        self.planner.approve_plan()
+        assert not self.planner.is_plan_mode
+
+    def test_planning_prompt_mentions_tools(self):
+        prompt = self.planner.get_planning_prompt()
+        assert "enter_plan_mode" in prompt
+        assert "exit_plan_mode" in prompt
+        assert "proactively" in prompt.lower()
+
+
+class TestPlanModeTools:
+    """Tests for the enter/exit plan mode AI tools."""
+
+    def setup_method(self):
+        import os
+        os.environ['CHOOSE_CLIENT'] = '1'
+        from wyn360_cli.agent import WYN360Agent
+        self.agent = WYN360Agent(api_key="test_key")
+
+    @pytest.mark.asyncio
+    async def test_enter_plan_mode(self):
+        result = await self.agent.enter_plan_mode(None, "Add authentication")
+        assert "Plan mode activated" in result
+        assert "Add authentication" in result
+        assert "Do NOT modify" in result
+
+    @pytest.mark.asyncio
+    async def test_enter_plan_mode_twice(self):
+        await self.agent.enter_plan_mode(None, "First task")
+        # Set up a plan so is_planning is True
+        self.agent.planner.create_plan("First task", ["step 1"])
+        result = await self.agent.enter_plan_mode(None, "Second task")
+        assert "Already in plan mode" in result
+
+    @pytest.mark.asyncio
+    async def test_exit_plan_mode(self):
+        await self.agent.enter_plan_mode(None, "Add auth")
+        result = await self.agent.exit_plan_mode(None, """
+1. Create auth middleware in src/middleware/auth.py
+2. Add JWT validation in src/utils/jwt.py
+3. Update routes to use middleware
+4. Write tests in tests/test_auth.py
+""")
+        assert "Plan created" in result
+        assert "approve" in result.lower()
+        assert self.agent.planner.current_plan is not None
+        assert len(self.agent.planner.current_plan.steps) == 4
+
+    @pytest.mark.asyncio
+    async def test_exit_plan_mode_extracts_files(self):
+        await self.agent.enter_plan_mode(None, "Refactor")
+        result = await self.agent.exit_plan_mode(None, """
+1. Update `src/auth.py` with new logic
+2. Modify `src/api/routes.py` endpoints
+""")
+        plan = self.agent.planner.current_plan
+        assert "src/auth.py" in plan.steps[0].files_involved
+        assert "src/api/routes.py" in plan.steps[1].files_involved
+
+    @pytest.mark.asyncio
+    async def test_exit_plan_mode_empty_steps(self):
+        await self.agent.enter_plan_mode(None, "Task")
+        result = await self.agent.exit_plan_mode(None, "")
+        assert "Error" in result
+
+    @pytest.mark.asyncio
+    async def test_full_plan_flow(self):
+        """Test the complete flow: enter -> exit -> approve -> execute."""
+        # Enter plan mode
+        await self.agent.enter_plan_mode(None, "Add logging")
+
+        # Create plan
+        await self.agent.exit_plan_mode(None, """
+1. Add logging config in src/config.py
+2. Add log calls to src/main.py
+""")
+
+        # Plan should be awaiting approval
+        assert self.agent.planner.is_planning
+        assert not self.agent.planner.is_executing
+
+        # Approve
+        self.agent.planner.approve_plan()
+        assert not self.agent.planner.is_planning
+        assert self.agent.planner.is_executing
+
+        # Advance through steps
+        self.agent.planner.advance_plan()  # completes step 1, starts step 2
+        self.agent.planner.advance_plan()  # completes step 2, plan done
+        assert self.agent.planner.current_plan.completed
+        assert len(self.agent.planner.plan_history) == 1

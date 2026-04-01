@@ -669,7 +669,10 @@ class WYN360Agent:
                 # Document readers (Phase 13.2, 13.3, 13.4)
                 self.read_excel,
                 self.read_word,
-                self.read_pdf
+                self.read_pdf,
+                # Plan mode tools (v0.5.0)
+                self.enter_plan_mode,
+                self.exit_plan_mode,
             ]
 
         self.agent = Agent(
@@ -4286,6 +4289,92 @@ You can restart the task by running the command again.
 
             error_msg = f"\n\nAn error occurred: {str(e)}"
             return error_msg
+
+    async def enter_plan_mode(self, ctx: RunContext[None], goal: str) -> str:
+        """
+        Enter plan mode for a complex task. Use this PROACTIVELY before starting
+        non-trivial implementation tasks that involve multiple files or architectural decisions.
+
+        While in plan mode, investigate the codebase (read files, search, explore) but
+        do NOT modify files. Once you understand the approach, call exit_plan_mode with your plan.
+
+        Args:
+            goal: Description of what the task aims to accomplish
+
+        Returns:
+            Confirmation that plan mode is active
+        """
+        if self.planner.is_planning:
+            return f"Already in plan mode for: {self.planner.current_plan.goal}"
+
+        if self.planner.is_executing:
+            return f"A plan is already being executed. Use /plan to check status."
+
+        # Create an empty plan - steps will be filled in by exit_plan_mode
+        self.planner.current_plan = None  # Clear any old plan
+        # Store the goal for when exit_plan_mode is called
+        self._plan_mode_goal = goal
+
+        self.performance_metrics.track_tool_call("enter_plan_mode", True)
+
+        return (
+            f"Plan mode activated for: {goal}\n\n"
+            f"You are now in plan mode. Investigate the codebase to understand the task:\n"
+            f"- Use read_file, list_files, search_files to explore\n"
+            f"- Do NOT modify any files yet\n"
+            f"- When ready, call exit_plan_mode with your step-by-step plan"
+        )
+
+    async def exit_plan_mode(self, ctx: RunContext[None], steps: str) -> str:
+        """
+        Exit plan mode and present a plan for user approval. Call this after
+        investigating the codebase and designing your implementation approach.
+
+        Args:
+            steps: Your implementation plan as a numbered list. Each line should be
+                   one step, e.g.:
+                   1. Create auth middleware in src/middleware/auth.py
+                   2. Add JWT token validation utility in src/utils/jwt.py
+                   3. Update API routes to use auth middleware
+                   4. Write tests in tests/test_auth.py
+
+        Returns:
+            The formatted plan shown to the user for approval
+        """
+        goal = getattr(self, '_plan_mode_goal', 'Implementation task')
+
+        # Parse steps from the text
+        import re
+        step_list = []
+        for line in steps.strip().split('\n'):
+            line = line.strip()
+            if not line:
+                continue
+            # Remove numbering like "1.", "1)", "- ", "* "
+            cleaned = re.sub(r'^[\d]+[.)]\s*', '', line)
+            cleaned = re.sub(r'^[-*]\s*', '', cleaned)
+            if cleaned:
+                # Try to extract file paths from the step
+                files = re.findall(r'[`]([^`]+\.\w+)[`]', cleaned)
+                if not files:
+                    files = re.findall(r'(\S+\.\w{1,4})', cleaned)
+                    files = [f for f in files if '/' in f or f.endswith('.py') or f.endswith('.ts')]
+                step_list.append({"description": cleaned, "files": files})
+
+        if not step_list:
+            return "Error: No steps provided. Please provide a numbered list of implementation steps."
+
+        # Create the plan
+        plan = self.planner.create_plan(goal, step_list)
+
+        self.performance_metrics.track_tool_call("exit_plan_mode", True)
+
+        return (
+            f"Plan created and presented to user for approval.\n\n"
+            f"{plan.to_markdown()}\n\n"
+            f"Waiting for user to run /plan approve or /plan reject.\n"
+            f"Do NOT proceed with implementation until the plan is approved."
+        )
 
     def _suggest_filename(self, code: str) -> str:
         """
