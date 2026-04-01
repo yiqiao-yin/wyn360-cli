@@ -751,10 +751,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
+  <a href="#how-its-triggered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How It Works
+        How It's Triggered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-the-ai-enters-plan-mode-automatically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the AI Enters Plan Mode Automatically
       
     </span>
   </a>
@@ -834,7 +856,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#how-it-works_1" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
         How It Works
@@ -1612,10 +1634,32 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
+  <a href="#how-its-triggered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How It Works
+        How It's Triggered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Flow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-the-ai-enters-plan-mode-automatically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the AI Enters Plan Mode Automatically
       
     </span>
   </a>
@@ -1695,7 +1739,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#how-it-works_1" class="md-nav__link">
+  <a href="#how-it-works" class="md-nav__link">
     <span class="md-ellipsis">
       
         How It Works
@@ -1787,62 +1831,75 @@
 
 
 <h1 id="planning-sub-agents">Planning &amp; Sub-Agents<a class="headerlink" href="#planning-sub-agents" title="Permanent link">&para;</a></h1>
-<p><em>New in v0.4.0</em></p>
+<p><em>New in v0.4.0, enhanced in v0.5.1</em></p>
 <p>WYN360 CLI introduces structured planning and parallel sub-agent workers, enabling the assistant to break complex tasks into steps and parallelize research across multiple workers.</p>
 <hr />
 <h2 id="plan-mode">Plan Mode<a class="headerlink" href="#plan-mode" title="Permanent link">&para;</a></h2>
 <p>Plan mode forces the AI to think through a task before executing it. Instead of jumping straight into code changes, the assistant produces a numbered plan for your approval.</p>
-<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Create</strong> - The AI analyzes your request and produces a step-by-step plan</li>
-<li><strong>Review</strong> - You see each step with the files involved</li>
-<li><strong>Approve/Reject</strong> - You decide whether to proceed</li>
-<li><strong>Execute</strong> - Steps are executed one at a time with progress tracking</li>
-</ol>
+<h3 id="how-its-triggered">How It's Triggered<a class="headerlink" href="#how-its-triggered" title="Permanent link">&para;</a></h3>
+<p>Plan mode works <strong>two ways</strong>:</p>
+<p><strong>Automatic (AI-initiated):</strong> The AI has <code>enter_plan_mode</code> and <code>exit_plan_mode</code> tools. When it receives a complex task (multi-file changes, architectural decisions, unclear requirements), it proactively enters plan mode, investigates the codebase, then presents a plan for approval.</p>
+<p><strong>Manual (user-initiated):</strong> Type <code>/plan</code> to check plan status, or ask the AI to plan explicitly: "Plan how to add authentication."</p>
+<h3 id="the-flow">The Flow<a class="headerlink" href="#the-flow" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>1. AI detects complex task → calls enter_plan_mode
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>2. AI investigates (reads files, searches — NO modifications)
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>3. AI calls exit_plan_mode with step-by-step plan
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>4. You see the plan → /plan approve or /plan reject
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>5. If approved → AI executes step by step
+</code></pre></div>
+<h3 id="when-the-ai-enters-plan-mode-automatically">When the AI Enters Plan Mode Automatically<a class="headerlink" href="#when-the-ai-enters-plan-mode-automatically" title="Permanent link">&para;</a></h3>
+<p>The AI is instructed to use plan mode when ANY of these apply:
+- <strong>New feature</strong> requiring architectural decisions
+- <strong>Multiple valid approaches</strong> exist
+- <strong>3+ files</strong> will be modified
+- <strong>Unclear requirements</strong> need investigation first</p>
+<p>It will NOT enter plan mode for simple tasks (typos, one-line fixes, specific instructions).</p>
 <h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># View current plan status</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>/plan
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Approve the current plan</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>/plan<span class="w"> </span>approve
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Reject and discard the current plan</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>/plan<span class="w"> </span>reject
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Skip the current step</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>/plan<span class="w"> </span>skip
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># Check progress</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>/plan<span class="w"> </span>status
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># View current plan status</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>/plan
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Approve the current plan</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>/plan<span class="w"> </span>approve
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># Reject and discard the current plan</span>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>/plan<span class="w"> </span>reject
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1"># Skip the current step</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>/plan<span class="w"> </span>skip
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1"># Check progress</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>/plan<span class="w"> </span>status
 </code></pre></div>
 <h3 id="example-session">Example Session<a class="headerlink" href="#example-session" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>You: Refactor the auth module to use JWT tokens instead of sessions
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>WYN360: I&#39;ll create a plan for this refactoring:
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>## Plan: Refactor auth to JWT
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>[ ] Step 1: Analyze current session-based auth implementation
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    Files: `src/auth/session.py`, `src/auth/middleware.py`
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>[ ] Step 2: Create JWT token utilities
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    Files: `src/auth/jwt_utils.py`
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>[ ] Step 3: Update authentication middleware
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    Files: `src/auth/middleware.py`
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>[ ] Step 4: Migrate user endpoints to use JWT
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    Files: `src/api/users.py`, `src/api/auth.py`
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>[ ] Step 5: Update tests
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    Files: `tests/test_auth.py`, `tests/test_api.py`
-<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
-<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>Awaiting approval. Use /plan approve to proceed.
-<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
-<a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>You: /plan approve
-<a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>WYN360: Plan approved. Starting Step 1...
-<a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
-<a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>You: /plan status
-<a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>2/5 steps completed
-<a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a>
-<a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a>You: /plan skip
-<a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>Skipped to: Step 4 - Migrate user endpoints to use JWT
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>You: Refactor the auth module to use JWT tokens instead of sessions
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>WYN360: [Calls enter_plan_mode — investigates codebase...]
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>WYN360: [Reads src/auth/session.py, src/auth/middleware.py, tests/...]
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>WYN360: [Calls exit_plan_mode with plan:]
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>## Plan: Refactor auth to JWT
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>[ ] Step 1: Analyze current session-based auth implementation
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    Files: `src/auth/session.py`, `src/auth/middleware.py`
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>[ ] Step 2: Create JWT token utilities
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>    Files: `src/auth/jwt_utils.py`
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>[ ] Step 3: Update authentication middleware
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>    Files: `src/auth/middleware.py`
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>[ ] Step 4: Migrate user endpoints to use JWT
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    Files: `src/api/users.py`, `src/api/auth.py`
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>[ ] Step 5: Update tests
+<a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>    Files: `tests/test_auth.py`, `tests/test_api.py`
+<a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+<a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>Waiting for approval. Use /plan approve or /plan reject.
+<a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>
+<a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>You: /plan approve
+<a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>WYN360: Plan approved. Starting Step 1...
+<a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a>
+<a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>You: /plan status
+<a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a>2/5 steps completed
+<a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a>
+<a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a>You: /plan skip
+<a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a>Skipped to: Step 4 - Migrate user endpoints to use JWT
 </code></pre></div>
 <h3 id="plan-display-format">Plan Display Format<a class="headerlink" href="#plan-display-format" title="Permanent link">&para;</a></h3>
 <p>Each step shows:
@@ -1889,28 +1946,28 @@
 </tr>
 </tbody>
 </table>
-<h3 id="how-it-works_1">How It Works<a class="headerlink" href="#how-it-works_1" title="Permanent link">&para;</a></h3>
+<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
 <p>When the AI needs to investigate multiple areas simultaneously, it spawns worker agents:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>You: There&#39;s a bug in both the auth and payment modules
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>WYN360: Let me investigate both areas in parallel.
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>[Spawns worker: &quot;Investigate auth module&quot;]
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>[Spawns worker: &quot;Investigate payment module&quot;]
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>Workers: 2 total, 2 completed, 0 failed | Duration: 3200ms
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>### Investigate auth module
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>Found null pointer in src/auth/validate.py:42. The user field
-<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>is undefined when sessions expire...
-<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
-<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>### Investigate payment module
-<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>Found race condition in src/payment/charge.py:89. Two concurrent
-<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>requests can double-charge...
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>You: There&#39;s a bug in both the auth and payment modules
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>WYN360: Let me investigate both areas in parallel.
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>[Spawns worker: &quot;Investigate auth module&quot;]
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>[Spawns worker: &quot;Investigate payment module&quot;]
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>Workers: 2 total, 2 completed, 0 failed | Duration: 3200ms
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>### Investigate auth module
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>Found null pointer in src/auth/validate.py:42. The user field
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>is undefined when sessions expire...
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>### Investigate payment module
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>Found race condition in src/payment/charge.py:89. Two concurrent
+<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>requests can double-charge...
 </code></pre></div>
 <h3 id="commands_1">Commands<a class="headerlink" href="#commands_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Show all sub-agent tasks and their status</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>/workers
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Show all sub-agent tasks and their status</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>/workers
 </code></pre></div>
 <p>The <code>/workers</code> command displays a table with:</p>
 <table>
@@ -1951,9 +2008,9 @@
 <li><strong>Verification</strong> can run alongside implementation on different files</li>
 </ul>
 <h3 id="task-lifecycle">Task Lifecycle<a class="headerlink" href="#task-lifecycle" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pending → running → completed
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>                  → failed
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>                  → killed
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pending → running → completed
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>                  → failed
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>                  → killed
 </code></pre></div>
 <ul>
 <li><strong>Completed</strong>: Worker finished successfully, results available</li>
