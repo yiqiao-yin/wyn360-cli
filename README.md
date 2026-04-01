@@ -303,26 +303,31 @@ WYN360: I'll create a Streamlit app for you...
 - 🎯 **Three Processing Modes** - skip (default), describe (alt text only), vision (full AI processing)
 - ⚡ **Batch Processing** - Efficient handling of documents with multiple images
 
-### Autonomous Vision-Based Browsing (v0.3.52 - v0.3.56) 🆕
+### Autonomous Vision-Based Browsing (v0.3.52 - v0.3.56)
 - 🤖 **Fully Autonomous** - Agent navigates websites and completes tasks without manual intervention
 - 👁️ **Vision-Powered** - Uses Claude Vision API to "see" and understand web pages
 - 🎯 **Multi-Step Tasks** - Handles complex workflows (search, filter, compare, extract)
 - 🔗 **Tool Chaining** - Seamlessly integrates with WebSearchTool and login_to_website
 - 🔒 **Authenticated Browsing** - Works with saved login sessions
-- 📊 **Structured Extraction** - Returns clean, formatted data from websites
-- 🛡️ **Error Resilient** - Automatic retry logic and timeout handling
-- 💡 **Smart Decision Making** - Handles popups, loading states, forms, and navigation
 
-**Example:**
-```
-You: "Browse Amazon and find the cheapest wireless mouse under $20 with good reviews"
+### Agentic Features (v0.4.0) 🆕
+- 🧠 **[Persistent Memory](https://yiqiao-yin.github.io/wyn360-cli/docs/features/agentic-memory)** - Cross-session memory with YAML frontmatter files and keyword relevance selection
+- 🤖 **[Sub-Agent Workers](https://yiqiao-yin.github.io/wyn360-cli/docs/features/planning-and-agents)** - Spawn parallel pydantic-ai agents for concurrent research and verification
+- 📋 **[Plan Mode](https://yiqiao-yin.github.io/wyn360-cli/docs/features/planning-and-agents)** - AI proactively enters plan mode for complex tasks, presents step-by-step plans for approval
+- 🔄 **[Token Budget Auto-Continue](https://yiqiao-yin.github.io/wyn360-cli/docs/features/hooks-and-budget)** - Automatically continues responses cut off by max_tokens
+- ⚡ **[Extensible Skills](https://yiqiao-yin.github.io/wyn360-cli/docs/features/agentic-memory)** - User-defined slash commands via YAML files in `~/.wyn360/skills/`
+- 🔧 **[Hook System](https://yiqiao-yin.github.io/wyn360-cli/docs/features/hooks-and-budget)** - Pre/post response hooks with built-in safety checks (runs automatically)
 
-WYN360: [Launches browser, searches, filters, compares]
-✅ Task Completed Successfully!
-Result: Logitech M185 - $14.99, 4.5 stars, 15,234 reviews
-```
-
-See **[docs/AUTONOMOUS_BROWSING.md](docs/AUTONOMOUS_BROWSING.md)** for complete guide, examples, and API reference.
+### Advanced Agentic Features (v0.5.0) 🆕
+- 💤 **[Dream System](https://yiqiao-yin.github.io/wyn360-cli/docs/features/dream-and-compaction)** - Background memory consolidation reviews recent sessions automatically
+- 📦 **[Context Compaction](https://yiqiao-yin.github.io/wyn360-cli/docs/features/dream-and-compaction)** - Auto-drops old messages when conversation exceeds 50 messages
+- ⌨️ **[Vim Mode](https://yiqiao-yin.github.io/wyn360-cli/docs/features/vim-voice-buddy)** - Vi-style editing in the terminal (toggle with `/vim`)
+- 🎙️ **[Voice Input](https://yiqiao-yin.github.io/wyn360-cli/docs/features/vim-voice-buddy)** - Speech-to-text via Google (free) or OpenAI Whisper
+- 🐱 **[Buddy Companion](https://yiqiao-yin.github.io/wyn360-cli/docs/features/vim-voice-buddy)** - Virtual pet with species, rarity, personality, and event reactions
+- ⏰ **[Cron Agents](https://yiqiao-yin.github.io/wyn360-cli/docs/features/cron-plugins-lsp)** - Schedule recurring background tasks (e.g., monitor CI every 5 minutes)
+- 🔌 **[Plugin System](https://yiqiao-yin.github.io/wyn360-cli/docs/features/cron-plugins-lsp)** - Install/create plugins in `~/.wyn360/plugins/` with YAML manifests
+- 🔍 **[LSP Diagnostics](https://yiqiao-yin.github.io/wyn360-cli/docs/features/cron-plugins-lsp)** - Run pyright/ruff diagnostics with `/diagnostics`
+- ⏪ **[Rewind](https://yiqiao-yin.github.io/wyn360-cli/docs/features/cron-plugins-lsp)** - Undo mistakes by reverting to previous conversation states
 
 ## 🎮 Usage Examples
 
@@ -500,20 +505,33 @@ to the backend services.
 | `Ctrl+Enter` | Add a new line (multi-line input) |
 | `exit` or `quit` | End the session |
 
-### Slash Commands (v0.2.8+)
+### Slash Commands
 
-Slash commands provide quick access to context management and model selection features:
-
-| Command | Description | Example |
+| Command | Description | Version |
 |---------|-------------|---------|
-| `/clear` | Clear conversation history and reset token counters | `/clear` |
-| `/history` | Display conversation history in a table | `/history` |
-| `/save <file>` | Save current session to JSON file | `/save my_session.json` |
-| `/load <file>` | Load session from JSON file | `/load my_session.json` |
-| `/tokens` | Show detailed token usage statistics and costs | `/tokens` |
-| `/model [name]` | Show current model info or switch models (v0.3.0) | `/model haiku` |
-| `/config` | Show current configuration (v0.3.1) | `/config` |
-| `/help` | Display help message with all commands | `/help` |
+| `/clear` | Clear conversation history and reset counters | v0.2.8 |
+| `/history` | Display conversation history | v0.2.8 |
+| `/save <file>` | Save session to JSON | v0.2.8 |
+| `/load <file>` | Load session from JSON | v0.2.8 |
+| `/tokens` | Show token usage and costs | v0.2.8 |
+| `/model [name]` | Show/switch model (haiku/sonnet/opus) | v0.3.0 |
+| `/config` | Show current configuration | v0.3.1 |
+| `/help` | Display help | v0.2.8 |
+| `/memory [list\|save\|search\|delete]` | Manage persistent memories | v0.4.0 |
+| `/plan [approve\|reject\|skip\|status]` | Manage execution plans | v0.4.0 |
+| `/skills` | List custom skills | v0.4.0 |
+| `/hooks` | Show registered hooks and stats | v0.4.0 |
+| `/workers` | Show sub-agent task status | v0.4.0 |
+| `/budget` | Show token budget stats | v0.4.0 |
+| `/dream` | Show dream consolidation status | v0.5.0 |
+| `/compact` | Show context compaction stats | v0.5.0 |
+| `/vim` | Toggle vim editing mode | v0.5.0 |
+| `/voice` | Toggle voice input | v0.5.0 |
+| `/buddy` | Toggle virtual companion | v0.5.0 |
+| `/cron [add\|delete\|pause\|resume]` | Manage scheduled jobs | v0.5.0 |
+| `/plugins [create\|install\|uninstall\|reload]` | Manage plugins | v0.5.0 |
+| `/diagnostics` | Run pyright/ruff diagnostics | v0.5.0 |
+| `/rewind [undo\|<id>]` | Revert conversation state | v0.5.0 |
 
 **Example Usage:**
 ```
@@ -541,12 +559,18 @@ You: /load my_analysis_session.json
 
 ## 📚 Documentation
 
-For comprehensive documentation:
+**Full documentation:** https://yiqiao-yin.github.io/wyn360-cli/docs/
 
-- **[USE_CASES.md](docs/USE_CASES.md)** - Detailed use cases, examples, and workflows
-- **[COST.md](docs/COST.md)** - Token usage, pricing, cost optimization, and `max_tokens` configuration
-- **[SYSTEM.md](docs/SYSTEM.md)** - System architecture, design principles, and technical details
-- **[ROADMAP.md](docs/ROADMAP.md)** - Feature roadmap and planned enhancements
+Key pages:
+- **[Features Overview](https://yiqiao-yin.github.io/wyn360-cli/docs/features/overview)** - All features with comparisons
+- **[Memory & Skills](https://yiqiao-yin.github.io/wyn360-cli/docs/features/agentic-memory)** - Persistent memory and custom commands
+- **[Planning & Sub-Agents](https://yiqiao-yin.github.io/wyn360-cli/docs/features/planning-and-agents)** - Plan mode and parallel workers
+- **[Hooks & Token Budget](https://yiqiao-yin.github.io/wyn360-cli/docs/features/hooks-and-budget)** - Pipeline hooks and auto-continue
+- **[Dream & Compaction](https://yiqiao-yin.github.io/wyn360-cli/docs/features/dream-and-compaction)** - Background memory consolidation
+- **[Vim, Voice & Buddy](https://yiqiao-yin.github.io/wyn360-cli/docs/features/vim-voice-buddy)** - Input modes and companion
+- **[Cron, Plugins & LSP](https://yiqiao-yin.github.io/wyn360-cli/docs/features/cron-plugins-lsp)** - Scheduled agents, plugins, diagnostics, rewind
+- **[System Architecture](https://yiqiao-yin.github.io/wyn360-cli/docs/architecture/system)** - Architecture overview with diagrams
+- **[Commands Reference](https://yiqiao-yin.github.io/wyn360-cli/docs/usage/commands)** - All slash commands
 
 ## 🛠️ Development & Testing
 
@@ -613,11 +637,20 @@ poetry run pytest tests/ --cov=wyn360_cli --cov-report=html
 ```
 tests/
 ├── __init__.py
-├── test_agent.py          # Agent and tool tests (46 tests)
+├── test_agent.py          # Agent and tool tests (93 tests)
 ├── test_cli.py            # CLI and slash command tests (33 tests)
 ├── test_config.py         # Configuration tests (25 tests)
-└── test_utils.py          # Utility function tests (29 tests)
-                           # Total: 133 tests
+├── test_utils.py          # Utility function tests (29 tests)
+├── test_memory.py         # Memory system tests (14 tests)
+├── test_subagent.py       # Sub-agent worker tests (14 tests)
+├── test_planner.py        # Plan mode tests (26 tests)
+├── test_token_budget.py   # Token budget tests (12 tests)
+├── test_skills.py         # Skills system tests (13 tests)
+├── test_hooks.py          # Hook system tests (20 tests)
+├── test_dream.py          # Dream consolidation tests (11 tests)
+└── test_v050_features.py  # Compaction, vim, voice, buddy, cron,
+                           # plugins, LSP, rewind tests (62 tests)
+                           # Total: 333+ tests
 ```
 
 ### Expected Output
@@ -906,5 +939,5 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Current Version:** 0.3.80
-**Last Updated:** November 24, 2025
+**Current Version:** 0.5.3
+**Last Updated:** April 2026
