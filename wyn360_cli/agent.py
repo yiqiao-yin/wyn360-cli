@@ -3,6 +3,7 @@
 import os
 import sys
 import time
+import asyncio
 import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional, Tuple, Annotated
@@ -4254,6 +4255,15 @@ You can restart the task by running the command again.
                 self.conversation_history = self.compaction_manager.compact_pydantic_messages(
                     self.conversation_history
                 )
+
+            # Auto-dream: check if background memory consolidation should run
+            if self.dream_manager.should_dream():
+                try:
+                    asyncio.create_task(
+                        self.dream_manager.dream(self.model, self.memory_manager)
+                    )
+                except Exception:
+                    pass  # Dream failure should never block the session
 
             # Check if response contains code blocks and extract them
             code_blocks = extract_code_blocks(response_text)
