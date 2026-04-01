@@ -807,10 +807,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
+  <a href="#how-its-triggered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How It Works
+        How It's Triggered
       
     </span>
   </a>
@@ -818,10 +818,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-it-extracts" class="md-nav__link">
+  <a href="#what-happens-during-a-dream" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What It Extracts
+        What Happens During a Dream
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-will-my-first-dream-happen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When Will My First Dream Happen?
       
     </span>
   </a>
@@ -840,10 +851,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#dream-status-output" class="md-nav__link">
+  <a href="#example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dream Status Output
+        Example
       
     </span>
   </a>
@@ -868,10 +879,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-it-works_1" class="md-nav__link">
+  <a href="#how-its-triggered_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How It Works
+        How It's Triggered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-kept-vs-dropped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Kept vs Dropped
       
     </span>
   </a>
@@ -890,10 +912,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#compaction-stats" class="md-nav__link">
+  <a href="#example_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compaction Stats
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-i-lose-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do I Lose Information?
       
     </span>
   </a>
@@ -1557,10 +1590,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
+  <a href="#how-its-triggered" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How It Works
+        How It's Triggered
       
     </span>
   </a>
@@ -1568,10 +1601,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#what-it-extracts" class="md-nav__link">
+  <a href="#what-happens-during-a-dream" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What It Extracts
+        What Happens During a Dream
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-will-my-first-dream-happen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When Will My First Dream Happen?
       
     </span>
   </a>
@@ -1590,10 +1634,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#dream-status-output" class="md-nav__link">
+  <a href="#example" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Dream Status Output
+        Example
       
     </span>
   </a>
@@ -1618,10 +1662,21 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#how-it-works_1" class="md-nav__link">
+  <a href="#how-its-triggered_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        How It Works
+        How It's Triggered
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-gets-kept-vs-dropped" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Gets Kept vs Dropped
       
     </span>
   </a>
@@ -1640,10 +1695,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#compaction-stats" class="md-nav__link">
+  <a href="#example_1" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Compaction Stats
+        Example
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#do-i-lose-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Do I Lose Information?
       
     </span>
   </a>
@@ -1679,56 +1745,102 @@
 <h1 id="dream-context-compaction">Dream &amp; Context Compaction<a class="headerlink" href="#dream-context-compaction" title="Permanent link">&para;</a></h1>
 <p><em>New in v0.5.0</em></p>
 <h2 id="dream-auto-memory-consolidation">Dream (Auto Memory Consolidation)<a class="headerlink" href="#dream-auto-memory-consolidation" title="Permanent link">&para;</a></h2>
-<p>The Dream system is a background process that automatically reviews recent conversation sessions and extracts useful information into persistent memories - no manual <code>/memory save</code> needed.</p>
-<h3 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h3>
+<p>The Dream system <strong>runs automatically in the background</strong> — you don't need to trigger it. It reviews your recent conversation sessions and extracts useful information into persistent memories, so you never have to manually <code>/memory save</code>.</p>
+<h3 id="how-its-triggered">How It's Triggered<a class="headerlink" href="#how-its-triggered" title="Permanent link">&para;</a></h3>
+<p><strong>Fully automatic.</strong> After every AI response, the system checks three gates:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>You chat normally
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>  → AI responds
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    → Dream check runs silently:
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>      1. Has it been 24+ hours since last dream?  → if no, skip
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>      2. Have there been 3+ new sessions?          → if no, skip
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>      3. Is another dream already running?          → if yes, skip
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>      → All three pass? → Dream starts in background
+</code></pre></div>
+<p>The dream runs as a <strong>background task</strong> — it doesn't block your session. You keep chatting normally while it consolidates memories behind the scenes.</p>
+<h3 id="what-happens-during-a-dream">What Happens During a Dream<a class="headerlink" href="#what-happens-during-a-dream" title="Permanent link">&para;</a></h3>
 <ol>
-<li><strong>Time gate</strong>: Waits at least 24 hours since the last dream</li>
-<li><strong>Session gate</strong>: Requires 3+ new sessions since the last dream</li>
-<li><strong>Lock gate</strong>: Ensures no other dream is running</li>
-<li>When all gates pass, a background agent reviews session transcripts and saves extracted memories</li>
-</ol>
-<h3 id="what-it-extracts">What It Extracts<a class="headerlink" href="#what-it-extracts" title="Permanent link">&para;</a></h3>
-<ul>
+<li>Gathers your recent session transcripts (up to 10)</li>
+<li>A background AI agent reads through them</li>
+<li>Extracts useful patterns into memory files:</li>
 <li>User preferences and coding style</li>
 <li>Project architecture decisions</li>
 <li>Feedback (what worked, what was corrected)</li>
 <li>References to external tools and resources</li>
-</ul>
+<li>Saves them to <code>~/.wyn360/memory/</code> automatically</li>
+</ol>
+<h3 id="when-will-my-first-dream-happen">When Will My First Dream Happen?<a class="headerlink" href="#when-will-my-first-dream-happen" title="Permanent link">&para;</a></h3>
+<p>After you've:
+- Used WYN360 for at least <strong>24 hours</strong> (calendar time, not usage time)
+- Completed at least <strong>3 separate sessions</strong> (start wyn360, chat, exit = 1 session)</p>
+<p>If you just installed WYN360 today, you won't see a dream until tomorrow at the earliest.</p>
 <h3 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>/dream<span class="w">          </span><span class="c1"># Show dream status</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>/dream<span class="w"> </span>now<span class="w">      </span><span class="c1"># Trigger a dream consolidation</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>/dream<span class="w">          </span><span class="c1"># Check dream status (when was last dream, how many sessions pending)</span>
 </code></pre></div>
-<h3 id="dream-status-output">Dream Status Output<a class="headerlink" href="#dream-status-output" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>Dream (Memory Consolidation) Status:
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>  Enabled: True
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  Total dreams: 3
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  Sessions reviewed: 15
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  Hours since last: 26.4
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>  Min hours between: 24
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  Min sessions needed: 3
+<h3 id="example">Example<a class="headerlink" href="#example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>/dream
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Dream (Memory Consolidation) Status:
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  Enabled: True
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  Total dreams: 3
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  Sessions reviewed: 15
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  Hours since last: 26.4
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  Min hours between: 24
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>  Min sessions needed: 3
 </code></pre></div>
+<p>If you see "Hours since last: 26.4" and "Min sessions needed: 3" with 3+ sessions, the next dream will trigger automatically on your next message.</p>
 <hr />
 <h2 id="context-compaction">Context Compaction<a class="headerlink" href="#context-compaction" title="Permanent link">&para;</a></h2>
-<p>When conversations grow long, older messages are automatically compacted to free up context window space while preserving essential information.</p>
-<h3 id="how-it-works_1">How It Works<a class="headerlink" href="#how-it-works_1" title="Permanent link">&para;</a></h3>
-<ul>
-<li><strong>Trigger</strong>: When conversation exceeds 50 messages (configurable)</li>
-<li><strong>Action</strong>: Drops oldest messages, keeping the 10 most recent</li>
-<li><strong>LLM summarization</strong> (optional): Summarizes old messages into a compact form using a side-call</li>
-<li><strong>Result</strong>: Longer conversations without losing critical context</li>
-</ul>
+<p>Context compaction also <strong>runs automatically</strong> — you don't trigger it. When your conversation gets too long, old messages are silently dropped to keep the context window fresh.</p>
+<h3 id="how-its-triggered_1">How It's Triggered<a class="headerlink" href="#how-its-triggered_1" title="Permanent link">&para;</a></h3>
+<p><strong>Fully automatic.</strong> After every AI response:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>AI responds
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  → System checks: are there more than 50 messages in history?
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    → Yes → silently drop oldest messages, keep 10 most recent
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    → No  → do nothing
+</code></pre></div>
+<p>You'll never notice it happening. Your conversation just keeps working without hitting context limits.</p>
+<h3 id="what-gets-kept-vs-dropped">What Gets Kept vs Dropped<a class="headerlink" href="#what-gets-kept-vs-dropped" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Kept (always)</th>
+<th>Dropped (when over 50 messages)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Your 10 most recent messages</td>
+<td>Older messages</td>
+</tr>
+<tr>
+<td>All recent AI responses</td>
+<td>Early conversation turns</td>
+</tr>
+<tr>
+<td>Recent tool calls and results</td>
+<td>Old tool outputs</td>
+</tr>
+</tbody>
+</table>
 <h3 id="commands_1">Commands<a class="headerlink" href="#commands_1" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>/compact<span class="w">        </span><span class="c1"># Show compaction statistics</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>/compact<span class="w">        </span><span class="c1"># Check compaction statistics</span>
 </code></pre></div>
-<h3 id="compaction-stats">Compaction Stats<a class="headerlink" href="#compaction-stats" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>Context Compaction Status:
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>  Enabled: True
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>  Total compactions: 2
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>  Messages compacted: 35
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>  Tokens saved (est): 12,500
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>  Max messages: 50
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>  Preserve recent: 10
+<h3 id="example_1">Example<a class="headerlink" href="#example_1" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>/compact
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Context Compaction Status:
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  Enabled: True
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  Total compactions: 2
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  Messages compacted: 35
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  Tokens saved (est): 12,500
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>  Max messages: 50
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  Preserve recent: 10
 </code></pre></div>
+<h3 id="do-i-lose-information">Do I Lose Information?<a class="headerlink" href="#do-i-lose-information" title="Permanent link">&para;</a></h3>
+<p>Old messages are dropped from the active context, but:
+- The <strong>Dream system</strong> may have already extracted important info into persistent memories
+- Your <strong>session files</strong> still contain the full conversation if you saved them
+- The AI won't remember dropped messages in the current session, but memories persist across sessions</p>
 <hr />
 <p><strong>Next:</strong> <a href="../vim-voice-buddy/">Vim, Voice &amp; Buddy</a> | <a href="../../usage/commands/">Commands Reference</a></p>
 
