@@ -12,6 +12,10 @@ This document provides a detailed overview of the WYN360 CLI system architecture
 WYN360 CLI is built on a modular, layered architecture with six main layers. The v0.4.0 and v0.5.0 releases added three new architectural layers (Pipeline, Agentic, State Management) on top of the original three (UI, Agent, Tools).
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 graph TB
     subgraph "User Interface Layer"
         CLI[CLI Interface]
@@ -79,12 +83,36 @@ graph TB
     Dream --> Memory
     Cron --> Agent
 
-    style Agent fill:#e1f5ff
-    style Model fill:#fff3e0
-    style PreHook fill:#f3e5f5
-    style PostHook fill:#f3e5f5
-    style Memory fill:#e8f5e9
-    style Dream fill:#fff9c4
+    style CLI fill:#e3f2fd
+    style Slash fill:#e3f2fd
+    style Vim fill:#e3f2fd
+    style Voice fill:#e3f2fd
+    style Buddy fill:#e3f2fd
+    style PreHook fill:#bbdefb
+    style PostHook fill:#bbdefb
+    style Budget fill:#bbdefb
+    style Agent fill:#90caf9
+    style Model fill:#90caf9
+    style Prompt fill:#90caf9
+    style Planner fill:#64b5f6
+    style SubAgent fill:#64b5f6
+    style Dream fill:#64b5f6
+    style Cron fill:#64b5f6
+    style Files fill:#42a5f5
+    style Git fill:#42a5f5
+    style Web fill:#42a5f5
+    style GitHub fill:#42a5f5
+    style Browser fill:#42a5f5
+    style Docs fill:#42a5f5
+    style LSP fill:#42a5f5
+    style PlanTools fill:#42a5f5
+    style Memory fill:#1e88e5,color:#fff
+    style Rewind fill:#1e88e5,color:#fff
+    style Compact fill:#1e88e5,color:#fff
+    style Skills fill:#1e88e5,color:#fff
+    style Plugins fill:#1e88e5,color:#fff
+    style Config fill:#1e88e5,color:#fff
+    style Sessions fill:#1e88e5,color:#fff
 ```
 
 ---
@@ -115,6 +143,10 @@ User types message (or speaks via /voice)
 Middleware that processes every message before and after the AI sees it. Runs automatically on every turn.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 graph LR
     Input[User Message] --> Pre[Pre-Query Hooks]
     Pre --> Agent[Agent]
@@ -124,9 +156,13 @@ graph LR
     Continue --> Agent
     Budget -->|Complete| Output[Display Response]
 
-    style Pre fill:#f3e5f5
-    style Post fill:#f3e5f5
-    style Budget fill:#fff9c4
+    style Input fill:#e3f2fd
+    style Pre fill:#bbdefb
+    style Agent fill:#90caf9
+    style Post fill:#64b5f6
+    style Budget fill:#42a5f5,color:#fff
+    style Continue fill:#42a5f5,color:#fff
+    style Output fill:#1e88e5,color:#fff
 ```
 
 | Component | Module | Trigger | Purpose |
@@ -157,6 +193,10 @@ The core orchestrator that routes between the LLM and tools.
 Autonomous subsystems that operate independently or in parallel.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 graph TB
     Agent[WYN360Agent] --> Planner
     Agent --> SubAgent
@@ -182,8 +222,21 @@ graph TB
         Cron[CronManager] --> Jobs[Scheduled Jobs]
     end
 
-    style Planner fill:#e1f5ff
-    style Dream fill:#fff9c4
+    style Agent fill:#e3f2fd
+    style Planner fill:#bbdefb
+    style Investigate fill:#90caf9
+    style Exit fill:#90caf9
+    style Approve fill:#64b5f6
+    style Execute fill:#64b5f6
+    style SubAgent fill:#bbdefb
+    style W1 fill:#90caf9
+    style W2 fill:#90caf9
+    style W3 fill:#90caf9
+    style Dream fill:#42a5f5,color:#fff
+    style Consolidate fill:#42a5f5,color:#fff
+    style SaveMem fill:#1e88e5,color:#fff
+    style Cron fill:#42a5f5,color:#fff
+    style Jobs fill:#1e88e5,color:#fff
 ```
 
 | Component | Module | Trigger | Purpose |
@@ -214,6 +267,10 @@ Functions the AI can call to interact with the filesystem, web, and external ser
 Persistent state management across sessions.
 
 ```mermaid
+---
+config:
+  layout: elk
+---
 graph LR
     subgraph "~/.wyn360/"
         Memory["memory/<br/>MEMORY.md + topic files"]
@@ -231,9 +288,16 @@ graph LR
         History["Conversation History"]
     end
 
-    style Memory fill:#e8f5e9
-    style Dream fill:#fff9c4
-    style Rewind fill:#e1f5ff
+    style Memory fill:#e3f2fd
+    style Sessions fill:#bbdefb
+    style Plugins fill:#90caf9
+    style Skills fill:#90caf9
+    style Dream fill:#64b5f6
+    style Cache fill:#bbdefb
+    style Creds fill:#42a5f5,color:#fff
+    style Rewind fill:#64b5f6
+    style Compact fill:#42a5f5,color:#fff
+    style History fill:#1e88e5,color:#fff
 ```
 
 | Component | Module | Storage | Purpose |
