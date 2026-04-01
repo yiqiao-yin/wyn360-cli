@@ -47,6 +47,15 @@ from .planner import Planner
 from .token_budget import TokenBudgetManager
 from .skills import SkillRegistry, Skill
 from .hooks import HookManager, HookPoint, HookContext
+from .dream import DreamManager
+from .compaction import CompactionManager
+from .vim_mode import VimModeManager
+from .voice import VoiceInputManager
+from .buddy import BuddyManager
+from .cron_agent import CronManager
+from .plugin_system import PluginManager
+from .lsp_client import LSPClient
+from .rewind import RewindManager
 # Import DOM-first browser automation tools
 from .tools.browser import (
     browser_tools,
@@ -426,6 +435,34 @@ class WYN360Agent:
         # Hook system (pre/post response processing)
         self.hook_manager = HookManager()
         self.hook_manager.register_builtin_hooks()
+
+        # Dream system (background memory consolidation)
+        self.dream_manager = DreamManager()
+
+        # Context compaction (auto-summarize old messages)
+        self.compaction_manager = CompactionManager()
+
+        # Vim mode (vi keybindings)
+        self.vim_mode = VimModeManager()
+
+        # Voice input (speech-to-text)
+        self.voice_input = VoiceInputManager()
+
+        # Buddy/Companion (virtual pet)
+        self.buddy_manager = BuddyManager()
+
+        # Cron agents (scheduled tasks)
+        self.cron_manager = CronManager()
+
+        # Plugin system
+        self.plugin_manager = PluginManager()
+        self.plugin_manager.load_all()
+
+        # LSP client (language server diagnostics)
+        self.lsp_client = LSPClient()
+
+        # Rewind (conversation state snapshots)
+        self.rewind_manager = RewindManager()
 
         # Browser use / website fetching (Phase 12.1, 12.2)
         if config and config.browser_use_cache_enabled and HAS_CRAWL4AI:
@@ -4200,6 +4237,20 @@ You can restart the task by running the command again.
             post_result = await self.hook_manager.execute(HookPoint.POST_RESPONSE, post_ctx)
             if post_result.modified_response:
                 response_text = post_result.modified_response
+
+            # Take rewind snapshot
+            self.rewind_manager.take_snapshot(
+                self.conversation_history,
+                label=user_message[:50],
+                input_tokens=self.total_input_tokens,
+                output_tokens=self.total_output_tokens,
+            )
+
+            # Auto-compact if history is too long
+            if self.compaction_manager.should_compact(len(self.conversation_history)):
+                self.conversation_history = self.compaction_manager.compact_pydantic_messages(
+                    self.conversation_history
+                )
 
             # Check if response contains code blocks and extract them
             code_blocks = extract_code_blocks(response_text)

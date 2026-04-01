@@ -13,6 +13,7 @@ from .agent import WYN360Agent
 from .config import load_config, get_user_config_path, get_project_config_path
 from .planner import PlanStep
 from .subagent import TaskType
+from .cron_agent import parse_interval
 import shutil
 
 # Get terminal width, with fallback to 120 if detection fails
@@ -969,6 +970,208 @@ def handle_slash_command(command: str, agent: WYN360Agent) -> tuple[bool, str]:
         ]
         return True, "\n".join(lines)
 
+    # ── Dream commands ──
+
+    elif cmd == "dream":
+        status = agent.dream_manager.get_status()
+        if arg and arg.strip() == "now":
+            return True, "Dream consolidation will run in the background after this response."
+        lines = [
+            "Dream (Memory Consolidation) Status:",
+            f"  Enabled: {status['enabled']}",
+            f"  Total dreams: {status['total_dreams']}",
+            f"  Sessions reviewed: {status['sessions_reviewed']}",
+            f"  Hours since last: {status['hours_since_last']}",
+            f"  Min hours between: {status['min_hours']}",
+            f"  Min sessions needed: {status['min_sessions']}",
+        ]
+        return True, "\n".join(lines)
+
+    # ── Compact commands ──
+
+    elif cmd == "compact":
+        stats = agent.compaction_manager.get_stats()
+        lines = [
+            "Context Compaction Status:",
+            f"  Enabled: {stats['enabled']}",
+            f"  Total compactions: {stats['total_compactions']}",
+            f"  Messages compacted: {stats['messages_compacted']}",
+            f"  Tokens saved (est): {stats['tokens_saved_estimate']:,}",
+            f"  Max messages: {stats['max_messages']}",
+            f"  Preserve recent: {stats['preserve_recent']}",
+        ]
+        return True, "\n".join(lines)
+
+    # ── Vim mode ──
+
+    elif cmd == "vim":
+        enabled = agent.vim_mode.toggle()
+        return True, f"Vim mode {'enabled' if enabled else 'disabled'}. Restart prompt for full effect."
+
+    # ── Voice commands ──
+
+    elif cmd == "voice":
+        if not agent.voice_input.is_available:
+            return True, "Voice input unavailable. Install: pip install SpeechRecognition pyaudio"
+        if arg and arg.strip() == "status":
+            status = agent.voice_input.get_status()
+            lines = [f"  {k}: {v}" for k, v in status.items()]
+            return True, "Voice Status:\n" + "\n".join(lines)
+        enabled = agent.voice_input.toggle()
+        return True, f"Voice input {'enabled' if enabled else 'disabled'}."
+
+    # ── Buddy commands ──
+
+    elif cmd == "buddy":
+        if arg and arg.strip() == "status":
+            status = agent.buddy_manager.get_status()
+            if status.get("companion"):
+                c = status["companion"]
+                return True, (
+                    f"Your companion: {status['display_name']}\n"
+                    f"  Rarity: {c['rarity']}\n"
+                    f"  Personality: {c['personality']}"
+                )
+            return True, "Buddy is disabled. Use /buddy to enable."
+        enabled = agent.buddy_manager.toggle()
+        if enabled:
+            greeting = agent.buddy_manager.get_greeting()
+            return True, f"Buddy enabled!\n{greeting}"
+        return True, "Buddy disabled."
+
+    # ── Cron commands ──
+
+    elif cmd == "cron":
+        if not arg:
+            jobs = agent.cron_manager.list_jobs()
+            if not jobs:
+                return True, "No cron jobs. Use: /cron add <interval> <name> | <prompt>"
+            from rich.table import Table
+            table = Table(title="Scheduled Jobs", show_lines=True)
+            table.add_column("ID", style="cyan", width=14)
+            table.add_column("Name", style="white", width=20)
+            table.add_column("Interval", style="yellow", width=8)
+            table.add_column("Runs", style="magenta", width=6)
+            table.add_column("Status", style="green", width=8)
+            for j in jobs:
+                table.add_row(j.id, j.name, j.interval_display, str(j.run_count),
+                              "active" if j.enabled else "paused")
+            console.print(table)
+            return True, ""
+
+        cron_parts = arg.split(maxsplit=1)
+        cron_cmd = cron_parts[0].lower()
+        cron_arg = cron_parts[1] if len(cron_parts) > 1 else ""
+
+        if cron_cmd == "add":
+            try:
+                parts = cron_arg.split("|", 1)
+                header = parts[0].strip().split(maxsplit=1)
+                interval = header[0]
+                name = header[1] if len(header) > 1 else "unnamed"
+                prompt = parts[1].strip() if len(parts) > 1 else name
+                job = agent.cron_manager.create_job(name, prompt, interval)
+                return True, f"Created cron job '{name}' (every {job.interval_display}): {job.id}"
+            except (ValueError, IndexError) as e:
+                return True, f"Usage: /cron add <interval> <name> | <prompt>\nError: {e}"
+
+        elif cron_cmd == "delete":
+            if agent.cron_manager.delete_job(cron_arg.strip()):
+                return True, f"Deleted cron job: {cron_arg.strip()}"
+            return True, f"Job not found: {cron_arg.strip()}"
+
+        elif cron_cmd == "pause":
+            agent.cron_manager.pause_job(cron_arg.strip())
+            return True, f"Paused: {cron_arg.strip()}"
+
+        elif cron_cmd == "resume":
+            agent.cron_manager.resume_job(cron_arg.strip())
+            return True, f"Resumed: {cron_arg.strip()}"
+
+        return True, "Cron commands: /cron [add|delete|pause|resume]"
+
+    # ── Plugin commands ──
+
+    elif cmd == "plugins":
+        if not arg:
+            plugins = agent.plugin_manager.list_plugins()
+            if not plugins:
+                return True, "No plugins installed. Create one: /plugins create <name>"
+            lines = ["Installed plugins:"]
+            for p in plugins:
+                status = "loaded" if p.loaded else f"error: {p.error}"
+                lines.append(f"  {p.manifest.name} v{p.manifest.version} [{p.manifest.plugin_type}] ({status})")
+            return True, "\n".join(lines)
+
+        plug_parts = arg.split(maxsplit=1)
+        plug_cmd = plug_parts[0].lower()
+        plug_arg = plug_parts[1] if len(plug_parts) > 1 else ""
+
+        if plug_cmd == "create":
+            path = agent.plugin_manager.create_plugin(plug_arg.strip() or "my-plugin")
+            return True, f"Created plugin scaffold at: {path}"
+        elif plug_cmd == "install":
+            if agent.plugin_manager.install_from_directory(plug_arg.strip()):
+                agent.plugin_manager.load_all()
+                return True, f"Installed plugin from: {plug_arg.strip()}"
+            return True, f"Failed to install from: {plug_arg.strip()}"
+        elif plug_cmd == "uninstall":
+            if agent.plugin_manager.uninstall(plug_arg.strip()):
+                return True, f"Uninstalled: {plug_arg.strip()}"
+            return True, f"Plugin not found: {plug_arg.strip()}"
+        elif plug_cmd == "reload":
+            agent.plugin_manager.load_all()
+            return True, "Plugins reloaded."
+        return True, "Plugin commands: /plugins [create|install|uninstall|reload]"
+
+    # ── LSP/Diagnostics commands ──
+
+    elif cmd == "diagnostics" or cmd == "lint":
+        import asyncio
+        directory = arg.strip() if arg else "."
+        console.print("[dim]Running diagnostics...[/dim]")
+        loop = asyncio.get_event_loop()
+        diags = loop.run_until_complete(agent.lsp_client.check_project(directory))
+        if not diags:
+            return True, "No diagnostics found. (Is pyright/ruff installed?)"
+        formatted = agent.lsp_client.format_diagnostics(diags)
+        return True, formatted
+
+    # ── Rewind commands ──
+
+    elif cmd == "rewind":
+        if not arg:
+            snapshots = agent.rewind_manager.list_snapshots(limit=10)
+            if not snapshots:
+                return True, "No snapshots yet. Snapshots are taken after each turn."
+            from rich.table import Table
+            table = Table(title="Conversation Snapshots", show_lines=True)
+            table.add_column("ID", style="cyan", width=4)
+            table.add_column("Label", style="white", width=40)
+            table.add_column("Messages", style="yellow", width=8)
+            table.add_column("Age", style="green", width=10)
+            for s in snapshots:
+                table.add_row(str(s.id), s.label, str(s.message_count), s.age_display)
+            console.print(table)
+            return True, ""
+
+        if arg.strip() == "undo":
+            messages = agent.rewind_manager.rewind_last()
+            if messages:
+                agent.conversation_history = messages
+                return True, "Rewound to previous state."
+            return True, "Nothing to undo."
+
+        try:
+            snap_id = int(arg.strip())
+            messages = agent.rewind_manager.rewind_to(snap_id)
+            if messages:
+                agent.conversation_history = messages
+                return True, f"Rewound to snapshot {snap_id}."
+            return True, f"Snapshot {snap_id} not found."
+        except ValueError:
+            return True, "Usage: /rewind [undo | <snapshot_id>]"
+
     # ── Check for custom skill invocation ──
 
     elif agent.skill_registry.has_skill(cmd):
@@ -996,12 +1199,21 @@ async def chat_loop(agent: WYN360Agent):
     def _(event):
         event.current_buffer.insert_text('\n')
 
-    # Create prompt session
+    # Create prompt session with optional vim mode
+    editing_mode = agent.vim_mode.get_editing_mode()
     session = PromptSession(
         multiline=False,
         key_bindings=kb,
-        prompt_continuation=lambda width, line_number, is_soft_wrap: '... '
+        prompt_continuation=lambda width, line_number, is_soft_wrap: '... ',
+        editing_mode=editing_mode,
     )
+
+    # Show buddy greeting if enabled
+    if agent.buddy_manager.enabled:
+        greeting = agent.buddy_manager.get_greeting()
+        if greeting:
+            console.print(f"[dim]{greeting}[/dim]")
+            console.print()
 
     while True:
         try:

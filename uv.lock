@@ -5745,7 +5745,7 @@ wheels = [
 
 [[package]]
 name = "wyn360-cli"
-version = "0.3.80"
+version = "0.4.0"
 source = { editable = "." }
 dependencies = [
     { name = "anthropic", extra = ["bedrock"] },

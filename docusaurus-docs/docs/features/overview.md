@@ -133,7 +133,18 @@ WYN360 CLI provides comprehensive AI-powered development assistance through a ri
 
 ## Feature Roadmap
 
-### Current Focus (v0.4.x)
+### Current Focus (v0.5.x)
+- ✅ Dream (auto memory consolidation)
+- ✅ Context compaction
+- ✅ Vim mode
+- ✅ Voice input (speech-to-text)
+- ✅ Buddy companion system
+- ✅ Cron/scheduled agents
+- ✅ Plugin system
+- ✅ LSP diagnostics integration
+- ✅ Conversation rewind
+
+### Previous (v0.4.x)
 - ✅ Persistent memory system
 - ✅ Sub-agent parallel workers
 - ✅ Structured plan mode
@@ -156,6 +167,9 @@ WYN360 CLI provides comprehensive AI-powered development assistance through a ri
 
 ## Get Started with Specific Features
 
+- **[Dream & Compaction →](dream-and-compaction.md)** - Auto memory consolidation and context management *(v0.5.0)*
+- **[Vim, Voice & Buddy →](vim-voice-buddy.md)** - Vim editing, speech input, virtual companion *(v0.5.0)*
+- **[Cron, Plugins & LSP →](cron-plugins-lsp.md)** - Scheduled agents, plugins, diagnostics, rewind *(v0.5.0)*
 - **[Memory & Skills →](agentic-memory.md)** - Persistent memory and custom slash commands *(v0.4.0)*
 - **[Planning & Sub-Agents →](planning-and-agents.md)** - Structured plans and parallel workers *(v0.4.0)*
 - **[Hooks & Token Budget →](hooks-and-budget.md)** - Pipeline hooks and auto-continue *(v0.4.0)*

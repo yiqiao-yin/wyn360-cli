@@ -47,6 +47,9 @@ nav:
       - Memory & Skills: features/agentic-memory.md
       - Planning & Sub-Agents: features/planning-and-agents.md
       - Hooks & Token Budget: features/hooks-and-budget.md
+      - Dream & Compaction: features/dream-and-compaction.md
+      - Vim, Voice & Buddy: features/vim-voice-buddy.md
+      - Cron, Plugins & LSP: features/cron-plugins-lsp.md
       - Web Search: features/web-search.md
       - Browser Use: features/browser-use.md
       - Vision Mode: features/vision-mode.md

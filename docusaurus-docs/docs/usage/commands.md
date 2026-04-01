@@ -46,6 +46,15 @@ Complete reference for WYN360 CLI commands and slash commands.
 | `/hooks` | Show registered hooks and stats | `/hooks` |
 | `/workers` | Show sub-agent task status | `/workers` |
 | `/budget` | Show token budget statistics | `/budget` |
+| `/dream` | Show dream consolidation status | `/dream` |
+| `/compact` | Show context compaction stats | `/compact` |
+| `/vim` | Toggle vim editing mode | `/vim` |
+| `/voice` | Toggle voice input | `/voice` |
+| `/buddy` | Toggle virtual companion | `/buddy` |
+| `/cron` | List/manage scheduled jobs | `/cron add 5m CI | gh run list` |
+| `/plugins` | List/manage plugins | `/plugins create my-tool` |
+| `/diagnostics` | Run linting/type checks | `/diagnostics src/` |
+| `/rewind` | View/restore conversation snapshots | `/rewind undo` |
 
 ### Help & Information
 
