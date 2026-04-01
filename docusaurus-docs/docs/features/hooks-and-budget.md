@@ -8,31 +8,51 @@ WYN360 CLI provides a hook system for customizing the request/response pipeline 
 
 ## Hook System
 
-Hooks are functions that run at specific points in the request/response lifecycle. They enable validation, transformation, and custom processing without modifying core code.
+Hooks are functions that run **automatically** at specific points in every request/response cycle. You don't trigger them — they fire on their own every time you send a message or the AI responds. Think of them as invisible middleware that watches everything flowing through the pipeline.
+
+### How Hooks Are Triggered
+
+**You do nothing.** Hooks run automatically:
+
+```
+You type a message
+  → pre_query hooks fire (validate/transform your message)
+    → Message sent to AI
+      → AI calls a tool (e.g., read_file)
+        → pre_tool hooks fire (can block the tool)
+        → Tool executes
+        → post_tool hooks fire (track results)
+      → AI generates response
+    → post_response hooks fire (filter/log the response)
+  → You see the response
+
+If anything crashes → on_error hooks fire
+```
+
+Every message, every response, every tool call — hooks are watching. The built-in hooks are already running from the moment you start a session.
 
 ### Hook Points
 
-| Hook Point | When It Fires | Use Case |
-|------------|---------------|----------|
-| `pre_query` | Before sending message to AI | Input validation, message transformation |
-| `post_response` | After receiving AI response | Response filtering, logging |
-| `pre_tool` | Before a tool executes | Block dangerous operations |
-| `post_tool` | After a tool completes | Track tool usage, validate results |
-| `on_error` | When an error occurs | Error reporting, recovery |
+| Hook Point | Fires automatically... | Every... | Use Case |
+|------------|----------------------|----------|----------|
+| `pre_query` | When you press Enter | Message you send | Input validation, message transformation |
+| `post_response` | When AI finishes responding | AI response | Response filtering, logging |
+| `pre_tool` | When AI is about to use a tool | Tool call | Block dangerous operations |
+| `post_tool` | When a tool finishes | Tool call | Track tool usage, validate results |
+| `on_error` | When something crashes | Error | Error reporting, recovery |
 
-### Built-in Hooks
+### Built-in Hooks (Always Running)
 
-WYN360 ships with two built-in hooks:
+WYN360 ships with two hooks that are **active by default** in every session:
 
-**Safety Check** (`builtin_safety_check`):
-Warns when potentially destructive patterns are detected in your message:
-- `rm -rf`
-- `DROP TABLE`
-- `DELETE FROM`
-- `format c:`
+**Safety Check** (`builtin_safety_check`) — runs on every message you type:
+- Scans for destructive patterns: `rm -rf`, `DROP TABLE`, `DELETE FROM`, `format c:`
+- If found, adds a warning message (does not block — just warns)
+- Example: you type "please rm -rf /tmp" → you'll see "Warning: Detected potentially destructive pattern 'rm -rf'"
 
-**Response Tracker** (`builtin_response_tracker`):
-Logs when responses exceed 50,000 characters for debugging.
+**Response Tracker** (`builtin_response_tracker`) — runs on every AI response:
+- Silently logs when responses exceed 50,000 characters
+- You won't see anything unless you check the logs — it's for debugging
 
 ### Commands
 
@@ -110,19 +130,21 @@ manager.register("rm_blocker", HookPoint.PRE_TOOL, block_rm, priority=-10)
 
 ## Token Budget & Auto-Continue
 
-The token budget manager tracks output token usage and automatically continues the AI's response when it gets cut off by the `max_tokens` limit.
+The token budget manager **runs automatically** on every AI response. You don't need to configure or trigger it — it watches for cut-off responses and continues them seamlessly.
 
 ### The Problem
 
 When the AI generates a long response, it may hit the `max_tokens` limit and stop mid-sentence. Previously, you had to manually ask "please continue" to get the rest.
 
-### The Solution
+### The Solution (Fully Automatic)
 
-WYN360 now:
-1. Detects when a response was cut off (doesn't end with a sentence terminator)
-2. Automatically sends a continuation message
+After every AI response, the system automatically:
+1. Checks if the response was cut off (doesn't end with a sentence terminator)
+2. If cut off, sends a continuation message behind the scenes
 3. Appends the continuation to the original response seamlessly
-4. Stops when the response is complete or diminishing returns are detected
+4. Repeats until the response is complete or diminishing returns are detected
+
+**You see one complete response** — the auto-continue happens invisibly. You never need to type "please continue."
 
 ### How It Works
 
