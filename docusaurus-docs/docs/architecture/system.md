@@ -83,36 +83,36 @@ graph TB
     Dream --> Memory
     Cron --> Agent
 
-    style CLI fill:#e3f2fd
-    style Slash fill:#e3f2fd
-    style Vim fill:#e3f2fd
-    style Voice fill:#e3f2fd
-    style Buddy fill:#e3f2fd
-    style PreHook fill:#bbdefb
-    style PostHook fill:#bbdefb
-    style Budget fill:#bbdefb
-    style Agent fill:#90caf9
-    style Model fill:#90caf9
-    style Prompt fill:#90caf9
-    style Planner fill:#64b5f6
-    style SubAgent fill:#64b5f6
-    style Dream fill:#64b5f6
-    style Cron fill:#64b5f6
-    style Files fill:#42a5f5
-    style Git fill:#42a5f5
-    style Web fill:#42a5f5
-    style GitHub fill:#42a5f5
-    style Browser fill:#42a5f5
-    style Docs fill:#42a5f5
-    style LSP fill:#42a5f5
-    style PlanTools fill:#42a5f5
-    style Memory fill:#1e88e5,color:#fff
-    style Rewind fill:#1e88e5,color:#fff
-    style Compact fill:#1e88e5,color:#fff
-    style Skills fill:#1e88e5,color:#fff
-    style Plugins fill:#1e88e5,color:#fff
-    style Config fill:#1e88e5,color:#fff
-    style Sessions fill:#1e88e5,color:#fff
+    style CLI fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style Slash fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style Vim fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style Voice fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style Buddy fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style PreHook fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style PostHook fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style Budget fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style Agent fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Model fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Prompt fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Planner fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style SubAgent fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style Dream fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style Cron fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style Files fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Git fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Web fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style GitHub fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Browser fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Docs fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style LSP fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style PlanTools fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Memory fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
+    style Rewind fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
+    style Compact fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
+    style Skills fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
+    style Plugins fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
+    style Config fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
+    style Sessions fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
 ```
 
 ---
@@ -156,13 +156,13 @@ graph LR
     Continue --> Agent
     Budget -->|Complete| Output[Display Response]
 
-    style Input fill:#e3f2fd
-    style Pre fill:#bbdefb
-    style Agent fill:#90caf9
-    style Post fill:#64b5f6
-    style Budget fill:#42a5f5,color:#fff
-    style Continue fill:#42a5f5,color:#fff
-    style Output fill:#1e88e5,color:#fff
+    style Input fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style Pre fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style Agent fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Post fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style Budget fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Continue fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Output fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
 ```
 
 | Component | Module | Trigger | Purpose |
@@ -222,21 +222,21 @@ graph TB
         Cron[CronManager] --> Jobs[Scheduled Jobs]
     end
 
-    style Agent fill:#e3f2fd
-    style Planner fill:#bbdefb
-    style Investigate fill:#90caf9
-    style Exit fill:#90caf9
-    style Approve fill:#64b5f6
-    style Execute fill:#64b5f6
-    style SubAgent fill:#bbdefb
-    style W1 fill:#90caf9
-    style W2 fill:#90caf9
-    style W3 fill:#90caf9
-    style Dream fill:#42a5f5,color:#fff
-    style Consolidate fill:#42a5f5,color:#fff
-    style SaveMem fill:#1e88e5,color:#fff
-    style Cron fill:#42a5f5,color:#fff
-    style Jobs fill:#1e88e5,color:#fff
+    style Agent fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style Planner fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style Investigate fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Exit fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Approve fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style Execute fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style SubAgent fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style W1 fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style W2 fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style W3 fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Dream fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Consolidate fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style SaveMem fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
+    style Cron fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Jobs fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
 ```
 
 | Component | Module | Trigger | Purpose |
@@ -288,16 +288,16 @@ graph LR
         History["Conversation History"]
     end
 
-    style Memory fill:#e3f2fd
-    style Sessions fill:#bbdefb
-    style Plugins fill:#90caf9
-    style Skills fill:#90caf9
-    style Dream fill:#64b5f6
-    style Cache fill:#bbdefb
-    style Creds fill:#42a5f5,color:#fff
-    style Rewind fill:#64b5f6
-    style Compact fill:#42a5f5,color:#fff
-    style History fill:#1e88e5,color:#fff
+    style Memory fill:#2563eb,color:#fff,stroke:#fff,stroke-width:1px
+    style Sessions fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style Plugins fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Skills fill:#1e40af,color:#fff,stroke:#fff,stroke-width:1px
+    style Dream fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style Cache fill:#1d4ed8,color:#fff,stroke:#fff,stroke-width:1px
+    style Creds fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style Rewind fill:#1e3a8a,color:#fff,stroke:#fff,stroke-width:1px
+    style Compact fill:#172554,color:#fff,stroke:#fff,stroke-width:1px
+    style History fill:#0f172a,color:#fff,stroke:#fff,stroke-width:1px
 ```
 
 | Component | Module | Storage | Purpose |

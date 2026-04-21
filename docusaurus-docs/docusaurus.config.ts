@@ -77,6 +77,8 @@ const config: Config = {
     mermaid: true,
   },
 
+  clientModules: [require.resolve('./src/clientModules/mermaidFullscreen.ts')],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',

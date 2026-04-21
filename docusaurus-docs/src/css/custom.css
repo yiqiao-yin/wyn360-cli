@@ -179,3 +179,129 @@
   background: var(--ifm-color-emphasis-200);
   color: var(--ifm-color-emphasis-900);
 }
+
+/* ============================================================
+ * Mermaid Diagram Enhancements
+ * - Larger font size for readability
+ * - Fullscreen button overlay
+ * - White text on dark blue fills in both themes
+ * ============================================================ */
+
+.docusaurus-mermaid-container {
+  position: relative;
+  background: var(--ifm-background-surface-color);
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+}
+
+/* Increase font size across mermaid nodes, edges, and cluster labels */
+.docusaurus-mermaid-container .nodeLabel,
+.docusaurus-mermaid-container .edgeLabel,
+.docusaurus-mermaid-container .cluster-label,
+.docusaurus-mermaid-container text {
+  font-size: 18px !important;
+  font-weight: 500 !important;
+}
+
+.docusaurus-mermaid-container .cluster-label .nodeLabel,
+.docusaurus-mermaid-container .cluster text {
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+/* Ensure white text in nodes regardless of theme */
+.docusaurus-mermaid-container .nodeLabel,
+.docusaurus-mermaid-container .nodeLabel p,
+.docusaurus-mermaid-container .nodeLabel span {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Cluster (subgraph) labels — readable in light and dark mode */
+.docusaurus-mermaid-container .cluster rect {
+  stroke: #1e3a8a !important;
+  stroke-width: 1.5px !important;
+  fill: rgba(30, 58, 138, 0.08) !important;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container .cluster rect {
+  fill: rgba(30, 58, 138, 0.25) !important;
+}
+
+/* Edge label backgrounds blend with container */
+.docusaurus-mermaid-container .edgeLabel {
+  background-color: var(--ifm-background-surface-color) !important;
+  color: var(--ifm-font-color-base) !important;
+}
+
+.docusaurus-mermaid-container .edgeLabel .labelBkg,
+.docusaurus-mermaid-container .edgeLabel rect {
+  fill: var(--ifm-background-surface-color) !important;
+  opacity: 0.9 !important;
+}
+
+/* Fullscreen toggle button */
+.mermaid-fullscreen-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #ffffff;
+  background: #1e3a8a;
+  border: 1px solid #1e40af;
+  border-radius: 6px;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.mermaid-fullscreen-btn:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+  background: #1d4ed8;
+}
+
+.mermaid-fullscreen-btn svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+}
+
+/* When the container is in fullscreen, make the diagram fill the screen */
+.docusaurus-mermaid-container:fullscreen,
+.docusaurus-mermaid-container:-webkit-full-screen {
+  padding: 2.5rem;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme='dark'] .docusaurus-mermaid-container:fullscreen,
+[data-theme='dark'] .docusaurus-mermaid-container:-webkit-full-screen {
+  background: #0f172a;
+}
+
+.docusaurus-mermaid-container:fullscreen svg,
+.docusaurus-mermaid-container:-webkit-full-screen svg {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.docusaurus-mermaid-container:fullscreen .nodeLabel,
+.docusaurus-mermaid-container:-webkit-full-screen .nodeLabel,
+.docusaurus-mermaid-container:fullscreen text,
+.docusaurus-mermaid-container:-webkit-full-screen text {
+  font-size: 22px !important;
+}
